@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.0.0
+    Version: 1.0.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
