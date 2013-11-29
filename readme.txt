@@ -41,7 +41,7 @@ Why create Child Themes using the Child Theme Configurator?
    
 == Frequently Asked Questions ==
 
-= Where is the functions.php file?
+= Where is the functions.php file? =
 
 You can add your own functions.php file, and any other files and directories you need for your Child Theme. The Child Theme Configurator helps you identify and override selectors in the Parent stylesheet without touching the other files.
 
