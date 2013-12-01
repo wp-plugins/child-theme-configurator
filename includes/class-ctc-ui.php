@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.0.0
+    Version: 1.0.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -23,8 +23,8 @@ class Child_Theme_Configurator_UI {
     function render_options() { 
         global $chld_thm_cfg; 
         $css    = $chld_thm_cfg->css;
-        $parent = $css->get_property('parent_theme');
-        $child  = $css->get_property('child_theme');
+        $parent = $css->get_property('parnt');
+        $child  = $css->get_property('child');
         $imports= $css->get_property('imports');
         $id     = 0;
     ?>
@@ -62,7 +62,7 @@ class Child_Theme_Configurator_UI {
     <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
       <form id="ctc_load_form" method="post" action="">
         <?php wp_nonce_field( 'ctc_update' ); ?>
-        <div class="ctc-input-row clearfix" id="input_row_parent_theme">
+        <div class="ctc-input-row clearfix" id="input_row_parnt">
           <div class="ctc-input-cell">
             <label>
               <?php _e('Parent Theme', $chld_thm_cfg->ns); ?>
@@ -72,7 +72,7 @@ class Child_Theme_Configurator_UI {
             <?php $this->render_theme_dropdown(); ?>
           </div>
         </div>
-        <div class="ctc-input-row clearfix" id="input_row_child_theme">
+        <div class="ctc-input-row clearfix" id="input_row_child">
           <div class="ctc-input-cell">
             <label>
               <?php _e('Child Theme', $chld_thm_cfg->ns); ?>
@@ -186,8 +186,8 @@ class Child_Theme_Configurator_UI {
             <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
               <input type="button" class="button ctc-save-input" id="ctc_save_query_selector" 
             name="ctc_save_query_selector" value="Save" />
-              <input type="hidden" id="ctc_sel_ovrd_selnum" 
-            name="ctc_sel_ovrd_selnum" value="" />
+              <input type="hidden" id="ctc_sel_ovrd_selid" 
+            name="ctc_sel_ovrd_selid" value="" />
             </div>
           </div>
           <div class="ctc-input-row clearfix" id="ctc_sel_ovrd_rule_header" style="display:none">
@@ -285,7 +285,7 @@ class Child_Theme_Configurator_UI {
             if ($child !== empty($parent)):
                 $template = $child ? $theme->get_stylesheet() : $theme->get_template();
                 echo '<option value="' . $template . '"' 
-                    . ($template == $chld_thm_cfg->css->get_property($child?'child_theme':'parent_theme') ? ' selected' : '') 
+                    . ($template == $chld_thm_cfg->css->get_property($child?'child':'parnt') ? ' selected' : '') 
                     . '>' . $theme->get('Name') . '</option>' . LF;
             endif;
         endforeach;
@@ -302,7 +302,7 @@ class Child_Theme_Configurator_UI {
             echo '</ul></div>' . LF;
         elseif (isset($_GET['updated'])):
             echo '<div class="updated"><p>' . LF
-                . __('Child Theme', $chld_thm_cfg->ns) . ' <strong>' . $chld_thm_cfg->css->get_property('child_theme_name') 
+                . __('Child Theme', $chld_thm_cfg->ns) . ' <strong>' . $chld_thm_cfg->css->get_property('child_name') 
                 . '</strong> ' . __('has been updated.', $chld_thm_cfg->ns) . LF
                 . '</p></div>' . LF;
         endif;

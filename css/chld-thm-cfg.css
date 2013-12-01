@@ -30,6 +30,10 @@
 .ctc-swatch {
     display:block;
     float:left;
+    font-size:16px;
+    padding:0;
+    line-height:1;
+    overflow: hidden;
 }
 .ctc-hidden {
     display:none;
@@ -39,11 +43,8 @@
     max-height:100px;
     max-width:100px;
     margin:0 2% 0 0;
-    padding:0;
-    line-height:1;
     /*color:#7f7f7f;
     border: 1px solid #ddd;*/
-    overflow: hidden;
 }
 .ctc-parent-row {
     clear:both;
