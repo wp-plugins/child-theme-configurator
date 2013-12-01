@@ -15,7 +15,7 @@ if ( !defined('ABSPATH')) exit;
     Copyright (C) 2013 Lilaea Media
 */
 class Child_Theme_Configurator_CSS {
-
+    var $version;
     var $sel_ndx;
     var $val_ndx;
     var $data;
@@ -28,6 +28,7 @@ class Child_Theme_Configurator_CSS {
     var $child_theme_name;
     
     function __construct() {
+        $this->version          = '1.0.2';
         $this->keynum           = 0;
         $this->child_theme      = '';
         $this->parent_theme     = '';
@@ -71,6 +72,7 @@ class Child_Theme_Configurator_CSS {
     }
 
     function obj_to_utf8($data) {
+        
         if (is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -89,29 +91,27 @@ class Child_Theme_Configurator_CSS {
                 $values[] = $value;
                 $rules[] = 'background-image';
             endif;
-        else:
-            $regex = '#^(\#\w{3,6})? *(url\([^\)]+\))?(.+)?$#';
-            preg_match($regex, $value, $parts);
-            if (empty($parts[1]) && empty($parts[2])):
-                // this is a named color or single hex color
-                $parts[1] = $parts[3];
-                unset($parts[3]);
-            endif;
-            if (!empty($parts[1])):
-                if ('none' != $parts[1]):
-                    $rules[] = 'background-color'; 
-                else: 
-                    $rules[] = 'background'; 
-                endif;
-                $values[]   = $parts[1];
-            endif;
-            if (!empty($parts[2])):
+        else:            
+            $regex = '#(url *\([^\)]+\))#';
+            if (preg_match($regex, $value, $matches)) $url = $matches[1];
+            $parts = preg_split($regex, $value);
+            
+            //echo 'BACKGROUND PARTS: ' . print_r($parts, true) . LF;
+            if (count($parts) == 1):
+                // this is a named color or single hex color or none
+                $part = str_replace(' ', '', $parts[0]);
+                $rules[] = 'none' == $part ? 'background' : 'background-color'; 
+                $values[]   = $part;
+            else:
                 $rules[]    = 'background-image';
-                $values[]   = $parts[2];
-            endif;
-            if (!empty($parts[3])):
+                $values[]   = $url;
+                if (!empty($parts[0]) && '' != $parts[0]):
+                    $rules[]    = 'background-color';
+                    $values[]   = trim($parts[0]);
+                endif;
                 $position = array();
-                foreach(preg_split('/ +/', trim($parts[3])) as $part):
+                foreach(preg_split('/ +/', trim($parts[1])) as $part):
+                    if (empty($part) || '' == $part) continue;
                     if (false === strpos($part, 'repeat')):
                         $position[] = $part;
                     else:
@@ -125,6 +125,9 @@ class Child_Theme_Configurator_CSS {
                 endif;
             endif;
         endif;
+        //echo 'RULES: ' . print_r($rules, true) . LF;
+        //echo 'VALUES: ' . print_r($values, true) . LF;
+        echo $value . LF;
     }
     
     function normalize_font($value, &$rules, &$values) {
@@ -154,9 +157,11 @@ class Child_Theme_Configurator_CSS {
     
     function normalize_margin_padding($rule, $value, &$rules, &$values) {
         $parts = preg_split("/ +/", trim($value));
-        if (empty($parts[1])) $parts[1] = $parts[0];
-        if (empty($parts[2])) $parts[2] = $parts[0];
-        if (empty($parts[3])) $parts[3] = $parts[1];
+        //echo 'rule: ' . $rule . ' value: ' . $value . ' split: ' . print_r($parts, true) . LF;
+        if (!isset($parts[1])) $parts[1] = $parts[0];
+        if (!isset($parts[2])) $parts[2] = $parts[0];
+        if (!isset($parts[3])) $parts[3] = $parts[1];
+        //echo 'reordered split: ' . print_r($parts, true) . LF;
         $rules[0]   = $rule . '-top';
         $values[0]  = $parts[0];
         $rules[1]   = $rule . '-right';
@@ -202,9 +207,10 @@ class Child_Theme_Configurator_CSS {
             $selnum = $this->sel_ndx[$query][$sel];
             if ('' == $value && isset($old_value) && '' != $old_value):
                 $this->data[$selnum]['value'][$rule][$template] = '';
-                unset($this->val_ndx[$template][$rule][$value][$query][$selnum]);
-                if (isset($this->val_ndx[$template][$rule][$old_value][$query][$selnum])):
-                    unset($this->val_ndx[$template][$rule][$old_value][$query][$selnum]);
+                unset($this->val_ndx[$rule][$old_value][$query][$selnum][$template]);
+                if (isset($this->val_ndx[$rule][$old_value][$query][$selnum])
+                    && !count($this->val_ndx[$rule][$old_value][$query][$selnum])):
+                    unset($this->val_ndx[$rule][$old_value][$query][$selnum]);
                     $delete = array(
                         'rule'      => $rule,
                         'value'     => $old_value,
@@ -212,26 +218,26 @@ class Child_Theme_Configurator_CSS {
                         'selnum'    => $selnum,
                     );
                 endif;
-                if (isset($this->val_ndx[$template][$rule][$old_value][$query]) 
-                    && !count($this->val_ndx[$template][$rule][$old_value][$query])):
-                    unset($this->val_ndx[$template][$rule][$old_value][$query]);
+                if (isset($this->val_ndx[$rule][$old_value][$query]) 
+                    && !count($this->val_ndx[$rule][$old_value][$query])):
+                    unset($this->val_ndx[$rule][$old_value][$query]);
                     $delete = array(
                         'rule'      => $rule,
                         'value'     => $old_value,
                         'query'     => $query,
                     );
                 endif;
-                if (isset($this->val_ndx[$template][$rule][$old_value]) 
-                    && !count($this->val_ndx[$template][$rule][$old_value])):
-                    unset($this->val_ndx[$template][$rule][$old_value]);
+                if (isset($this->val_ndx[$rule][$old_value]) 
+                    && !count($this->val_ndx[$rule][$old_value])):
+                    unset($this->val_ndx[$rule][$old_value]);
                     $delete = array(
                         'rule'      => $rule,
                         'value'     => $old_value,
                     );
                 endif;
-                if (isset($this->val_ndx[$template][$rule]) 
-                    && !count($this->val_ndx[$template][$rule])):
-                    unset($this->val_ndx[$template][$rule]);
+                if (isset($this->val_ndx[$rule]) 
+                    && !count($this->val_ndx[$rule])):
+                    unset($this->val_ndx[$rule]);
                     $delete = array(
                         'rule'      => $rule,
                     );
@@ -248,7 +254,7 @@ class Child_Theme_Configurator_CSS {
                 // add values to data array
                 $this->data[$selnum]['value'][$rule][$template] = $value . ($important?' !important':'');
                 // add rule and values to index
-                $this->val_ndx[$template][$rule][$value][$query][$selnum] = 0;
+                $this->val_ndx[$rule][$value][$query][$selnum][$template] = 0;
                 $this->updates[$template]['update'][] = array(
                         'rule'      => $rule,
                         'value'     => $value,
@@ -509,7 +515,8 @@ class Child_Theme_Configurator_CSS {
     
     function parse_post_data() {
         if (isset($_POST['ctc_new_selectors'])):
-            $this->parse_css($this->child_theme, LF . $_POST['ctc_new_selectors'], (isset($_POST['ctc_sel_ovrd_query'])?trim($_POST['ctc_sel_ovrd_query']):null), false);
+            $this->parse_css($this->child_theme, LF . $_POST['ctc_new_selectors'], 
+                (isset($_POST['ctc_sel_ovrd_query'])?trim($_POST['ctc_sel_ovrd_query']):null), false);
         elseif (isset($_POST['ctc_child_imports'])):
             $this->parse_css($this->child_theme, $_POST['ctc_child_imports']);
         else:
@@ -599,5 +606,24 @@ class Child_Theme_Configurator_CSS {
         asort($queries);
         return $queries;
     }
+
+    function upgrade() {
+        if (!empty($this->val_ndx[$this->parent_theme]) && is_array($this->val_ndx[$this->parent_theme])):
+            $new_ndx = array();
+            foreach (array($this->parent_theme, $this->child_theme) as $theme):
+                foreach ($this->val_ndx[$theme] as $rule => $valarr):
+                    foreach ($valarr as $value => $queryarr):
+                        foreach ($queryarr as $query => $selarr):
+                            foreach($selarr as $sel => $selflag):
+                                $new_ndx[$rule][$value][$query][$sel][$theme] = $selflag;
+                            endforeach;
+                        endforeach;
+                    endforeach;
+                endforeach;
+            endforeach;
+            $this->val_ndx = $new_ndx;
+        endif;
+    }
+    
 }
 ?>

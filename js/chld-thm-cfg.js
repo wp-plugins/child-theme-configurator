@@ -2,13 +2,13 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.0.1
+ *  Version: 1.0.2
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
  *  Copyright (C) 2013 Lilaea Media
  */
-(function($){
+jQuery(document).ready(function($){
 
     var lf = "\n", 
     
@@ -117,6 +117,8 @@
             $($swatch).removeAttr('style');
             if (has_gradient.parent) { $($swatch).ctcgrad(gradient.parent.origin, [gradient.parent.start, gradient.parent.end]); }
             $($swatch).css(cssrules.parent);  
+            console.log($swatch.attr('id'));
+            console.log(cssrules.parent);
             if (!($swatch.attr('id').match(/parent/))){
                 if (has_gradient.child) { $($swatch).ctcgrad(gradient.child.origin, [gradient.child.start, gradient.child.end]); }
                 $($swatch).css(cssrules.child);
@@ -130,14 +132,15 @@
             ctcAjax.imports[ctcAjax.child_theme] = obj.imports;
         }
         $(obj.del).each(function(){
+            delete ctcAjax.val_ndx[this.rule][this.value][this.query][this.selnum][ctcAjax.child_theme];
             if (undefined != this.selnum) {
-                delete ctcAjax.val_ndx[ctcAjax.child_theme][this.rule][this.value][this.query][this.selnum];
+                delete ctcAjax.val_ndx[this.rule][this.value][this.query][this.selnum];
             } else if (undefined != this.query) {
-                delete ctcAjax.val_ndx[ctcAjax.child_theme][this.rule][this.value][this.query];
+                delete ctcAjax.val_ndx[this.rule][this.value][this.query];
             } else if (undefined != this.value) {
-                delete ctcAjax.val_ndx[ctcAjax.child_theme][this.rule][this.value];
+                delete ctcAjax.val_ndx[this.rule][this.value];
             } else if (undefined != this.rule) {
-                delete ctcAjax.val_ndx[ctcAjax.child_theme][this.rule];
+                delete ctcAjax.val_ndx[this.rule];
             }
             if (undefined != this.query) currQuery = this.query;
             if (undefined != this.selnum) currSelnum = this.selnum;
@@ -155,24 +158,23 @@
             if (undefined != this.rule) currRule = this.rule;
         });
         $(obj.update).each(function(){
-            if (undefined == ctcAjax.val_ndx[ctcAjax.child_theme]) {
-                ctcAjax.val_ndx[ctcAjax.child_theme] = {};
+            if (undefined == ctcAjax.val_ndx[this.rule]) {
+                ctcAjax.val_ndx[this.rule] = {};
+            } 
+            if (this.value && undefined == ctcAjax.val_ndx[this.rule][this.value]) {
+                ctcAjax.val_ndx[this.rule][this.value] = {};
+            } 
+            if (this.value && undefined == ctcAjax.val_ndx[this.rule][this.value][this.query]) {
+                ctcAjax.val_ndx[this.rule][this.value][this.query] = {};
+            } 
+            if (this.value && undefined == ctcAjax.val_ndx[this.rule][this.value][this.query][this.selnum]) {
+                ctcAjax.val_ndx[this.rule][this.value][this.query][this.selnum] = {};
             }
-            if (undefined == ctcAjax.val_ndx[ctcAjax.child_theme][this.rule]) {
-                ctcAjax.val_ndx[ctcAjax.child_theme][this.rule] = {};
-            } 
-            if (this.value && undefined == ctcAjax.val_ndx[ctcAjax.child_theme][this.rule][this.value]) {
-                ctcAjax.val_ndx[ctcAjax.child_theme][this.rule][this.value] = {};
-            } 
-            if (this.value && undefined == ctcAjax.val_ndx[ctcAjax.child_theme][this.rule][this.value][this.query]) {
-                ctcAjax.val_ndx[ctcAjax.child_theme][this.rule][this.value][this.query] = {};
-            } 
-            if (this.value && undefined == ctcAjax.val_ndx[ctcAjax.child_theme][this.rule][this.value][this.query][this.selnum]) {
-                ctcAjax.val_ndx[ctcAjax.child_theme][this.rule][this.value][this.query][this.selnum] = 0;
+            if (this.value && undefined == ctcAjax.val_ndx[this.rule][this.value][this.query][this.selnum][ctcAjax.child_theme]) {
+                ctcAjax.val_ndx[this.rule][this.value][this.query][this.selnum][ctcAjax.child_theme] = 0;
             }
             if (this.rule && undefined == ctcAjax.data[this.selnum].value[this.rule]) {
                 ctcAjax.data[this.selnum].value[this.rule] = {};
-                //ctcAjax.val_ndx[ctcAjax.child_theme][this.rule] = {};
             }
             ctcAjax.data[this.selnum].value[this.rule][ctcAjax.child_theme] = this.value + (this.important > 0 ? ' !important':'');
             if (undefined != this.query) currQuery = this.query;
@@ -186,9 +188,9 @@
         if (currSelnum) {
             ctc_set_selector(currSelnum, ctcAjax.data[currSelnum].selector);
         }
-        if (currRule) {
-            ctc_set_rule(currRule, currRule);
-        }
+        //if (currRule) {
+            //ctc_set_rule(currRule, currRule);
+        //}
     },
     ctc_image_url = function(theme, value) {
         var parts = value.match(/url\([" ]*(.+?)[" ]*\)/),
@@ -256,13 +258,8 @@
     ctc_load_rules = function() {
         var obj = {},
             arr = [];
-        if (false === ctc_is_empty(ctcAjax.val_ndx[ctcAjax.parent_theme])) {
-            $.each(ctcAjax.val_ndx[ctcAjax.parent_theme], function(key, value) {
-                obj[key]++;
-            });
-        }
-        if (false === ctc_is_empty(ctcAjax.val_ndx[ctcAjax.child_theme])) {
-            $.each(ctcAjax.val_ndx[ctcAjax.child_theme], function(key, value) {
+        if (false === ctc_is_empty(ctcAjax.val_ndx)) {
+            $.each(ctcAjax.val_ndx, function(key, value) {
                 obj[key]++;
             });
         }
@@ -282,14 +279,13 @@
             value = (undefined == ctcAjax.data[selnum].value || undefined == ctcAjax.data[selnum].value[rule] ? '' : ctcAjax.data[selnum].value[rule]),
             oldRuleObj = ctc_decode_value(rule, (undefined == value ? '' : value[ctcAjax.parent_theme])),
             newRuleObj = ctc_decode_value(rule, (undefined == value ? '' : value[ctcAjax.child_theme]));
-        if (value) {
-            unique_rule_value[rule + '%%' + value[ctcAjax.parent_theme]] = 1;
-            unique_rule_value[rule + '%%' + value[ctcAjax.child_theme]] = 1;
-        }
         html += '<div class="ctc-' + (specific ? 'selector' : 'input' ) + '-row clearfix">' + lf;
-        html += '<div class="ctc-input-cell">' + (specific ? ctcAjax.data[selnum].selector : rule) + '</div>' + lf;
-        html += '<div class="ctc-parent-value' + (specific ? ' ctc-hidden' : ' ctc-input-cell') +'" id="ctc_parent_' + rule + '_' + selnum + '">' 
+        html += '<div class="ctc-input-cell">' + (specific ? ctcAjax.data[selnum].selector 
+            + (ctc_is_empty(oldRuleObj.orig) ? '<br/>' + ctcAjax.child_only : '') : rule) + '</div>' + lf;
+        if (!specific) {
+            html += '<div class="ctc-parent-value ctc-input-cell" id="ctc_parent_' + rule + '_' + selnum + '">' 
             + (ctc_is_empty(oldRuleObj.orig) ? '[no value]' : oldRuleObj.orig) + '</div>' + lf;
+        }
         html += '<div class="ctc-input-cell">' + lf;
         if (false === ctc_is_empty(oldRuleObj.names)){
             $.each(oldRuleObj.names, function(ndx, newname) {
@@ -320,7 +316,9 @@
     },
     
     ctc_render_selector_inputs = function(selnum) {
-        if (undefined == ctcAjax.data[selnum].value) return;
+        if (undefined == ctcAjax.data[selnum].value) {
+            $('#ctc_sel_ovrd_rule_inputs').html('');
+        } else {
         var html = '', counter = 0;
         if (false === ctc_is_empty(ctcAjax.data[selnum].value)){
             $.each(ctcAjax.data[selnum].value, function(rule, value) {
@@ -330,38 +328,31 @@
         $('#ctc_sel_ovrd_rule_inputs').html(html).find('.color-picker').each(function() {
             ctc_setup_iris(this);
         });
+        }
         ctc_coalesce_inputs('#ctc_child_all_0_swatch');
     }
 
     ctc_render_rule_value_inputs = function(rule) {
         var html = '<div class="ctc-input-row clearfix" id="ctc_rule_row_' + rule + '">' + lf, 
-            valID = 0, 
-            themes = {parent: ctcAjax.parent_theme, child: ctcAjax.child_theme};
-        unique_rule_value = {},
+            valID = 0;
 
-        $.each(themes, function(ndx, theme) {
-            if (ctc_is_empty(ctcAjax.val_ndx[theme]) || undefined == ctcAjax.val_ndx[theme][rule]) return;
-            $.each(ctcAjax.val_ndx[theme][rule], function(value, sel) {
-                if (unique_rule_value[rule + '%%' + value]) {
-                    return;
-                } else {
-                    valID++;
-                    oldRuleObj = ctc_decode_value(rule, value),
-                    html += '<div class="ctc-parent-row clearfix" id="ctc_rule_row_' + rule + '_' + valID + '">' + lf;
-                    html += '<div class="ctc-input-cell ctc-parent-value" id="ctc_parent_' + rule + '_' + valID + '">' 
-                        + oldRuleObj.orig + '</div>' + lf;
-                    html += '<div class="ctc-input-cell">' + lf;
-                    html += '<div class="ctc-swatch ctc-specific" id="ctc_parent_'+rule+'_' + valID + '_swatch">' 
-                        + ctcAjax.swatch_text + '</div></div>' + lf;
-                    html += '<div class="ctc-input-cell"><a href="#" class="ctc-selector-handle" id="ctc_selector_' + rule + '_' + valID + '">'
-                        + ctcAjax.selector_text + '</a></div>' + lf;
-                    html += '<div id="ctc_selector_' + rule + '_' + valID + '_container" class="ctc-selector-container clearfix">' + lf;
-                    html += '<a href="#" id="ctc_selector_' + rule + '_' + valID + '_close" class="ctc-selector-handle" style="float:right">' 
-                        + ctcAjax.close_text + '</a>' + lf;
-                        html += ctc_render_selector_value_inputs(rule, sel);
-                    html += '</div></div>' + lf;
-                }
-            });
+        if (ctc_is_empty(ctcAjax.val_ndx) || undefined == ctcAjax.val_ndx[rule]) return;
+        $.each(ctcAjax.val_ndx[rule], function(value, sel) {
+            valID++;
+            oldRuleObj = ctc_decode_value(rule, value),
+            html += '<div class="ctc-parent-row clearfix" id="ctc_rule_row_' + rule + '_' + valID + '">' + lf;
+            html += '<div class="ctc-input-cell ctc-parent-value" id="ctc_parent_' + rule + '_' + valID + '">' 
+                + oldRuleObj.orig + '</div>' + lf;
+            html += '<div class="ctc-input-cell">' + lf;
+            html += '<div class="ctc-swatch ctc-specific" id="ctc_parent_'+rule+'_' + valID + '_swatch">' 
+                + ctcAjax.swatch_text + '</div></div>' + lf;
+            html += '<div class="ctc-input-cell"><a href="#" class="ctc-selector-handle" id="ctc_selector_' + rule + '_' + valID + '">'
+                + ctcAjax.selector_text + '</a></div>' + lf;
+            html += '<div id="ctc_selector_' + rule + '_' + valID + '_container" class="ctc-selector-container clearfix">' + lf;
+            html += '<a href="#" id="ctc_selector_' + rule + '_' + valID + '_close" class="ctc-selector-handle" style="float:right">' 
+                + ctcAjax.close_text + '</a>' + lf;
+            html += ctc_render_selector_value_inputs(rule, sel);
+            html += '</div></div>' + lf;
         });
         html += '</div>' + lf;
         $('#ctc_rule_value_inputs').html(html).find('.color-picker').each(function() {
@@ -378,7 +369,7 @@
             $.each(sel, function(query, selectors) {
                 if (query != lastquery) { 
                     lastquery = query; 
-                    html += '<h4 class="ctc-query-heading">' + query + '</h4>' + lf; //queryparts[1]
+                    html += '<h4 class="ctc-query-heading">' + query + '</h4>' + lf;
                 }
                 if (false === ctc_is_empty(selectors)){
                     $.each(selectors, function(selnum, zero) {
@@ -627,5 +618,5 @@
         },
         focus: function(e) { e.preventDefault(); }
     });
-})(jQuery);
+});
     
