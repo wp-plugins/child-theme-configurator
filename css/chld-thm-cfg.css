@@ -10,7 +10,7 @@
     max-height:800px;
     overflow:auto;
 }
-#preview_options_panel {
+#view_child_options_panel, #view_parnt_options_panel {
     white-space:pre;
     overflow:auto;
     font-family:monospace;
@@ -77,11 +77,11 @@
 .ctc-save-input {
 }
 .ctc-button-cell, .ctc-input-cell.ctc-button-cell {
-    width:80px;
+    width:85px;
 }
 .ctc-textarea-button-cell {
     margin:15px 0;
-    width:80px;
+    width:85px;
 }
 .ctc-selector-link {
 }

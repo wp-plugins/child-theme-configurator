@@ -27,6 +27,7 @@ class Child_Theme_Configurator {
     var $shortName;
     var $ns;
     var $ui;
+    var $themes;
     var $errors;
     var $hook;
     var $is_ajax;
@@ -34,23 +35,21 @@ class Child_Theme_Configurator {
 
     function __construct($file) {
         $this->dir = dirname( $file );
-        $this->ns = CHLD_THM_CFG_NS;
-        $this->optionsName = $this->ns . '_options';
-        $this->menuName = $this->ns . '_menu';
+        $this->optionsName  = 'chld_thm_cfg_options';
+        $this->menuName     = 'chld_thm_cfg_menu';
+        $lang_dir           = $this->dir . '/lang';
+        load_plugin_textdomain('chld_thm_cfg', false, $lang_dir, $lang_dir);
         
-        $lang_dir             = $this->dir . '/lang';
-        load_plugin_textdomain($this->ns, false, $lang_dir, $lang_dir);
-        
-        $this->pluginName = __('Child Theme Configurator', $this->ns);
-        $this->shortName = __('Child Themes', $this->ns);
-        $this->pluginPath    = $this->dir . '/';
-        $this->pluginURL     = plugin_dir_url($file);
+        $this->pluginName   = __('Child Theme Configurator', 'chld_thm_cfg');
+        $this->shortName    = __('Child Themes', 'chld_thm_cfg');
+        $this->pluginPath   = $this->dir . '/';
+        $this->pluginURL    = plugin_dir_url($file);
 
         // setup plugin hooks
         add_action('admin_menu', array(&$this, 'admin_menu'));
         add_action('admin_enqueue_scripts', array(&$this, 'enqueue_scripts'));
         add_action('wp_ajax_ctc_update',    array(&$this, 'ajax_save_postdata' ));
-        add_action('wp_ajax_ctc_query',    array(&$this, 'ajax_query_css' ));
+        add_action('wp_ajax_ctc_query',     array(&$this, 'ajax_query_css' ));
         add_action('update_option_' . $this->optionsName, array(&$this, 'update_redirect'), 10);
     }
 
@@ -66,67 +65,77 @@ class Child_Theme_Configurator {
             wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css');
             wp_enqueue_script('iris');
             wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('iris'), '1.0');
-            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js', //'js/chld-thm-cfg.min.js',
+            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js', //'js/chld-thm-cfg.js',
                 array('jquery-ui-autocomplete'), '1.0', true);
             wp_localize_script( 'chld-thm-cfg-admin', 'ctcAjax', 
                 apply_filters('ctc_localize_script', array(
-                    'ajaxurl'       => admin_url( 'admin-ajax.php' ),
-                    'theme_uri'     => get_theme_root_uri(),
-                    'load_msg'      => __('Are you sure? This will replace your current settings.', $this->ns),
-                    'parnt'  => $this->css->get_property('parnt'),
-                    'child'   => $this->css->get_property('child'),
-                    'data'          => array(),
-                    'imports'       => $this->css->get_property('imports'),
-                    'sel_ndx'       => array(),
-                    'val_ndx'       => array(),
-                    'rule'          => array(),
-                    'labels'        => array(
-                        '_background_url'       => __('URL/None', $this->ns),
-                        '_background_origin'    => __('Origin', $this->ns),
-                        '_background_color1'    => __('Color 1', $this->ns),
-                        '_background_color2'    => __('Color 2', $this->ns),
-                        '_border_width'         => __('Width', $this->ns),
-                        '_border_style'         => __('Style', $this->ns),
-                        '_border_color'         => __('Color', $this->ns),
+                    'ajaxurl'           => admin_url( 'admin-ajax.php' ),
+                    'theme_uri'         => get_theme_root_uri(),
+                    'themes'            => $this->themes,
+                    'parnt'             => $this->css->get_property('parnt'),
+                    'child'             => $this->css->get_property('child'),
+                    'imports'           => $this->css->get_property('imports'),
+                    'rule'              => $this->css->get_property('rule'),
+                    'sel_ndx'           => $this->css->get_property('sel_ndx'),
+                    'val_qry'           => array(),
+                    'rule_val'          => array(),
+                    'sel_val'           => array(),
+                    'field_labels'      => array(
+                        '_background_url'       => __('URL/None', 'chld_thm_cfg'),
+                        '_background_origin'    => __('Origin', 'chld_thm_cfg'),
+                        '_background_color1'    => __('Color 1', 'chld_thm_cfg'),
+                        '_background_color2'    => __('Color 2', 'chld_thm_cfg'),
+                        '_border_width'         => __('Width', 'chld_thm_cfg'),
+                        '_border_style'         => __('Style', 'chld_thm_cfg'),
+                        '_border_color'         => __('Color', 'chld_thm_cfg'),
                     ),
-                    'swatch_text'   => $this->ui->swatch_text,
-                    'swatch_label'  => __('Sample', $this->ns),
-                    'selector_text' => __('Selectors', $this->ns),
-                    'close_text'    => __('Close', $this->ns),
-                    'new_query'     => __('New Query', $this->ns),
-                    'new_selector'  => __('New Selector', $this->ns),
-                    'css_fail'      => __('The stylesheet cannot be displayed.', $this->ns),
-                    'child_only'    => __('(Child Only)', $this->ns),
+                    'load_txt'          => __('Are you sure? This will replace your current settings.', 'chld_thm_cfg'),
+                    'swatch_txt'        => $this->ui->swatch_text,
+                    'swatch_label'      => __('Sample', 'chld_thm_cfg'),
+                    'selector_txt'      => __('Selectors', 'chld_thm_cfg'),
+                    'close_txt'         => __('Close', 'chld_thm_cfg'),
+                    'css_fail_txt'      => __('The stylesheet cannot be displayed.', 'chld_thm_cfg'),
+                    'child_only_txt'    => __('(Child Only)', 'chld_thm_cfg'),
+                    'inval_theme_txt'   => __('Please enter a valid Child Theme', 'chld_thm_cfg'),
+                    'inval_name_txt'    => __('Please enter a valid Child Theme name', 'chld_thm_cfg'),
+                    'theme_exists_txt'  => __('<strong>%s</strong> exists. Please enter a different Child Theme', 'chld_thm_cfg'),
                 )));
         endif;
     }
             
     function options_panel() {
         $this->ui->render_options();
-        //print_r($this->css->get_property('data'));
     }
     
     function ctc_page_init () {
+        $this->get_themes();
         $this->load_css();
+        $this->generate_stylesheet();
         $this->ui = new Child_Theme_Configurator_UI();
         $this->ui->render_help_tabs();
-        $this->handle_inputs();
-        if ($this->updated):
-            $this->css->reset_updates();
-            update_option($this->optionsName, $this->css);
-        endif;
 	}
+    
+    function get_themes() {
+        $this->themes = array('child' => array(), 'parnt' => array());
+        foreach (wp_get_themes() as $theme):
+            $parent = $theme->parent();
+            if (empty($parent)):
+                $slug = $theme->get_template();
+                $this->themes['parnt'][$slug] = array('Name' => $theme->get('Name'));
+            else:
+                $slug = $theme->get_stylesheet();
+                $this->themes['child'][$slug] = array('Name' => $theme->get('Name'), 'Author' => $theme->get('Author'), 'Version' => $theme->get('Version'));
+            endif;
+        endforeach;
+    }
+
     function load_css() {
-        if (!($this->css = get_option($this->optionsName)))
+        if (!($this->css = get_option($this->optionsName)) 
+            || !is_object($this->css) 
+            // upgrade to v.1.1.0 
+            || !($version = $this->css->get_property('version')))
+
             $this->css = new Child_Theme_Configurator_CSS();
-        $this->updated = false;
-        $upgrade = $this->css->get_property('version');
-        if (empty($upgrade)):
-            // upgrade val_ndx to 1.0.2 data structure
-            $this->css->upgrade();
-            $this->css->set_property('version', $this->version);
-            $this->updated = true;
-        endif;
     }
     
     function validate_post() {
@@ -150,49 +159,88 @@ class Child_Theme_Configurator {
         endif;
     }
     
-    function handle_inputs() {
-        if (isset($_POST['ctc_load_styles']) && current_user_can('install_themes') && $this->validate_post()):
-            $author = '';
-            if (isset($_POST['ctc_theme_parent'])):
-                $theme = sanitize_text_field($_POST['ctc_theme_parent']);
-                if (! $this->check_theme_exists($theme)):
-                    $this->errors[] = sprintf(__('%s does not exist. Please select a valid Parent Theme', $this->ns), $theme);
-                    return false;
-                else:
-                    $this->css->set_property('parnt', $theme);
+    function ajax_query_css() {
+        $this->is_ajax = true;
+        if ($this->validate_post()):
+            $this->load_css();
+            $regex = "/^ctc_query_/";
+            foreach(preg_grep($regex, array_keys($_POST)) as $key):
+                $name = preg_replace($regex, '', $key);
+                $param[$name] = sanitize_text_field($_POST[$key]);
+            endforeach;
+            if (!empty($param['obj'])):
+                $result = array(
+                    array(
+                        'key'   => isset($param['key'])?$param['key']:'',
+                        'obj'   => $param['obj'],
+                        'data'  => $this->css->get_property($param['obj'], $param),
+                    ),
+                );
+                die(json_encode($result));
+            endif;
+        endif;
+        die(0);
+    }
+    
+    function generate_stylesheet() {
+        if (empty($_POST['ctc_load_styles'])) return;
+        $this->errors = array();
+        if (current_user_can('install_themes') && $this->validate_post()):
+            foreach (array(
+                'ctc_theme_parnt', 
+                'ctc_child_type', 
+                'ctc_theme_child', 
+                'ctc_child_name', 
+                'ctc_child_template', 
+                'ctc_child_author',
+                'ctc_child_version') as $postfield):
+                $varparts = explode('_', $postfield);
+                $varname = end($varparts);
+                ${$varname} = empty($_POST[$postfield])?'':sanitize_text_field($_POST[$postfield]);
+            endforeach;
+            if ($parnt):
+                if (! $this->check_theme_exists($parnt)):
+                    $this->errors[] = sprintf(__('%s does not exist. Please select a valid Parent Theme', 'chld_thm_cfg'), $parnt);
+                endif;
+            else:
+                $this->errors[] = __('Please select a valid Parent Theme', 'chld_thm_cfg');
+            endif;
+            if ('new' == $type):
+                $child = strtolower(preg_replace("%[^\w\-]%", '', $template));
+                if ($this->check_theme_exists($child)):
+                    $this->errors[] = sprintf(__('<strong>%s</strong> exists. Please enter a different Child Theme template name', 'chld_thm_cfg'), $child);
                 endif;
             endif;
-            if (isset($_POST['ctc_theme_child'])):
-                $theme = sanitize_text_field($_POST['ctc_theme_child']);
-                $theme_name = empty($_POST['ctc_child_name']) ? '' : sanitize_text_field($_POST['ctc_child_name']);
-                if ('new' == $theme):
-                    $theme = empty($_POST['ctc_child_template']) ? '' : 
-                        strtolower(preg_replace("%\W%", '', sanitize_text_field($_POST['ctc_child_template'])));
-                if (empty($theme)):
-                    $this->errors[] = __('Please enter a valid Child Theme template name', $this->ns);
-                    return false;
-                elseif ($this->check_theme_exists($theme)):
-                    $this->errors[] = sprintf(__('%s exists. Please enter a different Child Theme template name', $this->ns), $theme);
-                    return false;
-                elseif (empty($theme_name)):
-                    $this->errors[] = sprintf(__('Please enter a valid Child Theme name', $this->ns), $theme_name);
-                    return false;
-                endif;
-                elseif (!$this->check_theme_exists($theme)):
-                    $this->errors[] = sprintf(__('%s does not exist. Please select a valid Child Theme', $this->ns), $theme);
-                    return false;
-                endif;
-                $this->css->set_property('child', $theme);
-                $this->css->set_property('child_name', $theme_name);
-                if (isset($_POST['ctc_theme_author'])):
-                    $this->css->set_property('author', sanitize_text_field($_POST['ctc_theme_author']));
-                endif;
+            if (empty($child) || preg_match("%^[^a-z]%", $child)):
+                $this->errors[] = __('Please enter a valid Child Theme template name', 'chld_thm_cfg');
             endif;
+            if (empty($name)):
+                $this->errors[] = __('Please enter a valid Child Theme name', 'chld_thm_cfg');
+            endif;
+        else:
+            $this->errors[] = __('You do not have permission to configure child themes.', 'chld_thm_cfg');
+        endif;
+        if (empty($this->errors)):
+            $this->css = new Child_Theme_Configurator_CSS();
+            $this->css->set_property('parnt', $parnt);
+            $this->css->set_property('child', $child);
+            $this->css->set_property('child_name', $name);
+            $this->css->set_property('child_author', $author);
+            $this->css->set_property('child_version', $version);
             $this->css->parse_css_file('parnt');
             $this->css->parse_css_file('child');
             $this->css->write_css();
-            $this->updated = true;
-        endif;        
+            update_option($this->optionsName, $this->css);
+        endif;
+    }
+    
+    function render_menu($template = 'child', $selected = null) {
+        $menu = '<option value="">Select</option>' . LF;
+        foreach ($this->themes[$template] as $slug => $theme):
+            $menu .= '<option value="' . $slug . '"' . ($slug == $selected ? ' selected' : '') . '>' 
+                . $slug . ' - "' . $theme['Name'] . '"' . '</option>' . LF;
+        endforeach;
+        return $menu;
     }
     
     function check_theme_exists($theme) {

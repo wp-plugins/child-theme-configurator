@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.5
 Tested up to: 3.8
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,7 +89,12 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
-== Changelog ==
+= 1.1.0 =
+* Corrected parsing for certain backgrounds and gradients (e.g., supports hsla color syntax)
+* Handle empty selectors
+* Ajax load for menus and updates
+* Clean up Parent/Child form UI and validation
+* Streamlined UI overall
 
 = 1.0.1 =
 * Updates to Readme.txt
@@ -107,11 +112,13 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 The first step is to create a child theme and import your parent theme styles into the configurator.
 
 1. Select an existing parent theme from the menu.
-2. Select an existing child theme from the menu, or "New Theme" if you are creating one from scratch.
-3. Enter an author for the child theme.
-4. If this is a new theme, enter a Name.
-5. If this is a new theme, enter a "slug" (lower case, no spaces). This is used to name the theme directory and identify the theme to WordPress.
-6. Click "Load Styles." If you are loading an existing child theme, The Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.
+2. Select "New" or "Existing" child theme.
+    * If creating a new theme, enter a "slug" (lower case, no spaces). This is used to name the theme directory and identify the theme to WordPress.</li>
+    * If using an existing theme, select a child theme from the menu.
+3. Enter a Name for the child theme.
+4. Enter an author for the child theme.
+5. Enter the child theme version number.
+6. Click "Generate Child Theme." If you are loading an existing child theme, The Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.
 
 == Override Parent Styles ==
 
@@ -149,6 +156,7 @@ If you prefer to use shorthand syntax for rules and values instead of the inputs
 You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme's stylesheet automatically. Do not need to add it here.
 
 == Preview and Activate ==
+
 Click the Preview CSS tab to see your new masterpiece as CSS code. To preview the stylesheet as a WordPress theme follow these steps:
 
 1. Navigate to Appearance > Themes in the WordPress Admin. You will now see the new Child Theme as one of the installed Themes.
