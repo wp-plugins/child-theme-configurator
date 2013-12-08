@@ -42,7 +42,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.0.2';
+        $this->version          = '1.1.0';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
