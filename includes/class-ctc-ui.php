@@ -1,12 +1,11 @@
 <?php
 // Exit if accessed directly
 if ( !defined('ABSPATH')) exit;
-
 /*
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.0.1
+    Version: 1.1.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -16,100 +15,133 @@ if ( !defined('ABSPATH')) exit;
 */
 class Child_Theme_Configurator_UI {
     var $swatch_text;
+    var $themes;
+    
     function __construct() {
-        $this->swatch_text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+        $this->swatch_text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';        
     }
     
     function render_options() { 
         global $chld_thm_cfg; 
-        $css    = $chld_thm_cfg->css;
-        $parent = $css->get_property('parent_theme');
-        $child  = $css->get_property('child_theme');
-        $imports= $css->get_property('imports');
-        $id     = 0;
+        $css        = $chld_thm_cfg->css;
+        $themes     = $chld_thm_cfg->themes;
+        $parent     = $css->get_property('parnt');
+        $child      = $css->get_property('child');
+        $hidechild  = (count($themes['child']) ? '' : 'style="display:none"');
+        $imports    = $css->get_property('imports');
+        $id         = 0;
     ?>
 
 <div class="wrap">
   <div id="icon-tools" class="icon32"></div>
   <h2><?php echo $chld_thm_cfg->pluginName; ?></h2>
-  <?php $this->settings_errors(); ?>
+  <div id="ctc_error_notice">
+    <?php $this->settings_errors(); ?>
+  </div>
   <?php  
             $active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'parent_child_options';
             ?>
-  <h2 class="nav-tab-wrapper">
-    <a id="parent_child_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=parent_child_options" 
+  <h2 class="nav-tab-wrapper"> <a id="parent_child_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=parent_child_options" 
                     class="nav-tab<?php echo 'parent_child_options' == $active_tab ? ' nav-tab-active' : ''; ?>">
-    <?php _e('Parent/Child', $chld_thm_cfg->ns); ?>
-    </a>
-    <a id="query_selector_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=query_selector_options" 
-                    class="nav-tab<?php echo 'query_selector_options' == $active_tab ? ' nav-tab-active' : ''; ?>">
-    <?php _e('Query/Selector', $chld_thm_cfg->ns); ?>
-    </a>
-    <a id="rule_value_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=rule_value_options" 
-                    class="nav-tab<?php echo 'rule_value_options' == $active_tab ? ' nav-tab-active' : ''; ?>">
-    <?php _e('Rule/Value', $chld_thm_cfg->ns); ?>
-    </a>
-    <a id="import_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=import_options" 
-                    class="nav-tab<?php echo 'import_options' == $active_tab ? ' nav-tab-active' : ''; ?>">
-    <?php _e('@import', $chld_thm_cfg->ns); ?>
-    </a>
-    <a id="preview_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=preview_options" 
-                    class="nav-tab<?php echo 'preview_options' == $active_tab ? ' nav-tab-active' : ''; ?>">
-    <?php _e('Preview CSS', $chld_thm_cfg->ns); ?>
-    </a> 
-  </h2>
+    <?php _e('Parent/Child', 'chld_thm_cfg'); ?>
+    </a> <a id="query_selector_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=query_selector_options" 
+                    class="nav-tab<?php echo 'query_selector_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
+    <?php _e('Query/Selector', 'chld_thm_cfg'); ?>
+    </a> <a id="rule_value_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=rule_value_options" 
+                    class="nav-tab<?php echo 'rule_value_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
+    <?php _e('Rule/Value', 'chld_thm_cfg'); ?>
+    </a> <a id="import_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=import_options" 
+                    class="nav-tab<?php echo 'import_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
+    <?php _e('@import', 'chld_thm_cfg'); ?>
+    </a> <a id="view_child_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=view_child_options" 
+                    class="nav-tab<?php echo 'view_child_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
+    <?php _e('View Child CSS', 'chld_thm_cfg'); ?>
+    </a> <a id="view_parnt_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=view_parnt_options" 
+                    class="nav-tab<?php echo 'view_parnt_options' == $active_tab ? ' nav-tab-active' : ''; ?>">
+    <?php _e('View Parent CSS', 'chld_thm_cfg'); ?>
+    </a> </h2>
   <div class="ctc-option-panel-container">
     <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
       <form id="ctc_load_form" method="post" action="">
         <?php wp_nonce_field( 'ctc_update' ); ?>
-        <div class="ctc-input-row clearfix" id="input_row_parent_theme">
+        <div class="ctc-input-row clearfix" id="input_row_parnt">
           <div class="ctc-input-cell">
             <label>
-              <?php _e('Parent Theme', $chld_thm_cfg->ns); ?>
+              <?php _e('Parent Theme', 'chld_thm_cfg'); ?>
             </label>
           </div>
           <div class="ctc-input-cell">
-            <?php $this->render_theme_dropdown(); ?>
+            <select class="ctc-select" id="ctc_theme_parnt" name="ctc_theme_parnt">
+              <?php echo $chld_thm_cfg->render_menu('parnt', $parent); ?>
+            </select>
           </div>
         </div>
-        <div class="ctc-input-row clearfix" id="input_row_child_theme">
+        <div class="ctc-input-row clearfix" id="input_row_child">
           <div class="ctc-input-cell">
             <label>
-              <?php _e('Child Theme', $chld_thm_cfg->ns); ?>
+              <?php _e('Child Theme', 'chld_thm_cfg'); ?>
             </label>
           </div>
           <div class="ctc-input-cell">
-            <?php $this->render_theme_dropdown(true); ?>
-          </div>
-        </div>
-        <div class="ctc-input-row clearfix" id="input_row_child_template">
-          <div class="ctc-input-cell">
-            <label>
-              <?php _e('Author', $chld_thm_cfg->ns); ?>
+            <input class="ctc-radio" id="ctc_child_type_new" name="ctc_child_type" type="radio" value="new" 
+            <? echo (!empty($hidechild) ? 'checked' : ''); ?>
+            <?php echo $hidechild;?> />
+            <label for="ctc_child_type_new">
+              <?php _e('Create New Child Theme', 'chld_thm_cfg'); ?>
             </label>
           </div>
           <div class="ctc-input-cell">
-            <input class="ctc_text" id="ctc_theme_author" name="ctc_theme_author" type="text" value="<? echo $css->get_property('author'); ?>"/>
+            <input class="ctc-radio" id="ctc_child_type_existing" name="ctc_child_type"  type="radio" value="existing" 
+            <? echo (empty($hidechild) ? 'checked' : ''); ?>
+            <?php echo $hidechild; ?>/>
+            &nbsp;
+            <label for="ctc_child_type_existing" <?php echo $hidechild;?>>
+              <?php _e('Use Existing Child Theme', 'chld_thm_cfg'); ?>
+            </label>
+          </div>
+          <div class="ctc-input-cell" style="clear:both">
+            <label>&nbsp;</label>
+          </div>
+          <div class="ctc-input-cell" >
+            <input class="ctc_text" id="ctc_child_template" name="ctc_child_template" type="text" placeholder="theme slug" autocomplete="off"/>
+          </div>
+          <div class="ctc-input-cell">
+            <select class="ctc-select" id="ctc_theme_child" name="ctc_theme_child" <?php echo $hidechild; ?>>
+              <?php echo $chld_thm_cfg->render_menu('child', $child); ?>
+            </select>
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_name">
           <div class="ctc-input-cell">
             <label>
-              <?php _e('New Child Theme Name', $chld_thm_cfg->ns); ?>
+              <?php _e('Child Theme Name', 'chld_thm_cfg'); ?>
             </label>
           </div>
           <div class="ctc-input-cell">
-            <input class="ctc_text" id="ctc_child_name" name="ctc_child_name"  type="text"/>
+            <input class="ctc_text" id="ctc_child_name" name="ctc_child_name"  type="text" 
+                value="<? echo esc_attr($css->get_property('child_name')); ?>" placeholder="theme name" autocomplete="off" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
           <div class="ctc-input-cell">
             <label>
-              <?php _e('New Child Theme Slug', $chld_thm_cfg->ns); ?>
+              <?php _e('Author', 'chld_thm_cfg'); ?>
             </label>
           </div>
           <div class="ctc-input-cell">
-            <input class="ctc_text" id="ctc_child_template" name="ctc_child_template" type="text"/>
+            <input class="ctc_text" id="ctc_child_author" name="ctc_child_author" type="text" 
+                value="<? echo esc_attr($css->get_property('author')); ?>" placeholder="author" autocomplete="off" />
+          </div>
+        </div>
+        <div class="ctc-input-row clearfix" id="input_row_child_template">
+          <div class="ctc-input-cell">
+            <label>
+              <?php _e('Version', 'chld_thm_cfg'); ?>
+            </label>
+          </div>
+          <div class="ctc-input-cell">
+            <input class="ctc_text" id="ctc_child_version" name="ctc_child_version" type="text" 
+                value="<? echo esc_attr($css->get_property('version')); ?>" placeholder="version" autocomplete="off" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -117,45 +149,49 @@ class Child_Theme_Configurator_UI {
             <label>&nbsp;</label>
           </div>
           <div class="ctc-input-cell">
-        <input class="ctc_submit button button-primary" id="ctc_load_styles" name="ctc_load_styles"  type="submit" 
-                value="<?php _e('Load Styles', $chld_thm_cfg->ns); ?>" />
+            <input class="ctc_submit button button-primary" id="ctc_load_styles" name="ctc_load_styles"  type="submit" 
+                value="<?php _e('Generate Child Theme', 'chld_thm_cfg'); ?>" disabled />
           </div>
         </div>
       </form>
     </div>
-    <div id="rule_value_options_panel" class="ctc-option-panel<?php echo 'rule_value_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
+    <div id="rule_value_options_panel" 
+        class="ctc-option-panel<?php echo 'rule_value_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
       <form id="ctc_rule_value_form" method="post" action="">
         <?php wp_nonce_field( 'ctc_update' ); ?>
         <div class="ctc-input-row clearfix" id="ctc_input_row_rule_menu">
           <div class="ctc-input-cell"> <strong>
-            <?php _e('Rule', $chld_thm_cfg->ns); ?>
+            <?php _e('Rule', 'chld_thm_cfg'); ?>
             </strong> </div>
           <div class="ctc-input-cell" id="ctc_rule_menu_selected">&nbsp;</div>
+          <div id="ctc_status_rule_val"></div>
           <div class="ctc-input-cell">
             <div class="ui-widget">
               <input id="ctc_rule_menu"/>
+              <div id="ctc_status_rule"></div>
             </div>
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="ctc_input_row_rule_header" style="display:none">
           <div class="ctc-input-cell"> <strong>
-            <?php _e('Value', $chld_thm_cfg->ns); ?>
+            <?php _e('Value', 'chld_thm_cfg'); ?>
             </strong> </div>
           <div class="ctc-input-cell"> <strong>
-            <?php _e('Sample', $chld_thm_cfg->ns); ?>
+            <?php _e('Sample', 'chld_thm_cfg'); ?>
             </strong> </div>
           <div class="ctc-input-cell"> <strong>
-            <?php _e('Selectors', $chld_thm_cfg->ns); ?>
+            <?php _e('Selectors', 'chld_thm_cfg'); ?>
             </strong> </div>
         </div>
         <div class="ctc-rule-value-input-container clearfix" id="ctc_rule_value_inputs" style="display:none"> </div>
       </form>
     </div>
-    <div id="query_selector_options_panel" class="ctc-option-panel<?php echo 'query_selector_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
+    <div id="query_selector_options_panel" 
+        class="ctc-option-panel<?php echo 'query_selector_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
       <form id="ctc_query_selector_form" method="post" action="">
         <div class="ctc-input-row clearfix" id="input_row_query">
           <div class="ctc-input-cell"> <strong>
-            <?php _e('Query', $chld_thm_cfg->ns); ?>
+            <?php _e('Query', 'chld_thm_cfg'); ?>
             </strong> </div>
           <div class="ctc-input-cell" id="ctc_sel_ovrd_query_selected">&nbsp;</div>
           <div class="ctc-input-cell">
@@ -166,89 +202,97 @@ class Child_Theme_Configurator_UI {
         </div>
         <div class="ctc-input-row clearfix" id="input_row_selector">
           <div class="ctc-input-cell"> <strong>
-            <?php _e('Selector', $chld_thm_cfg->ns); ?>
+            <?php _e('Selector', 'chld_thm_cfg'); ?>
             </strong> </div>
           <div class="ctc-input-cell" id="ctc_sel_ovrd_selector_selected">&nbsp;</div>
           <div class="ctc-input-cell">
             <div class="ui-widget">
               <input id="ctc_sel_ovrd_selector"/>
+              <div id="ctc_status_sel_ndx"></div>
             </div>
           </div>
         </div>
         <div class="ctc-selector-row clearfix" id="ctc_sel_ovrd_rule_inputs_container" style="display:none">
           <div class="ctc-input-row clearfix">
             <div class="ctc-input-cell"><strong>
-              <?php _e('Sample', $chld_thm_cfg->ns); ?>
+              <?php _e('Sample', 'chld_thm_cfg'); ?>
               </strong></div>
+            <div id="ctc_status_sel_val"></div>
             <div class="ctc-input-cell clearfix" style="max-height:150px;overflow:hidden">
               <div class="ctc-swatch" id="ctc_child_all_0_swatch"><?php echo $this->swatch_text; ?></div>
             </div>
             <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
               <input type="button" class="button ctc-save-input" id="ctc_save_query_selector" 
-            name="ctc_save_query_selector" value="Save" />
-              <input type="hidden" id="ctc_sel_ovrd_selnum" 
-            name="ctc_sel_ovrd_selnum" value="" />
+            name="ctc_save_query_selector" value="Save"  disabled />
+              <input type="hidden" id="ctc_sel_ovrd_qsid" 
+            name="ctc_sel_ovrd_qsid" value="" />
             </div>
           </div>
           <div class="ctc-input-row clearfix" id="ctc_sel_ovrd_rule_header" style="display:none">
             <div class="ctc-input-cell"> <strong>
-              <?php _e('Rule', $chld_thm_cfg->ns); ?>
+              <?php _e('Rule', 'chld_thm_cfg'); ?>
               </strong> </div>
             <div class="ctc-input-cell"> <strong>
-              <?php _e('Parent Value', $chld_thm_cfg->ns); ?>
+              <?php _e('Parent Value', 'chld_thm_cfg'); ?>
               </strong> </div>
             <div class="ctc-input-cell"> <strong>
-              <?php _e('Child Value', $chld_thm_cfg->ns); ?>
+              <?php _e('Child Value', 'chld_thm_cfg'); ?>
               </strong> </div>
           </div>
           <div id="ctc_sel_ovrd_rule_inputs" style="display:none"> </div>
           <div class="ctc-input-row clearfix" id="ctc_sel_ovrd_new_rule" style="display:none">
-          <div class="ctc-input-cell"> <strong>
-            <?php _e('New Rule', $chld_thm_cfg->ns); ?>
-            </strong> </div>
-          <div class="ctc-input-cell">
-            <div class="ui-widget">
-              <input id="ctc_new_rule_menu"/>
+            <div class="ctc-input-cell"> <strong>
+              <?php _e('New Rule', 'chld_thm_cfg'); ?>
+              </strong> </div>
+            <div class="ctc-input-cell">
+              <div class="ui-widget">
+                <input id="ctc_new_rule_menu"/>
+              </div>
             </div>
           </div>
         </div>
-        </div>
-          <div class="ctc-selector-row clearfix" id="ctc_new_selector_row">
-            <div class="ctc-input-cell"> <strong>
-              <?php _e('New Selector(s)', $chld_thm_cfg->ns); ?>
-              </strong> 
-              <div class="ctc-textarea-button-cell" id="ctc_save_query_selector_cell">
-                <input type="button" class="button ctc-save-input" id="ctc_save_new_selectors" 
-            name="ctc_save_new_selectors" value="Save" />
-              </div>
-              </div>
-            <div class="ctc-input-cell-wide"> <textarea id="ctc_new_selectors" name="ctc_new_selectors" wrap="off"></textarea> </div>
+        <div class="ctc-selector-row clearfix" id="ctc_new_selector_row">
+          <div class="ctc-input-cell"> <strong>
+            <?php _e('New Selector(s)', 'chld_thm_cfg'); ?>
+            </strong>
+            <div class="ctc-textarea-button-cell" id="ctc_save_query_selector_cell">
+              <input type="button" class="button ctc-save-input" id="ctc_save_new_selectors" 
+            name="ctc_save_new_selectors" value="Save"  disabled />
+            </div>
           </div>
+          <div class="ctc-input-cell-wide">
+            <textarea id="ctc_new_selectors" name="ctc_new_selectors" wrap="off"></textarea>
+          </div>
+        </div>
       </form>
     </div>
-    <div id="import_options_panel" class="ctc-option-panel<?php echo 'import_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
+    <div id="import_options_panel" 
+        class="ctc-option-panel<?php echo 'import_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
       <form id="ctc_import_form" method="post" action="">
         <?php wp_nonce_field( 'ctc_update' ); ?>
-          <div class="ctc-input-row clearfix" id="ctc_child_imports_row">
-            <div class="ctc-input-cell"> <strong>
-              <?php _e('@import Statements', $chld_thm_cfg->ns); ?>
-              </strong> 
-              <div class="ctc-textarea-button-cell" id="ctc_save_imports_cell">
-                <input type="button" class="button ctc-save-input" id="ctc_save_imports" 
-            name="ctc_save_imports" value="Save" />
-              </div>              
+        <div class="ctc-input-row clearfix" id="ctc_child_imports_row">
+          <div class="ctc-input-cell"> <strong>
+            <?php _e('@import Statements', 'chld_thm_cfg'); ?>
+            </strong>
+            <div class="ctc-textarea-button-cell" id="ctc_save_imports_cell">
+              <input type="button" class="button ctc-save-input" id="ctc_save_imports" 
+            name="ctc_save_imports" value="Save"  disabled />
             </div>
-            <div class="ctc-input-cell-wide"> <textarea id="ctc_child_imports" name="ctc_child_imports" wrap="off">
-<?php if (!empty($imports[$child])):
-        foreach ($imports[$child] as $import):
-            echo esc_textarea($import . ';' . LF);
-        endforeach; endif;?></textarea> </div>
-            
           </div>
+          <div class="ctc-input-cell-wide">
+            <textarea id="ctc_child_imports" name="ctc_child_imports" wrap="off">
+<?php if (!empty($imports)):
+        foreach ($imports as $import):
+            echo esc_textarea($import . ';' . LF);
+        endforeach; endif;?>
+</textarea>
+          </div>
+        </div>
       </form>
     </div>
-    <div id="preview_options_panel" class="ctc-option-panel<?php echo 'preview_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
-    </div>
+    <div id="view_child_options_panel" 
+        class="ctc-option-panel<?php echo 'view_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
+    <div id="view_parnt_options_panel" class="ctc-option-panel<?php echo 'view_parnt_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>"> </div>
   </div>
 </div>
 <style type="text/css">
@@ -274,24 +318,6 @@ class Child_Theme_Configurator_UI {
 <?php  
     } 
     
-    function render_theme_dropdown($child = false) {
-        global $chld_thm_cfg;
-        echo '<select class="chld-thm-cfg-select" id="ctc_theme_' . ($child?'child':'parent') . '" name="ctc_theme_' . ($child?'child':'parent') . '">' . LF;
-        if ($child):
-                echo '<option value="new">New Theme</option>' . LF;
-        endif;
-        foreach (wp_get_themes() as $theme):
-            $parent = $theme->parent();
-            if ($child !== empty($parent)):
-                $template = $child ? $theme->get_stylesheet() : $theme->get_template();
-                echo '<option value="' . $template . '"' 
-                    . ($template == $chld_thm_cfg->css->get_property($child?'child_theme':'parent_theme') ? ' selected' : '') 
-                    . '>' . $theme->get('Name') . '</option>' . LF;
-            endif;
-        endforeach;
-        echo '</select>' . LF;
-    }
-    
     function settings_errors() {
         global $chld_thm_cfg;
         if (count($chld_thm_cfg->errors)):
@@ -302,8 +328,8 @@ class Child_Theme_Configurator_UI {
             echo '</ul></div>' . LF;
         elseif (isset($_GET['updated'])):
             echo '<div class="updated"><p>' . LF
-                . __('Child Theme', $chld_thm_cfg->ns) . ' <strong>' . $chld_thm_cfg->css->get_property('child_theme_name') 
-                . '</strong> ' . __('has been updated.', $chld_thm_cfg->ns) . LF
+                . sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.', 'chld_thm_cfg'),
+                $chld_thm_cfg->css->get_property('child_name')) . LF
                 . '</p></div>' . LF;
         endif;
     }
@@ -319,59 +345,61 @@ class Child_Theme_Configurator_UI {
     		// Add help tabs
 	    	$screen->add_help_tab( array(
 		    	'id'	=> 'ctc_getting_started',
-			    'title'	=> __( 'Start Here', $chld_thm_cfg->ns ),
+			    'title'	=> __( 'Start Here', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <p>The first step is to create a child theme and import your parent theme styles into the configurator.</p>
 <ol><li>Select an existing parent theme from the menu.</li>
-<li>Select an existing child theme from the menu, or "New Theme" if you are creating one from scratch.</li>
+<li>Select "New" or "Existing" child theme.
+<ul><li>If creating a new theme, enter a "slug" (lower case, no spaces). This is used to name the theme directory and identify the theme to WordPress.</li>
+<li>If using an existing theme, select a child theme from the menu.</li></ul></li>
+<li>Enter a Name for the child theme.</li>
 <li>Enter an author for the child theme.</li>
-<li>If this is a new theme, enter a Name.</li>
-<li>If this is a new theme, enter a "slug" (lower case, no spaces). This is used to name the theme directory and identify the theme to WordPress.</li>
-<li>Click "Load Styles." If you are loading an existing child theme, The Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.</li></ol>
-				    ', $chld_thm_cfg->ns
+<li>Enter the child theme version number.</li>
+<li>Click "Generate Child Theme." If you are loading an existing child theme, The Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.</li></ol>
+				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
 
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_query_selector',
-			    'title'	=> __( 'Query/Selector', $chld_thm_cfg->ns ),
+			    'title'	=> __( 'Query/Selector', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <p>There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by <strong>selector</strong> and by <strong>rule</strong>. If you wish to change a specific selector (e.g., h1), use the "Query/Selector" tab. If you have a specific value you wish to change site-wide (e.g., the color of the type), use the "Rule/Value" tab.</p>
 <p>The Query/Selector tab lets you find specific selectors and edit them. First, find the query that contains the selector you wish to edit by typing in the <strong>Query</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. Selectors are in the <strong>base</strong> query by default.</p>
 <p>Next, find the selector by typing in the <strong>Selector</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.</p>
 <p>This will load all of the rules for that selector with the Parent values on the left and the Child values inputs on the right. Any existing child values will be automatically populated. There is also a Sample preview that displays the combination of Parent and Child overrides. Note that the <strong>border</strong> and <strong>background-image</strong> get special treatment.</p>
 <p>Click "Save" to update the child stylesheet and save your changes to the WordPress admin.</p>
-				    ', $chld_thm_cfg->ns
+				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
 
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_rule_value',
-			    'title'	=> __( 'Rule/Value', $chld_thm_cfg->ns ),
+			    'title'	=> __( 'Rule/Value', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <p>There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by <strong>selector</strong> and by <strong>rule</strong>. If you wish to change a specific selector (e.g., h1), use the "Query/Selector" tab. If you have a specific value you wish to change site-wide (e.g., the color of the type), use the "Rule/Value" tab.</p>
 <p>The Rule/Value tab lets you find specific values for a given rule and then edit that value for individual selectors that use that rule/value combination. First, find the rule you wish to override by typing in the <strong>Rule</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.</p>
 <p>This will load all of the unique values that exist for that rule in the parent stylesheet with a Sample preview for that value. If there are values that exist in the child stylesheet that do not exist in the parent stylesheet, they will be displayed as well.</p>
 <p>For each unique value, click the "Selectors" link to view a list of selectors that use that rule/value combination, grouped by query with a Sample preview of the value and inputs for the child value. Any existing child values will be automatically populated.</p>
 <p>Click "Save" to update the child stylesheet and save your changes to the WordPress admin.</p>
-				    ', $chld_thm_cfg->ns
+				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
 
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_new_styles',
-			    'title'	=> __( 'Add New Styles', $chld_thm_cfg->ns ),
+			    'title'	=> __( 'Add New Styles', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <p>If you wish to add additional rules to a given selector, first load the selector using the Query/Selector tab. Then find the rule you wish to override by typing in the <strong>New Rule</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.</p>
 <p>If you wish to add completely new selectors, or even new @media queries, you can enter free-form CSS in the "New Selector" textarea. Be aware that your syntax must be correct (i.e., balanced curly braces, etc.) for the parser to load the new styles. You will know it is invalid because a red "X" will appear next to the save button.</p>
 <p>If you prefer to use shorthand syntax for rules and values instead of the inputs provided by the Child Theme Configurator, you can enter them here as well. The parser will convert your input into normalized CSS code automatically.</p>
-				    ', $chld_thm_cfg->ns
+				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
 
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_imports',
-			    'title'	=> __( '@imports', $chld_thm_cfg->ns ),
+			    'title'	=> __( '@imports', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. <strong>Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme\'s stylesheet automatically. Do not need to add it here.</strong></p>
 <p>Below is an example that loads a local custom stylesheet (you would have to add the "fonts" directory and stylesheet) as well as the web font "Open Sans" from Google Web Fonts:</p>
@@ -379,25 +407,25 @@ class Child_Theme_Configurator_UI {
 @import url(fonts/stylesheet.css);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic);
 </code></pre></blockquote>
-				    ', $chld_thm_cfg->ns
+				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
 
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_preview',
-			    'title'	=> __( 'Preview and Activate', $chld_thm_cfg->ns ),
+			    'title'	=> __( 'Preview and Activate', 'chld_thm_cfg' ),
 			    'content'	=> __( '
-<p>Click the Preview CSS tab to see your new masterpiece as CSS code. To preview the stylesheet as a WordPress theme follow these steps:</p>
+<p>Click the View Child or Parent CSS tab to reference the stylesheet code. To preview the stylesheet as a WordPress theme follow these steps:</p>
 <ol><li>Navigate to Appearance > Themes in the WordPress Admin. You will now see the new Child Theme as one of the installed Themes.</li>
 <li>Click "Live Preview" below the new Child Theme to see it in action.</li>
 <li>When you are ready to take the Child Theme live, click "Activate."</li></ol>
-				    ', $chld_thm_cfg->ns
+				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
 
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_faq',
-			    'title'	=> __( 'FAQs', $chld_thm_cfg->ns ),
+			    'title'	=> __( 'FAQs', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <h5 id="specific_color">How do I change a specific color/font style/background?</h5>
 <p>You can override a specific value globally using the Rule/Value tab. See Rule/Value, above.</p>
@@ -419,13 +447,13 @@ class Child_Theme_Configurator_UI {
 <p>You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. <strong>Note:</strong> Currently the Child Theme Configurator does not generate previews of imported web fonts, but will in a later release.</p>
 <h5 id="functions_file">Where is the functions.php file?</h5>
 <p>You can add your own functions.php file, and any other files and directories you need for your Child Theme. The Child Theme Configurator helps you identify and override the Parent stylesheet without touching the other files.</p>
-                    ', $chld_thm_cfg->ns
+                    ', 'chld_thm_cfg'
 			    ),
 		    ) );
 
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_glossary',
-			    'title'	=> __( 'Glossary', $chld_thm_cfg->ns ),
+			    'title'	=> __( 'Glossary', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <h3 id="terms">Glossary</h3>
 <ul><li id="parent_theme"><strong>Parent Theme</strong> The WordPress Theme you wish to edit. WordPress first loads the Child Theme, then loads the Parent Theme. If a style exists in the Child Theme, it overrides the Parent Theme.</li>
@@ -439,7 +467,7 @@ class Child_Theme_Configurator_UI {
 </ul></li>
  <li id="override"><strong>Override</strong> When a selector exists in both the Child Theme and the Parent Theme, the Child Theme takes priority over the Parent theme. This is where the Child Theme Configurator stands out: it helps you create <strong>exact overrides</strong> of selectors from the Parent Theme, eliminating hours of trial and error.</li>
  </ul> 
-				    ', $chld_thm_cfg->ns
+				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
 
@@ -447,10 +475,12 @@ class Child_Theme_Configurator_UI {
 		    $screen->set_help_sidebar(
 			    '
 			    <ul>
-                    <li><a href="http://www.lilaeamedia.com/about/contact/">' . __( 'Contact us', $chld_thm_cfg->ns ) . '</a></li>
-				    <li><a href="http://www.lilaeamedia.com/plugins/child-theme-configurator">' . __( 'Plugin Website', $chld_thm_cfg->ns ) . '</a></li>
-				    <li><a href="http://codex.wordpress.org/Child_Themes">' . __( 'WordPress Codex', $chld_thm_cfg->ns ) . '</a></li>
-				    <li><a href="http://wordpress.stackexchange.com/">' . __( 'WordPress Answers', $chld_thm_cfg->ns ) . '</a></li>
+                    <li><a href="http://www.lilaeamedia.com/about/contact/">' . __( 'Contact us', 'chld_thm_cfg' ) . '</a></li>
+				    <li><a href="http://www.lilaeamedia.com/plugins/child-theme-configurator">' . __( 'Plugin Website', 'chld_thm_cfg' ) . '</a></li>
+				    <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ">' . __( 'Donate', 'chld_thm_cfg' ) . '</a></li>
+				    <li><a href="http://wordpress.org/support/view/plugin-reviews/child-theme-configurator?rate=5#postform">' . __( 'Give Us 5 Stars', 'chld_thm_cfg' ) . '</a></li>
+				    <li><a href="http://codex.wordpress.org/Child_Themes">' . __( 'WordPress Codex', 'chld_thm_cfg' ) . '</a></li>
+				    <li><a href="http://wordpress.stackexchange.com/">' . __( 'WordPress Answers', 'chld_thm_cfg' ) . '</a></li>
 			    </ul>
 			    '
 		    );

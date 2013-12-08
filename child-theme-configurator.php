@@ -15,7 +15,6 @@ if ( !defined('ABSPATH')) exit;
     Copyright (C) 2013 Lilaea Media
 */
 
-    defined('CHLD_THM_CFG_NS') or define('CHLD_THM_CFG_NS', 'chld_thm_cfg');
     defined('LF') or define('LF', "\n");
 
     require_once( 'includes/class-ctc.php' );
