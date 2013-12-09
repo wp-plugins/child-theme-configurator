@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.1.0
+    Version: 1.1.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -18,7 +18,7 @@ require_once('class-ctc-ui.php');
 require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
-    var $version = '1.1.0';
+    var $version = '1.1.1';
     var $css;
     var $optionsName;
     var $menuName;
@@ -132,7 +132,7 @@ class Child_Theme_Configurator {
     function load_css() {
         if (!($this->css = get_option($this->optionsName)) 
             || !is_object($this->css) 
-            // upgrade to v.1.1.0 
+            // upgrade to v.1.1.1 
             || !($version = $this->css->get_property('version')))
 
             $this->css = new Child_Theme_Configurator_CSS();
@@ -211,7 +211,7 @@ class Child_Theme_Configurator {
                     $this->errors[] = sprintf(__('<strong>%s</strong> exists. Please enter a different Child Theme template name', 'chld_thm_cfg'), $child);
                 endif;
             endif;
-            if (empty($child) || preg_match("%^[^a-z]%", $child)):
+            if (empty($child)):
                 $this->errors[] = __('Please enter a valid Child Theme template name', 'chld_thm_cfg');
             endif;
             if (empty($name)):
@@ -229,7 +229,7 @@ class Child_Theme_Configurator {
             $this->css->set_property('child_version', $version);
             $this->css->parse_css_file('parnt');
             $this->css->parse_css_file('child');
-            $this->css->write_css();
+            $this->css->write_css(true); // backup current stylesheet
             update_option($this->optionsName, $this->css);
         endif;
     }
