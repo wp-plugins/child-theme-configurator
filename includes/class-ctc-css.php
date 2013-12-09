@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.1.0
+    Version: 1.1.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -42,7 +42,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.0.2';
+        $this->version          = '1.1.1';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -156,13 +156,13 @@ class Child_Theme_Configurator_CSS {
             else:
                 $rules[]    = 'background-image';
                 $values[]   = $url;
-                if (!empty($parts[0]) && '' != $parts[0]):
+                if (!empty($parts[0]) && '' !== $parts[0]):
                     $rules[]    = 'background-color';
                     $values[]   = trim($parts[0]);
                 endif;
                 $position = array();
                 foreach(preg_split('/ +/', trim($parts[1])) as $part):
-                    if (empty($part) || '' == $part) continue;
+                    if (empty($part) || '' === $part) continue;
                     if (false === strpos($part, 'repeat')):
                         $position[] = $part;
                     else:
@@ -229,6 +229,34 @@ class Child_Theme_Configurator_CSS {
         $values[3]  = $parts[3];
     }
 
+    function encode_shorthand($shorthand) {
+        $rules = '';
+        foreach (array_keys($shorthand) as $key):
+            $rule = $shorthand[$key];
+            if (4 == count($rule)):
+                $parts = array();
+                $parts[0] = $rule['top'];
+                if ($rule['left'] != $rule['right']):
+                    $parts[3] = $rule['left'];
+                    $parts[2] = $rule['bottom'];
+                    $parts[1] = $rule['right'];
+                endif;
+                if ($rule['bottom'] != $rule['top']):
+                    $parts[2] = $rule['bottom'];
+                    $parts[1] = $rule['right'];
+                endif;
+                if ($rule['right'] != $rule['top']):
+                    $parts[1] = $rule['right'];
+                endif;
+                $rules .= '    ' . $key . ': ' . implode(' ', $parts) . ';' . LF;
+            else:
+                foreach ($rule as $side => $value):
+                    $rules .= '    ' . $key . '-' . $side . ': ' . $value . ';' . LF;
+                endforeach;
+            endif;
+        endforeach;
+        return $rules;
+    }
     /*
      * parse_css_file
      * reads stylesheet to get WordPress meta data and passes rest to parse_css 
@@ -295,18 +323,19 @@ class Child_Theme_Configurator_CSS {
             endif;
             $qsid = $this->sel_ndx[$this->dict_query[$query]][$this->dict_sel[$sel]];
             $ruleid = $this->dict_rule[$rule];
-            //$important = $this->is_important($value);
+            
             if (!isset($this->dict_val[$value])):
                 $this->dict_val[$value] = ++$this->valkey;
             endif;
             $this->val_ndx[$qsid][$ruleid][$template] = $this->dict_val[$value];
             $this->val_ndx[$qsid][$ruleid]['i'] = $important;
             // tell the UI to add a single cached query/selector data array:
-            $this->updates[] = array(
+            $updatearr = array(
                 'obj'   => 'sel_val',
                 'key'   => $qsid,
                 'data'  => $this->denorm_sel_val($qsid),
             );
+            $this->updates[] = $updatearr;
         endif;
     }
 
@@ -403,7 +432,7 @@ class Child_Theme_Configurator_CSS {
      * New selectors are appended to the end of each media query block.
      * TODO: allow user to modify selector sequence, !important flags and @media sort
      */
-    function write_css() {
+    function write_css($backup = false) {
         // write new stylesheet
         $output = '/*' . LF;
         $output .= 'Theme Name: ' . $this->child_name . LF;
@@ -434,16 +463,18 @@ class Child_Theme_Configurator_CSS {
                 $has_value = 0;
                 $sel = $selarr[$selid];
                 if (!empty($this->val_ndx[$qsid])):
+                    $shorthand = array();
                     foreach ($this->val_ndx[$qsid] as $ruleid => $valid):
-                        if (isset($valid['child']) && isset($valarr[$valid['child']]) && '' != $valarr[$valid['child']]):
+                        if (isset($valid['child']) && isset($valarr[$valid['child']]) && '' !== $valarr[$valid['child']]):
                             if (! $has_value): 
                                 $sel_output .= $sel . ' {' . LF; 
                                 $has_value = 1;
                                 $has_selector = 1;
                             endif;
-                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], $valarr[$valid['child']]);
+                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], $valarr[$valid['child']], $shorthand);
                         endif;
                     endforeach;
+                    $sel_output .= $this->encode_shorthand($shorthand);
                     if ($has_value):
                         $sel_output .= '}' . LF;
                     endif;
@@ -458,9 +489,10 @@ class Child_Theme_Configurator_CSS {
         if (!is_dir($themedir)):
             mkdir($themedir, 0755);
         endif;
-        // backup current stylesheet if no backup exists
-        if (is_file($stylesheet) && !is_file($stylesheet . '.bak')):
-            file_put_contents($stylesheet . '.bak', file_get_contents($stylesheet));
+        // backup current stylesheet
+        if ($backup && is_file($stylesheet)):
+            $timestamp = date('YmdHis', current_time('timestamp'));
+            file_put_contents($stylesheet . '-' . $timestamp . '.bak', file_get_contents($stylesheet));
         endif;
         // write new stylesheet
         file_put_contents($stylesheet, $output);        
@@ -472,9 +504,12 @@ class Child_Theme_Configurator_CSS {
      * These are based on commonly used practices and not all vendor prefixed are supported
      * TODO: verify this logic against vendor and W3C documentation
      */
-    function add_vendor_rules($rule, $value) {
+    function add_vendor_rules($rule, $value, &$shorthand) {
         $rules = '';
-        if (preg_match("/^(box\-sizing|font\-smoothing|border\-radius|box\-shadow|transition)$/", $rule)):
+        if (preg_match("/^(margin|padding)\-(top|right|bottom|left)$/", $rule, $matches)):
+            $shorthand[$matches[1]][$matches[2]] = $value;
+            return '';
+        elseif (preg_match("/^(box\-sizing|font\-smoothing|border\-radius|box\-shadow|transition)$/", $rule)):
             foreach(array('moz', 'webkit', 'o') as $prefix):
                 $rules .= '    -' . $prefix . '-' . $rule . ': ' . $value . ';' . LF;
             endforeach;
@@ -625,7 +660,7 @@ class Child_Theme_Configurator_CSS {
                     $ruleid = $this->dict_rule[$rule];
                     $qsid = $matches[3];
                     $value  = sanitize_text_field($_POST[$post_key]);
-                    if  (isset($this->val_ndx[$qsid][$ruleid]) && isset($this->val_ndx[$qsid][$ruleid]['child'])):
+                    /*if  (isset($this->val_ndx[$qsid][$ruleid]) && isset($this->val_ndx[$qsid][$ruleid]['child'])):
                         $child_value = $this->val_ndx[$qsid][$ruleid]['child'];
                     else: 
                         $child_value = $this->val_ndx[$qsid][$ruleid]['child'] = '';
@@ -634,8 +669,8 @@ class Child_Theme_Configurator_CSS {
                         $parent_value = $this->val_ndx[$qsid][$ruleid]['parnt'];
                     else: 
                         $parent_value = $this->val_ndx[$qsid][$ruleid]['parnt'] = '';
-                    endif;
-                    $important = $this->val_ndx[$qsid][$ruleid]['i'];
+                    endif;*/
+                    $important = empty($this->val_ndx[$qsid][$ruleid]['i']) ? 0 : $this->val_ndx[$qsid][$ruleid]['i'];
                     
                     $selarr = $this->denorm_query_sel($qsid);
                     if (!empty($matches[5])):
@@ -677,7 +712,7 @@ class Child_Theme_Configurator_CSS {
                         $value = '';
                     endif;
                     $this->update_arrays('child', $rule_part['query'], $rule_part['selector'], 
-                        $rule, $value, $rule_part['important']);
+                        $rule, trim($value), $rule_part['important']);
                 endforeach;
             endforeach; 
         endif;
@@ -731,7 +766,7 @@ class Child_Theme_Configurator_CSS {
         foreach ($this->val_ndx as $selid => $rules):
             if (!isset($rules[$ruleid])) continue;
             foreach ($rules[$ruleid] as $theme => $val):
-                if (!isset($val_arr[$val]) || '' == $val_arr[$val]) continue;
+                if (!isset($val_arr[$val]) || '' === $val_arr[$val]) continue;
                 $rule_sel_arr[$val] = $val_arr[$val];
             endforeach;
         endforeach;
@@ -786,7 +821,9 @@ class Child_Theme_Configurator_CSS {
         if (isset($this->val_ndx[$qsid]) && is_array($this->val_ndx[$qsid])):
             foreach ($this->val_ndx[$qsid] as $ruleid => $values):
                 foreach ($values as $name => $val):
-                    if ('i' == $name || !isset($valarr[$val]) || '' == $valarr[$val]) continue;
+                    if ('i' == $name || !isset($valarr[$val]) || '' === $valarr[$val]):
+                        continue;
+                    endif;
                     $selarr['value'][$rulearr[$ruleid]][$name] = $valarr[$val];
                 endforeach;
             endforeach;

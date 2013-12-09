@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.0.2
+ *  Version: 1.1.1
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -11,7 +11,9 @@
 jQuery(document).ready(function($){
 
     var lf = "\n", 
-    
+        currentQuery = '',
+        currentSel,
+        saveEvents = {},
     // initialize functions
     ctc_setup_iris = function(obj) {
         $(obj).iris({
@@ -53,7 +55,7 @@ jQuery(document).ready(function($){
             if ('child' == inputtheme) {
                 postdata[inputid] = value;
             }
-            if (ctc_is_empty(value)) return;
+            if ('' === value) return;
             // handle specific inputs
             if (false === ctc_is_empty(rulepart)) {
                 switch(rulepart) {
@@ -179,8 +181,8 @@ jQuery(document).ready(function($){
     },
     
     ctc_is_empty = function(obj) {
-        // first bail when definitely empty or undefined (true)
-        if ('undefined' == typeof obj || false === obj || null === obj || '' === obj || 0 === obj) { return true; }
+        // first bail when definitely empty or undefined (true) NOTE: zero is not empty
+        if ('undefined' == typeof obj || false === obj || null === obj || '' === obj) { return true; }
         // then, if this is bool, string or number it must not be empty (false)
         if (true === obj || "string" === typeof obj || "number" === typeof obj) { return false; }
         // thanks to Abena Kuttin for Win safe version
@@ -286,7 +288,7 @@ jQuery(document).ready(function($){
                     html += '<div class="ctc-child-input-cell">' + lf;
                     var id = 'ctc_' + (specific? '' : 'ovrd_') + 'child_' + rule + '_' + qsid + newname,
                         newval;
-                    if (!(newval = newRuleObj.values.shift()) ){
+                    if (false === (newval = newRuleObj.values.shift()) ){
                         newval = '';
                     }
                         
@@ -450,7 +452,12 @@ jQuery(document).ready(function($){
     },
     ctc_save = function(obj) {
         var postdata = {},
-            $selector, $query, $imports, $rule;
+            $selector, $query, $imports, $rule,
+            id = $(obj).attr('id');
+        if (ctc_is_empty(saveEvents[id])) {
+            saveEvents[id] = 0;
+        }
+        saveEvents[id]++;
         // disable the button until ajax returns
         $(obj).prop('disabled', true);
         // clear previous success/fail icons
@@ -480,6 +487,7 @@ jQuery(document).ready(function($){
             postdata,
             //on success function  
             function(response){
+                //console.log(response);
                 // release button
                 $(obj).prop('disabled', false);
                 // hide spinner
@@ -491,12 +499,12 @@ jQuery(document).ready(function($){
                     $('.ctc-status-icon').addClass('success');
                     $('#ctc_new_selectors').val('');
                     // update data objects   
-                    ctc_update_cache(response);
-                    ctc_setup_menus();
+                    ////ctc_update_cache(response);
+                    ////ctc_setup_menus();
                 }
                 return false;  
-            },
-            'json'
+            }/*,
+            'json'*/
         ).fail(function(){
             // release button
             $(obj).prop('disabled', false);
@@ -609,6 +617,7 @@ jQuery(document).ready(function($){
     ctc_set_query = function(value) {
         $('#ctc_sel_ovrd_query').val('');
         $('#ctc_sel_ovrd_query_selected').text(value);
+        currentQuery = value;
         ctc_setup_selector_menu(value);
         $('#ctc_new_selector_row').show();
     },
@@ -617,6 +626,7 @@ jQuery(document).ready(function($){
         $('#ctc_sel_ovrd_selector').val('');
         $('#ctc_sel_ovrd_selector_selected').text(label);
         $('#ctc_sel_ovrd_qsid').val(value);
+        currentSel = value;
         if (1 != loading.sel_val) loading.sel_val = 0;
         ctc_render_selector_inputs(value);
         $('#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header,#ctc_sel_ovrd_rule_inputs_container,#ctc_sel_ovrd_rule_inputs').show();
@@ -670,18 +680,45 @@ jQuery(document).ready(function($){
             focus: function(e) { e.preventDefault(); }
         });
     },
+    ctc_filtered_rules = function(request, response) {
+        var arr = [];
+        if (false === (ctc_is_empty(ctcAjax.sel_val[currentSel]))) {
+            if (ctc_is_empty(ctc_rules)) { 
+                ctc_rules = ctc_load_rules();
+            }
+            $.each(ctc_rules, function(key, val){
+                var skip = false,
+                    matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+                if (matcher.test( val.label )) {
+                    // skip rule if in current selector array
+                    $.each(ctcAjax.sel_val[currentSel].value, function(rule, value) {
+                        if (val.label == rule) {
+                            skip = true;
+                            return false;
+                        }
+                    });
+                    if (skip) {
+                        return;
+                    }
+                    // add rule
+                    arr.push(val);
+                }
+            });
+        }
+        response(arr);
+    },
     ctc_setup_new_rule_menu = function() {
         $('#ctc_new_rule_menu').autocomplete({
-            source: ctc_rules,
+            source: ctc_filtered_rules,
             //minLength: 0,
             selectFirst: true,
             autoFocus: true,
             select: function(e, ui) {
-                var qsid = $('#ctc_sel_ovrd_qsid').val();
-                $('#ctc_sel_ovrd_rule_inputs').append(ctc_render_child_rule_input(qsid, ui.item.label, false)).find('.color-picker').each(function() {
+                $('#ctc_sel_ovrd_rule_inputs').append(ctc_render_child_rule_input(currentSel, ui.item.label, false)).find('.color-picker').each(function() {
                     ctc_setup_iris(this);
                 });
                 $('#ctc_new_rule_menu').val('');
+                ctcAjax.sel_val[currentSel].value[ui.item.label] = {'child': ''};
                 return false;
             },
             focus: function(e) { e.preventDefault(); }
@@ -689,7 +726,7 @@ jQuery(document).ready(function($){
     },
     ctc_setup_menus = function() {
         ctc_setup_query_menu();
-        ctc_setup_selector_menu('');
+        ctc_setup_selector_menu(currentQuery);
         ctc_setup_rule_menu();
         ctc_setup_new_rule_menu();
     },
@@ -730,10 +767,10 @@ jQuery(document).ready(function($){
         if (ctc_theme_exists(slug, type)) {
             errors.push(ctcAjax.theme_exists_txt.replace(/%s/, slug));
         }
-        if ('' == slug || slug.match(/^[^a-z]/)) {
+        if ('' === slug) {
             errors.push(ctcAjax.inval_theme_txt);
         }
-        if ('' == $('#ctc_child_name').val()) {
+        if ('' === $('#ctc_child_name').val()) {
             errors.push(ctcAjax.inval_name_txt);
         }
         if (errors.length) {
@@ -742,7 +779,7 @@ jQuery(document).ready(function($){
         }
         return true;
     },
-    ctc_set_theme_menu = function() {
+    ctc_set_theme_menu = function(e) {
         var slug = $('#ctc_theme_child').val();
         if (false === ctc_is_empty(ctcAjax.themes.child[slug])) {
             $('#ctc_child_name').val(ctcAjax.themes.child[slug].Name);
@@ -763,9 +800,9 @@ jQuery(document).ready(function($){
         'sel_val':  0
     },
     
-    ctc_selectors   = [],
-    ctc_queries     = [],
-    ctc_rules       = [];
+    ctc_selectors       = [],
+    ctc_queries         = [],
+    ctc_rules           = [];
     // -- end var definitions
     
     // initialize Iris color picker    
@@ -826,6 +863,7 @@ jQuery(document).ready(function($){
     $('#ctc_load_form').on('submit', function() {
         return (ctc_validate() && confirm(ctcAjax.load_txt) ) ;
     });
+    $('#parent_child_options_panel').on('change', '#ctc_theme_child', ctc_set_theme_menu );
     $(document).on('click', '.ctc-save-input', function(e) {
         ctc_save(this);
     });
