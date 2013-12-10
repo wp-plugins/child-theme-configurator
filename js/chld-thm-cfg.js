@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.0.2
+ *  Version: 1.1.2
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -11,7 +11,9 @@
 jQuery(document).ready(function($){
 
     var lf = "\n", 
-    
+        currentQuery = '',
+        currentSel,
+        saveEvents = {},
     // initialize functions
     ctc_setup_iris = function(obj) {
         $(obj).iris({
@@ -43,7 +45,7 @@ jQuery(document).ready(function($){
         // set up objects for all neighboring inputs
         $container.find('.ctc-parent-value, .ctc-child-value').each(function(){
             var inputid     = $(this).attr('id'),
-                inputparts  = inputid.match(regex),
+                inputparts  = inputid.toString().match(regex),
                 inputtheme  = inputparts[3],
                 inputrule   = ('undefined' == typeof inputparts[4] ? '' : inputparts[4]),
                 qsid        = inputparts[5],
@@ -53,7 +55,7 @@ jQuery(document).ready(function($){
             if ('child' == inputtheme) {
                 postdata[inputid] = value;
             }
-            if (ctc_is_empty(value)) return;
+            if ('' === value) return;
             // handle specific inputs
             if (false === ctc_is_empty(rulepart)) {
                 switch(rulepart) {
@@ -87,17 +89,17 @@ jQuery(document).ready(function($){
                 }
             } else {
                 // handle borders
-                if (parts = inputrule.match(/^border(\-(top|right|bottom|left))?$/) && !value.match(/none/)) {
-                    subparts = value.split(/ +/);
+                if (parts = inputrule.toString().match(/^border(\-(top|right|bottom|left))?$/) && !value.match(/none/)) {
+                    subparts = value.toString().split(/ +/);
                     cssrules[inputtheme][inputrule + '-width'] = 'undefined' == typeof subparts[0] ? '' : subparts[0];
                     cssrules[inputtheme][inputrule + '-style'] = 'undefined' == typeof subparts[1] ? '' : subparts[1];
                     cssrules[inputtheme][inputrule + '-color'] = 'undefined' == typeof subparts[2] ? '' : subparts[2];
                 // handle background images
                 } else if ( 'background-image' == inputrule ) {
-                    if (value.match(/url\(/)) {
+                    if (value.toString().match(/url\(/)) {
                         cssrules[inputtheme]['background-image'] = ctc_image_url(inputtheme, value);
                     } else {
-                        subparts = value.split(/ +/);
+                        subparts = value.toString().split(/ +/);
                         if (subparts.length > 2) {
                             gradient[inputtheme].origin = 'undefined' == typeof subparts[0] ? 'top' : subparts[0];
                             gradient[inputtheme].start  = 'undefined' == typeof subparts[1] ? 'transparent' : subparts[1];
@@ -117,7 +119,7 @@ jQuery(document).ready(function($){
             $($swatch).removeAttr('style');
             if (has_gradient.parent) { $($swatch).ctcgrad(gradient.parent.origin, [gradient.parent.start, gradient.parent.end]); }
             $($swatch).css(cssrules.parent);  
-            if (!($swatch.attr('id').match(/parent/))){
+            if (!($swatch.attr('id').toString().match(/parent/))){
                 if (has_gradient.child) { $($swatch).ctcgrad(gradient.child.origin, [gradient.child.start, gradient.child.end]); }
                 $($swatch).css(cssrules.child);
             }
@@ -164,13 +166,13 @@ jQuery(document).ready(function($){
         });
     },
     ctc_image_url = function(theme, value) {
-        var parts = value.match(/url\([" ]*(.+?)[" ]*\)/),
+        var parts = value.toString().match(/url\([" ]*(.+?)[" ]*\)/),
             path = ('undefined' == typeof parts ? null : parts[1]),
             url = ctcAjax.theme_uri + '/' + ('parent' == theme ? ctcAjax.parnt : ctcAjax.child) + '/',
             image_url;
         if (!path) { 
             return false; 
-        } else if (path.match(/^(http:|\/)/)) { 
+        } else if (path.toString().match(/^(http:|\/)/)) { 
             image_url = value; 
         } else { 
             image_url = 'url(' + url + path + ')'; 
@@ -179,8 +181,8 @@ jQuery(document).ready(function($){
     },
     
     ctc_is_empty = function(obj) {
-        // first bail when definitely empty or undefined (true)
-        if ('undefined' == typeof obj || false === obj || null === obj || '' === obj || 0 === obj) { return true; }
+        // first bail when definitely empty or undefined (true) NOTE: zero is not empty
+        if ('undefined' == typeof obj || false === obj || null === obj || '' === obj) { return true; }
         // then, if this is bool, string or number it must not be empty (false)
         if (true === obj || "string" === typeof obj || "number" === typeof obj) { return false; }
         // thanks to Abena Kuttin for Win safe version
@@ -286,14 +288,14 @@ jQuery(document).ready(function($){
                     html += '<div class="ctc-child-input-cell">' + lf;
                     var id = 'ctc_' + (specific? '' : 'ovrd_') + 'child_' + rule + '_' + qsid + newname,
                         newval;
-                    if (!(newval = newRuleObj.values.shift()) ){
+                    if (false === (newval = newRuleObj.values.shift()) ){
                         newval = '';
                     }
                         
                     html += (ctc_is_empty(newname) ? '' : ctcAjax.field_labels[newname] + ':<br/>') 
                         + '<input type="text" id="' + id + '" name="' + id + '" class="ctc-child-value' 
-                        + ((newname + rule).match(/color/) ? ' color-picker' : '') 
-                        + ((newname).match(/url/) ? ' ctc-input-wide' : '')
+                        + ((newname + rule).toString().match(/color/) ? ' color-picker' : '') 
+                        + ((newname).toString().match(/url/) ? ' ctc-input-wide' : '')
                         + '" value="' + newval + '" />' + lf;
                     html += '</div>' + lf;
                 });
@@ -450,7 +452,12 @@ jQuery(document).ready(function($){
     },
     ctc_save = function(obj) {
         var postdata = {},
-            $selector, $query, $imports, $rule;
+            $selector, $query, $imports, $rule,
+            id = $(obj).attr('id');
+        if (ctc_is_empty(saveEvents[id])) {
+            saveEvents[id] = 0;
+        }
+        saveEvents[id]++;
         // disable the button until ajax returns
         $(obj).prop('disabled', true);
         // clear previous success/fail icons
@@ -480,6 +487,7 @@ jQuery(document).ready(function($){
             postdata,
             //on success function  
             function(response){
+                //console.log(response);
                 // release button
                 $(obj).prop('disabled', false);
                 // hide spinner
@@ -491,12 +499,12 @@ jQuery(document).ready(function($){
                     $('.ctc-status-icon').addClass('success');
                     $('#ctc_new_selectors').val('');
                     // update data objects   
-                    ctc_update_cache(response);
-                    ctc_setup_menus();
+                    ////ctc_update_cache(response);
+                    ////ctc_setup_menus();
                 }
                 return false;  
-            },
-            'json'
+            }/*,
+            'json'*/
         ).fail(function(){
             // release button
             $(obj).prop('disabled', false);
@@ -570,8 +578,8 @@ jQuery(document).ready(function($){
     ctc_decode_value = function(rule, value) {
         value = ('undefined' == typeof value ? '' : value);
         var obj = { 'orig':   value };
-        if (rule.match(/^border(\-(top|right|bottom|left))?$/)) {
-            var params = value.split(/ +/);
+        if (rule.toString().match(/^border(\-(top|right|bottom|left))?$/)) {
+            var params = value.toString().split(/ +/);
             obj['names'] = [
                 '_border_width',
                 '_border_style',
@@ -582,7 +590,7 @@ jQuery(document).ready(function($){
                 ('undefined' == typeof params[1] ? '' : params[1]),
                 ('undefined' == typeof params[2] ? '' : params[2])
             ];
-        } else if (rule.match(/^background\-image/)) {
+        } else if (rule.toString().match(/^background\-image/)) {
             obj['names'] = [
                 '_background_url',
                 '_background_origin', 
@@ -590,8 +598,8 @@ jQuery(document).ready(function($){
                 '_background_color2'
             ];
             obj['values'] = ['','','',''];
-            if (value.match(/:/)) {
-                var params = value.split(/:/);
+            if (value.toString().match(/:/)) {
+                var params = value.toString().split(/:/);
                 obj['values'][1] = ('undefined' == typeof params[0] ? '' : params[0]);
                 obj['values'][2] = ('undefined' == typeof params[1] ? '' : params[1]);
                 obj['values'][3] = ('undefined' == typeof params[3] ? '' : params[3]);
@@ -609,6 +617,7 @@ jQuery(document).ready(function($){
     ctc_set_query = function(value) {
         $('#ctc_sel_ovrd_query').val('');
         $('#ctc_sel_ovrd_query_selected').text(value);
+        currentQuery = value;
         ctc_setup_selector_menu(value);
         $('#ctc_new_selector_row').show();
     },
@@ -617,6 +626,7 @@ jQuery(document).ready(function($){
         $('#ctc_sel_ovrd_selector').val('');
         $('#ctc_sel_ovrd_selector_selected').text(label);
         $('#ctc_sel_ovrd_qsid').val(value);
+        currentSel = value;
         if (1 != loading.sel_val) loading.sel_val = 0;
         ctc_render_selector_inputs(value);
         $('#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header,#ctc_sel_ovrd_rule_inputs_container,#ctc_sel_ovrd_rule_inputs').show();
@@ -670,18 +680,45 @@ jQuery(document).ready(function($){
             focus: function(e) { e.preventDefault(); }
         });
     },
+    ctc_filtered_rules = function(request, response) {
+        var arr = [];
+        if (false === (ctc_is_empty(ctcAjax.sel_val[currentSel]))) {
+            if (ctc_is_empty(ctc_rules)) { 
+                ctc_rules = ctc_load_rules();
+            }
+            $.each(ctc_rules, function(key, val){
+                var skip = false,
+                    matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+                if (matcher.test( val.label )) {
+                    // skip rule if in current selector array
+                    $.each(ctcAjax.sel_val[currentSel].value, function(rule, value) {
+                        if (val.label == rule) {
+                            skip = true;
+                            return false;
+                        }
+                    });
+                    if (skip) {
+                        return;
+                    }
+                    // add rule
+                    arr.push(val);
+                }
+            });
+        }
+        response(arr);
+    },
     ctc_setup_new_rule_menu = function() {
         $('#ctc_new_rule_menu').autocomplete({
-            source: ctc_rules,
+            source: ctc_filtered_rules,
             //minLength: 0,
             selectFirst: true,
             autoFocus: true,
             select: function(e, ui) {
-                var qsid = $('#ctc_sel_ovrd_qsid').val();
-                $('#ctc_sel_ovrd_rule_inputs').append(ctc_render_child_rule_input(qsid, ui.item.label, false)).find('.color-picker').each(function() {
+                $('#ctc_sel_ovrd_rule_inputs').append(ctc_render_child_rule_input(currentSel, ui.item.label, false)).find('.color-picker').each(function() {
                     ctc_setup_iris(this);
                 });
                 $('#ctc_new_rule_menu').val('');
+                ctcAjax.sel_val[currentSel].value[ui.item.label] = {'child': ''};
                 return false;
             },
             focus: function(e) { e.preventDefault(); }
@@ -689,7 +726,7 @@ jQuery(document).ready(function($){
     },
     ctc_setup_menus = function() {
         ctc_setup_query_menu();
-        ctc_setup_selector_menu('');
+        ctc_setup_selector_menu(currentQuery);
         ctc_setup_rule_menu();
         ctc_setup_new_rule_menu();
     },
@@ -722,18 +759,18 @@ jQuery(document).ready(function($){
     },
     ctc_validate = function() {
         var regex = /[^\w\-]/,
-            newslug = $('#ctc_child_template').val().replace(regex).toLowerCase(),
-            slug = $('#ctc_theme_child').val().replace(regex).toLowerCase(),
+            newslug = $('#ctc_child_template').val().toString().replace(regex).toLowerCase(),
+            slug = $('#ctc_theme_child').val().toString().replace(regex).toLowerCase(),
             type = $('input[name=ctc_child_type]:checked').val(),
             errors = [];
         if ('new' == type) slug = newslug;
         if (ctc_theme_exists(slug, type)) {
-            errors.push(ctcAjax.theme_exists_txt.replace(/%s/, slug));
+            errors.push(ctcAjax.theme_exists_txt.toString().replace(/%s/, slug));
         }
-        if ('' == slug || slug.match(/^[^a-z]/)) {
+        if ('' === slug) {
             errors.push(ctcAjax.inval_theme_txt);
         }
-        if ('' == $('#ctc_child_name').val()) {
+        if ('' === $('#ctc_child_name').val()) {
             errors.push(ctcAjax.inval_name_txt);
         }
         if (errors.length) {
@@ -742,7 +779,7 @@ jQuery(document).ready(function($){
         }
         return true;
     },
-    ctc_set_theme_menu = function() {
+    ctc_set_theme_menu = function(e) {
         var slug = $('#ctc_theme_child').val();
         if (false === ctc_is_empty(ctcAjax.themes.child[slug])) {
             $('#ctc_child_name').val(ctcAjax.themes.child[slug].Name);
@@ -763,9 +800,9 @@ jQuery(document).ready(function($){
         'sel_val':  0
     },
     
-    ctc_selectors   = [],
-    ctc_queries     = [],
-    ctc_rules       = [];
+    ctc_selectors       = [],
+    ctc_queries         = [],
+    ctc_rules           = [];
     // -- end var definitions
     
     // initialize Iris color picker    
@@ -788,8 +825,8 @@ jQuery(document).ready(function($){
     $('.ctc-option-panel-container').on('click', '.ctc-selector-handle', function(e) {
         e.preventDefault();
         ctc_set_notice('')
-        var id = $(this).attr('id').replace('_close', ''),
-            valid = id.replace(/\D+/g, '');
+        var id = $(this).attr('id').toString().replace('_close', ''),
+            valid = id.toString().replace(/\D+/g, '');
         if ($('#' + id + '_container').is(':hidden')) {
             if (1 != loading.val_qry) loading.val_qry = 0;
             ctc_render_selector_value_inputs(valid);
@@ -812,7 +849,7 @@ jQuery(document).ready(function($){
     $('#view_child_options,#view_parnt_options').on('click', function(e){
         ctc_set_notice('')
         var stamp = new Date().getTime(),
-            theme = $(this).attr('id').match(/(child|parnt)/)[1],
+            theme = $(this).attr('id').toString().match(/(child|parnt)/)[1],
             css_uri = ctcAjax.theme_uri + '/' + ctcAjax[theme] + '/style.css?' + stamp;
         $.get(
             css_uri,
@@ -826,6 +863,7 @@ jQuery(document).ready(function($){
     $('#ctc_load_form').on('submit', function() {
         return (ctc_validate() && confirm(ctcAjax.load_txt) ) ;
     });
+    $('#parent_child_options_panel').on('change', '#ctc_theme_child', ctc_set_theme_menu );
     $(document).on('click', '.ctc-save-input', function(e) {
         ctc_save(this);
     });

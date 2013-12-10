@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.5
 Tested up to: 3.8
-Stable tag: 1.1.0
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,6 +89,20 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.1.2 =
+* Small bug fix to javascript (casting number to string)
+
+= 1.1.1 =
+* Fixed major bug where inputs containing '0' were being ignored
+* Removed "no leading digits" requirement for theme slug
+* Change query sort function to keep parent order of queries without device width rules
+* Fixed gettext calls to use static namespace parameter
+* Auto populate child theme inputs when existing theme is selected
+* Correctly remove border when values are blanked
+* Fixed duplicate "new rule" bug on Query/Selector panel
+* added timestamp to backup file 
+* Added encode_shorthand function to recombine margin/padding values when all 4 sides are present
+
 = 1.1.0 =
 * Corrected parsing for certain backgrounds and gradients (e.g., supports hsla color syntax)
 * Handle empty selectors
@@ -103,6 +117,10 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+* This release fixes a major bug that caused input values containing '0' to be ignored
+* Several other bugs fixed/improvements made, see change log for details.
 
 = 1.0.0 =
 * Initial release.
