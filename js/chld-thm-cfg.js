@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.1.1
+ *  Version: 1.1.2
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -45,7 +45,7 @@ jQuery(document).ready(function($){
         // set up objects for all neighboring inputs
         $container.find('.ctc-parent-value, .ctc-child-value').each(function(){
             var inputid     = $(this).attr('id'),
-                inputparts  = inputid.match(regex),
+                inputparts  = inputid.toString().match(regex),
                 inputtheme  = inputparts[3],
                 inputrule   = ('undefined' == typeof inputparts[4] ? '' : inputparts[4]),
                 qsid        = inputparts[5],
@@ -89,17 +89,17 @@ jQuery(document).ready(function($){
                 }
             } else {
                 // handle borders
-                if (parts = inputrule.match(/^border(\-(top|right|bottom|left))?$/) && !value.match(/none/)) {
-                    subparts = value.split(/ +/);
+                if (parts = inputrule.toString().match(/^border(\-(top|right|bottom|left))?$/) && !value.match(/none/)) {
+                    subparts = value.toString().split(/ +/);
                     cssrules[inputtheme][inputrule + '-width'] = 'undefined' == typeof subparts[0] ? '' : subparts[0];
                     cssrules[inputtheme][inputrule + '-style'] = 'undefined' == typeof subparts[1] ? '' : subparts[1];
                     cssrules[inputtheme][inputrule + '-color'] = 'undefined' == typeof subparts[2] ? '' : subparts[2];
                 // handle background images
                 } else if ( 'background-image' == inputrule ) {
-                    if (value.match(/url\(/)) {
+                    if (value.toString().match(/url\(/)) {
                         cssrules[inputtheme]['background-image'] = ctc_image_url(inputtheme, value);
                     } else {
-                        subparts = value.split(/ +/);
+                        subparts = value.toString().split(/ +/);
                         if (subparts.length > 2) {
                             gradient[inputtheme].origin = 'undefined' == typeof subparts[0] ? 'top' : subparts[0];
                             gradient[inputtheme].start  = 'undefined' == typeof subparts[1] ? 'transparent' : subparts[1];
@@ -119,7 +119,7 @@ jQuery(document).ready(function($){
             $($swatch).removeAttr('style');
             if (has_gradient.parent) { $($swatch).ctcgrad(gradient.parent.origin, [gradient.parent.start, gradient.parent.end]); }
             $($swatch).css(cssrules.parent);  
-            if (!($swatch.attr('id').match(/parent/))){
+            if (!($swatch.attr('id').toString().match(/parent/))){
                 if (has_gradient.child) { $($swatch).ctcgrad(gradient.child.origin, [gradient.child.start, gradient.child.end]); }
                 $($swatch).css(cssrules.child);
             }
@@ -166,13 +166,13 @@ jQuery(document).ready(function($){
         });
     },
     ctc_image_url = function(theme, value) {
-        var parts = value.match(/url\([" ]*(.+?)[" ]*\)/),
+        var parts = value.toString().match(/url\([" ]*(.+?)[" ]*\)/),
             path = ('undefined' == typeof parts ? null : parts[1]),
             url = ctcAjax.theme_uri + '/' + ('parent' == theme ? ctcAjax.parnt : ctcAjax.child) + '/',
             image_url;
         if (!path) { 
             return false; 
-        } else if (path.match(/^(http:|\/)/)) { 
+        } else if (path.toString().match(/^(http:|\/)/)) { 
             image_url = value; 
         } else { 
             image_url = 'url(' + url + path + ')'; 
@@ -294,8 +294,8 @@ jQuery(document).ready(function($){
                         
                     html += (ctc_is_empty(newname) ? '' : ctcAjax.field_labels[newname] + ':<br/>') 
                         + '<input type="text" id="' + id + '" name="' + id + '" class="ctc-child-value' 
-                        + ((newname + rule).match(/color/) ? ' color-picker' : '') 
-                        + ((newname).match(/url/) ? ' ctc-input-wide' : '')
+                        + ((newname + rule).toString().match(/color/) ? ' color-picker' : '') 
+                        + ((newname).toString().match(/url/) ? ' ctc-input-wide' : '')
                         + '" value="' + newval + '" />' + lf;
                     html += '</div>' + lf;
                 });
@@ -578,8 +578,8 @@ jQuery(document).ready(function($){
     ctc_decode_value = function(rule, value) {
         value = ('undefined' == typeof value ? '' : value);
         var obj = { 'orig':   value };
-        if (rule.match(/^border(\-(top|right|bottom|left))?$/)) {
-            var params = value.split(/ +/);
+        if (rule.toString().match(/^border(\-(top|right|bottom|left))?$/)) {
+            var params = value.toString().split(/ +/);
             obj['names'] = [
                 '_border_width',
                 '_border_style',
@@ -590,7 +590,7 @@ jQuery(document).ready(function($){
                 ('undefined' == typeof params[1] ? '' : params[1]),
                 ('undefined' == typeof params[2] ? '' : params[2])
             ];
-        } else if (rule.match(/^background\-image/)) {
+        } else if (rule.toString().match(/^background\-image/)) {
             obj['names'] = [
                 '_background_url',
                 '_background_origin', 
@@ -598,8 +598,8 @@ jQuery(document).ready(function($){
                 '_background_color2'
             ];
             obj['values'] = ['','','',''];
-            if (value.match(/:/)) {
-                var params = value.split(/:/);
+            if (value.toString().match(/:/)) {
+                var params = value.toString().split(/:/);
                 obj['values'][1] = ('undefined' == typeof params[0] ? '' : params[0]);
                 obj['values'][2] = ('undefined' == typeof params[1] ? '' : params[1]);
                 obj['values'][3] = ('undefined' == typeof params[3] ? '' : params[3]);
@@ -759,13 +759,13 @@ jQuery(document).ready(function($){
     },
     ctc_validate = function() {
         var regex = /[^\w\-]/,
-            newslug = $('#ctc_child_template').val().replace(regex).toLowerCase(),
-            slug = $('#ctc_theme_child').val().replace(regex).toLowerCase(),
+            newslug = $('#ctc_child_template').val().toString().replace(regex).toLowerCase(),
+            slug = $('#ctc_theme_child').val().toString().replace(regex).toLowerCase(),
             type = $('input[name=ctc_child_type]:checked').val(),
             errors = [];
         if ('new' == type) slug = newslug;
         if (ctc_theme_exists(slug, type)) {
-            errors.push(ctcAjax.theme_exists_txt.replace(/%s/, slug));
+            errors.push(ctcAjax.theme_exists_txt.toString().replace(/%s/, slug));
         }
         if ('' === slug) {
             errors.push(ctcAjax.inval_theme_txt);
@@ -825,8 +825,8 @@ jQuery(document).ready(function($){
     $('.ctc-option-panel-container').on('click', '.ctc-selector-handle', function(e) {
         e.preventDefault();
         ctc_set_notice('')
-        var id = $(this).attr('id').replace('_close', ''),
-            valid = id.replace(/\D+/g, '');
+        var id = $(this).attr('id').toString().replace('_close', ''),
+            valid = id.toString().replace(/\D+/g, '');
         if ($('#' + id + '_container').is(':hidden')) {
             if (1 != loading.val_qry) loading.val_qry = 0;
             ctc_render_selector_value_inputs(valid);
@@ -849,7 +849,7 @@ jQuery(document).ready(function($){
     $('#view_child_options,#view_parnt_options').on('click', function(e){
         ctc_set_notice('')
         var stamp = new Date().getTime(),
-            theme = $(this).attr('id').match(/(child|parnt)/)[1],
+            theme = $(this).attr('id').toString().match(/(child|parnt)/)[1],
             css_uri = ctcAjax.theme_uri + '/' + ctcAjax[theme] + '/style.css?' + stamp;
         $.get(
             css_uri,
