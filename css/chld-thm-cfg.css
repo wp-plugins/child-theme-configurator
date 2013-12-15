@@ -9,6 +9,7 @@
     min-height:600px;
     max-height:800px;
     overflow:auto;
+    border-bottom:1px solid #f9f9f9;
 }
 #view_child_options_panel, #view_parnt_options_panel {
     white-space:pre;
