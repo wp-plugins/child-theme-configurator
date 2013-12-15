@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.1.1
+    Version: 1.1.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -18,7 +18,7 @@ require_once('class-ctc-ui.php');
 require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
-    var $version = '1.1.1';
+    var $version = '1.1.3';
     var $css;
     var $optionsName;
     var $menuName;
@@ -50,7 +50,7 @@ class Child_Theme_Configurator {
         add_action('admin_enqueue_scripts', array(&$this, 'enqueue_scripts'));
         add_action('wp_ajax_ctc_update',    array(&$this, 'ajax_save_postdata' ));
         add_action('wp_ajax_ctc_query',     array(&$this, 'ajax_query_css' ));
-        add_action('update_option_' . $this->optionsName, array(&$this, 'update_redirect'), 10);
+        //add_action('update_option_' . $this->optionsName, array(&$this, 'update_redirect'), 10);
     }
 
     function admin_menu() {
@@ -231,6 +231,7 @@ class Child_Theme_Configurator {
             $this->css->parse_css_file('child');
             $this->css->write_css(true); // backup current stylesheet
             update_option($this->optionsName, $this->css);
+            $this->update_redirect();
         endif;
     }
     
@@ -244,7 +245,7 @@ class Child_Theme_Configurator {
     }
     
     function check_theme_exists($theme) {
-        return in_array(strtolower($theme), array_keys(wp_get_themes()));
+        return in_array($theme, array_keys(wp_get_themes()));
     }
     
     function sanitize_options($input) {

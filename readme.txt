@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.5
 Tested up to: 3.8
-Stable tag: 1.1.1
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,13 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.1.3 = 
+* Fixed bug that assumed lowercase only for theme slugs. (Thanks to timk)
+* Fixed update redirect to execute on first run
+
+= 1.1.2 =
+* Small bug fix to javascript (casting number to string)
 
 = 1.1.1 =
 * Fixed major bug where inputs containing '0' were being ignored
