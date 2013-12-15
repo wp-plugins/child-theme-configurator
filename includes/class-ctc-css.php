@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.1.2
+    Version: 1.1.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -42,7 +42,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.1.2';
+        $this->version          = '1.1.4';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -248,6 +248,7 @@ class Child_Theme_Configurator_CSS {
                 if ($rule['right'] != $rule['top']):
                     $parts[1] = $rule['right'];
                 endif;
+                ksort($parts);
                 $rules .= '    ' . $key . ': ' . implode(' ', $parts) . ';' . LF;
             else:
                 foreach ($rule as $side => $value):
@@ -422,6 +423,7 @@ class Child_Theme_Configurator_CSS {
                 endforeach;
             endforeach;
         endforeach;
+
     }
 
     /*
@@ -660,16 +662,6 @@ class Child_Theme_Configurator_CSS {
                     $ruleid = $this->dict_rule[$rule];
                     $qsid = $matches[3];
                     $value  = sanitize_text_field($_POST[$post_key]);
-                    /*if  (isset($this->val_ndx[$qsid][$ruleid]) && isset($this->val_ndx[$qsid][$ruleid]['child'])):
-                        $child_value = $this->val_ndx[$qsid][$ruleid]['child'];
-                    else: 
-                        $child_value = $this->val_ndx[$qsid][$ruleid]['child'] = '';
-                    endif;
-                    if (isset($this->val_ndx[$qsid][$ruleid]['parnt'])): 
-                        $parent_value = $this->val_ndx[$qsid][$ruleid]['parnt'];
-                    else: 
-                        $parent_value = $this->val_ndx[$qsid][$ruleid]['parnt'] = '';
-                    endif;*/
                     $important = empty($this->val_ndx[$qsid][$ruleid]['i']) ? 0 : $this->val_ndx[$qsid][$ruleid]['i'];
                     
                     $selarr = $this->denorm_query_sel($qsid);
