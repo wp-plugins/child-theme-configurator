@@ -499,12 +499,12 @@ jQuery(document).ready(function($){
                     $('.ctc-status-icon').addClass('success');
                     $('#ctc_new_selectors').val('');
                     // update data objects   
-                    ////ctc_update_cache(response);
-                    ////ctc_setup_menus();
+                    ctc_update_cache(response);
+                    ctc_setup_menus();
                 }
                 return false;  
-            }/*,
-            'json'*/
+            },
+            'json'
         ).fail(function(){
             // release button
             $(obj).prop('disabled', false);
