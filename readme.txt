@@ -41,6 +41,20 @@ Why create Child Themes using the Child Theme Configurator?
    
 == Frequently Asked Questions ==
 
+= Where is it in the Admin? =
+
+The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started. 
+
+Click the "Help" tab at the top right for a quick reference.
+
+= Where are the styles? The configurator doesn't do anything! =
+
+All of the styles are loaded dynamically. You must start typing in the text boxes to select styles to edit.
+
+"Base" is the query group that contains styles that are not associated with any particular "At-rule."
+
+Start by clicking the "Query/Selector" tab and typing "base" in the first box. You can then start typing in the second box to retrieve the style selectors to edit.
+
 = Where is the functions.php file? =
 
 You can add your own functions.php file, and any other files and directories you need for your Child Theme. The Child Theme Configurator helps you identify and override selectors in the Parent stylesheet without touching the other files.
