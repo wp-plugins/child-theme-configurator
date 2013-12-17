@@ -47,13 +47,19 @@ The Child Theme Configurator can be found under the "Tools" menu in the WordPres
 
 Click the "Help" tab at the top right for a quick reference.
 
-= Where are the styles? The configurator doesn't do anything! =
+= Where are the styles? The configurator doesn't show anything! =
 
 All of the styles are loaded dynamically. You must start typing in the text boxes to select styles to edit.
 
 "Base" is the query group that contains styles that are not associated with any particular "At-rule."
 
 Start by clicking the "Query/Selector" tab and typing "base" in the first box. You can then start typing in the second box to retrieve the style selectors to edit.
+
+= If the parent theme changes (e.g., upgrade), do I have to update the child theme? =
+
+No. This is the point of using child themes. Changes to the parent theme are automatically inherited by the child theme.
+
+A child theme is not a "copy" of the parent theme. It is a special feature of WordPress that let's you override specific styles and functions leaving the rest of the theme intact. The only time you need to make changes after an upgrade is if the parent removes or changes style or function names. Quality themes should identify any deprecated functions or styles in the upgrade notes so that child theme users can make adjustments accordingly.
 
 = Where is the functions.php file? =
 
