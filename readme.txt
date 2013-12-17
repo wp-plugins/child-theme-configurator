@@ -55,7 +55,7 @@ All of the styles are loaded dynamically. You must start typing in the text boxe
 
 Start by clicking the "Query/Selector" tab and typing "base" in the first box. You can then start typing in the second box to retrieve the style selectors to edit.
 
-= If the parent theme changes (e.g., upgrade), do I have to copy them to the child theme? =
+= If the parent theme changes (e.g., upgrade), do I have to update the child theme? =
 
 No. This is the point of using child themes. Changes to the parent theme are automatically inherited by the child theme.
 
