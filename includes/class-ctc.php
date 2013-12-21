@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.1.5
+    Version: 1.1.6
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -18,7 +18,7 @@ require_once('class-ctc-ui.php');
 require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
-    var $version = '1.1.5';
+    var $version = '1.1.6';
     var $css;
     var $optionsName;
     var $menuName;
@@ -133,7 +133,8 @@ class Child_Theme_Configurator {
         if (!($this->css = get_option($this->optionsName)) 
             || !is_object($this->css) 
             // upgrade to v.1.1.1 
-            || !($version = $this->css->get_property('version')))
+            || !($version = $this->css->get_property('version'))
+            )
 
             $this->css = new Child_Theme_Configurator_CSS();
     }
@@ -230,8 +231,12 @@ class Child_Theme_Configurator {
             $this->css->parse_css_file('parnt');
             $this->css->parse_css_file('child');
             $this->css->write_css(true); // backup current stylesheet
-            update_option($this->optionsName, $this->css);
-            $this->update_redirect();
+            $this->css->reset_updates();
+            if (update_option($this->optionsName, $this->css)):
+                $this->update_redirect();
+            else:
+                $this->errors[] = sprintf(__('Child Theme %s was unchanged.', 'chld_thm_cfg'), $name, $this->optionsName);
+            endif;
         endif;
     }
     
