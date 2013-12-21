@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.5
 Tested up to: 3.8
-Stable tag: 1.1.2
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,31 +41,55 @@ Why create Child Themes using the Child Theme Configurator?
    
 == Frequently Asked Questions ==
 
-= Where is the functions.php file? =
+= Where is it in the Admin? =
+
+The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started. 
+
+Click the "Help" tab at the top right for a quick reference.
+
+= Where are the styles? The configurator doesn't show anything! =
+
+All of the styles are loaded dynamically. You must start typing in the text boxes to select styles to edit.
+
+"Base" is the query group that contains styles that are not associated with any particular "At-rule."
+
+Start by clicking the "Query/Selector" tab and typing "base" in the first box. You can then start typing in the second box to retrieve the style selectors to edit.
+
+= If the parent theme changes (e.g., upgrade), do I have to update the child theme? =
+
+No. This is the point of using child themes. Changes to the parent theme are automatically inherited by the child theme.
+
+A child theme is not a "copy" of the parent theme. It is a special feature of WordPress that let's you override specific styles and functions leaving the rest of the theme intact. The only time you need to make changes after an upgrade is if the parent removes or changes style or function names. Quality themes should identify any deprecated functions or styles in the upgrade notes so that child theme users can make adjustments accordingly.
+
+= Where are the .php files? =
 
 You can add your own functions.php file, and any other files and directories you need for your Child Theme. The Child Theme Configurator helps you identify and override selectors in the Parent stylesheet without touching the other files.
 
-= How Do I change a specific color/font style/background? =
+= How do I change a specific color/font style/background? =
 
 You can override a specific value globally using the Rule/Value tab. See "Rule/Value," below.
 
-= How Do I add styles that aren't in the Parent Theme? =
+= How do I add styles that aren't in the Parent Theme? =
 
 You can add queries and selectors using the "New Selector(s)" textarea on the Query/Selector tab. See "Query/Selector," below.
 
-= How Do I remove a style from the Parent Theme? =
+= How do I remove a style from the Parent Theme? =
 
-You can't really "remove" a style from the Parent. You can, however, set the rule to "inherit," "none," or zero (depending on the rule). This will negate the Parent value. Some experimentation may be necessary.
+You shouldn't really "remove" a style from the Parent. You can, however, set the rule to "inherit," "none," or zero (depending on the rule). This will negate the Parent value. Some experimentation may be necessary.
 
-= How Do I remove a style from the Child Theme? =
+= How do I remove a style from the Child Theme? =
 
 Delete the value from the input for the rule you wish to remove. The Child Theme Configurator only adds overrides for rules that contain values.
 
-= How Do I create cross-browser gradients? =
+= How do I set the !important flag? =
+
+If you are overriding a style from the parent that is flagged as important, the Child Theme Configurator will automatically add the flag to the child stylesheet. New styles are added to the end of the query block, so they will take precedence. We are discussing adding the ability to set the important flag in the child stylesheet, but for now you'll have to rely on good cascading design. 
+
+= How do I create cross-browser gradients? =
 
 The Child Theme Configurator uses a standardized syntax for gradients and only supports two-color gradients without intermediate stops. The inputs consist of origin (e.g., top, left, 135deg, etc.), start color and end color. The browser-specific syntax is generated automatically when you save these values. See Caveats, below, for more information.
 
-= How Do I make my Theme responsive? =
+= How do I make my Theme responsive? =
 
 This topic is beyond the scope of this document. The short answer is to use a responsive Parent Theme. Some common characteristics of responsive design are:
 
@@ -73,7 +97,7 @@ This topic is beyond the scope of this document. The short answer is to use a re
 * Combining floats and clears with inline and relative positions allow the elements to adjust gracefully to their container's width.
 * Showing and hiding content with Javascript.
 
-= How Do I add Web Fonts? =
+= How do I add Web Fonts? =
 
 The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts.
 
@@ -88,6 +112,21 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.1.6 =
+* Added call to reset_updates() before update_option() to prevent serialization errors.
+
+= 1.1.5 =
+* Query/Selector panel now defaults to 'base'
+* Fixed bug causing background-image with full urls (http://) to be parsed as gradients
+* Fixed bug causing rule menu to throw error when selector has no rules
+
+= 1.1.4 =
+* Fixed sort bug in shorthand parser that was returning rules in wrong order
+
+= 1.1.3 = 
+* Fixed bug that assumed lowercase only for theme slugs. (Thanks to timk)
+* Fixed update redirect to execute on first run
 
 = 1.1.2 =
 * Small bug fix to javascript (casting number to string)
@@ -117,6 +156,12 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.5 =
+* Several bugs fixed/improvements made, see change log for details.
+
+= 1.1.4 =
+* Fixed sort bug in shorthand parser that was returning rules in wrong order
 
 = 1.1.1 =
 * This release fixes a major bug that caused input values containing '0' to be ignored
@@ -171,7 +216,7 @@ If you prefer to use shorthand syntax for rules and values instead of the inputs
 
 == Add Imports ==
 
-You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme's stylesheet automatically. Do not need to add it here.
+You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme's stylesheet automatically. You do not need to add it here.
 
 == Preview and Activate ==
 

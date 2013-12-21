@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.1.2
+ *  Version: 1.1.6
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -11,7 +11,7 @@
 jQuery(document).ready(function($){
 
     var lf = "\n", 
-        currentQuery = '',
+        currentQuery = 'base',
         currentSel,
         saveEvents = {},
     // initialize functions
@@ -172,7 +172,7 @@ jQuery(document).ready(function($){
             image_url;
         if (!path) { 
             return false; 
-        } else if (path.toString().match(/^(http:|\/)/)) { 
+        } else if (path.toString().match(/^(https?:|\/)/)) { 
             image_url = value; 
         } else { 
             image_url = 'url(' + url + path + ')'; 
@@ -499,12 +499,12 @@ jQuery(document).ready(function($){
                     $('.ctc-status-icon').addClass('success');
                     $('#ctc_new_selectors').val('');
                     // update data objects   
-                    ////ctc_update_cache(response);
-                    ////ctc_setup_menus();
+                    ctc_update_cache(response);
+                    ctc_setup_menus();
                 }
                 return false;  
-            }/*,
-            'json'*/
+            },
+            'json'
         ).fail(function(){
             // release button
             $(obj).prop('disabled', false);
@@ -598,7 +598,7 @@ jQuery(document).ready(function($){
                 '_background_color2'
             ];
             obj['values'] = ['','','',''];
-            if (value.toString().match(/:/)) {
+            if (false === (ctc_is_empty(value)) && !(value.toString().match(/url/))) {
                 var params = value.toString().split(/:/);
                 obj['values'][1] = ('undefined' == typeof params[0] ? '' : params[0]);
                 obj['values'][2] = ('undefined' == typeof params[1] ? '' : params[1]);
@@ -615,10 +615,14 @@ jQuery(document).ready(function($){
     },
     
     ctc_set_query = function(value) {
+        currentQuery = value;
         $('#ctc_sel_ovrd_query').val('');
         $('#ctc_sel_ovrd_query_selected').text(value);
-        currentQuery = value;
+        $('#ctc_sel_ovrd_selector').val('');
+        $('#ctc_sel_ovrd_selector_selected').html('&nbsp;');
+        $('#ctc_sel_ovrd_rule_inputs').html('');
         ctc_setup_selector_menu(value);
+        ctc_coalesce_inputs('#ctc_child_all_0_swatch');
         $('#ctc_new_selector_row').show();
     },
     
@@ -681,15 +685,16 @@ jQuery(document).ready(function($){
         });
     },
     ctc_filtered_rules = function(request, response) {
-        var arr = [];
-        if (false === (ctc_is_empty(ctcAjax.sel_val[currentSel]))) {
-            if (ctc_is_empty(ctc_rules)) { 
-                ctc_rules = ctc_load_rules();
-            }
-            $.each(ctc_rules, function(key, val){
-                var skip = false,
-                    matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
-                if (matcher.test( val.label )) {
+        var arr = [],
+            noval = (ctc_is_empty(ctcAjax.sel_val[currentSel])) || (ctc_is_empty(ctcAjax.sel_val[currentSel].value));
+        if (ctc_is_empty(ctc_rules)) { 
+            ctc_rules = ctc_load_rules();
+        }
+        $.each(ctc_rules, function(key, val){
+            var skip = false,
+                matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+            if (matcher.test( val.label )) {
+                if (false === noval) {
                     // skip rule if in current selector array
                     $.each(ctcAjax.sel_val[currentSel].value, function(rule, value) {
                         if (val.label == rule) {
@@ -700,11 +705,11 @@ jQuery(document).ready(function($){
                     if (skip) {
                         return;
                     }
-                    // add rule
-                    arr.push(val);
                 }
-            });
-        }
+                // add rule
+                arr.push(val);
+            }
+        });
         response(arr);
     },
     ctc_setup_new_rule_menu = function() {
@@ -718,6 +723,9 @@ jQuery(document).ready(function($){
                     ctc_setup_iris(this);
                 });
                 $('#ctc_new_rule_menu').val('');
+                if (ctc_is_empty(ctcAjax.sel_val[currentSel].value)) {
+                    ctcAjax.sel_val[currentSel]['value'] = {};
+                }
                 ctcAjax.sel_val[currentSel].value[ui.item.label] = {'child': ''};
                 return false;
             },
@@ -788,7 +796,7 @@ jQuery(document).ready(function($){
         }
     },
     fade_update_notice = function() {
-        $('.updated').fadeOut('slow', function(){ $('.updated').remove(); });
+        $('.updated, .error').slideUp('slow', function(){ $('.updated').remove(); });
     },
     // initialize vars
     // ajax semaphores: 0 = reload, 1 = loading, 2 = loaded
@@ -869,6 +877,7 @@ jQuery(document).ready(function($){
     });
     // initialize menus
     ctc_setup_menus();
+    ctc_set_query(currentQuery);
     $('input[type=submit],input[type=button]').prop('disabled', false);
     setTimeout(fade_update_notice, 6000);
 });
