@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.1.4
+    Version: 1.1.5
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -42,7 +42,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.1.4';
+        $this->version          = '1.1.5';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -617,21 +617,20 @@ class Child_Theme_Configurator_CSS {
 
     /*
      * decode_gradient
-     * De-normalize CTC gradient syntax into separate properties.
+     * Decode CTC gradient syntax into separate properties.
      */
     function decode_gradient($value) {
         $parts = explode(':', $value, 5);
-        if (count($parts) == 5):
+        if (5 == count($parts)):        
             return array(
-                'origin' => empty($parts[0])?'':$parts[0],
-                'color1' => empty($parts[1])?'':$parts[1],
-                'stop1'  => empty($parts[2])?'':$parts[2],
-                'color2' => empty($parts[3])?'':$parts[3],
-                'stop2'  => empty($parts[4])?'':$parts[4],
+                'origin' => empty($parts[0]) ? '' : $parts[0],
+                'color1' => empty($parts[1]) ? '' : $parts[1],
+                'stop1'  => empty($parts[2]) ? '' : $parts[2],
+                'color2' => empty($parts[3]) ? '' : $parts[3],
+                'stop2'  => empty($parts[4]) ? '' : $parts[4],
             );
-        else:
-            return false;
         endif;
+        return false;
     }
 
     /*
@@ -717,7 +716,7 @@ class Child_Theme_Configurator_CSS {
      */
     function is_important(&$value) {
         $important = 0;
-        $value = trim(str_replace('!important', '', $value, $important));
+        $value = trim(str_ireplace('!important', '', $value, $important));
         return $important;
     }
     
