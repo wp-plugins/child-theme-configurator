@@ -6,19 +6,19 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.1.6
+    Version: 1.1.7
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
     Domain Path: /lang
     License: GPLv2
-    Copyright (C) 2013 Lilaea Media
+    Copyright (C) 2014 Lilaea Media
 */
 require_once('class-ctc-ui.php');
 require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
-    var $version = '1.1.6';
+    var $version = '1.1.7';
     var $css;
     var $optionsName;
     var $menuName;

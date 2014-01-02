@@ -6,13 +6,13 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.1.6
+    Version: 1.1.7
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
     Domain Path: /lang
     License: GPLv2
-    Copyright (C) 2013 Lilaea Media
+    Copyright (C) 2014 Lilaea Media
 */
 class Child_Theme_Configurator_CSS {
     var $version;
@@ -42,7 +42,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.1.6';
+        $this->version          = '1.1.7';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;

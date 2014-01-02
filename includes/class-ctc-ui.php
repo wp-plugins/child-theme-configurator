@@ -5,13 +5,13 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.1.6
+    Version: 1.1.7
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
     Domain Path: /lang
     License: GPLv2
-    Copyright (C) 2013 Lilaea Media
+    Copyright (C) 2014 Lilaea Media
 */
 class Child_Theme_Configurator_UI {
     var $swatch_text;
@@ -343,6 +343,14 @@ class Child_Theme_Configurator_UI {
             if ( $screen->id != $chld_thm_cfg->hook )
 			    return;
     		// Add help tabs
+
+	    	$screen->add_help_tab( array(
+		    	'id'	=> 'ctc_tutorial',
+			    'title'	=> __( 'Tutorial Video', 'chld_thm_cfg' ),
+			    'content'	=> __('<iframe width="480" height="270" src="//www.youtube.com/embed/xL2HkWQxgOA?rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe>', 'chld_thm_cfg'), 
+		    ) );
+
+
 	    	$screen->add_help_tab( array(
 		    	'id'	=> 'ctc_getting_started',
 			    'title'	=> __( 'Start Here', 'chld_thm_cfg' ),
