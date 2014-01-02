@@ -7,7 +7,6 @@ Tested up to: 3.8
 Stable tag: 1.1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Copyright: (C) 2014 Lilaea Media
 
 Create a Child Theme from any installed Theme. Each CSS selector, rule and value can then be searched, previewed and modified.
 
@@ -245,3 +244,5 @@ Click the Preview CSS tab to see your new masterpiece as CSS code. To preview th
 == Documentation ==
 
 Go to http://www.lilaeamedia.com/plugins/child-theme-configurator
+
+Copyright: (C) 2014 Lilaea Media
