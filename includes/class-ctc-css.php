@@ -385,7 +385,7 @@ class Child_Theme_Configurator_CSS {
                     if (false === strpos($ruleval, ':')) continue;
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
-                    $value  = trim($value);
+                    $value  = stripslashes(trim($value));
                     
                     $rules = $values = array();
                     // save important flag
@@ -473,7 +473,7 @@ class Child_Theme_Configurator_CSS {
                                 $has_value = 1;
                                 $has_selector = 1;
                             endif;
-                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], $valarr[$valid['child']], $shorthand);
+                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], stripslashes($valarr[$valid['child']]), $shorthand);
                         endif;
                     endforeach;
                     $sel_output .= $this->encode_shorthand($shorthand);
@@ -660,7 +660,7 @@ class Child_Theme_Configurator_CSS {
                     if (null == $rule || !isset($this->dict_rule[$rule])) continue;
                     $ruleid = $this->dict_rule[$rule];
                     $qsid = $matches[3];
-                    $value  = sanitize_text_field($_POST[$post_key]);
+                    $value  = sanitize_text_field(stripslashes($_POST[$post_key]));
                     $important = empty($this->val_ndx[$qsid][$ruleid]['i']) ? 0 : $this->val_ndx[$qsid][$ruleid]['i'];
                     
                     $selarr = $this->denorm_query_sel($qsid);
