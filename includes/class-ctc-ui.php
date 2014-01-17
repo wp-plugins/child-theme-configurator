@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.1.7
+    Version: 1.1.8
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -196,7 +196,7 @@ class Child_Theme_Configurator_UI {
           <div class="ctc-input-cell" id="ctc_sel_ovrd_query_selected">&nbsp;</div>
           <div class="ctc-input-cell">
             <div class="ui-widget">
-              <input id="ctc_sel_ovrd_query"/>
+              <input id="ctc_sel_ovrd_query" />
             </div>
           </div>
         </div>
@@ -207,7 +207,7 @@ class Child_Theme_Configurator_UI {
           <div class="ctc-input-cell" id="ctc_sel_ovrd_selector_selected">&nbsp;</div>
           <div class="ctc-input-cell">
             <div class="ui-widget">
-              <input id="ctc_sel_ovrd_selector"/>
+              <input id="ctc_sel_ovrd_selector" />
               <div id="ctc_status_sel_ndx"></div>
             </div>
           </div>
@@ -217,12 +217,12 @@ class Child_Theme_Configurator_UI {
             <div class="ctc-input-cell"><strong>
               <?php _e('Sample', 'chld_thm_cfg'); ?>
               </strong></div>
-            <div id="ctc_status_sel_val"></div>
             <div class="ctc-input-cell clearfix" style="max-height:150px;overflow:hidden">
               <div class="ctc-swatch" id="ctc_child_all_0_swatch"><?php echo $this->swatch_text; ?></div>
             </div>
+            <div id="ctc_status_sel_val"></div>
             <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
-              <input type="button" class="button ctc-save-input" id="ctc_save_query_selector" 
+              <input type="button" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
             name="ctc_save_query_selector" value="Save"  disabled />
               <input type="hidden" id="ctc_sel_ovrd_qsid" 
             name="ctc_sel_ovrd_qsid" value="" />
@@ -246,14 +246,20 @@ class Child_Theme_Configurator_UI {
               </strong> </div>
             <div class="ctc-input-cell">
               <div class="ui-widget">
-                <input id="ctc_new_rule_menu"/>
+                <input id="ctc_new_rule_menu" />
               </div>
             </div>
+          </div>
+          <div class="ctc-input-row clearfix" id="input_row_selector">
+            <div class="ctc-input-cell"> <strong>
+              <?php _e('Order', 'chld_thm_cfg'); ?>
+              </strong> </div>
+            <div class="ctc-input-cell" id="ctc_child_load_order_container">&nbsp;</div>
           </div>
         </div>
         <div class="ctc-selector-row clearfix" id="ctc_new_selector_row">
           <div class="ctc-input-cell"> <strong>
-            <?php _e('New Selector(s)', 'chld_thm_cfg'); ?>
+            <?php _e('Raw CSS', 'chld_thm_cfg'); ?>
             </strong>
             <div class="ctc-textarea-button-cell" id="ctc_save_query_selector_cell">
               <input type="button" class="button ctc-save-input" id="ctc_save_new_selectors" 

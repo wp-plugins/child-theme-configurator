@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.1.7
+ *  Version: 1.1.8
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -24,7 +24,7 @@ jQuery(document).ready(function($){
     },
 
     ctc_coalesce_inputs = function(obj) {
-        var regex       = /^(ctc_(ovrd_)?(parent|child)_([a-z\-]+)_(\d+))(_\w+)?$/,
+        var regex       = /^(ctc_(ovrd|\d+)_(parent|child)_([a-z\-]+)_(\d+))(_\w+)?$/,
             $container  = $(obj).parents('.ctc-selector-row, .ctc-parent-row').first(),
             $swatch     = $container.find('.ctc-swatch').first(),
             cssrules = { 'parent': {}, 'child': {} },
@@ -46,16 +46,22 @@ jQuery(document).ready(function($){
         $container.find('.ctc-parent-value, .ctc-child-value').each(function(){
             var inputid     = $(this).attr('id'),
                 inputparts  = inputid.toString().match(regex),
+                inputseq    = inputparts[2],
                 inputtheme  = inputparts[3],
                 inputrule   = ('undefined' == typeof inputparts[4] ? '' : inputparts[4]),
                 qsid        = inputparts[5],
                 rulepart    = ('undefined' == typeof inputparts[6] ? '' : inputparts[6]),
                 value       = ('parent' == inputtheme ? $(this).text() : $(this).val()),
+                important   = 'ctc_' + inputseq + '_child_' + inputrule + '_i_' + qsid,
                 parts, subparts;
             if ('child' == inputtheme) {
                 postdata[inputid] = value;
+                postdata[important] = ($('#' + important).is(':checked')) ? 1 : 0;
             }
-            if ('' === value) return;
+            if ('' === value) {
+                $('#'+important).prop('checked', false);
+                return;
+            }
             // handle specific inputs
             if (false === ctc_is_empty(rulepart)) {
                 switch(rulepart) {
@@ -267,26 +273,31 @@ jQuery(document).ready(function($){
         });
     },
     
-    ctc_render_child_rule_input = function(qsid, rule, specific) {
-        var html = '', 
-            value = (ctc_is_empty(ctcAjax.sel_val[qsid]) || ctc_is_empty(ctcAjax.sel_val[qsid].value) 
+    ctc_render_child_rule_input = function(qsid, rule, seq) {
+        var html        = '', 
+            value       = (ctc_is_empty(ctcAjax.sel_val[qsid]) 
+                || ctc_is_empty(ctcAjax.sel_val[qsid].value) 
                 || ctc_is_empty(ctcAjax.sel_val[qsid].value[rule]) ? '' : ctcAjax.sel_val[qsid].value[rule]),
-            oldRuleObj = ctc_decode_value(rule, ('undefined' == typeof value ? '' : value['parnt'])),
-            newRuleObj = ctc_decode_value(rule, ('undefined' == typeof value ? '' : value['child']));
+            oldRuleObj  = ctc_decode_value(rule, ('undefined' == typeof value ? '' : value['parnt'])),
+            oldRuleFlag = (false === ctc_is_empty(value['i_parnt']) && value['i_parnt']) ? 
+                ctcAjax.important_label : '',
+            newRuleObj  = ctc_decode_value(rule, ('undefined' == typeof value ? '' : value['child'])),
+            newRuleFlag = (false === ctc_is_empty(value['i_child']) && value['i_child']) ? 1 : 0,
+            impid = 'ctc_' + seq + '_child_' + rule + '_i_' + qsid;
         if (false === ctc_is_empty(ctcAjax.sel_val[qsid])) {
-            html += '<div class="ctc-' + (specific ? 'selector' : 'input' ) + '-row clearfix">' + lf;
-            html += '<div class="ctc-input-cell">' + (specific ? ctcAjax.sel_val[qsid].selector 
-                + (ctc_is_empty(oldRuleObj.orig) ? '<br/>' + ctcAjax.child_only_txt : '') : rule) + '</div>' + lf;
-            if (!specific) {
-                html += '<div class="ctc-parent-value ctc-input-cell" id="ctc_parent_' + rule + '_' + qsid + '">' 
-                + (ctc_is_empty(oldRuleObj.orig) ? '[no value]' : oldRuleObj.orig) + '</div>' + lf;
+            html += '<div class="ctc-' + ('ovrd' == seq ? 'input' : 'selector' ) + '-row clearfix">' + lf;
+            html += '<div class="ctc-input-cell">' + ('ovrd' == seq ? rule : ctcAjax.sel_val[qsid].selector 
+                + (ctc_is_empty(oldRuleObj.orig) ? '<br/>' + ctcAjax.child_only_txt : '')) + '</div>' + lf;
+            if ('ovrd' == seq) {
+                html += '<div class="ctc-parent-value ctc-input-cell" id="ctc_' + seq + '_parent_' + rule + '_' + qsid + '">' 
+                + (ctc_is_empty(oldRuleObj.orig) ? '[no value]' : oldRuleObj.orig + oldRuleFlag) + '</div>' + lf;
             }
             html += '<div class="ctc-input-cell">' + lf;
             if (false === ctc_is_empty(oldRuleObj.names)){
                 $.each(oldRuleObj.names, function(ndx, newname) {
                     newname = (ctc_is_empty(newname) ? '' : newname);
                     html += '<div class="ctc-child-input-cell">' + lf;
-                    var id = 'ctc_' + (specific? '' : 'ovrd_') + 'child_' + rule + '_' + qsid + newname,
+                    var id = 'ctc_' + seq + '_child_' + rule + '_' + qsid + newname,
                         newval;
                     if (false === (newval = newRuleObj.values.shift()) ){
                         newval = '';
@@ -299,13 +310,15 @@ jQuery(document).ready(function($){
                         + '" value="' + newval + '" />' + lf;
                     html += '</div>' + lf;
                 });
+                html += '<label for="' + impid + '"><input type="checkbox" id="' + impid + '" name="' + impid + '" value="1" '
+                    + (1 === newRuleFlag ? 'checked' : '') + ' />' + ctcAjax.important_label + '</label>' + lf;
             }
             html += '</div>' + lf;
-            html += (specific ? '<div class="ctc-swatch ctc-specific" id="ctc_child_' + rule + '_' + qsid + '_swatch">' 
+            html += ('ovrd' == seq ? '' : '<div class="ctc-swatch ctc-specific" id="ctc_child_' + rule + '_' + qsid + '_swatch">' 
                 + ctcAjax.swatch_txt + '</div>' + lf 
                 + '<div class="ctc-child-input-cell ctc-button-cell" id="ctc_save_' + rule + '_' + qsid + '_cell">' + lf
                 + '<input type="button" class="button ctc-save-input" id="ctc_save_' + rule + '_' + qsid 
-                + '" name="ctc_save_' + rule + '_' + qsid + '" value="Save" /></div>' + lf : '');
+                + '" name="ctc_save_' + rule + '_' + qsid + '" value="Save" /></div>' + lf);
             html += '</div><!-- end input row -->' + lf;
         }
         return html;
@@ -320,16 +333,25 @@ jQuery(document).ready(function($){
             ctc_query_css('sel_val', qsid, ctc_render_selector_inputs);
             return false;
         }
-        var html = '';
-        if (false === ctc_is_empty(ctcAjax.sel_val[qsid] && false === ctc_is_empty(ctcAjax.sel_val[qsid].value))){
-            $.each(ctcAjax.sel_val[qsid].value, function(rule, value) {
-                html += ctc_render_child_rule_input(qsid, rule, false);
-            });
+        var id, html, val;
+        if (false === ctc_is_empty(ctcAjax.sel_val[qsid])) {
+            if (false === ctc_is_empty(ctcAjax.sel_val[qsid].seq)) {
+                id = 'ctc_ovrd_child_seq_' + qsid;
+                val = parseInt(ctcAjax.sel_val[qsid].seq);
+                html = '<input type="text" id="' + id + '" name="' + id + '" class="ctc-child-value" value="' + val + '" />';
+                $('#ctc_child_load_order_container').html(html);
+            }
+            if (false === ctc_is_empty(ctcAjax.sel_val[qsid].value)){
+                html = '';
+                $.each(ctcAjax.sel_val[qsid].value, function(rule, value) {
+                    html += ctc_render_child_rule_input(qsid, rule, 'ovrd');
+                });        
+                $('#ctc_sel_ovrd_rule_inputs').html(html).find('.color-picker').each(function() {
+                    ctc_setup_iris(this);
+                });
+                ctc_coalesce_inputs('#ctc_child_all_0_swatch');
+            }
         }
-        $('#ctc_sel_ovrd_rule_inputs').html(html).find('.color-picker').each(function() {
-            ctc_setup_iris(this);
-        });
-        ctc_coalesce_inputs('#ctc_child_all_0_swatch');
     }
 
     ctc_render_rule_value_inputs = function(ruleid) {
@@ -346,10 +368,10 @@ jQuery(document).ready(function($){
             $.each(ctcAjax.rule_val[ruleid], function(valid, value) {
                 var oldRuleObj = ctc_decode_value(rule, value);
                 html += '<div class="ctc-parent-row clearfix" id="ctc_rule_row_' + rule + '_' + valid + '">' + lf;
-                html += '<div class="ctc-input-cell ctc-parent-value" id="ctc_parent_' + rule + '_' + valid + '">' 
+                html += '<div class="ctc-input-cell ctc-parent-value" id="ctc_' + valid + '_parent_' + rule + '_' + valid + '">' 
                     + oldRuleObj.orig + '</div>' + lf;
                 html += '<div class="ctc-input-cell">' + lf;
-                html += '<div class="ctc-swatch ctc-specific" id="ctc_parent_'+rule+'_' + valid + '_swatch">' 
+                html += '<div class="ctc-swatch ctc-specific" id="ctc_' + valid + '_parent_' + rule + '_' + valid + '_swatch">' 
                     + ctcAjax.swatch_txt + '</div></div>' + lf;
                 html += '<div class="ctc-input-cell"><a href="#" class="ctc-selector-handle" id="ctc_selector_' + rule + '_' + valid + '">'
                     + ctcAjax.selector_txt + '</a></div>' + lf;
@@ -387,7 +409,7 @@ jQuery(document).ready(function($){
                     if (false === ctc_is_empty(selectors)){
                         $.each(selectors, function(qsid, data) {
                             ctcAjax.sel_val[qsid] = data;
-                            html += ctc_render_child_rule_input(qsid, rule, true);
+                            html += ctc_render_child_rule_input(qsid, rule, valid);
                         });
                     }
                 });
@@ -487,7 +509,6 @@ jQuery(document).ready(function($){
             postdata,
             //on success function  
             function(response){
-                //console.log(response);
                 // release button
                 $(obj).prop('disabled', false);
                 // hide spinner
@@ -503,8 +524,7 @@ jQuery(document).ready(function($){
                     ctc_setup_menus();
                 }
                 return false;  
-            },
-            'json'
+            }, 'json'
         ).fail(function(){
             // release button
             $(obj).prop('disabled', false);
@@ -719,9 +739,13 @@ jQuery(document).ready(function($){
             selectFirst: true,
             autoFocus: true,
             select: function(e, ui) {
-                $('#ctc_sel_ovrd_rule_inputs').append(ctc_render_child_rule_input(currentSel, ui.item.label, false)).find('.color-picker').each(function() {
-                    ctc_setup_iris(this);
-                });
+                $('#ctc_sel_ovrd_rule_inputs')
+                    .append(ctc_render_child_rule_input(currentSel, ui.item.label, 'ovrd'))
+                    .find('.ctc-child-value').each(function(){
+                        if ($(this).hasClass('color-picker'))
+                            ctc_setup_iris($(this));
+                        $(this).focus();
+                    });
                 $('#ctc_new_rule_menu').val('');
                 if (ctc_is_empty(ctcAjax.sel_val[currentSel].value)) {
                     ctcAjax.sel_val[currentSel]['value'] = {};
@@ -827,7 +851,7 @@ jQuery(document).ready(function($){
         ctc_set_notice('')
         $('.color-picker').not(this).iris('hide');
     });
-    $('.ctc-option-panel-container').on('change', '.ctc-child-value', function() {
+    $('.ctc-option-panel-container').on('change', '.ctc-child-value, input[type=checkbox]', function() {
         ctc_coalesce_inputs(this);
     });
     $('.ctc-option-panel-container').on('click', '.ctc-selector-handle', function(e) {
