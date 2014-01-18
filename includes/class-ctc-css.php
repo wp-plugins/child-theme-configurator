@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.1.7
+    Version: 1.1.8
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -22,6 +22,7 @@ class Child_Theme_Configurator_CSS {
     var $dict_qs;       // query/selector lookup
     var $dict_rule;     // css rules
     var $dict_val;      // css values
+    var $dict_seq;      // child load order (priority)
     // hierarchies
     var $sel_ndx;       // query => selector hierarchy
     var $val_ndx;       // selector => rule => value hierarchy
@@ -42,7 +43,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.1.7';
+        $this->version          = '1.1.8';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -59,6 +60,7 @@ class Child_Theme_Configurator_CSS {
         $this->dict_query       = array();
         $this->dict_rule        = array();
         $this->dict_val         = array();
+        $this->dict_seq         = array();
         $this->sel_ndx          = array();
         $this->val_ndx          = array();
         $this->imports          = array('child' => '', 'parnt' => '');
@@ -231,28 +233,47 @@ class Child_Theme_Configurator_CSS {
 
     function encode_shorthand($shorthand) {
         $rules = '';
+        $importantstr = ' !important';
         foreach (array_keys($shorthand) as $key):
-            $rule = $shorthand[$key];
-            if (4 == count($rule)):
+            $important = array();
+            $rule = array();
+            $importantct = 0;
+            // which sides do we have and are they important?
+            foreach($shorthand[$key] as $side => $val):
+                $ict = 0;
+                $rule[$side] = trim(preg_replace('/'.$importantstr.'/', '', $val, 1, $ict));
+                $important[$side] = $ict;
+                $importantct += $ict;
+            endforeach;
+            // shorthand must have 4 explicit values and all must have same priority
+            if (4 == count($rule) && (0 == $importantct || 4 == $importantct )):
+                // let's try to condense the values into as few as possible, starting with the top value
                 $parts = array();
                 $parts[0] = $rule['top'];
-                if ($rule['left'] != $rule['right']):
+                // if left is not the same as right, we must use all 4 values
+                if ($rule['left'] !== $rule['right']):
                     $parts[3] = $rule['left'];
                     $parts[2] = $rule['bottom'];
                     $parts[1] = $rule['right'];
                 endif;
-                if ($rule['bottom'] != $rule['top']):
+                // if top is not the same as bottom, we must use at least 3 values
+                if ($rule['bottom'] !== $rule['top']):
                     $parts[2] = $rule['bottom'];
                     $parts[1] = $rule['right'];
                 endif;
-                if ($rule['right'] != $rule['top']):
+                // if top is not the same as right, we must use at least 2 values
+                if ($rule['right'] !== $rule['top']):
                     $parts[1] = $rule['right'];
                 endif;
+                // the order of the sides is critical: top right bottom left
                 ksort($parts);
-                $rules .= '    ' . $key . ': ' . implode(' ', $parts) . ';' . LF;
+                $shorthandstr = implode(' ', $parts);
+                // if important counter is > 0, it must be == 4, add flag
+                $rules .= '    ' . $key . ': ' . $shorthandstr . ($importantct ? ' ' . $importantstr : '') . ';' . LF;
             else:
+                // otherwise return separate rule for each side
                 foreach ($rule as $side => $value):
-                    $rules .= '    ' . $key . '-' . $side . ': ' . $value . ';' . LF;
+                    $rules .= '    ' . $key . '-' . $side . ': ' . $value . ($important[$side] ? $importantstr : '') . ';' . LF;
                 endforeach;
             endif;
         endforeach;
@@ -290,13 +311,14 @@ class Child_Theme_Configurator_CSS {
      * CTC object arrays, creating update cache in the process.
      * Update cache is returned to UI via AJAX to refresh page
      */
-    function update_arrays($template, $query, $sel, $rule = null, $value = null, $important = null) {
+    function update_arrays($template, $query, $sel, $rule = null, $value = null, $important = 0) {
         // add selector and query to index
         if (!isset($this->dict_query[$query])) $this->dict_query[$query] = ++$this->querykey;
         if (!isset($this->dict_sel[$sel])) $this->dict_sel[$sel] = ++$this->selkey;
         if (!isset($this->sel_ndx[$this->dict_query[$query]][$this->dict_sel[$sel]])):
             // increment key number
             $this->sel_ndx[$this->dict_query[$query]][$this->dict_sel[$sel]] = ++$this->qskey;
+            
             $this->dict_qs[$this->qskey]['s'] = $this->dict_sel[$sel];
             $this->dict_qs[$this->qskey]['q'] = $this->dict_query[$query];
             // tell the UI to update a single cached query/selector lookup by passing 'qsid' as the key
@@ -311,6 +333,8 @@ class Child_Theme_Configurator_CSS {
                 ),
             );
         endif;
+        if (!isset($this->dict_seq[$this->qskey]))
+            $this->dict_seq[$this->qskey] = $this->qskey;
         // set data and value
         if ($rule):
             if (!isset($this->dict_rule[$rule])):
@@ -324,12 +348,12 @@ class Child_Theme_Configurator_CSS {
             endif;
             $qsid = $this->sel_ndx[$this->dict_query[$query]][$this->dict_sel[$sel]];
             $ruleid = $this->dict_rule[$rule];
-            
             if (!isset($this->dict_val[$value])):
                 $this->dict_val[$value] = ++$this->valkey;
             endif;
             $this->val_ndx[$qsid][$ruleid][$template] = $this->dict_val[$value];
-            $this->val_ndx[$qsid][$ruleid]['i'] = $important;
+            // set the important flag for this value
+            $this->val_ndx[$qsid][$ruleid]['i_' . $template] = $important;
             // tell the UI to add a single cached query/selector data array:
             $updatearr = array(
                 'obj'   => 'sel_val',
@@ -423,7 +447,6 @@ class Child_Theme_Configurator_CSS {
                 endforeach;
             endforeach;
         endforeach;
-
     }
 
     /*
@@ -451,15 +474,15 @@ class Child_Theme_Configurator_CSS {
             endforeach;
         endif;
         $output .= LF;
-        // turn the dictionaries into indexes:
+        // turn the dictionaries into indexes (value => id into id => value):
         $rulearr = array_flip($this->dict_rule);
         $valarr  = array_flip($this->dict_val);
         $selarr  = array_flip($this->dict_sel);
         foreach ($this->sort_queries() as $query => $sort_order):
-            $selectors = $this->sel_ndx[$this->dict_query[$query]];
-            asort($selectors);
             $has_selector = 0;
             $sel_output   = '';
+            $selectors = $this->sel_ndx[$this->dict_query[$query]];
+            uasort($selectors, array($this, 'cmp_seq'));
             if ('base' != $query) $sel_output .=  $query . ' {' . LF;
             foreach ($selectors as $selid => $qsid):
                 $has_value = 0;
@@ -469,14 +492,18 @@ class Child_Theme_Configurator_CSS {
                     foreach ($this->val_ndx[$qsid] as $ruleid => $valid):
                         if (isset($valid['child']) && isset($valarr[$valid['child']]) && '' !== $valarr[$valid['child']]):
                             if (! $has_value): 
+                                $sel_output .= isset($this->dict_seq[$qsid])?'/*' . $this->dict_seq[$qsid] . '*/' . LF:''; // show load order
                                 $sel_output .= $sel . ' {' . LF; 
                                 $has_value = 1;
                                 $has_selector = 1;
                             endif;
-                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], stripslashes($valarr[$valid['child']]), $shorthand);
+                            $important_parnt = empty($valid['i_parnt']) ? 0 : 1;
+                            $important = isset($valid['i_child']) ? $valid['i_child'] : $important_parnt;
+                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], stripslashes($valarr[$valid['child']]), $shorthand, $important);
                         endif;
                     endforeach;
-                    $sel_output .= $this->encode_shorthand($shorthand);
+                    $sel_output .= $this->encode_shorthand($shorthand); // . ($important ? ' !important' : '');
+;
                     if ($has_value):
                         $sel_output .= '}' . LF;
                     endif;
@@ -506,23 +533,25 @@ class Child_Theme_Configurator_CSS {
      * These are based on commonly used practices and not all vendor prefixed are supported
      * TODO: verify this logic against vendor and W3C documentation
      */
-    function add_vendor_rules($rule, $value, &$shorthand) {
+    function add_vendor_rules($rule, $value, &$shorthand, $important = 0) {
         $rules = '';
+        if ('filter' == $rule && (false !== strpos($value, 'progid:DXImageTransform.Microsoft.Gradient'))) return;
+        $importantstr = $important ? ' !important' : '';
         if (preg_match("/^(margin|padding)\-(top|right|bottom|left)$/", $rule, $matches)):
-            $shorthand[$matches[1]][$matches[2]] = $value;
+            $shorthand[$matches[1]][$matches[2]] = $value . $importantstr;
             return '';
         elseif (preg_match("/^(box\-sizing|font\-smoothing|border\-radius|box\-shadow|transition)$/", $rule)):
             foreach(array('moz', 'webkit', 'o') as $prefix):
-                $rules .= '    -' . $prefix . '-' . $rule . ': ' . $value . ';' . LF;
+                $rules .= '    -' . $prefix . '-' . $rule . ': ' . $value . $importantstr . ';' . LF;
             endforeach;
-            $rules .= '    ' . $rule . ': ' . $value . ';' . LF;
+            $rules .= '    ' . $rule . ': ' . $value . $importantstr . ';' . LF;
         elseif ('background-image' == $rule):
             // gradient?
             if ($gradient = $this->decode_gradient($value)):
                 // standard gradient
                 foreach(array('moz', 'webkit', 'o', 'ms') as $prefix):
                     $rules .= '    background-image: -' . $prefix . '-' . 'linear-gradient(' . $gradient['origin'] . ', ' 
-                        . $gradient['color1'] . ', ' . $gradient['color2'] . ');' . LF;
+                        . $gradient['color1'] . ', ' . $gradient['color2'] . ')' . $importantstr . ';' . LF;
                 endforeach;
                 // W3C standard gradient
                 // rotate origin 90 degrees
@@ -536,7 +565,7 @@ class Child_Theme_Configurator_CSS {
                     $org = 'to ' . implode(' ', $dirs);
                 endif;
                 $rules .= '    background-image: linear-gradient(' . $org . ', ' 
-                    . $gradient['color1'] . ', ' . $gradient['color2'] . ');' . LF;
+                    . $gradient['color1'] . ', ' . $gradient['color2'] . ')' . $importantstr . ';' . LF;
                 
                 // legacy webkit gradient - we'll add if there is demand
                 // '-webkit-gradient(linear,' .$origin . ', ' . $color1 . ', '. $color2 . ')';
@@ -545,13 +574,13 @@ class Child_Theme_Configurator_CSS {
                 $type = (in_array($gradient['origin'], array('left', 'right', '0deg', '180deg')) ? 1 : 0);
                 $color1 = preg_replace("/^#/", '#00', $gradient['color1']);
                 $rules .= '    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=' . $type . ', StartColorStr="' 
-                    . strtoupper($color1) . '", EndColorStr="' . strtoupper($gradient['color2']) . '");' . LF;
+                    . strtoupper($color1) . '", EndColorStr="' . strtoupper($gradient['color2']) . '")' . $importantstr . ';' . LF;
             else:
                 // url or other value
-                $rules .= '    ' . $rule . ': ' . $value . ';' . LF;
+                $rules .= '    ' . $rule . ': ' . $value . $importantstr . ';' . LF;
             endif;
         else:
-            $rules .= '    ' . $rule . ': ' . $value . ';' . LF;
+            $rules .= '    ' . $rule . ': ' . $value . $importantstr . ';' . LF;
         endif;
         return $rules;
     }
@@ -653,15 +682,26 @@ class Child_Theme_Configurator_CSS {
         elseif (isset($_POST['ctc_child_imports'])):
             $this->parse_css('child', $_POST['ctc_child_imports']);
         else:
+            // set the custom sequence value
+            foreach (preg_grep('#^ctc_ovrd_child_seq_#', array_keys($_POST)) as $post_key):
+                if (preg_match('#^ctc_ovrd_child_seq_(\d+)$#', $post_key, $matches)):
+                    $qsid = $matches[1];
+                    $this->dict_seq[$qsid] = intval($_POST[$post_key]);
+                endif;
+            endforeach;
+            foreach (preg_grep('#^ctc_(ovrd|\d+)_child_seq_#', array_keys($_POST)) as $post_key):
+            endforeach;
             $parts = array();
-            foreach (preg_grep('#^ctc_(ovrd_)?child#', array_keys($_POST)) as $post_key):
-                if (preg_match('#^ctc_(ovrd_)?child_([\w\-]+?)_(\d+?)(_(.+))?$#', $post_key, $matches)):
+            foreach (preg_grep('#^ctc_(ovrd|\d+)_child#', array_keys($_POST)) as $post_key):
+                if (preg_match('#^ctc_(ovrd|\d+)_child_([\w\-]+?)_(\d+?)(_(.+))?$#', $post_key, $matches)):
+                    $valid = $matches[1];
                     $rule   = $matches[2];
                     if (null == $rule || !isset($this->dict_rule[$rule])) continue;
                     $ruleid = $this->dict_rule[$rule];
                     $qsid = $matches[3];
                     $value  = sanitize_text_field(stripslashes($_POST[$post_key]));
-                    $important = empty($this->val_ndx[$qsid][$ruleid]['i']) ? 0 : $this->val_ndx[$qsid][$ruleid]['i'];
+                    $important = $this->is_important($value);
+                    if (!empty($_POST['ctc_' . $valid . '_child_' . $rule . '_i_' . $qsid])) $important = 1;
                     
                     $selarr = $this->denorm_query_sel($qsid);
                     if (!empty($matches[5])):
@@ -747,6 +787,15 @@ class Child_Theme_Configurator_CSS {
         return $queries;
     }
     
+    // sort selectors based on dict_seq if exists, otherwise qsid
+    function cmp_seq($a, $b) {
+        $cmpa = isset($this->dict_seq[$a])?$this->dict_seq[$a]:$a;
+        $cmpb = isset($this->dict_seq[$b])?$this->dict_seq[$b]:$b;
+        if ($cmpa == $cmpb) return 0;
+        return ($cmpa < $cmpb) ? -1 : 1;
+    }
+
+
     /*
      * denorm_rule_val
      * Return array of unique values corresponding to specific rule
@@ -790,13 +839,14 @@ class Child_Theme_Configurator_CSS {
      * Return id, query and selector values of a specific qsid (query-selector ID)
      */    
     function denorm_query_sel($qsid) {
-        $queryarr = array_flip($this->dict_query);
-        $selarr = array_flip($this->dict_sel);
-        
+        $queryarr               = array_flip($this->dict_query);
+        $selarr                 = array_flip($this->dict_sel);
+        $this->dict_seq[$qsid]  = isset($this->dict_seq[$qsid]) ? $this->dict_seq[$qsid] : $qsid;
         return array(
             'id'        => $qsid,
             'query'     => $queryarr[$this->dict_qs[$qsid]['q']],
             'selector'  => $selarr[$this->dict_qs[$qsid]['s']],
+            'seq'       => $this->dict_seq[$qsid],
         );
     }
 
@@ -812,11 +862,15 @@ class Child_Theme_Configurator_CSS {
         if (isset($this->val_ndx[$qsid]) && is_array($this->val_ndx[$qsid])):
             foreach ($this->val_ndx[$qsid] as $ruleid => $values):
                 foreach ($values as $name => $val):
-                    if ('i' == $name || !isset($valarr[$val]) || '' === $valarr[$val]):
+                    if ('i_parnt' == $name || 'i_child' == $name):
+                        $selarr['value'][$rulearr[$ruleid]][$name] = (empty($val) ? 0 : 1);
+                    elseif (!isset($valarr[$val]) || '' === $valarr[$val]):
                         continue;
+                    else:
+                        $selarr['value'][$rulearr[$ruleid]][$name] = $valarr[$val];
                     endif;
-                    $selarr['value'][$rulearr[$ruleid]][$name] = $valarr[$val];
                 endforeach;
+                // add load order
             endforeach;
         endif;
         return $selarr;

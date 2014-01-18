@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.8
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,7 +75,7 @@ You can override a specific value globally using the Rule/Value tab. See "Rule/V
 
 = How do I add styles that aren't in the Parent Theme? =
 
-You can add queries and selectors using the "New Selector(s)" textarea on the Query/Selector tab. See "Query/Selector," below.
+You can add queries and selectors using the "Raw CSS" textarea on the Query/Selector tab. See "Query/Selector," below.
 
 = How do I remove a style from the Parent Theme? =
 
@@ -87,7 +87,7 @@ Delete the value from the input for the rule you wish to remove. The Child Theme
 
 = How do I set the !important flag? =
 
-If you are overriding a style from the parent that is flagged as important, the Child Theme Configurator will automatically add the flag to the child stylesheet. New styles are added to the end of the query block, so they will take precedence. We are discussing adding the ability to set the important flag in the child stylesheet, but for now you'll have to rely on good cascading design. 
+We always recommend relying on good cascading design over global overrides. To that end, version 1.1.8 gives the ability to change the load order of child theme styles by entering a value in the "Order" field. And yes, you can now set rules as important by checking the "!" box next to each input. Please use judiciously. 
 
 = How do I create cross-browser gradients? =
 
@@ -116,6 +116,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.1.8 =
+* Added reorder sequence and important flag functionality. Fixed bug where multiple inputs with same selector/rule combo were assigned the same id. Fixed bug in the shorthand encoding routine. 
 
 = 1.1.7 =
 * Added tutorial video to help tabs.
@@ -200,6 +203,8 @@ The Query/Selector tab lets you find specific selectors and edit them. First, fi
 Next, find the selector by typing in the Selector autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.
 
 This will load all of the rules for that selector with the Parent values on the left and the Child values inputs on the right. Any existing child values will be automatically populated. There is also a Sample preview that displays the combination of Parent and Child overrides. Note that the border and background-image get special treatment.
+
+The "Order" field contains the original sequence of the selector in the parent theme stylesheet. You can change the selector order sequence by entering a lower or higher number in the "Order" field. You can also force style overrides (so called "!important" flag) by checking the "!" box next to each input. Please use judiciously.
 
 Click "Save" to update the child stylesheet and save your changes to the WordPress admin.
 

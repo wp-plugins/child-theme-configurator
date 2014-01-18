@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.1.7
+    Version: 1.1.8
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -196,7 +196,7 @@ class Child_Theme_Configurator_UI {
           <div class="ctc-input-cell" id="ctc_sel_ovrd_query_selected">&nbsp;</div>
           <div class="ctc-input-cell">
             <div class="ui-widget">
-              <input id="ctc_sel_ovrd_query"/>
+              <input id="ctc_sel_ovrd_query" />
             </div>
           </div>
         </div>
@@ -207,7 +207,7 @@ class Child_Theme_Configurator_UI {
           <div class="ctc-input-cell" id="ctc_sel_ovrd_selector_selected">&nbsp;</div>
           <div class="ctc-input-cell">
             <div class="ui-widget">
-              <input id="ctc_sel_ovrd_selector"/>
+              <input id="ctc_sel_ovrd_selector" />
               <div id="ctc_status_sel_ndx"></div>
             </div>
           </div>
@@ -217,12 +217,12 @@ class Child_Theme_Configurator_UI {
             <div class="ctc-input-cell"><strong>
               <?php _e('Sample', 'chld_thm_cfg'); ?>
               </strong></div>
-            <div id="ctc_status_sel_val"></div>
             <div class="ctc-input-cell clearfix" style="max-height:150px;overflow:hidden">
               <div class="ctc-swatch" id="ctc_child_all_0_swatch"><?php echo $this->swatch_text; ?></div>
             </div>
+            <div id="ctc_status_sel_val"></div>
             <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
-              <input type="button" class="button ctc-save-input" id="ctc_save_query_selector" 
+              <input type="button" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
             name="ctc_save_query_selector" value="Save"  disabled />
               <input type="hidden" id="ctc_sel_ovrd_qsid" 
             name="ctc_sel_ovrd_qsid" value="" />
@@ -246,14 +246,20 @@ class Child_Theme_Configurator_UI {
               </strong> </div>
             <div class="ctc-input-cell">
               <div class="ui-widget">
-                <input id="ctc_new_rule_menu"/>
+                <input id="ctc_new_rule_menu" />
               </div>
             </div>
+          </div>
+          <div class="ctc-input-row clearfix" id="input_row_selector">
+            <div class="ctc-input-cell"> <strong>
+              <?php _e('Order', 'chld_thm_cfg'); ?>
+              </strong> </div>
+            <div class="ctc-input-cell" id="ctc_child_load_order_container">&nbsp;</div>
           </div>
         </div>
         <div class="ctc-selector-row clearfix" id="ctc_new_selector_row">
           <div class="ctc-input-cell"> <strong>
-            <?php _e('New Selector(s)', 'chld_thm_cfg'); ?>
+            <?php _e('Raw CSS', 'chld_thm_cfg'); ?>
             </strong>
             <div class="ctc-textarea-button-cell" id="ctc_save_query_selector_cell">
               <input type="button" class="button ctc-save-input" id="ctc_save_new_selectors" 
@@ -376,6 +382,7 @@ class Child_Theme_Configurator_UI {
 <p>The Query/Selector tab lets you find specific selectors and edit them. First, find the query that contains the selector you wish to edit by typing in the <strong>Query</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. Selectors are in the <strong>base</strong> query by default.</p>
 <p>Next, find the selector by typing in the <strong>Selector</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.</p>
 <p>This will load all of the rules for that selector with the Parent values on the left and the Child values inputs on the right. Any existing child values will be automatically populated. There is also a Sample preview that displays the combination of Parent and Child overrides. Note that the <strong>border</strong> and <strong>background-image</strong> get special treatment.</p>
+<p>The "Order" field contains the original sequence of the selector in the parent theme stylesheet. You can change the selector order sequence by entering a lower or higher number in the "Order" field. You can also force style overrides (so called "!important" flag) by checking the "!" box next to each input. Please use judiciously.</p>
 <p>Click "Save" to update the child stylesheet and save your changes to the WordPress admin.</p>
 				    ', 'chld_thm_cfg'
 			    ),
@@ -443,6 +450,8 @@ class Child_Theme_Configurator_UI {
 <p>You shouldn\'t really "remove" a style from the Parent. You can, however, set the rule to "inherit," "none," or zero (depending on the rule). This will negate the Parent value. Some experimentation may be necessary.</p>
 <h5 id="remove_styles">How do I remove a style from the Child Theme?</h5>
 <p>Delete the value from the input for the rule you wish to remove. The Child Theme Configurator only adds overrides for rules that contain values.</p>
+<h5 id="important_flag">How do I set the !important flag?</h5>
+<p>We always recommend relying on good cascading design over global overrides. To that end, you have ability to change the load order of child theme styles by entering a value in the "Order" field. And yes, you can now set rules as important by checking the "!" box next to each input. Please use judiciously.</p>
 <h5 id="gradients">How do I create cross-browser gradients?</h5>
 <p>The Child Theme Configurator automatically generates the vendor prefixes and filters to display gradients across most browsers. It uses a normalized syntax and only supports two colors without intermediate stops. The inputs consist of origin (e.g., top, left, 135deg, etc.), start color and end color. The browser-specific syntax is generated automatically when you save these values. <strong>Note:</strong> For Internet Explorer, a filter rule approximates the gradient but can only be horizontal (origin top) or vertical (origin left). The legacy webkit-gradient syntax is not supported.</p>
 <h5 id="responsive">How do I make my Theme responsive?</h5>
