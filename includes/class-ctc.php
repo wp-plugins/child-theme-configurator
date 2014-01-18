@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.1.7
+    Version: 1.1.8
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -18,7 +18,7 @@ require_once('class-ctc-ui.php');
 require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
-    var $version = '1.1.7';
+    var $version = '1.1.8';
     var $css;
     var $optionsName;
     var $menuName;
@@ -92,6 +92,7 @@ class Child_Theme_Configurator {
                     'load_txt'          => __('Are you sure? This will replace your current settings.', 'chld_thm_cfg'),
                     'swatch_txt'        => $this->ui->swatch_text,
                     'swatch_label'      => __('Sample', 'chld_thm_cfg'),
+                    'important_label'   => __('<span style="font-size:10px">!</span>', 'chld_thm_cfg'),
                     'selector_txt'      => __('Selectors', 'chld_thm_cfg'),
                     'close_txt'         => __('Close', 'chld_thm_cfg'),
                     'css_fail_txt'      => __('The stylesheet cannot be displayed.', 'chld_thm_cfg'),
