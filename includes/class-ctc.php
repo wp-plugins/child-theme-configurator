@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.1.8
+    Version: 1.1.9
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -18,7 +18,7 @@ require_once('class-ctc-ui.php');
 require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
-    var $version = '1.1.8';
+    var $version = '1.1.9';
     var $css;
     var $optionsName;
     var $menuName;
@@ -231,7 +231,10 @@ class Child_Theme_Configurator {
             $this->css->set_property('child_version', $version);
             $this->css->parse_css_file('parnt');
             $this->css->parse_css_file('child');
-            $this->css->write_css(true); // backup current stylesheet
+            if (!$this->css->write_css(true)): // true backs up current stylesheet
+                $this->errors[] = __('Your theme directory is not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
+                return false;
+            endif;
             $this->css->reset_updates();
             if (update_option($this->optionsName, $this->css)):
                 $this->update_redirect();
@@ -254,6 +257,7 @@ class Child_Theme_Configurator {
         return in_array($theme, array_keys(wp_get_themes()));
     }
     
+    // this is a stub for future use
     function sanitize_options($input) {
         return $input;
     }
@@ -264,5 +268,4 @@ class Child_Theme_Configurator {
             die();
         endif;
     }
-
 }
