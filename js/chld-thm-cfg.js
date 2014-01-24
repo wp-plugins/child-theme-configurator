@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.1.8
+ *  Version: 1.1.9
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -157,7 +157,10 @@ jQuery(document).ready(function($){
                     if (ctc_is_empty(this.key)) { 
                         ctcAjax.sel_ndx = this.data;
                     } else if ('qsid' == this.key) {
-                        ctcAjax.sel_ndx[this.data['query']][this.data['selector']] = this.data['qsid'];
+                        if (ctc_is_empty(ctcAjax.sel_ndx[this.data.query])) {
+                            ctcAjax.sel_ndx[this.data.query] = {}
+                        } 
+                        ctcAjax.sel_ndx[this.data.query][this.data.selector] = this.data.qsid;
                     } else { 
                         ctcAjax.sel_ndx[this.key] = this.data;
                         currQuery = this.key;
