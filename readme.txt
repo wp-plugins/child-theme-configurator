@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.8
-Stable tag: 1.1.8
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,10 @@ Why create Child Themes using the Child Theme Configurator?
 
 http://www.youtube.com/watch?v=xL2HkWQxgOA
 
+= Why doesn't this work with my (insert theme vendor here) theme? =
+
+Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.
+
 = Where is it in the Admin? =
 
 The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started. 
@@ -67,7 +71,7 @@ A child theme is not a "copy" of the parent theme. It is a special feature of Wo
 
 = Where are the .php files? =
 
-You can add your own functions.php file, and any other files and directories you need for your Child Theme. The Child Theme Configurator helps you identify and override selectors in the Parent stylesheet without touching the other files.
+The configurator automatically adds a blank functions.php file to the child theme directory. You can add any additional files and directories you need for your Child Theme. The Child Theme Configurator helps you identify and override selectors in the Parent stylesheet without touching the other files.
 
 = How do I change a specific color/font style/background? =
 
@@ -87,7 +91,7 @@ Delete the value from the input for the rule you wish to remove. The Child Theme
 
 = How do I set the !important flag? =
 
-We always recommend relying on good cascading design over global overrides. To that end, version 1.1.8 gives the ability to change the load order of child theme styles by entering a value in the "Order" field. And yes, you can now set rules as important by checking the "!" box next to each input. Please use judiciously. 
+We always recommend relying on good cascading design over global overrides. Start by verifying the style is not being controlled by a higher priority selector in the parent stylesheet and if so, creating a variation of that selector for the specific case. If all else fails, you can set rules as "important" by checking the "!" box next to the input. Because this will force the style to take priority, please use this option judiciously. 
 
 = How do I create cross-browser gradients? =
 
@@ -116,6 +120,12 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.2.0 =
+* New features: Link to Query/Selector tab from specific Rule/Value selector, new rule focus on adding new rule. Bugs fixed: clear Query/Selector inputs when loaded selector is empty, use latest min.js script.
+
+= 1.1.9 =
+* Added check for writability before attempting to create child theme files to avoid fatal error on servers not running suEXEC. Fixed a bug in the ctc_update_cache function that was throwing a fatal JS error when new media queries were saved via the Raw CSS input. Configurator now adds functions.php file to child theme when it does not exist.
 
 = 1.1.8 =
 * Added reorder sequence and important flag functionality. Fixed bug where multiple inputs with same selector/rule combo were assigned the same id. Fixed bug in the shorthand encoding routine. 
@@ -166,6 +176,12 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+* New features: Link to Query/Selector tab from specific Rule/Value selector, new rule focus on adding new rule. Bugs fixed: clear Query/Selector inputs when loaded selector is empty, use latest min.js script.
+
+= 1.1.9 =
+* Several bugs fixed/improvements made, see change log for details.
 
 = 1.1.5 =
 * Several bugs fixed/improvements made, see change log for details.
