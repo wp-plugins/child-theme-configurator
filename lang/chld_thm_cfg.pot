@@ -1,10 +1,10 @@
-# Copyright (C) 2014 Child Theme Configurator
+# Copyright (C) 2014 Lilaea Media LLC
 # This file is distributed under the same license as the Child Theme Configurator package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Child Theme Configurator 1.1.8\n"
+"Project-Id-Version: Child Theme Configurator 1.1.9\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/child-theme-configurator\n"
-"POT-Creation-Date: 2014-01-18 00:37:07+00:00\n"
+"POT-Creation-Date: 2014-01-30 13:44:59+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -416,7 +416,7 @@ msgstr ""
 msgid "WordPress Answers"
 msgstr ""
 
-#. #-#-#-#-#  ctc.pot (Child Theme Configurator 1.1.8)  #-#-#-#-#
+#. #-#-#-#-#  pot.txt (Child Theme Configurator 1.1.9)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: includes/class-ctc.php:43
 msgid "Child Theme Configurator"
@@ -467,48 +467,58 @@ msgid "Close"
 msgstr ""
 
 #: includes/class-ctc.php:98
-msgid "The stylesheet cannot be displayed."
+msgid "Edit"
 msgstr ""
 
 #: includes/class-ctc.php:99
-msgid "(Child Only)"
+msgid "The stylesheet cannot be displayed."
 msgstr ""
 
 #: includes/class-ctc.php:100
+msgid "(Child Only)"
+msgstr ""
+
+#: includes/class-ctc.php:101
 msgid "Please enter a valid Child Theme"
 msgstr ""
 
-#: includes/class-ctc.php:101 includes/class-ctc.php:220
+#: includes/class-ctc.php:102 includes/class-ctc.php:221
 msgid "Please enter a valid Child Theme name"
 msgstr ""
 
-#: includes/class-ctc.php:102
+#: includes/class-ctc.php:103
 msgid "<strong>%s</strong> exists. Please enter a different Child Theme"
 msgstr ""
 
-#: includes/class-ctc.php:205
+#: includes/class-ctc.php:206
 msgid "%s does not exist. Please select a valid Parent Theme"
 msgstr ""
 
-#: includes/class-ctc.php:208
+#: includes/class-ctc.php:209
 msgid "Please select a valid Parent Theme"
 msgstr ""
 
-#: includes/class-ctc.php:213
+#: includes/class-ctc.php:214
 msgid ""
 "<strong>%s</strong> exists. Please enter a different Child Theme template "
 "name"
 msgstr ""
 
-#: includes/class-ctc.php:217
+#: includes/class-ctc.php:218
 msgid "Please enter a valid Child Theme template name"
 msgstr ""
 
-#: includes/class-ctc.php:223
+#: includes/class-ctc.php:224
 msgid "You do not have permission to configure child themes."
 msgstr ""
 
-#: includes/class-ctc.php:239
+#: includes/class-ctc.php:236
+msgid ""
+"Your theme directory is not writable. Please adjust permissions and try "
+"again."
+msgstr ""
+
+#: includes/class-ctc.php:243
 msgid "Child Theme %s was unchanged."
 msgstr ""
 
