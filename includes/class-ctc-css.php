@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.2.0
+    Version: 1.2.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -43,7 +43,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.2.0';
+        $this->version          = '1.2.1';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -409,6 +409,7 @@ class Child_Theme_Configurator_CSS {
                     if (false === strpos($ruleval, ':')) continue;
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
+                    $rule   = preg_replace_callback("/[^\w\-]/", array($this, 'to_ascii'), $rule);
                     $value  = stripslashes(trim($value));
                     
                     $rules = $values = array();
@@ -448,7 +449,12 @@ class Child_Theme_Configurator_CSS {
             endforeach;
         endforeach;
     }
-
+    function to_ascii($matches) {
+        return ord($matches[0]);
+    }
+    function from_ascii($matches) {
+        return chr($matches[0]);
+    }
     /*
      * write_css
      * converts normalized CSS object data into stylesheet.
@@ -589,6 +595,7 @@ class Child_Theme_Configurator_CSS {
                 $rules .= '    ' . $rule . ': ' . $value . $importantstr . ';' . LF;
             endif;
         else:
+            $rule = preg_replace_callback("/\d+/", array($this, 'from_ascii'), $rule);
             $rules .= '    ' . $rule . ': ' . $value . $importantstr . ';' . LF;
         endif;
         return $rules;

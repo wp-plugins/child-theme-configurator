@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.2.0
+ *  Version: 1.2.1
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -22,9 +22,17 @@ jQuery(document).ready(function($){
             }   
         });
     },
-
+    from_ascii = function(str) {
+        var ascii = parseInt(str),
+            chr = String.fromCharCode(ascii)
+        return chr;
+    },
+    to_ascii = function(str) {
+        var ascii = str.charCodeAt(0);
+        return ascii;
+    },
     ctc_coalesce_inputs = function(obj) {
-        var regex       = /^(ctc_(ovrd|\d+)_(parent|child)_([a-z\-]+)_(\d+))(_\w+)?$/,
+        var regex       = /^(ctc_(ovrd|\d+)_(parent|child)_([0-9a-z\-]+)_(\d+))(_\w+)?$/,
             $container  = $(obj).parents('.ctc-selector-row, .ctc-parent-row').first(),
             $swatch     = $container.find('.ctc-swatch').first(),
             cssrules = { 'parent': {}, 'child': {} },
@@ -58,10 +66,10 @@ jQuery(document).ready(function($){
                 postdata[inputid] = value;
                 postdata[important] = ($('#' + important).is(':checked')) ? 1 : 0;
             }
-            if ('' === value) {
+            /*if ('' === value) {
                 $('#'+important).prop('checked', false);
                 return;
-            }
+            }*/
             // handle specific inputs
             if (false === ctc_is_empty(rulepart)) {
                 switch(rulepart) {
@@ -263,7 +271,7 @@ jQuery(document).ready(function($){
         }
         if (false === ctc_is_empty(ctcAjax.rule)) { 
             $.each(ctcAjax.rule, function(key, value) {
-                var obj = { label: value, value: key };
+                var obj = { label: value.replace(/\d+/g, from_ascii), value: key };
                 arr.push(obj);
             });
         }
@@ -289,7 +297,7 @@ jQuery(document).ready(function($){
             impid = 'ctc_' + seq + '_child_' + rule + '_i_' + qsid;
         if (false === ctc_is_empty(ctcAjax.sel_val[qsid])) {
             html += '<div class="ctc-' + ('ovrd' == seq ? 'input' : 'selector' ) + '-row clearfix">' + lf;
-            html += '<div class="ctc-input-cell">' + ('ovrd' == seq ? rule : ctcAjax.sel_val[qsid].selector 
+            html += '<div class="ctc-input-cell">' + ('ovrd' == seq ? rule.replace(/\d+/g, from_ascii) : ctcAjax.sel_val[qsid].selector 
                 + '<br/><a href="#" class="ctc-selector-edit" id="ctc_selector_edit_' + qsid + '" >' + ctcAjax.edit_txt + '</a> '
                 + (ctc_is_empty(oldRuleObj.orig) ? ctcAjax.child_only_txt : '')) 
                 + '</div>' + lf;
@@ -403,7 +411,7 @@ jQuery(document).ready(function($){
         if (1 == loading.val_qry) return false;
         var params, 
             page_ruleid, 
-            rule = $('#ctc_rule_menu_selected').text(), 
+            rule = $('#ctc_rule_menu_selected').text().replace(/[^\w\-]/g, to_ascii), 
             selector, 
             html = '';
         if (0 === loading.val_qry) { 
@@ -728,7 +736,7 @@ jQuery(document).ready(function($){
                 if (false === noval) {
                     // skip rule if in current selector array
                     $.each(ctcAjax.sel_val[currentSel].value, function(rule, value) {
-                        if (val.label == rule) {
+                        if (val.label == rule.replace(/\d+/g, from_ascii)) {
                             skip = true;
                             return false;
                         }
@@ -889,7 +897,7 @@ jQuery(document).ready(function($){
         e.preventDefault();
         ctc_set_notice('')
         var id = $(this).attr('id').toString().replace('_close', ''),
-            valid = id.toString().replace(/\D+/g, '');
+            valid = id.toString().match(/_(\d+)$/)[1];
         if ($('#' + id + '_container').is(':hidden')) {
             if (1 != loading.val_qry) loading.val_qry = 0;
             ctc_render_selector_value_inputs(valid);

@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.2.0
+    Version: 1.2.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -223,7 +223,7 @@ class Child_Theme_Configurator_UI {
             <div id="ctc_status_sel_val"></div>
             <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
               <input type="button" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
-            name="ctc_save_query_selector" value="Save"  disabled />
+            name="ctc_save_query_selector" value="Save" disabled />
               <input type="hidden" id="ctc_sel_ovrd_qsid" 
             name="ctc_sel_ovrd_qsid" value="" />
             </div>
