@@ -184,7 +184,7 @@ jQuery(document).ready(function($){
     },
     ctc_image_url = function(theme, value) {
         var parts = value.toString().match(/url\([" ]*(.+?)[" ]*\)/),
-            path = ('undefined' == typeof parts ? null : parts[1]),
+            path = ctc_is_empty(parts) ? null : parts[1],
             url = ctcAjax.theme_uri + '/' + ('parent' == theme ? ctcAjax.parnt : ctcAjax.child) + '/',
             image_url;
         if (!path) { 
