@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.1.8
+    Version: 1.2.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -43,7 +43,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.1.8';
+        $this->version          = '1.2.1';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -409,6 +409,7 @@ class Child_Theme_Configurator_CSS {
                     if (false === strpos($ruleval, ':')) continue;
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
+                    $rule   = preg_replace_callback("/[^\w\-]/", array($this, 'to_ascii'), $rule);
                     $value  = stripslashes(trim($value));
                     
                     $rules = $values = array();
@@ -448,7 +449,12 @@ class Child_Theme_Configurator_CSS {
             endforeach;
         endforeach;
     }
-
+    function to_ascii($matches) {
+        return ord($matches[0]);
+    }
+    function from_ascii($matches) {
+        return chr($matches[0]);
+    }
     /*
      * write_css
      * converts normalized CSS object data into stylesheet.
@@ -458,6 +464,19 @@ class Child_Theme_Configurator_CSS {
      * TODO: allow user to modify selector sequence, !important flags and @media sort
      */
     function write_css($backup = false) {
+        // verify write permissions
+        $themedir = get_theme_root();
+        if (! is_writable($themedir)) return false;
+        $childdir = $themedir . '/' . $this->child;
+
+        if (!is_dir($childdir)):
+            if (!mkdir($childdir, 0755)) return false;
+        endif;
+        // add functions.php file
+        if ($backup && !file_exists($childdir . '/functions.php')):
+            if (false === file_put_contents($childdir . '/functions.php', 
+                "<?php\n// Exit if accessed directly\nif ( !defined('ABSPATH')) exit;\n\n/* Add custom functions below */")) return false;
+        endif;
         // write new stylesheet
         $output = '/*' . LF;
         $output .= 'Theme Name: ' . $this->child_name . LF;
@@ -503,7 +522,6 @@ class Child_Theme_Configurator_CSS {
                         endif;
                     endforeach;
                     $sel_output .= $this->encode_shorthand($shorthand); // . ($important ? ' !important' : '');
-;
                     if ($has_value):
                         $sel_output .= '}' . LF;
                     endif;
@@ -512,19 +530,16 @@ class Child_Theme_Configurator_CSS {
             if ('base' != $query) $sel_output .= '}' . LF;
             if ($has_selector) $output .= $sel_output;
         endforeach;
-        $themedir = get_theme_root() . '/' . $this->child;
-
-        $stylesheet = $themedir . '/style.css';
-        if (!is_dir($themedir)):
-            mkdir($themedir, 0755);
-        endif;
+        $stylesheet = $childdir . '/style.css';
         // backup current stylesheet
         if ($backup && is_file($stylesheet)):
-            $timestamp = date('YmdHis', current_time('timestamp'));
-            file_put_contents($stylesheet . '-' . $timestamp . '.bak', file_get_contents($stylesheet));
+            $timestamp  = date('YmdHis', current_time('timestamp'));
+            $bakfile    = preg_replace("/\.css$/", '', $stylesheet) . '-' . $timestamp . '.css';
+            if (false === file_put_contents($bakfile, file_get_contents($stylesheet))) return false;
         endif;
         // write new stylesheet
-        file_put_contents($stylesheet, $output);        
+        if (false === file_put_contents($stylesheet, $output)) return false; 
+        return true;     
     }
 
     /*
@@ -580,6 +595,7 @@ class Child_Theme_Configurator_CSS {
                 $rules .= '    ' . $rule . ': ' . $value . $importantstr . ';' . LF;
             endif;
         else:
+            $rule = preg_replace_callback("/\d+/", array($this, 'from_ascii'), $rule);
             $rules .= '    ' . $rule . ': ' . $value . $importantstr . ';' . LF;
         endif;
         return $rules;

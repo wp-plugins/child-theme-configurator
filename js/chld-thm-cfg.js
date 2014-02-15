@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.1.8
+ *  Version: 1.2.1
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -22,9 +22,17 @@ jQuery(document).ready(function($){
             }   
         });
     },
-
+    from_ascii = function(str) {
+        var ascii = parseInt(str),
+            chr = String.fromCharCode(ascii)
+        return chr;
+    },
+    to_ascii = function(str) {
+        var ascii = str.charCodeAt(0);
+        return ascii;
+    },
     ctc_coalesce_inputs = function(obj) {
-        var regex       = /^(ctc_(ovrd|\d+)_(parent|child)_([a-z\-]+)_(\d+))(_\w+)?$/,
+        var regex       = /^(ctc_(ovrd|\d+)_(parent|child)_([0-9a-z\-]+)_(\d+))(_\w+)?$/,
             $container  = $(obj).parents('.ctc-selector-row, .ctc-parent-row').first(),
             $swatch     = $container.find('.ctc-swatch').first(),
             cssrules = { 'parent': {}, 'child': {} },
@@ -58,10 +66,10 @@ jQuery(document).ready(function($){
                 postdata[inputid] = value;
                 postdata[important] = ($('#' + important).is(':checked')) ? 1 : 0;
             }
-            if ('' === value) {
+            /*if ('' === value) {
                 $('#'+important).prop('checked', false);
                 return;
-            }
+            }*/
             // handle specific inputs
             if (false === ctc_is_empty(rulepart)) {
                 switch(rulepart) {
@@ -157,7 +165,10 @@ jQuery(document).ready(function($){
                     if (ctc_is_empty(this.key)) { 
                         ctcAjax.sel_ndx = this.data;
                     } else if ('qsid' == this.key) {
-                        ctcAjax.sel_ndx[this.data['query']][this.data['selector']] = this.data['qsid'];
+                        if (ctc_is_empty(ctcAjax.sel_ndx[this.data.query])) {
+                            ctcAjax.sel_ndx[this.data.query] = {}
+                        } 
+                        ctcAjax.sel_ndx[this.data.query][this.data.selector] = this.data.qsid;
                     } else { 
                         ctcAjax.sel_ndx[this.key] = this.data;
                         currQuery = this.key;
@@ -173,7 +184,7 @@ jQuery(document).ready(function($){
     },
     ctc_image_url = function(theme, value) {
         var parts = value.toString().match(/url\([" ]*(.+?)[" ]*\)/),
-            path = ('undefined' == typeof parts ? null : parts[1]),
+            path = ctc_is_empty(parts) ? null : parts[1],
             url = ctcAjax.theme_uri + '/' + ('parent' == theme ? ctcAjax.parnt : ctcAjax.child) + '/',
             image_url;
         if (!path) { 
@@ -260,7 +271,7 @@ jQuery(document).ready(function($){
         }
         if (false === ctc_is_empty(ctcAjax.rule)) { 
             $.each(ctcAjax.rule, function(key, value) {
-                var obj = { label: value, value: key };
+                var obj = { label: value.replace(/\d+/g, from_ascii), value: key };
                 arr.push(obj);
             });
         }
@@ -286,8 +297,10 @@ jQuery(document).ready(function($){
             impid = 'ctc_' + seq + '_child_' + rule + '_i_' + qsid;
         if (false === ctc_is_empty(ctcAjax.sel_val[qsid])) {
             html += '<div class="ctc-' + ('ovrd' == seq ? 'input' : 'selector' ) + '-row clearfix">' + lf;
-            html += '<div class="ctc-input-cell">' + ('ovrd' == seq ? rule : ctcAjax.sel_val[qsid].selector 
-                + (ctc_is_empty(oldRuleObj.orig) ? '<br/>' + ctcAjax.child_only_txt : '')) + '</div>' + lf;
+            html += '<div class="ctc-input-cell">' + ('ovrd' == seq ? rule.replace(/\d+/g, from_ascii) : ctcAjax.sel_val[qsid].selector 
+                + '<br/><a href="#" class="ctc-selector-edit" id="ctc_selector_edit_' + qsid + '" >' + ctcAjax.edit_txt + '</a> '
+                + (ctc_is_empty(oldRuleObj.orig) ? ctcAjax.child_only_txt : '')) 
+                + '</div>' + lf;
             if ('ovrd' == seq) {
                 html += '<div class="ctc-parent-value ctc-input-cell" id="ctc_' + seq + '_parent_' + rule + '_' + qsid + '">' 
                 + (ctc_is_empty(oldRuleObj.orig) ? '[no value]' : oldRuleObj.orig + oldRuleFlag) + '</div>' + lf;
@@ -334,14 +347,20 @@ jQuery(document).ready(function($){
             return false;
         }
         var id, html, val;
-        if (false === ctc_is_empty(ctcAjax.sel_val[qsid])) {
-            if (false === ctc_is_empty(ctcAjax.sel_val[qsid].seq)) {
+        if (ctc_is_empty(ctcAjax.sel_val[qsid])) {
+            $('#ctc_sel_ovrd_rule_inputs').html('')
+        } else {
+            if (ctc_is_empty(ctcAjax.sel_val[qsid].seq)) {
+                $('#ctc_child_load_order_container').html('');
+            } else {
                 id = 'ctc_ovrd_child_seq_' + qsid;
                 val = parseInt(ctcAjax.sel_val[qsid].seq);
                 html = '<input type="text" id="' + id + '" name="' + id + '" class="ctc-child-value" value="' + val + '" />';
                 $('#ctc_child_load_order_container').html(html);
             }
-            if (false === ctc_is_empty(ctcAjax.sel_val[qsid].value)){
+            if (ctc_is_empty(ctcAjax.sel_val[qsid].value)){
+                $('#ctc_sel_ovrd_rule_inputs').html('');
+            } else {
                 html = '';
                 $.each(ctcAjax.sel_val[qsid].value, function(rule, value) {
                     html += ctc_render_child_rule_input(qsid, rule, 'ovrd');
@@ -392,7 +411,7 @@ jQuery(document).ready(function($){
         if (1 == loading.val_qry) return false;
         var params, 
             page_ruleid, 
-            rule = $('#ctc_rule_menu_selected').text(), 
+            rule = $('#ctc_rule_menu_selected').text().replace(/[^\w\-]/g, to_ascii), 
             selector, 
             html = '';
         if (0 === loading.val_qry) { 
@@ -717,7 +736,7 @@ jQuery(document).ready(function($){
                 if (false === noval) {
                     // skip rule if in current selector array
                     $.each(ctcAjax.sel_val[currentSel].value, function(rule, value) {
-                        if (val.label == rule) {
+                        if (val.label == rule.replace(/\d+/g, from_ascii)) {
                             skip = true;
                             return false;
                         }
@@ -739,18 +758,19 @@ jQuery(document).ready(function($){
             selectFirst: true,
             autoFocus: true,
             select: function(e, ui) {
-                $('#ctc_sel_ovrd_rule_inputs')
-                    .append(ctc_render_child_rule_input(currentSel, ui.item.label, 'ovrd'))
-                    .find('.ctc-child-value').each(function(){
-                        if ($(this).hasClass('color-picker'))
-                            ctc_setup_iris($(this));
-                        $(this).focus();
-                    });
+                e.preventDefault();
+                var n = $(ctc_render_child_rule_input(currentSel, ui.item.label, 'ovrd'));
+                $('#ctc_sel_ovrd_rule_inputs').append(n);
                 $('#ctc_new_rule_menu').val('');
                 if (ctc_is_empty(ctcAjax.sel_val[currentSel].value)) {
                     ctcAjax.sel_val[currentSel]['value'] = {};
                 }
                 ctcAjax.sel_val[currentSel].value[ui.item.label] = {'child': ''};
+                n.find('input[type="text"]').each(function(ndx, el){
+                    if ($(el).hasClass('color-picker'))
+                        ctc_setup_iris(el);
+                    $(el).focus();
+                });
                 return false;
             },
             focus: function(e) { e.preventDefault(); }
@@ -822,6 +842,25 @@ jQuery(document).ready(function($){
     fade_update_notice = function() {
         $('.updated, .error').slideUp('slow', function(){ $('.updated').remove(); });
     },
+    ctc_focus_panel = function(id) {
+        var panelid = id + '_panel';
+        $('.nav-tab').removeClass('nav-tab-active');
+        $('.ctc-option-panel').removeClass('ctc-option-panel-active');
+        $('.ctc-selector-container').hide();
+        $(id).addClass('nav-tab-active');
+        $('.ctc-option-panel-container').scrollTop(0);
+        $(panelid).addClass('ctc-option-panel-active');
+    },
+    ctc_selector_edit = function(obj) {
+        var qsid = $(obj).attr('id').match(/_(\d+)$/)[1],
+            q = ctcAjax.sel_val[qsid].query,
+            s = ctcAjax.sel_val[qsid].selector,
+            id = '#query_selector_options';
+        ctc_set_query(q);
+        ctc_set_selector(qsid, s);
+        ctc_focus_panel(id);        
+        
+    },
     // initialize vars
     // ajax semaphores: 0 = reload, 1 = loading, 2 = loaded
     loading = {
@@ -858,7 +897,7 @@ jQuery(document).ready(function($){
         e.preventDefault();
         ctc_set_notice('')
         var id = $(this).attr('id').toString().replace('_close', ''),
-            valid = id.toString().replace(/\D+/g, '');
+            valid = id.toString().match(/_(\d+)$/)[1];
         if ($('#' + id + '_container').is(':hidden')) {
             if (1 != loading.val_qry) loading.val_qry = 0;
             ctc_render_selector_value_inputs(valid);
@@ -870,13 +909,8 @@ jQuery(document).ready(function($){
         e.preventDefault();
         // clear the notice box
         ctc_set_notice('')
-        var id = '#' + $(this).attr('id'), panelid = id + '_panel';
-        $('.nav-tab').removeClass('nav-tab-active');
-        $('.ctc-option-panel').removeClass('ctc-option-panel-active');
-        $('.ctc-selector-container').hide();
-        $(id).addClass('nav-tab-active');
-        $('.ctc-option-panel-container').scrollTop(0);
-        $(panelid).addClass('ctc-option-panel-active');
+        var id = '#' + $(this).attr('id');
+        ctc_focus_panel(id);
     });
     $('#view_child_options,#view_parnt_options').on('click', function(e){
         ctc_set_notice('')
@@ -898,6 +932,9 @@ jQuery(document).ready(function($){
     $('#parent_child_options_panel').on('change', '#ctc_theme_child', ctc_set_theme_menu );
     $(document).on('click', '.ctc-save-input', function(e) {
         ctc_save(this);
+    });
+    $(document).on('click', '.ctc-selector-edit', function(e) {
+        ctc_selector_edit(this);
     });
     // initialize menus
     ctc_setup_menus();
