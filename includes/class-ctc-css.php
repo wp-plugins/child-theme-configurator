@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.2.1
+    Version: 1.2.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -43,7 +43,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.2.1';
+        $this->version          = '1.2.2';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -164,7 +164,7 @@ class Child_Theme_Configurator_CSS {
                 endif;
                 $position = array();
                 foreach(preg_split('/ +/', trim($parts[1])) as $part):
-                    if (empty($part) || '' === $part) continue;
+                    if ('' === $part) continue; // empty($part) || 
                     if (false === strpos($part, 'repeat')):
                         $position[] = $part;
                     else:
@@ -311,7 +311,9 @@ class Child_Theme_Configurator_CSS {
      * CTC object arrays, creating update cache in the process.
      * Update cache is returned to UI via AJAX to refresh page
      */
-    function update_arrays($template, $query, $sel, $rule = null, $value = null, $important = 0) {
+    function update_arrays($template, $query, $sel, $rule = null, $value = null, $important = 0, $seq = null) {
+        // normalize selector styling
+        $sel = implode(', ', preg_split('#\s*,\s*#s', trim($sel)));
         // add selector and query to index
         if (!isset($this->dict_query[$query])) $this->dict_query[$query] = ++$this->querykey;
         if (!isset($this->dict_sel[$sel])) $this->dict_sel[$sel] = ++$this->selkey;
@@ -333,8 +335,8 @@ class Child_Theme_Configurator_CSS {
                 ),
             );
         endif;
-        if (!isset($this->dict_seq[$this->qskey]))
-            $this->dict_seq[$this->qskey] = $this->qskey;
+        if (!isset($this->dict_seq[$this->qskey]) || isset($seq))
+            $this->dict_seq[$this->qskey] = isset($seq) ? $seq : $this->qskey;
         // set data and value
         if ($rule):
             if (!isset($this->dict_rule[$rule])):
@@ -402,8 +404,6 @@ class Child_Theme_Configurator_CSS {
             preg_match_all($regex, $segment, $matches);
             foreach($matches[1] as $sel):
                 $stuff  = array_shift($matches[2]);
-                // normalize selector styling
-                $sel = implode(', ', preg_split('#\s*,\s*#s', trim($sel)));
                 $this->update_arrays($template, $query, $sel);
                 foreach (explode(';', $stuff) as $ruleval):
                     if (false === strpos($ruleval, ':')) continue;
@@ -461,7 +461,6 @@ class Child_Theme_Configurator_CSS {
      * Preserves selector sequence and !important flags of parent stylesheet.
      * @media query blocks are sorted using internal heuristics (see sort_queries)
      * New selectors are appended to the end of each media query block.
-     * TODO: allow user to modify selector sequence, !important flags and @media sort
      */
     function write_css($backup = false) {
         // verify write permissions
@@ -681,6 +680,7 @@ class Child_Theme_Configurator_CSS {
     /*
      * parse_css_input
      * Normalize raw user CSS input so that the parser can read it.
+     * TODO: this is a stub for future use
      */
     function parse_css_input($styles) {
         return $styles;
@@ -698,14 +698,13 @@ class Child_Theme_Configurator_CSS {
         elseif (isset($_POST['ctc_child_imports'])):
             $this->parse_css('child', $_POST['ctc_child_imports']);
         else:
+            $newselector = isset($_POST['ctc_rewrite_selector']) ? sanitize_text_field(stripslashes($_POST['ctc_rewrite_selector'])) : NULL;
             // set the custom sequence value
             foreach (preg_grep('#^ctc_ovrd_child_seq_#', array_keys($_POST)) as $post_key):
                 if (preg_match('#^ctc_ovrd_child_seq_(\d+)$#', $post_key, $matches)):
                     $qsid = $matches[1];
                     $this->dict_seq[$qsid] = intval($_POST[$post_key]);
                 endif;
-            endforeach;
-            foreach (preg_grep('#^ctc_(ovrd|\d+)_child_seq_#', array_keys($_POST)) as $post_key):
             endforeach;
             $parts = array();
             foreach (preg_grep('#^ctc_(ovrd|\d+)_child#', array_keys($_POST)) as $post_key):
@@ -726,8 +725,14 @@ class Child_Theme_Configurator_CSS {
                         $parts[$qsid][$rule]['query']     = $selarr['query'];
                         $parts[$qsid][$rule]['selector']  = $selarr['selector'];
                     else:
-                        $this->update_arrays('child', $selarr['query'], $selarr['selector'], 
-                            $rule, $value, $important);
+                        if ($newselector && $newselector != $selarr['selector']):
+                            $this->update_arrays('child', $selarr['query'], $newselector, 
+                                $rule, trim($value), $important, $this->dict_seq[$qsid]);
+                            $this->update_arrays('child', $selarr['query'], $selarr['selector'], $rule, '');
+                        else:
+                            $this->update_arrays('child', $selarr['query'], $selarr['selector'], 
+                                $rule, trim($value), $important);
+                        endif;
                     endif;
                 endif;
             endforeach;
@@ -758,8 +763,14 @@ class Child_Theme_Configurator_CSS {
                     else:
                         $value = '';
                     endif;
-                    $this->update_arrays('child', $rule_part['query'], $rule_part['selector'], 
-                        $rule, trim($value), $rule_part['important']);
+                    if ($newselector && $newselector != $rule_part['selector']):
+                        $this->update_arrays('child', $rule_part['query'], $newselector, 
+                            $rule, trim($value), $rule_part['important'], $this->dict_seq[$qsid]);
+                        $this->update_arrays('child', $rule_part['query'], $rule_part['selector'], $rule, '');
+                    else:
+                        $this->update_arrays('child', $rule_part['query'], $rule_part['selector'], 
+                            $rule, trim($value), $rule_part['important']);
+                    endif;
                 endforeach;
             endforeach; 
         endif;

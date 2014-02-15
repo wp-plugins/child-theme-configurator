@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.2.1
+    Version: 1.2.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -18,7 +18,7 @@ require_once('class-ctc-ui.php');
 require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
-    var $version = '1.2.1';
+    var $version = '1.2.2';
     var $css;
     var $optionsName;
     var $menuName;
@@ -65,7 +65,7 @@ class Child_Theme_Configurator {
             wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css');
             wp_enqueue_script('iris');
             wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('iris'), '1.0');
-            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js',
+            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
                 array('jquery-ui-autocomplete'), '1.0', true);
             wp_localize_script( 'chld-thm-cfg-admin', 'ctcAjax', 
                 apply_filters('ctc_localize_script', array(
@@ -96,6 +96,8 @@ class Child_Theme_Configurator {
                     'selector_txt'      => __('Selectors', 'chld_thm_cfg'),
                     'close_txt'         => __('Close', 'chld_thm_cfg'),
                     'edit_txt'          => __('Edit', 'chld_thm_cfg'),
+                    'cancel_txt'        => __('Cancel', 'chld_thm_cfg'),
+                    'rename_txt'        => __('Rename', 'chld_thm_cfg'),
                     'css_fail_txt'      => __('The stylesheet cannot be displayed.', 'chld_thm_cfg'),
                     'child_only_txt'    => __('(Child Only)', 'chld_thm_cfg'),
                     'inval_theme_txt'   => __('Please enter a valid Child Theme', 'chld_thm_cfg'),
@@ -232,7 +234,7 @@ class Child_Theme_Configurator {
             $this->css->set_property('child_version', $version);
             $this->css->parse_css_file('parnt');
             $this->css->parse_css_file('child');
-            if (!$this->css->write_css(true)): // true backs up current stylesheet
+            if (!$this->css->write_css(isset($_POST['ctc_backup']))): // true backs up current stylesheet
                 $this->errors[] = __('Your theme directory is not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
                 return false;
             endif;
@@ -258,7 +260,9 @@ class Child_Theme_Configurator {
         return in_array($theme, array_keys(wp_get_themes()));
     }
     
-    // this is a stub for future use
+    /*
+     * TODO: this is a stub for future use
+     */
     function sanitize_options($input) {
         return $input;
     }
