@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.2.1
+ *  Version: 1.2.2
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -14,6 +14,8 @@ jQuery(document).ready(function($){
         currentQuery = 'base',
         currentSel,
         saveEvents = {},
+        rewrite_id, 
+        rewrite_sel,
     // initialize functions
     ctc_setup_iris = function(obj) {
         $(obj).iris({
@@ -141,7 +143,7 @@ jQuery(document).ready(function($){
         return postdata;
     },
     ctc_update_cache = function(response) {
-        var currQuery, currSelId, currRule;
+        var currQuery, currSelId, currRuleId;
         $(response).each(function(){
             switch (this.obj) {
                 case 'imports':
@@ -178,7 +180,11 @@ jQuery(document).ready(function($){
                 case 'sel_val':
                     ctcAjax.sel_val[this.key] = this.data;
                     currSelId = this.key;
-                    break;           
+                    break; 
+                case 'rewrite':
+                    rewrite_id  = this.key;
+                    rewrite_sel = this.data;
+                    break;
             }
         });
     },
@@ -494,7 +500,7 @@ jQuery(document).ready(function($){
     ctc_save = function(obj) {
         var postdata = {},
             $selector, $query, $imports, $rule,
-            id = $(obj).attr('id');
+            id = $(obj).attr('id'), newsel;
         if (ctc_is_empty(saveEvents[id])) {
             saveEvents[id] = 0;
         }
@@ -517,6 +523,18 @@ jQuery(document).ready(function($){
             // coalesce inputs
             postdata = ctc_coalesce_inputs(obj);
         }
+        // add rename selector value if it exists
+        $('#ctc_sel_ovrd_selector_selected').find('#ctc_rewrite_selector').each(function(){
+            newsel = $('#ctc_rewrite_selector').val(),
+                origsel = $('#ctc_rewrite_selector_orig').val();
+            if (ctc_is_empty(newsel) || !newsel.toString().match(/\w/)) {
+                newsel = origsel;
+            } else {
+                postdata['ctc_rewrite_selector'] = newsel;
+            }
+            $('.ctc-rewrite-toggle').text(ctcAjax.rename_txt);
+            $('#ctc_sel_ovrd_selector_selected').html(newsel);
+        });
         // add wp ajax action to array
         postdata['action'] = 'ctc_update';
         postdata['_wpnonce'] = $('#_wpnonce').val();
@@ -528,6 +546,7 @@ jQuery(document).ready(function($){
             postdata,
             //on success function  
             function(response){
+                console.log(response);
                 // release button
                 $(obj).prop('disabled', false);
                 // hide spinner
@@ -541,6 +560,10 @@ jQuery(document).ready(function($){
                     // update data objects   
                     ctc_update_cache(response);
                     ctc_setup_menus();
+                    if (false === ctc_is_empty(rewrite_id)) {
+                        ctc_set_selector(rewrite_id, rewrite_sel);
+                        rewrite_id = rewrite_sel = null;
+                    }
                 }
                 return false;  
             }, 'json'
@@ -672,7 +695,8 @@ jQuery(document).ready(function($){
         currentSel = value;
         if (1 != loading.sel_val) loading.sel_val = 0;
         ctc_render_selector_inputs(value);
-        $('#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header,#ctc_sel_ovrd_rule_inputs_container,#ctc_sel_ovrd_rule_inputs').show();
+        $('.ctc-rewrite-toggle').text(ctcAjax.rename_txt);
+        $('#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header,#ctc_sel_ovrd_rule_inputs_container,#ctc_sel_ovrd_rule_inputs,.ctc-rewrite-toggle').show();
     },
     
     ctc_set_rule = function(value,label) {
@@ -680,6 +704,7 @@ jQuery(document).ready(function($){
         $('#ctc_rule_menu_selected').text(label);
         if (1 != loading.rule_val) loading.rule_val = 0;
         ctc_render_rule_value_inputs(value);
+        $('.ctc-rewrite-toggle').text(ctcAjax.rename_txt);
         $('#ctc_rule_value_inputs,#ctc_input_row_rule_header').show();
     },
     ctc_setup_query_menu = function() {
@@ -759,7 +784,7 @@ jQuery(document).ready(function($){
             autoFocus: true,
             select: function(e, ui) {
                 e.preventDefault();
-                var n = $(ctc_render_child_rule_input(currentSel, ui.item.label, 'ovrd'));
+                var n = $(ctc_render_child_rule_input(currentSel, ui.item.label.replace(/[^\w\-]/g, to_ascii), 'ovrd'));
                 $('#ctc_sel_ovrd_rule_inputs').append(n);
                 $('#ctc_new_rule_menu').val('');
                 if (ctc_is_empty(ctcAjax.sel_val[currentSel].value)) {
@@ -859,8 +884,21 @@ jQuery(document).ready(function($){
         ctc_set_query(q);
         ctc_set_selector(qsid, s);
         ctc_focus_panel(id);        
-        
     },
+    ctc_selector_input_toggle = function(obj) {
+        var origval;
+        if ($('#ctc_rewrite_selector').length) {
+            origval = $('#ctc_rewrite_selector_orig').val();
+            $('#ctc_sel_ovrd_selector_selected').text(origval);
+            $(obj).text(ctcAjax.rename_txt);
+        } else {
+            origval = $('#ctc_sel_ovrd_selector_selected').text();
+            $('#ctc_sel_ovrd_selector_selected').html('<input id="ctc_rewrite_selector" name="ctc_rewrite_selector" type="text" value="' 
+                + origval + '" autocomplete="off" /><input id="ctc_rewrite_selector_orig" name="ctc_rewrite_selector_orig" type="hidden" value="' 
+                + origval + '"/>');
+            $(obj).text(ctcAjax.cancel_txt);
+        }
+    }
     // initialize vars
     // ajax semaphores: 0 = reload, 1 = loading, 2 = loaded
     loading = {
@@ -936,6 +974,11 @@ jQuery(document).ready(function($){
     $(document).on('click', '.ctc-selector-edit', function(e) {
         ctc_selector_edit(this);
     });
+    $(document).on('click', '.ctc-rewrite-toggle', function(e) {
+        e.preventDefault();
+        ctc_selector_input_toggle(this);
+    });//ctc_rewrite_toggle
+    
     // initialize menus
     ctc_setup_menus();
     ctc_set_query(currentQuery);

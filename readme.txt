@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.8
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,10 @@ You can override a specific value globally using the Rule/Value tab. See "Rule/V
 
 You can add queries and selectors using the "Raw CSS" textarea on the Query/Selector tab. See "Query/Selector," below.
 
+= How do I use background images from the Parent Theme? =
+
+Use a relative path in the Child Theme value, e.g., 'url(../parent_theme/images/background.png)', where 'parent_theme' is the parent theme's slug.
+
 = How do I remove a style from the Parent Theme? =
 
 You shouldn't really "remove" a style from the Parent. You can, however, set the rule to "inherit," "none," or zero (depending on the rule). This will negate the Parent value. Some experimentation may be necessary.
@@ -120,6 +124,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.2.2 = 
+* New Features: You can now rename selectors in place from the Query/Selector panel. Made stylesheet backup optional. Bugs fixed: Incorrect parsing of background position when '0', fixed type error when background image url value is removed.
 
 = 1.2.1 =
 * Bugs fixed: "star hack" rules no longer throwing js error. Important flag now works on borders and gradients.
@@ -179,6 +186,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
+= 1.2.2 =
+* New features and bugs fixed.
 
 = 1.2.0 =
 * New features: Link to Query/Selector tab from specific Rule/Value selector, new rule focus on adding new rule. Bugs fixed: clear Query/Selector inputs when loaded selector is empty, use latest min.js script.
