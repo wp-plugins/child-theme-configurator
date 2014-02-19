@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.2.1
+    Version: 1.2.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -146,6 +146,17 @@ class Child_Theme_Configurator_UI {
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
           <div class="ctc-input-cell">
+            <label>
+              <?php _e('Backup Stylesheet', 'chld_thm_cfg'); ?>
+            </label>
+          </div>
+          <div class="ctc-input-cell">
+            <input class="ctc_checkbox" id="ctc_backup" name="ctc_backup" type="checkbox" 
+                value="1" checked />
+          </div>
+        </div>
+        <div class="ctc-input-row clearfix" id="input_row_child_template">
+          <div class="ctc-input-cell">
             <label>&nbsp;</label>
           </div>
           <div class="ctc-input-cell">
@@ -203,7 +214,7 @@ class Child_Theme_Configurator_UI {
         <div class="ctc-input-row clearfix" id="input_row_selector">
           <div class="ctc-input-cell"> <strong>
             <?php _e('Selector', 'chld_thm_cfg'); ?>
-            </strong> </div>
+            </strong> <a href="#" class="ctc-rewrite-toggle"></a></div>
           <div class="ctc-input-cell" id="ctc_sel_ovrd_selector_selected">&nbsp;</div>
           <div class="ctc-input-cell">
             <div class="ui-widget">

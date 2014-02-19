@@ -106,7 +106,12 @@
 
 .ctc-selector-handle {
 }
-
+.ctc-rewrite-toggle {
+    font-size:0.8em;
+    padding-left:1em;
+    display:none;
+    outline:none;
+}
 .ctc-selector-container {
     clear: both;
     background: #f9f9f9;
