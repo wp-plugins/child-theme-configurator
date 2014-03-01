@@ -46,7 +46,7 @@ class Child_Theme_Configurator {
         $this->pluginURL    = plugin_dir_url($file);
 
         // setup plugin hooks
-        add_action('admin_menu', array(&$this, 'admin_menu'));
+        add_action('admin_menu',            array(&$this, 'admin_menu'));
         add_action('admin_enqueue_scripts', array(&$this, 'enqueue_scripts'));
         add_action('wp_ajax_ctc_update',    array(&$this, 'ajax_save_postdata' ));
         add_action('wp_ajax_ctc_query',     array(&$this, 'ajax_query_css' ));
