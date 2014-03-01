@@ -51,6 +51,7 @@ class Child_Theme_Configurator_CSS {
         $this->valkey           = 0;
         $this->child            = '';
         $this->parnt            = '';
+        $this->configtype      = 'theme';
         $this->child_name       = '';
         $this->child_author     = 'Child Theme Configurator by Lilaea Media';
         $this->child_version    = '1.0';
@@ -68,20 +69,20 @@ class Child_Theme_Configurator_CSS {
     }
     
     /*
-     * set_property
+     * set_prop
      * Setter interface (scalar values only)
      */
-    function set_property($prop, $value) {
+    function set_prop($prop, $value) {
         if (is_scalar($this->{$prop}))
             $this->{$prop} = $value;
         else return false;
     }
     
     /*
-     * get_property
+     * get_prop
      * Getter interface (data sliced different ways depending on objname)
      */
-    function get_property($objname, $params = null) {
+    function get_prop($objname, $params = null) {
         switch ($objname):
             case 'updates':
                 return $this->obj_to_utf8($this->updates);
@@ -105,6 +106,8 @@ class Child_Theme_Configurator_CSS {
                 return $this->child;
             case 'parnt':
                 return $this->parnt;
+            case 'configtype':
+                return $this->configtype;
             case 'child_name':
                 return $this->child_name;
             case 'author':
@@ -284,16 +287,17 @@ class Child_Theme_Configurator_CSS {
      * reads stylesheet to get WordPress meta data and passes rest to parse_css 
      */
     function parse_css_file($template) {
-        if (empty($this->{$template}) || !is_scalar($this->{$template})) return false;
-        $stylesheet = get_theme_root() . '/' . $this->{$template} . '/style.css';
+        $source = $this->get_prop($template);
+        if (empty($source) || !is_scalar($source)) return false;
+        $stylesheet = apply_filters('chld_thm_cfg_source', get_theme_root() . '/' . $source . '/style.css', $this);
         // read parnt stylesheet
         if (!is_file($stylesheet)) return false;
         $styles = file_get_contents($stylesheet);
         // get theme name
         $regex = '#Theme Name:\s*(.+?)\n#i';
         preg_match($regex, $styles, $matches);
-        if (empty($matches[1])) return false;
-        if ('child' == $template && empty($this->child_name)) $this->set_property('child_name', $matches[1]);
+        $child_name = $this->get_prop('child_name');
+        if (!empty($matches[1]) && 'child' == $template && empty($child_name)) $this->set_prop('child_name', $matches[1]);
         $this->parse_css($template, $styles);
     }
 
@@ -471,31 +475,11 @@ class Child_Theme_Configurator_CSS {
      * New selectors are appended to the end of each media query block.
      */
     function write_css($backup = false) {
-        // verify write permissions
-        $themedir = get_theme_root();
-        if (! is_writable($themedir)) return false;
-        $childdir = $themedir . '/' . $this->child;
-
-        if (!is_dir($childdir)):
-            if (!mkdir($childdir, 0755)) return false;
-        endif;
-        // add functions.php file
-        if ($backup && !file_exists($childdir . '/functions.php')):
-            if (false === file_put_contents($childdir . '/functions.php', 
-                "<?php\n// Exit if accessed directly\nif ( !defined('ABSPATH')) exit;\n\n/* Add custom functions below */")) return false;
-        endif;
         // write new stylesheet
-        $output = '/*' . LF;
-        $output .= 'Theme Name: ' . $this->child_name . LF;
-        $output .= 'Template: ' . $this->parnt . LF;
-        $output .= 'Author: ' . $this->child_author . LF;
-        $output .= 'Version: 1.0' . LF;
-        $output .= 'Updated: ' . current_time('mysql') . LF;
-        $output .= '*/' . LF . LF;
-        $output .= '@charset "UTF-8";' . LF;
-        $output .= '@import url(\'../' . $this->parnt . '/style.css\');' . LF;
-        if (!empty($this->imports['child'])):
-            foreach ($this->imports['child'] as $import):
+        $output = apply_filters('chld_thm_cfg_css_header', $this->get_css_header(), $this);
+        $imports = $this->get_prop('imports');
+        if (!empty($imports)):
+            foreach ($imports as $import):
                 $output .= $import . ';' . LF;
             endforeach;
         endif;
@@ -537,7 +521,7 @@ class Child_Theme_Configurator_CSS {
             if ('base' != $query) $sel_output .= '}' . LF;
             if ($has_selector) $output .= $sel_output;
         endforeach;
-        $stylesheet = $childdir . '/style.css';
+        $stylesheet = apply_filters('chld_thm_cfg_target', $this->get_child_target(), $this);
         // backup current stylesheet
         if ($backup && is_file($stylesheet)):
             $timestamp  = date('YmdHis', current_time('timestamp'));
@@ -548,7 +532,21 @@ class Child_Theme_Configurator_CSS {
         if (false === file_put_contents($stylesheet, $output)) return false; 
         return true;     
     }
-
+    /* write_theme
+     * creates child theme stylesheet if it does not exist
+     * or verifies it is writable if it does
+     */
+    function write_theme() {
+        $stylesheet = $this->get_child_target();
+        if (! is_file($stylesheet)):
+            $output = $this->get_css_header();
+            if (false === file_put_contents($stylesheet, $output)):
+                return false; 
+            endif;
+        elseif (! is_writeable($stylesheet)):
+            return false;
+        endif;
+    }
     /*
      * add_vendor_rules
      * Applies vendor prefixes to rules/values
@@ -933,5 +931,22 @@ class Child_Theme_Configurator_CSS {
         endforeach;
         return empty($query) ? $sel_ndx_norm : $sel_ndx_norm[$query];
     }
+    
+    function get_css_header() {
+        $parnt = $this->get_prop('parnt');
+        return '/*' . LF
+            . 'Theme Name: ' . $this->get_prop('child_name') . LF
+            . 'Template: ' . $parnt . LF
+            . 'Author: ' . $this->get_prop('author'). LF
+            . 'Version: ' . $this->get_prop('version') . LF
+            . 'Updated: ' . current_time('mysql') . LF
+            . '*/' . LF . LF
+            . '@charset "UTF-8";' . LF
+            . '@import url(\'../' . $parnt . '/style.css\');' . LF;
+   }
+   
+   function get_child_target($file = 'style.css') {
+        return get_theme_root() . '/' . $this->get_prop('child') . '/' . $file;
+   }
 }
 ?>

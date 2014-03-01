@@ -46,10 +46,11 @@ class Child_Theme_Configurator {
         $this->pluginURL    = plugin_dir_url($file);
 
         // setup plugin hooks
-        add_action('admin_menu', array(&$this, 'admin_menu'));
-        add_action('admin_enqueue_scripts', array(&$this, 'enqueue_scripts'));
-        add_action('wp_ajax_ctc_update',    array(&$this, 'ajax_save_postdata' ));
-        add_action('wp_ajax_ctc_query',     array(&$this, 'ajax_query_css' ));
+        add_action('admin_menu',                array(&$this, 'admin_menu'));
+        add_action('admin_enqueue_scripts',     array(&$this, 'enqueue_scripts'));
+        add_action('wp_ajax_ctc_update',        array(&$this, 'ajax_save_postdata' ));
+        add_action('wp_ajax_ctc_query',         array(&$this, 'ajax_query_css' ));
+        add_action('chld_thm_cfg_addl_files',   array(&$this, 'add_functions_file'), 10, 2);
         //add_action('update_option_' . $this->optionsName, array(&$this, 'update_redirect'), 10);
     }
 
@@ -65,18 +66,22 @@ class Child_Theme_Configurator {
             wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css');
             wp_enqueue_script('iris');
             wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('iris'), '1.0');
-            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
+            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js',
                 array('jquery-ui-autocomplete'), '1.0', true);
             wp_localize_script( 'chld-thm-cfg-admin', 'ctcAjax', 
-                apply_filters('ctc_localize_script', array(
+                apply_filters('chld_thm_cfg_localize_script', array(
                     'ajaxurl'           => admin_url( 'admin-ajax.php' ),
                     'theme_uri'         => get_theme_root_uri(),
                     'themes'            => $this->themes,
-                    'parnt'             => $this->css->get_property('parnt'),
-                    'child'             => $this->css->get_property('child'),
-                    'imports'           => $this->css->get_property('imports'),
-                    'rule'              => $this->css->get_property('rule'),
-                    'sel_ndx'           => $this->css->get_property('sel_ndx'),
+                    'source'            => apply_filters('chld_thm_cfg_source_uri', get_theme_root_uri() . '/' 
+                                            . $this->css->get_prop('parnt') . '/style.css', $this->css),
+                    'target'            => apply_filters('chld_thm_cfg_target_uri', get_theme_root_uri() . '/' 
+                                            . $this->css->get_prop('child') . '/style.css', $this->css),
+                    'parnt'             => $this->css->get_prop('parnt'),
+                    'child'             => $this->css->get_prop('child'),
+                    'imports'           => $this->css->get_prop('imports'),
+                    'rule'              => $this->css->get_prop('rule'),
+                    'sel_ndx'           => $this->css->get_prop('sel_ndx'),
                     'val_qry'           => array(),
                     'rule_val'          => array(),
                     'sel_val'           => array(),
@@ -113,8 +118,8 @@ class Child_Theme_Configurator {
     
     function ctc_page_init () {
         $this->get_themes();
-        $this->load_css();
-        $this->generate_stylesheet();
+        $this->load_config();
+        if (!empty($_POST['ctc_load_styles'])) $this->write_config();
         $this->ui = new Child_Theme_Configurator_UI();
         $this->ui->render_help_tabs();
 	}
@@ -133,11 +138,11 @@ class Child_Theme_Configurator {
         endforeach;
     }
 
-    function load_css() {
+    function load_config() {
         if (!($this->css = get_option($this->optionsName)) 
             || !is_object($this->css) 
             // upgrade to v.1.1.1 
-            || !($version = $this->css->get_property('version'))
+            || !($version = $this->css->get_prop('version'))
             )
 
             $this->css = new Child_Theme_Configurator_CSS();
@@ -152,10 +157,10 @@ class Child_Theme_Configurator {
     function ajax_save_postdata() {
         $this->is_ajax = true;
         if ($this->validate_post()):
-            $this->load_css();
+            $this->load_config();
             $this->css->parse_post_data();
             $this->css->write_css();
-            $result = $this->css->get_property('updates');
+            $result = $this->css->get_prop('updates');
             // clear updates so they aren't saved in options object
             $this->css->reset_updates();
             update_option($this->optionsName, $this->css);
@@ -169,7 +174,7 @@ class Child_Theme_Configurator {
     function ajax_query_css() {
         $this->is_ajax = true;
         if ($this->validate_post()):
-            $this->load_css();
+            $this->load_config();
             $regex = "/^ctc_query_/";
             foreach(preg_grep($regex, array_keys($_POST)) as $key):
                 $name = preg_replace($regex, '', $key);
@@ -180,7 +185,7 @@ class Child_Theme_Configurator {
                     array(
                         'key'   => isset($param['key'])?$param['key']:'',
                         'obj'   => $param['obj'],
-                        'data'  => $this->css->get_property($param['obj'], $param),
+                        'data'  => $this->css->get_prop($param['obj'], $param),
                     ),
                 );
                 die(json_encode($result));
@@ -189,15 +194,15 @@ class Child_Theme_Configurator {
         die(0);
     }
     
-    function generate_stylesheet() {
-        if (empty($_POST['ctc_load_styles'])) return;
+    function write_config() {
         $this->errors = array();
         if (current_user_can('install_themes') && $this->validate_post()):
             foreach (array(
                 'ctc_theme_parnt', 
                 'ctc_child_type', 
                 'ctc_theme_child', 
-                'ctc_child_name', 
+                'ctc_child_name',
+                'ctc_configtype', 
                 'ctc_child_template', 
                 'ctc_child_author',
                 'ctc_child_version') as $postfield):
@@ -224,29 +229,33 @@ class Child_Theme_Configurator {
             if (empty($name)):
                 $this->errors[] = __('Please enter a valid Child Theme name', 'chld_thm_cfg');
             endif;
+            if (false === $this->verify_child_theme($child)):
+                $this->errors[] = __('Your theme directories are not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
+            endif;
         else:
             $this->errors[] = __('You do not have permission to configure child themes.', 'chld_thm_cfg');
         endif;
         if (empty($this->errors)):
             $this->css = new Child_Theme_Configurator_CSS();
-            $this->css->set_property('parnt', $parnt);
-            $this->css->set_property('child', $child);
-            $this->css->set_property('child_name', $name);
-            $this->css->set_property('child_author', $author);
-            $this->css->set_property('child_version', $version);
+            $this->css->set_prop('parnt', $parnt);
+            $this->css->set_prop('child', $child);
+            $this->css->set_prop('child_name', $name);
+            $this->css->set_prop('child_author', $author);
+            $this->css->set_prop('child_version', $version);
+            $this->css->set_prop('configtype', $configtype);
+            do_action('chld_thm_cfg_addl_files', $this->css); // hook for add'l plugin files and subdirectories
             $this->css->parse_css_file('parnt');
             $this->css->parse_css_file('child');
-            if (!$this->css->write_css(isset($_POST['ctc_backup']))): // true backs up current stylesheet
-                $this->errors[] = __('Your theme directory is not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
+            if (false === $this->css->write_theme() || false === $this->css->write_css(isset($_POST['ctc_backup']))):
+                $this->errors[] = __('Your stylesheet is not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
                 return false;
-            endif;
+            endif; 
             $this->css->reset_updates();
             if (update_option($this->optionsName, $this->css)):
                 $this->update_redirect();
-            else:
-                $this->errors[] = sprintf(__('Child Theme %s was unchanged.', 'chld_thm_cfg'), $name, $this->optionsName);
             endif;
         endif;
+        $this->errors[] = sprintf(__('Child Theme %s was unchanged.', 'chld_thm_cfg'), $name, $this->optionsName);
     }
     
     function render_menu($template = 'child', $selected = null) {
@@ -273,6 +282,29 @@ class Child_Theme_Configurator {
         if (empty($this->is_ajax)):
             wp_safe_redirect(admin_url('tools.php?page=' . $this->menuName . '&updated=true'));
             die();
+        endif;
+    }
+    
+    function verify_child_theme($child) {
+        $themedir = get_theme_root();
+        if (! is_writable($themedir)) return false;
+        $childdir = $themedir . '/' . $child;
+
+        if (! is_dir($childdir)):
+            if (! mkdir($childdir, 0755)):
+                return false;
+            endif;
+        elseif (! is_writable($childdir)):
+            return false;
+        endif;
+    }
+    
+    function add_functions_file($css_obj){
+        // add functions.php file
+        $file = $css_obj->get_child_target('functions.php');
+        if (!file_exists($file)):
+            if (false === file_put_contents($file, 
+                "<?php\n// Exit if accessed directly\nif ( !defined('ABSPATH')) exit;\n\n/* Add custom functions below */")) return false;
         endif;
     }
 }

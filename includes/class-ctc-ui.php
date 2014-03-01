@@ -25,10 +25,11 @@ class Child_Theme_Configurator_UI {
         global $chld_thm_cfg; 
         $css        = $chld_thm_cfg->css;
         $themes     = $chld_thm_cfg->themes;
-        $parent     = $css->get_property('parnt');
-        $child      = $css->get_property('child');
+        $parent     = $css->get_prop('parnt');
+        $child      = $css->get_prop('child');
+        $cfg_type   = $css->get_prop('cfg_type');
         $hidechild  = (count($themes['child']) ? '' : 'style="display:none"');
-        $imports    = $css->get_property('imports');
+        $imports    = $css->get_prop('imports');
         $id         = 0;
     ?>
 
@@ -59,7 +60,7 @@ class Child_Theme_Configurator_UI {
     </a> <a id="view_parnt_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=view_parnt_options" 
                     class="nav-tab<?php echo 'view_parnt_options' == $active_tab ? ' nav-tab-active' : ''; ?>">
     <?php _e('View Parent CSS', 'chld_thm_cfg'); ?>
-    </a> </h2>
+    </a><?php do_action('chld_thm_cfg_tabs', $chld_thm_cfg, $active_tab, $hidechild);?> </h2>
   <div class="ctc-option-panel-container">
     <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
       <form id="ctc_load_form" method="post" action="">
@@ -119,9 +120,29 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_text" id="ctc_child_name" name="ctc_child_name"  type="text" 
-                value="<? echo esc_attr($css->get_property('child_name')); ?>" placeholder="theme name" autocomplete="off" />
+                value="<? echo esc_attr($css->get_prop('child_name')); ?>" placeholder="theme name" autocomplete="off" />
           </div>
         </div>
+        <?php // hook to add alternate source/target css
+        $configtypes = apply_filters('chld_thm_cfg_types', array('theme' => __('Theme', 'chld_thm_cfg'))); 
+        if (count($configtypes) <= 1): ?>
+        <input type="hidden" name="ctc_configtype" id="ctc_configtype" value="theme" />
+        <?php else: ?>
+        <div class="ctc-input-row clearfix" id="input_row_parnt">
+          <div class="ctc-input-cell">
+            <label>
+              <?php _e('Config Type', 'chld_thm_cfg'); ?>
+            </label>
+          </div>
+          <div class="ctc-input-cell">
+            <select class="ctc-select" id="ctc_configtype" name="ctc_configtype">
+              <?php foreach ($configtypes as $value => $label): ?>
+                <option value="<?php echo $value . ' ' . selected($value, $configtype); ?>"><?php echo $label; ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+        </div>
+        <?php endif; ?>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
           <div class="ctc-input-cell">
             <label>
@@ -130,7 +151,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_text" id="ctc_child_author" name="ctc_child_author" type="text" 
-                value="<? echo esc_attr($css->get_property('author')); ?>" placeholder="author" autocomplete="off" />
+                value="<? echo esc_attr($css->get_prop('author')); ?>" placeholder="author" autocomplete="off" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -141,7 +162,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_text" id="ctc_child_version" name="ctc_child_version" type="text" 
-                value="<? echo esc_attr($css->get_property('version')); ?>" placeholder="version" autocomplete="off" />
+                value="<? echo esc_attr($css->get_prop('version')); ?>" placeholder="version" autocomplete="off" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -310,6 +331,7 @@ class Child_Theme_Configurator_UI {
     <div id="view_child_options_panel" 
         class="ctc-option-panel<?php echo 'view_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
     <div id="view_parnt_options_panel" class="ctc-option-panel<?php echo 'view_parnt_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>"> </div>
+<?php do_action('chld_thm_cfg_panels', $chld_thm_cfg, $active_tab, $hidechild); ?>
   </div>
 </div>
 <style type="text/css">
@@ -346,7 +368,7 @@ class Child_Theme_Configurator_UI {
         elseif (isset($_GET['updated'])):
             echo '<div class="updated"><p>' . LF
                 . sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.', 'chld_thm_cfg'),
-                $chld_thm_cfg->css->get_property('child_name')) . LF
+                $chld_thm_cfg->css->get_prop('child_name')) . LF
                 . '</p></div>' . LF;
         endif;
     }

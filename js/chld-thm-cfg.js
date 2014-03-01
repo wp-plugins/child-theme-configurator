@@ -472,6 +472,7 @@ jQuery(document).ready(function($){
             postdata,
             //on success function  
             function(response){
+                console.log(response);
                 // hide spinner
                 loading[obj] = 2;
                 $('.ctc-status-icon').removeClass('spinner');
@@ -954,7 +955,7 @@ jQuery(document).ready(function($){
         ctc_set_notice('')
         var stamp = new Date().getTime(),
             theme = $(this).attr('id').toString().match(/(child|parnt)/)[1],
-            css_uri = ctcAjax.theme_uri + '/' + ctcAjax[theme] + '/style.css?' + stamp;
+            css_uri = ('child' == theme ? ctcAjax.target : ctcAjax.source) + '?' + stamp;
         $.get(
             css_uri,
             function(response){
