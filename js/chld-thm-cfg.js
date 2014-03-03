@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.2.2
+ *  Version: 1.2.3
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -959,6 +959,11 @@ jQuery(document).ready(function($){
         $.get(
             css_uri,
             function(response){
+                if (response.match(/\}[\w\#\.]/gm)) { // compressed CSS
+                    response = response.replace(/\{\s*/gm, " {\n    ");
+                    response = response.replace(/;\s*/gm,  ";\n    ");
+                    response = response.replace(/\n?\}\s*/gm, "\n}\n")
+                }
                 $('#view_'+theme+'_options_panel').text(response);
             }
         ).fail(function(){

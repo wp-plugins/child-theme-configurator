@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.2.2
+    Version: 1.2.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -18,7 +18,6 @@ require_once('class-ctc-ui.php');
 require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
-    var $version = '1.2.2';
     var $css;
     var $optionsName;
     var $menuName;
@@ -251,11 +250,11 @@ class Child_Theme_Configurator {
                 return false;
             endif; 
             $this->css->reset_updates();
-            if (update_option($this->optionsName, $this->css)):
-                $this->update_redirect();
-            endif;
+            update_option($this->optionsName, $this->css);
+            do_action('chld_thm_cfg_addl_options', $this->css); // hook for add'l plugin options
+            $this->update_redirect();
         endif;
-        $this->errors[] = sprintf(__('Child Theme %s was unchanged.', 'chld_thm_cfg'), $name, $this->optionsName);
+        //$this->errors[] = sprintf(__('Child Theme %s was unchanged.', 'chld_thm_cfg'), $name, $this->optionsName);
     }
     
     function render_menu($template = 'child', $selected = null) {

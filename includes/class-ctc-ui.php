@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.2.2
+    Version: 1.2.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -27,7 +27,7 @@ class Child_Theme_Configurator_UI {
         $themes     = $chld_thm_cfg->themes;
         $parent     = $css->get_prop('parnt');
         $child      = $css->get_prop('child');
-        $cfg_type   = $css->get_prop('cfg_type');
+        $configtype = $css->get_prop('configtype');
         $hidechild  = (count($themes['child']) ? '' : 'style="display:none"');
         $imports    = $css->get_prop('imports');
         $id         = 0;
@@ -85,7 +85,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc-radio" id="ctc_child_type_new" name="ctc_child_type" type="radio" value="new" 
-            <? echo (!empty($hidechild) ? 'checked' : ''); ?>
+            <?php echo (!empty($hidechild) ? 'checked' : ''); ?>
             <?php echo $hidechild;?> />
             <label for="ctc_child_type_new">
               <?php _e('Create New Child Theme', 'chld_thm_cfg'); ?>
@@ -93,7 +93,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc-radio" id="ctc_child_type_existing" name="ctc_child_type"  type="radio" value="existing" 
-            <? echo (empty($hidechild) ? 'checked' : ''); ?>
+            <?php echo (empty($hidechild) ? 'checked' : ''); ?>
             <?php echo $hidechild; ?>/>
             &nbsp;
             <label for="ctc_child_type_existing" <?php echo $hidechild;?>>
@@ -120,29 +120,10 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_text" id="ctc_child_name" name="ctc_child_name"  type="text" 
-                value="<? echo esc_attr($css->get_prop('child_name')); ?>" placeholder="theme name" autocomplete="off" />
+                value="<?php echo esc_attr($css->get_prop('child_name')); ?>" placeholder="theme name" autocomplete="off" />
           </div>
         </div>
-        <?php // hook to add alternate source/target css
-        $configtypes = apply_filters('chld_thm_cfg_types', array('theme' => __('Theme', 'chld_thm_cfg'))); 
-        if (count($configtypes) <= 1): ?>
-        <input type="hidden" name="ctc_configtype" id="ctc_configtype" value="theme" />
-        <?php else: ?>
-        <div class="ctc-input-row clearfix" id="input_row_parnt">
-          <div class="ctc-input-cell">
-            <label>
-              <?php _e('Config Type', 'chld_thm_cfg'); ?>
-            </label>
-          </div>
-          <div class="ctc-input-cell">
-            <select class="ctc-select" id="ctc_configtype" name="ctc_configtype">
-              <?php foreach ($configtypes as $value => $label): ?>
-                <option value="<?php echo $value . ' ' . selected($value, $configtype); ?>"><?php echo $label; ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-        </div>
-        <?php endif; ?>
+        <?php do_action('chld_thm_cfg_controls', $css); ?>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
           <div class="ctc-input-cell">
             <label>
@@ -151,7 +132,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_text" id="ctc_child_author" name="ctc_child_author" type="text" 
-                value="<? echo esc_attr($css->get_prop('author')); ?>" placeholder="author" autocomplete="off" />
+                value="<?php echo esc_attr($css->get_prop('author')); ?>" placeholder="author" autocomplete="off" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -162,7 +143,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_text" id="ctc_child_version" name="ctc_child_version" type="text" 
-                value="<? echo esc_attr($css->get_prop('version')); ?>" placeholder="version" autocomplete="off" />
+                value="<?php echo esc_attr($css->get_prop('version')); ?>" placeholder="version" autocomplete="off" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -367,12 +348,11 @@ class Child_Theme_Configurator_UI {
             echo '</ul></div>' . LF;
         elseif (isset($_GET['updated'])):
             echo '<div class="updated"><p>' . LF
-                . sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.', 'chld_thm_cfg'),
-                $chld_thm_cfg->css->get_prop('child_name')) . LF
+                . apply_filters('chld_thm_cfg_update_msg', sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.', 'chld_thm_cfg'),
+                $chld_thm_cfg->css->get_prop('child_name')), $chld_thm_cfg->css) . LF
                 . '</p></div>' . LF;
         endif;
     }
-    
     function render_help_tabs() {
 	    global $wp_version, $chld_thm_cfg;
 	    if ( version_compare( $wp_version, '3.3') >= 0 ) {

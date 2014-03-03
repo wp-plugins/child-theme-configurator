@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.2.2
+    Version: 1.2.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -37,13 +37,14 @@ class Child_Theme_Configurator_CSS {
     var $updates;       // temporary update cache
     var $child;         // child theme slug
     var $parnt;         // parent theme slug
+    var $configtype;    // theme or plugin extension
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
     var $child_version; // stylesheet version
     
     function __construct() {
         // scalars
-        $this->version          = '1.2.2';
+        $this->version          = '1.2.3';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -289,8 +290,8 @@ class Child_Theme_Configurator_CSS {
     function parse_css_file($template) {
         $source = $this->get_prop($template);
         if (empty($source) || !is_scalar($source)) return false;
-        $stylesheet = apply_filters('chld_thm_cfg_source', get_theme_root() . '/' . $source . '/style.css', $this);
-        // read parnt stylesheet
+        $stylesheet = apply_filters('chld_thm_cfg_' . $template, get_theme_root() . '/' . $source . '/style.css', $this);
+        // read stylesheet
         if (!is_file($stylesheet)) return false;
         $styles = file_get_contents($stylesheet);
         // get theme name
@@ -532,6 +533,7 @@ class Child_Theme_Configurator_CSS {
         if (false === file_put_contents($stylesheet, $output)) return false; 
         return true;     
     }
+    
     /* write_theme
      * creates child theme stylesheet if it does not exist
      * or verifies it is writable if it does
@@ -547,6 +549,7 @@ class Child_Theme_Configurator_CSS {
             return false;
         endif;
     }
+    
     /*
      * add_vendor_rules
      * Applies vendor prefixes to rules/values
@@ -834,7 +837,6 @@ class Child_Theme_Configurator_CSS {
         if ($cmpa == $cmpb) return 0;
         return ($cmpa < $cmpb) ? -1 : 1;
     }
-
 
     /*
      * denorm_rule_val
