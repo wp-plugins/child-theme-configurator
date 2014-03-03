@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.2.2
+    Version: 1.2.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -84,7 +84,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc-radio" id="ctc_child_type_new" name="ctc_child_type" type="radio" value="new" 
-            <? echo (!empty($hidechild) ? 'checked' : ''); ?>
+            <?php echo (!empty($hidechild) ? 'checked' : ''); ?>
             <?php echo $hidechild;?> />
             <label for="ctc_child_type_new">
               <?php _e('Create New Child Theme', 'chld_thm_cfg'); ?>
@@ -92,7 +92,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc-radio" id="ctc_child_type_existing" name="ctc_child_type"  type="radio" value="existing" 
-            <? echo (empty($hidechild) ? 'checked' : ''); ?>
+            <?php echo (empty($hidechild) ? 'checked' : ''); ?>
             <?php echo $hidechild; ?>/>
             &nbsp;
             <label for="ctc_child_type_existing" <?php echo $hidechild;?>>
@@ -119,7 +119,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_text" id="ctc_child_name" name="ctc_child_name"  type="text" 
-                value="<? echo esc_attr($css->get_property('child_name')); ?>" placeholder="theme name" autocomplete="off" />
+                value="<?php echo esc_attr($css->get_property('child_name')); ?>" placeholder="theme name" autocomplete="off" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -130,7 +130,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_text" id="ctc_child_author" name="ctc_child_author" type="text" 
-                value="<? echo esc_attr($css->get_property('author')); ?>" placeholder="author" autocomplete="off" />
+                value="<?php echo esc_attr($css->get_property('author')); ?>" placeholder="author" autocomplete="off" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -141,7 +141,7 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_text" id="ctc_child_version" name="ctc_child_version" type="text" 
-                value="<? echo esc_attr($css->get_property('version')); ?>" placeholder="version" autocomplete="off" />
+                value="<?php echo esc_attr($css->get_property('version')); ?>" placeholder="version" autocomplete="off" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
