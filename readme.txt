@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.8
-Stable tag: 1.2.3
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -124,6 +124,12 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.3.0 =
+* Changed CSS preview to retrieve directly from WordPress Admin instead of remote http GET to prevent caching issues.
+* Added loading icon for CSS preview.
+* Fixed JS type error on backup toggle.
+* Improved extensibility throughout.
 
 = 1.2.3 =
 * Replace PHP short tags with standard codes.

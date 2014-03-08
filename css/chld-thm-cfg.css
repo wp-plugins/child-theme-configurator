@@ -180,7 +180,9 @@
 .ctc-child-input-cell input[type="text"] {
 /*width:60px;*/
 }
-
+.ctc-select {
+    max-width:100%;
+}
 .ctc-child-input-cell input[type="text"].ctc-input-wide {
     width: 200px;
 }
