@@ -3,8 +3,8 @@ Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
-Tested up to: 3.8
-Stable tag: 1.3.0
+Tested up to: 3.8.1
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,9 @@ Why create Child Themes using the Child Theme Configurator?
 * Import web fonts and use them in place of Theme fonts
 * Save hours of development time
 
+= Now it works with plugins! =
+
+We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
 
 == Installation ==
 
@@ -41,6 +44,10 @@ Why create Child Themes using the Child Theme Configurator?
    
 == Frequently Asked Questions ==
 
+= Does it work with plugins? =
+
+We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
+
 = Is there a tutorial? =
 
 http://www.youtube.com/watch?v=xL2HkWQxgOA
@@ -48,6 +55,10 @@ http://www.youtube.com/watch?v=xL2HkWQxgOA
 = Why doesn't this work with my (insert theme vendor here) theme? =
 
 Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.
+
+= Why are my menus displaying incorrectly when I activate the new child theme? =
+
+The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance > Menus and assign locations to each of the menus for the new Child Theme.
 
 = Where is it in the Admin? =
 
@@ -125,6 +136,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.3.1 =
+* Updated help tab content. Added additional sanitization of source and target file paths.
+
 = 1.3.0 =
 * Changed CSS preview to retrieve directly from WordPress Admin instead of remote http GET to prevent caching issues.
 * Added loading icon for CSS preview.
@@ -195,27 +209,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
-= 1.2.2 =
-* New features and bugs fixed.
-
-= 1.2.0 =
-* New features: Link to Query/Selector tab from specific Rule/Value selector, new rule focus on adding new rule. Bugs fixed: clear Query/Selector inputs when loaded selector is empty, use latest min.js script.
-
-= 1.1.9 =
-* Several bugs fixed/improvements made, see change log for details.
-
-= 1.1.5 =
-* Several bugs fixed/improvements made, see change log for details.
-
-= 1.1.4 =
-* Fixed sort bug in shorthand parser that was returning rules in wrong order
-
-= 1.1.1 =
-* This release fixes a major bug that caused input values containing '0' to be ignored
-* Several other bugs fixed/improvements made, see change log for details.
-
-= 1.0.0 =
-* Initial release.
+= 1.3.1 =
+* This update adds additional sanitization of source and target file paths.
 
 == Create Your Child Theme ==
 

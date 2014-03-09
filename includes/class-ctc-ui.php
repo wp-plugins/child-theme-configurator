@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.3.0
+    Version: 1.3.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -457,6 +457,15 @@ class Child_Theme_Configurator_UI {
 		    	'id'	=> 'ctc_faq',
 			    'title'	=> __( 'FAQs', 'chld_thm_cfg' ),
 			    'content'	=> __( '
+<h5>Does it work with Plugins?</h5>
+<p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles" title="Child Theme Configurator Extension">Learn more</a></p>
+<h5 id="doesnt_work">Why doesn’t this work with my (insert theme vendor here) theme?</h5>
+<p>Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade.</p>
+<p>Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.</p>
+<h5 id="menus-broken">Why are my menus displaying incorrectly when I activate the new child theme?</h5>
+<p>The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance &gt; Menus and assign locations to each of the menus for the new Child Theme.</p>
+<h5 "preview-not-loading">Why do the preview tabs return "Stylesheet could not be displayed"?</h5>
+<p>You have to configure at least one child theme from the Parent/Child tab for the preview to display.</p>
 <h5 id="specific_color">How do I change a specific color/font style/background?</h5>
 <p>You can override a specific value globally using the Rule/Value tab. See Rule/Value, above.</p>
 <h5 id="add_styles">How do I add styles that aren\'t in the Parent Theme?</h5>
@@ -506,6 +515,8 @@ class Child_Theme_Configurator_UI {
 		    // Set help sidebar
 		    $screen->set_help_sidebar(
 			    '
+                <h4>Now it works with plugins, too!</h4>
+                <p style="font-size:smaller">Easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles" title="Child Theme Configurator Extension">Learn more</a></p>
 			    <ul>
                     <li><a href="http://www.lilaeamedia.com/about/contact/">' . __( 'Contact us', 'chld_thm_cfg' ) . '</a></li>
 				    <li><a href="http://www.lilaeamedia.com/plugins/child-theme-configurator">' . __( 'Plugin Website', 'chld_thm_cfg' ) . '</a></li>

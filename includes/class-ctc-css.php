@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.3.0
+    Version: 1.3.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.3.0';
+        $this->version          = '1.3.1';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -232,9 +232,12 @@ class Child_Theme_Configurator_CSS {
         $source = $this->get_prop($template);
         if (empty($source) || !is_scalar($source)) return false;
         $stylesheet = apply_filters('chld_thm_cfg_' . $template, get_theme_root() . '/' . $source . '/style.css', $this);
+        
         // read stylesheet
-        if (!is_file($stylesheet)) return false;
-        return @file_get_contents($stylesheet);
+        if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'read')):
+            return @file_get_contents($stylesheet_verified);
+        endif;
+        return false;
     }
    
     /*
@@ -496,15 +499,18 @@ class Child_Theme_Configurator_CSS {
             if ($has_selector) $output .= $sel_output;
         endforeach;
         $stylesheet = apply_filters('chld_thm_cfg_target', $this->get_child_target(), $this);
-        // backup current stylesheet
-        if ($backup && is_file($stylesheet)):
-            $timestamp  = date('YmdHis', current_time('timestamp'));
-            $bakfile    = preg_replace("/\.css$/", '', $stylesheet) . '-' . $timestamp . '.css';
-            if (false === file_put_contents($bakfile, file_get_contents($stylesheet))) return false;
-        endif;
-        // write new stylesheet
-        if (false === file_put_contents($stylesheet, $output)) return false; 
-        return true;     
+        if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'write')):
+            // backup current stylesheet
+            if ($backup && is_file($stylesheet_verified)):
+                $timestamp  = date('YmdHis', current_time('timestamp'));
+                $bakfile    = preg_replace("/\.css$/", '', $stylesheet_verified) . '-' . $timestamp . '.css';
+                if (false === file_put_contents($bakfile, file_get_contents($stylesheet_verified))) return false;
+            endif;
+            // write new stylesheet
+            if (false === file_put_contents($stylesheet_verified, $output)) return false; 
+            return true;  
+        endif;   
+        return false;
     }
     
     /*
@@ -956,6 +962,22 @@ class Child_Theme_Configurator_CSS {
     
     function from_ascii($matches) {
         return chr($matches[0]);
+    }
+    
+    /* is_file_ok
+     * verify file exists and is in valid location
+     */
+    function is_file_ok($stylesheet, $permission = 'read') {
+        // remove any ../ manipulations
+        $stylesheet = preg_replace("%\.\./%", '/', $stylesheet);
+        if ('read' == $permission && !is_file($stylesheet)) return false;
+        // sanity check for php files
+        if (preg_match('%php$%', $stylesheet)) return false;
+        // check if in themes dir;
+        if (preg_match('%^' . get_theme_root() . '%', $stylesheet)) return $stylesheet;
+        // check if in plugins dir
+        if (preg_match('%^' . WP_PLUGIN_DIR . '%', $stylesheet)) return $stylesheet;
+        return false;
     }
 }
 ?>
