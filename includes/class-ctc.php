@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.3.0
+    Version: 1.3.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -138,16 +138,6 @@ class Child_Theme_Configurator {
         endforeach;
     }
 
-    function load_config() {
-        if (!($this->css = get_option($this->optionsName)) 
-            || !is_object($this->css) 
-            // upgrade to v.1.1.1 
-            || !($version = $this->css->get_prop('version'))
-            )
-
-            $this->css = new Child_Theme_Configurator_CSS();
-    }
-    
     function validate_post($action = 'ctc_update', $noncefield = '_wpnonce') {
         return ('POST' == $_SERVER['REQUEST_METHOD'] 
             && current_user_can('edit_theme_options')
@@ -192,6 +182,16 @@ class Child_Theme_Configurator {
             endif;
         endif;
         die(0);
+    }
+    
+    function load_config() {
+        if (!($this->css = get_option($this->optionsName)) 
+            || !is_object($this->css) 
+            // upgrade to v.1.1.1 
+            || !($version = $this->css->get_prop('version'))
+            )
+
+            $this->css = new Child_Theme_Configurator_CSS();
     }
     
     function write_config() {
