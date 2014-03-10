@@ -14,7 +14,12 @@ Create a Child Theme from any installed Theme. Each CSS selector, rule and value
 
 Created by Lilaea Media, the team that brought you IntelliWidget, the Child Theme Configurator provides a new approach to WordPress stylesheets. The Child Theme Configurator lets you identify and override only the Parent Theme style attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
 
-The Child Theme Configurator attacks this challenge from a new angle. First, it parses and indexes a Theme's stylesheet so that every media query, selector, rule and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the Child Theme.Finally, it saves your work so that you can fine-tune your Child Theme without the risk of losing your edits. 
+= Now it works with plugins! =
+
+We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
+
+The Child Theme Configurator parses and indexes a Theme's stylesheet so that every media query, selector, rule and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the Child Theme.Finally, it saves your work so that you can fine-tune your Child Theme without the risk of losing your edits. 
+
 You can create any number of Child Themes from any existing Parent Theme. The Child Theme Configurator lets you choose from your installed themes (even existing Child Themes) and save the results in your Themes directory.
 
 When you are ready, just activate the Child Theme and your WordPress site takes on the new look and feel automatically.
@@ -31,10 +36,6 @@ Why create Child Themes using the Child Theme Configurator?
 * Add and modify individual @media queries
 * Import web fonts and use them in place of Theme fonts
 * Save hours of development time
-
-= Now it works with plugins! =
-
-We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
 
 == Installation ==
 
