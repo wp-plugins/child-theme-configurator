@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.8.1
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.3.2 =
+* Fixed unquoted regex pattern in file path security check function. Thanks to buzcuz for reporting this.
+
 = 1.3.1 =
 * Updated help tab content. Added additional sanitization of source and target file paths.
 
@@ -210,8 +213,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
-= 1.3.1 =
-* This update adds additional sanitization of source and target file paths.
+= 1.3.2 =
+* This update fixes the file path security check on WAMP environments.
 
 == Create Your Child Theme ==
 

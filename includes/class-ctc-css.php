@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.3.1
+    Version: 1.3.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.3.1';
+        $this->version          = '1.3.2';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -974,9 +974,9 @@ class Child_Theme_Configurator_CSS {
         // sanity check for php files
         if (preg_match('%php$%', $stylesheet)) return false;
         // check if in themes dir;
-        if (preg_match('%^' . get_theme_root() . '%', $stylesheet)) return $stylesheet;
+        if (preg_match('%^' . preg_quote(get_theme_root()) . '%', $stylesheet)) return $stylesheet;
         // check if in plugins dir
-        if (preg_match('%^' . WP_PLUGIN_DIR . '%', $stylesheet)) return $stylesheet;
+        if (preg_match('%^' . preg_quote(WP_PLUGIN_DIR) . '%', $stylesheet)) return $stylesheet;
         return false;
     }
 }
