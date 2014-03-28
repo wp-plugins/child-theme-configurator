@@ -61,6 +61,10 @@ Some themes (particularly commercial themes) do not adhere to the Theme Developm
 
 The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance > Menus and assign locations to each of the menus for the new Child Theme.
 
+= Why does the header image disappear when I activate the new child theme? =
+
+If your theme supports the 'custom-header' option (you will know because you'll have a 'Header' link under the Appearance menu), you will need to be update the header for the new child theme (just like menus in the previous question).
+
 = Where is it in the Admin? =
 
 The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started. 
