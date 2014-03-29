@@ -57,6 +57,10 @@ http://www.youtube.com/watch?v=xL2HkWQxgOA
 
 Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.
 
+= Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator? =
+
+You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
+
 = Why are my menus displaying incorrectly when I activate the new child theme? =
 
 The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance > Menus and assign locations to each of the menus for the new Child Theme.
