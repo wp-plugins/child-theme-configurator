@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.8.1
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,7 +51,7 @@ We offer a premium extension to let you easily modify styles for any WordPress P
 
 = Is there a tutorial? =
 
-http://www.youtube.com/watch?v=xL2HkWQxgOA
+https://www.youtube.com/watch?v=xL2HkWQxgOA
 
 = Why doesn't this work with my (insert theme vendor here) theme? =
 
@@ -145,6 +145,10 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.3.3 =
+* New Feature: option to scan parent theme for additional stylesheets. This allows CTC to be used with themes such as "Responsive" by CyberChimps.
+* New Feature: automatically copies parent theme screenshot to child. 
+
 = 1.3.2 =
 * Fixed unquoted regex pattern in file path security check function. Thanks to buzcuz for reporting this.
 
@@ -221,8 +225,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
-= 1.3.2 =
-* This update fixes the file path security check on WAMP environments.
+= 1.3.3 =
+* This version adds the ability to parse additional stylesheets from the Parent theme as well as the main style.css file.
 
 == Create Your Child Theme ==
 
