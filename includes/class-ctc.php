@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.3.2
+    Version: 1.3.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -31,18 +31,19 @@ class Child_Theme_Configurator {
     var $hook;
     var $is_ajax;
     var $updated;
-
+    var $image_formats;
     function __construct($file) {
         $this->dir = dirname( $file );
-        $this->optionsName  = 'chld_thm_cfg_options';
-        $this->menuName     = 'chld_thm_cfg_menu';
-        $lang_dir           = $this->dir . '/lang';
+        $this->optionsName      = 'chld_thm_cfg_options';
+        $this->menuName         = 'chld_thm_cfg_menu';
+        $lang_dir               = $this->dir . '/lang';
         load_plugin_textdomain('chld_thm_cfg', false, $lang_dir, $lang_dir);
         
-        $this->pluginName   = __('Child Theme Configurator', 'chld_thm_cfg');
-        $this->shortName    = __('Child Themes', 'chld_thm_cfg');
-        $this->pluginPath   = $this->dir . '/';
-        $this->pluginURL    = plugin_dir_url($file);
+        $this->pluginName       = __('Child Theme Configurator', 'chld_thm_cfg');
+        $this->shortName        = __('Child Themes', 'chld_thm_cfg');
+        $this->pluginPath       = $this->dir . '/';
+        $this->pluginURL        = plugin_dir_url($file);
+        $this->image_formats    = array('jpg','jpeg','gif','png','JPG','JPEG','GIF','PNG');
 
         // setup plugin hooks
         add_action('admin_menu',                array(&$this, 'admin_menu'));
@@ -50,6 +51,7 @@ class Child_Theme_Configurator {
         add_action('wp_ajax_ctc_update',        array(&$this, 'ajax_save_postdata' ));
         add_action('wp_ajax_ctc_query',         array(&$this, 'ajax_query_css' ));
         add_action('chld_thm_cfg_addl_files',   array(&$this, 'add_functions_file'), 10, 2);
+        add_action('chld_thm_cfg_addl_files',   array(&$this, 'copy_screenshot'), 10, 2);
         //add_action('update_option_' . $this->optionsName, array(&$this, 'update_redirect'), 10);
     }
 
@@ -255,7 +257,8 @@ class Child_Theme_Configurator {
             $this->css->reset_updates();
             update_option($this->optionsName, $this->css);
             do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
-            $this->update_redirect();
+            $msg = isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
+            $this->update_redirect($msg);
         endif;
         //$this->errors[] = sprintf(__('Child Theme %s was unchanged.', 'chld_thm_cfg'), $name, $this->optionsName);
     }
@@ -303,10 +306,21 @@ class Child_Theme_Configurator {
     
     function add_functions_file($obj){
         // add functions.php file
-        $file = $obj->css->get_child_target('functions.php');
-        if (!file_exists($file)):
+        $file = $obj->css->is_file_ok($obj->css->get_child_target('functions.php'));
+        if ($file && !file_exists($file)):
             if (false === file_put_contents($file, 
                 "<?php\n// Exit if accessed directly\nif ( !defined('ABSPATH')) exit;\n\n/* Add custom functions below */")) return false;
+        endif;
+    }
+    
+    function copy_screenshot($obj) {
+        foreach ($this->image_formats as $ext):
+            if ($screenshot_parent = $obj->css->is_file_ok($obj->css->get_parent_source('screenshot.' . $ext))) break;
+        endforeach;
+        $screenshot_child  = $obj->css->get_child_target('screenshot.' . $ext);
+        if ($screenshot_parent && $screenshot_child && !file_exists($screenshot_child)):
+            if (false === file_put_contents($screenshot_child, 
+                @file_get_contents($screenshot_parent))) return false;
         endif;
     }
 }
