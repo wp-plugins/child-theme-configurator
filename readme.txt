@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.8.1
-Stable tag: 1.3.1
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,15 +51,23 @@ We offer a premium extension to let you easily modify styles for any WordPress P
 
 = Is there a tutorial? =
 
-http://www.youtube.com/watch?v=xL2HkWQxgOA
+https://www.youtube.com/watch?v=xL2HkWQxgOA
 
 = Why doesn't this work with my (insert theme vendor here) theme? =
 
 Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.
 
+= Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator? =
+
+You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
+
 = Why are my menus displaying incorrectly when I activate the new child theme? =
 
 The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance > Menus and assign locations to each of the menus for the new Child Theme.
+
+= Why does the header image disappear when I activate the new child theme? =
+
+If your theme supports the 'custom-header' option (you will know because you'll have a 'Header' link under the Appearance menu), you will need to be update the header for the new child theme (just like menus in the previous question).
 
 = Where is it in the Admin? =
 
@@ -137,6 +145,13 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.3.3 =
+* New Feature: option to scan parent theme for additional stylesheets. This allows CTC to be used with themes such as "Responsive" by CyberChimps.
+* New Feature: automatically copies parent theme screenshot to child. 
+
+= 1.3.2 =
+* Fixed unquoted regex pattern in file path security check function. Thanks to buzcuz for reporting this.
+
 = 1.3.1 =
 * Updated help tab content. Added additional sanitization of source and target file paths.
 
@@ -210,8 +225,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
-= 1.3.1 =
-* This update adds additional sanitization of source and target file paths.
+= 1.3.3 =
+* This version adds the ability to parse additional stylesheets from the Parent theme as well as the main style.css file.
 
 == Create Your Child Theme ==
 

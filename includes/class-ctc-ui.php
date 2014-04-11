@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.3.1
+    Version: 1.3.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -16,9 +16,11 @@ if ( !defined('ABSPATH')) exit;
 class Child_Theme_Configurator_UI {
     var $swatch_text;
     var $themes;
+    var $extLink;
     
     function __construct() {
-        $this->swatch_text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';        
+        $this->swatch_text  = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';  
+        $this->extLink      = '<a href="http://www.lilaeamedia.com/plugins/child-theme-configurator-plugins/" target="_blank" title="' . __('Easily customize your plugins with the CTC Plugin Extension', 'chld_thm_cfg') . '" style="float:right">' . __('Use this to customize your plugins', 'chld_thm_cfg') . '</a>';
     }
     
     function render_options() { 
@@ -34,7 +36,7 @@ class Child_Theme_Configurator_UI {
     ?>
 
 <div class="wrap">
-  <div id="icon-tools" class="icon32"></div>
+  <div id="icon-tools" class="icon32"></div><?php echo $this->extLink; ?>
   <h2><?php echo $chld_thm_cfg->pluginName; ?></h2>
   <div id="ctc_error_notice">
     <?php $this->settings_errors(); ?>
@@ -154,7 +156,18 @@ class Child_Theme_Configurator_UI {
           </div>
           <div class="ctc-input-cell">
             <input class="ctc_checkbox" id="ctc_backup" name="ctc_backup" type="checkbox" 
-                value="1" checked />
+                value="1" />
+          </div>
+        </div>
+        <div class="ctc-input-row clearfix" id="input_row_child_template">
+          <div class="ctc-input-cell">
+            <label>
+              <?php _e('Scan Parent Theme<br/>for Additional Stylesheets', 'chld_thm_cfg'); ?>
+            </label>
+          </div>
+          <div class="ctc-input-cell">
+            <input class="ctc_checkbox" id="ctc_scan_subdirs" name="ctc_scan_subdirs" type="checkbox" 
+                value="1" />
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -351,7 +364,10 @@ class Child_Theme_Configurator_UI {
             echo '<div class="updated"><p>' . LF
                 . apply_filters('chld_thm_cfg_update_msg', sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.', 'chld_thm_cfg'),
                 $chld_thm_cfg->css->get_prop('child_name')), $chld_thm_cfg) . LF
-                . '</p></div>' . LF;
+                . '</p>';
+                
+            if ( 9 == $_GET['updated']) echo '<p>' . __('Please verify the imports below and remove any imports that are not needed by the front end, such as admin or configuration stylesheets.', 'chld_thm_cfg') . '</p>' . LF;
+            echo '</div>' . LF;
         endif;
     }
     
@@ -384,6 +400,7 @@ class Child_Theme_Configurator_UI {
 <li>Enter a Name for the child theme.</li>
 <li>Enter an author for the child theme.</li>
 <li>Enter the child theme version number.</li>
+<li>If your theme uses multiple stylesheets, check "Scan Parent Theme for additional stylesheets.</li>
 <li>Click "Generate Child Theme." If you are loading an existing child theme, The Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.</li></ol>
 				    ', 'chld_thm_cfg'
 			    ),
@@ -432,6 +449,7 @@ class Child_Theme_Configurator_UI {
 			    'title'	=> __( '@imports', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. <strong>Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme\'s stylesheet automatically. Do not need to add it here.</strong></p>
+<p><strong>Important:</strong> If you chose "Scan Parent Theme for additional stylesheets," the Child Theme Configurator automically places @import rules for the additional stylesheets here. Be sure to delete any imports that are not needed by the front end, such as admin or configuration stylesheets.</p>
 <p>Below is an example that loads a local custom stylesheet (you would have to add the "fonts" directory and stylesheet) as well as the web font "Open Sans" from Google Web Fonts:</p>
 <blockquote><pre><code>
 @import url(fonts/stylesheet.css);

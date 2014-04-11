@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.3.1
+    Version: 1.3.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.3.1';
+        $this->version          = '1.3.3';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -65,7 +65,7 @@ class Child_Theme_Configurator_CSS {
         $this->dict_seq         = array();
         $this->sel_ndx          = array();
         $this->val_ndx          = array();
-        $this->imports          = array('child' => '', 'parnt' => '');
+        $this->imports          = array('child' => array(), 'parnt' => array());
         $this->updates          = array();
     }
     
@@ -78,7 +78,7 @@ class Child_Theme_Configurator_CSS {
             case 'updates':
                 return $this->obj_to_utf8($this->updates);
             case 'imports':
-                return $this->obj_to_utf8($this->imports['child']);
+                return $this->obj_to_utf8(array_keys($this->imports['child']));
             case 'sel_ndx':
                 return $this->obj_to_utf8($this->denorm_sel_ndx(empty($params['key'])?null:$params['key']));
             case 'rule_val':
@@ -149,6 +149,9 @@ class Child_Theme_Configurator_CSS {
    
     function get_child_target($file = 'style.css') {
         return get_theme_root() . '/' . $this->get_prop('child') . '/' . $file;
+    }
+    function get_parent_source($file = 'style.css') {
+        return get_theme_root() . '/' . $this->get_prop('parnt') . '/' . $file;
     }
    
     /*
@@ -230,16 +233,72 @@ class Child_Theme_Configurator_CSS {
 
     function read_stylesheet($template = 'child') {
         $source = $this->get_prop($template);
+        $configtype = $this->get_prop('configtype');
         if (empty($source) || !is_scalar($source)) return false;
-        $stylesheet = apply_filters('chld_thm_cfg_' . $template, get_theme_root() . '/' . $source . '/style.css', $this);
-        
-        // read stylesheet
-        if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'read')):
-            return @file_get_contents($stylesheet_verified);
+        $stylesheets = array();
+        $themedir = get_theme_root() . '/' . $source;
+        if ('parnt' == $template && (empty($configtype) || 'theme' == $configtype) && isset($_POST['ctc_scan_subdirs'])):
+            $stylesheets = $this->recurse_directory($themedir);
+        else:
+            $stylesheets[] = apply_filters('chld_thm_cfg_' . $template, $themedir . '/style.css', $this);
         endif;
-        return false;
+        
+        // read stylesheets
+        $styles = '';
+        foreach ($stylesheets as $stylesheet):
+            if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'read')):
+                $import_url = preg_replace('%^' . preg_quote($themedir) . '/%', '', $stylesheet_verified);
+                $styles .= @file_get_contents($stylesheet_verified) . "\n";
+                if ($styles && isset($_POST['ctc_scan_subdirs']) && 'parnt' == $template && (empty($configtype) || 'theme' == $configtype) && 'style.css' != $import_url):
+                    $this->imports['child']["@import url('../" . $source . '/' . $import_url . "')"] = 1;
+                    
+                    // convert relative urls to absolute 
+                    $this->convert_parent_rel_url_to_abs_url($import_url, $styles);
+                endif;
+            endif;
+        endforeach;
+        return $styles;
     }
-   
+    
+    function recurse_directory($rootdir, $ext = 'css') {
+        $files = array();
+        $dirs = array($rootdir);
+        $loops = 0;
+        while(count($dirs) && $loops < CHLD_THM_CFG_MAX_RECURSE_LOOPS):
+            $loops++;
+            $dir = array_shift($dirs);
+            if ($handle = opendir($dir)):
+                while (false !== ($file = readdir($handle))):
+                    if (preg_match("/^\./", $file)) continue;
+                    $filepath  = $dir . '/' . $file;
+                    if (is_dir($filepath)):
+                        array_unshift($dirs, $filepath);
+                    elseif (is_file($filepath) && preg_match("/\.".$ext."$/", $filepath)):
+                        $files[] = $filepath;
+                    endif;
+                endwhile;
+                closedir($handle);
+            endif;
+        endwhile;
+        return $files;
+    }
+    
+    function convert_parent_rel_url_to_abs_url($url, &$styles) {
+        $source = $this->get_prop('parnt');
+        $spliton = '%[/\\\\]%';
+        $dirname = dirname($url);
+        $dirs = preg_split($spliton, $dirname);
+        $dds  = '';
+        $themeuri = get_theme_root_uri();
+        while (count($dirs)):
+            $thisdir = array_pop($dirs);
+            $upone = implode('/', $dirs);           
+            $dds .= '\.\.\/';
+            $regex = '%url\([\'" ]*' . $dds . '(.+?)[\'" ]*\)%';
+            $fullurl = $themeuri . '/' . $source . '/' . $upone . ('' == $upone ? '' : '/' );
+            $styles = preg_replace($regex, "url(" . $fullurl . "$1)", $styles);
+        endwhile;
+    }
     /*
      * parse_post_data
      * Parse user form input into separate properties and pass to update_arrays
@@ -250,9 +309,10 @@ class Child_Theme_Configurator_CSS {
             $this->parse_css('child', LF . $this->parse_css_input($_POST['ctc_new_selectors']), 
                 (isset($_POST['ctc_sel_ovrd_query'])?trim($_POST['ctc_sel_ovrd_query']):null), false);
         elseif (isset($_POST['ctc_child_imports'])):
-            $this->parse_css('child', $_POST['ctc_child_imports']);
+            $this->imports['child'] = array();
+            $this->parse_css('child', $this->parse_css_input($_POST['ctc_child_imports']));
         else:
-            $newselector = isset($_POST['ctc_rewrite_selector']) ? sanitize_text_field(stripslashes($_POST['ctc_rewrite_selector'])) : NULL;
+            $newselector = isset($_POST['ctc_rewrite_selector']) ? sanitize_text_field($this->parse_css_input(($_POST['ctc_rewrite_selector']))) : NULL;
             // set the custom sequence value
             foreach (preg_grep('#^ctc_ovrd_child_seq_#', array_keys($_POST)) as $post_key):
                 if (preg_match('#^ctc_ovrd_child_seq_(\d+)$#', $post_key, $matches)):
@@ -268,7 +328,7 @@ class Child_Theme_Configurator_CSS {
                     if (null == $rule || !isset($this->dict_rule[$rule])) continue;
                     $ruleid = $this->dict_rule[$rule];
                     $qsid = $matches[3];
-                    $value  = sanitize_text_field(stripslashes($_POST[$post_key]));
+                    $value  = sanitize_text_field($this->parse_css_input(($_POST[$post_key])));
                     $important = $this->is_important($value);
                     if (!empty($_POST['ctc_' . $valid . '_child_' . $rule . '_i_' . $qsid])) $important = 1;
                     
@@ -343,7 +403,7 @@ class Child_Theme_Configurator_CSS {
      * TODO: this is a stub for future use
      */
     function parse_css_input($styles) {
-        return $styles;
+        return stripslashes($styles);
     }
 
     /*
@@ -377,10 +437,11 @@ class Child_Theme_Configurator_CSS {
         if ($parse_imports):
             $regex = '#(\@import.+?);#';
             preg_match_all($regex, $styles, $matches);
-            $this->imports[$template] = preg_grep('#style\.css#', $matches[1], PREG_GREP_INVERT);
+            foreach (preg_grep('#style\.css#', $matches[1], PREG_GREP_INVERT) as $import)
+                $this->imports[$template][$import] = 1;
             $this->updates[] = array(
                 'obj'  => 'imports',
-                'data' => $this->imports[$template],
+                'data' => array_keys($this->imports[$template]),
             );
         endif;
         // break into @ segments
@@ -400,6 +461,7 @@ class Child_Theme_Configurator_CSS {
                 $stuff  = array_shift($matches[2]);
                 $this->update_arrays($template, $query, $sel);
                 foreach (explode(';', $stuff) as $ruleval):
+                    if ($this->qskey > CHLD_THM_CFG_MAX_SELECTORS) break;
                     if (false === strpos($ruleval, ':')) continue;
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
@@ -754,10 +816,13 @@ class Child_Theme_Configurator_CSS {
             $param[2] = '0%';
             $param[4] = '100%';
         endif;
-        $param[1] = $parts[7];
-        $param[3]   = $parts[10];
-        ksort($param);
-        return implode(':', $param);
+        if (isset($parts[7]) && isset($parts[10])):
+            $param[1] = $parts[7];
+            $param[3] = $parts[10];
+            ksort($param);
+            return implode(':', $param);
+        else: return $value;
+        endif;
     }
 
     /*
@@ -974,9 +1039,9 @@ class Child_Theme_Configurator_CSS {
         // sanity check for php files
         if (preg_match('%php$%', $stylesheet)) return false;
         // check if in themes dir;
-        if (preg_match('%^' . get_theme_root() . '%', $stylesheet)) return $stylesheet;
+        if (preg_match('%^' . preg_quote(get_theme_root()) . '%', $stylesheet)) return $stylesheet;
         // check if in plugins dir
-        if (preg_match('%^' . WP_PLUGIN_DIR . '%', $stylesheet)) return $stylesheet;
+        if (preg_match('%^' . preg_quote(WP_PLUGIN_DIR) . '%', $stylesheet)) return $stylesheet;
         return false;
     }
 }
