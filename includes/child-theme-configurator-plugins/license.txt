@@ -1,0 +1,44 @@
+END USER LICENSE AGREEMENT
+
+This copy of Child Theme Configurator Plugins Extension (the "SOFTWARE PRODUCT") and accompanying documentation is licensed and not sold. This Software Product is protected by copyright laws and treaties, as well as laws and treaties related to other forms of intellectual property. Lilaea Media LLC or its subsidiaries, affiliates, and suppliers (collectively "Lilaea Media") own intellectual property rights in the SOFTWARE PRODUCT. The Licensee's ("you" or "your") license to download, use, copy, or change the SOFTWARE PRODUCT is subject to these rights and to all the terms and conditions of this End User License Agreement ("Agreement").
+
+Acceptance
+
+YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS OF THIS AGREEMENT BY SELECTING THE "ACCEPT" OPTION AND DOWNLOADING THE SOFTWARE PRODUCT OR BY INSTALLING, USING, OR COPYING THE SOFTWARE PRODUCT. YOU MUST AGREE TO ALL OF THE TERMS OF THIS AGREEMENT BEFORE YOU WILL BE ALLOWED TO DOWNLOAD THE SOFTWARE PRODUCT. IF YOU DO NOT AGREE TO ALL OF THE TERMS OF THIS AGREEMENT, YOU MUST SELECT "DECLINE" AND YOU MUST NOT INSTALL, USE, OR COPY THE SOFTWARE PRODUCT.  
+
+License Grant
+
+Lilaea Media LLC grants to you a personal, non-transferable and non-exclusive right to use the copy of the SOFTWARE PRODUCT provided with this EULA on a single web server instance running on a single virtual or physical machine ("WEBSITE"). You agree you will not copy the Software except as required for the normally accepted backup, testing and maintenance of the WEBSITE. This license permits the use of multiple instances the SOFTWARE PRODUCT provided they reside on and originate from the same WEBSITE.
+
+Copyright. 
+
+The Software is licensed, not sold. You acknowledge that no title to the intellectual property in the SOFTWARE PRODUCT is transferred to you. You further acknowledge that title and full ownership rights to the SOFTWARE PRODUCT will remain the exclusive property of Lilaea Media LLC and/or its suppliers, and you will not acquire any rights to the SOFTWARE PRODUCT, except as expressly set forth above. All copies of the SOFTWARE PRODUCT will contain the same proprietary notices as contained in or on the SOFTWARE PRODUCT. All title and copyrights in and to the SOFTWARE PRODUCT (including but not limited to any images, photographs, animations, video, audio, music, text incorporated into the SOFTWARE PRODUCT), the accompanying printed materials, and any copies of the SOFTWARE PRODUCT, are owned by Lilaea Media LLC or its suppliers. The SOFTWARE PRODUCT is protected by copyright laws and international treaty provisions. 
+ 
+Restrictions on Transfer
+
+Without first obtaining the express written consent of Lilaea Media, you may not assign your rights and obligations under this Agreement, or redistribute, encumber, sell, rent, lease, sublicense, or otherwise transfer your rights to the SOFTWARE PRODUCT.
+
+Restrictions on Alteration
+
+You may not modify the SOFTWARE PRODUCT or create any derivative work of the SOFTWARE PRODUCT or its accompanying documentation. Derivative works include but are not limited to translations. You may not alter any files or libraries in any portion of the SOFTWARE PRODUCT.
+
+Upgrades
+
+If the SOFTWARE PRODUCT is an upgrade from an earlier release or previously released version, you may use that upgraded product only in accordance with this EULA. If the SOFTWARE PRODUCT is an upgrade of a software program which you licensed as a single product, the SOFTWARE PRODUCT may be used only as part of that single product package and may not be separated for use on more than one WEBSITE. 
+
+Disclaimer of Warranties and Limitation of Liability
+
+UNLESS OTHERWISE EXPLICITLY AGREED TO IN WRITING BY LILAEA MEDIA, LILAEA MEDIA MAKES NO OTHER WARRANTIES, EXPRESS OR IMPLIED, IN FACT OR IN LAW, INCLUDING, BUT NOT LIMITED TO, ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE OTHER THAN AS SET FORTH IN THIS AGREEMENT OR IN THE LIMITED WARRANTY DOCUMENTS PROVIDED WITH THE SOFTWARE PRODUCT.
+
+Lilaea Media makes no warranty that the SOFTWARE PRODUCT will meet your requirements or operate under your specific conditions of use. Lilaea Media makes no warranty that operation of the Software Product will be secure, error free, or free from interruption. YOU MUST DETERMINE WHETHER THE SOFTWARE PRODUCT SUFFICIENTLY MEETS YOUR REQUIREMENTS FOR SECURITY AND UNINTERRUPTABILITY. YOU BEAR SOLE RESPONSIBILITY AND ALL LIABILITY FOR ANY LOSS INCURRED DUE TO FAILURE OF THE SOFTWARE PRODUCT TO MEET YOUR REQUIREMENTS. LILAEA MEDIA WILL NOT, UNDER ANY CIRCUMSTANCES, BE RESPONSIBLE OR LIABLE FOR THE LOSS OF DATA ON ANY COMPUTER OR INFORMATION STORAGE DEVICE.
+
+UNDER NO CIRCUMSTANCES SHALL LILAEA MEDIA, ITS DIRECTORS, OFFICERS, EMPLOYEES OR AGENTS BE LIABLE TO YOU OR ANY OTHER PARTY FOR INDIRECT, CONSEQUENTIAL, SPECIAL, INCIDENTAL, PUNITIVE, OR EXEMPLARY DAMAGES OF ANY KIND (INCLUDING LOST REVENUES OR PROFITS OR LOSS OF BUSINESS) RESULTING FROM THIS AGREEMENT, OR FROM THE FURNISHING, PERFORMANCE, INSTALLATION, OR USE OF THE SOFTWARE PRODUCT, WHETHER DUE TO A BREACH OF CONTRACT, BREACH OF WARRANTY, OR THE NEGLIGENCE OF LILAEA MEDIA OR ANY OTHER PARTY, EVEN IF LILAEA MEDIA IS ADVISED BEFOREHAND OF THE POSSIBILITY OF SUCH DAMAGES. TO THE EXTENT THAT THE APPLICABLE JURISDICTION LIMITS LILAEA MEDIA'S ABILITY TO DISCLAIM ANY IMPLIED WARRANTIES, THIS DISCLAIMER SHALL BE EFFECTIVE TO THE MAXIMUM EXTENT PERMITTED.
+
+Governing Law, Jurisdiction and Costs
+
+This Agreement is governed by the laws of North Carolina, USA, without regard to North Carolina's conflict or choice of law provisions.
+
+Severability
+
+If any provision of this Agreement shall be held to be invalid or unenforceable, the remainder of this Agreement shall remain in full force and effect. To the extent any express or implied restrictions are not permitted by applicable laws, these express or implied restrictions shall remain in force and effect to the maximum extent permitted by such applicable laws.
+
