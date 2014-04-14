@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.8.2
-Stable tag: 1.3.4
+Stable tag: 1.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,7 +149,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
-= 1.3.4 =
+= 1.3.5 =
 * Fixes a bug with the way the @import data is stored that threw errors on php 5.3 and corrupted v1.3.2 @import data.
 
 = 1.3.3 =
