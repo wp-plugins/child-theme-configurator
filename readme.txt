@@ -3,8 +3,8 @@ Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
-Tested up to: 3.8.1
-Stable tag: 1.3.3
+Tested up to: 3.8.2
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,75 +53,79 @@ We offer a premium extension to let you easily modify styles for any WordPress P
 
 https://www.youtube.com/watch?v=xL2HkWQxgOA
 
-= Why doesn't this work with my (insert theme vendor here) theme? =
+= Why doesn't this work with my (insert theme vendor here) theme? = 
 
-Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.
+Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. 
 
-= Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator? =
+Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.
 
-You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
+= Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
-= Why are my menus displaying incorrectly when I activate the new child theme? =
+Your Parent theme is probably using a non-standard location for the stylesheets. Check "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again.
 
-The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance > Menus and assign locations to each of the menus for the new Child Theme.
+= Why is everything backwards? = 
 
-= Why does the header image disappear when I activate the new child theme? =
+More than likely you selected "Scan Parent Theme for additional stylesheets" and your theme uses a "right-to-left" (rtl) stylesheet. Go to the @imports tab and remove the rtl stylesheet from the list of imported stylesheets.
 
-If your theme supports the 'custom-header' option (you will know because you'll have a 'Header' link under the Appearance menu), you will need to be update the header for the new child theme (just like menus in the previous question).
+= Where is it in the Admin? = 
 
-= Where is it in the Admin? =
-
-The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started. 
-
+The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started.
 Click the "Help" tab at the top right for a quick reference.
 
-= Where are the styles? The configurator doesn't show anything! =
+= Where are the styles? The configurator doesn't show anything! = 
 
 All of the styles are loaded dynamically. You must start typing in the text boxes to select styles to edit.
-
 "Base" is the query group that contains styles that are not associated with any particular "At-rule."
 
 Start by clicking the "Query/Selector" tab and typing "base" in the first box. You can then start typing in the second box to retrieve the style selectors to edit.
 
-= If the parent theme changes (e.g., upgrade), do I have to update the child theme? =
+= Why do the preview tabs return "Stylesheet could not be displayed"? = 
+
+You have to load a child theme from the Parent/Child tab for the preview to display. This can also happen when your WP_CONTENT_URL is different than $bloginfo('site_url'). Ajax cannot make cross-domain requests by default. Check that your Settings > General > "WordPress Address (URL)" value is correct. (Often caused by missing "www" in the domain.)
+
+= Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator? = 
+
+You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
+
+= Why are my menus displaying incorrectly when I activate the new child theme? = 
+
+The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance > Menus and assign locations to each of the menus for the new Child Theme. 
+
+= If the parent theme changes (e.g., upgrade), do I have to update the child theme? = 
 
 No. This is the point of using child themes. Changes to the parent theme are automatically inherited by the child theme.
 
 A child theme is not a "copy" of the parent theme. It is a special feature of WordPress that let's you override specific styles and functions leaving the rest of the theme intact. The only time you need to make changes after an upgrade is if the parent removes or changes style or function names. Quality themes should identify any deprecated functions or styles in the upgrade notes so that child theme users can make adjustments accordingly.
 
-= Where are the .php files? =
+= Where are the .php files? = 
 
 The configurator automatically adds a blank functions.php file to the child theme directory. You can add any additional files and directories you need for your Child Theme. The Child Theme Configurator helps you identify and override selectors in the Parent stylesheet without touching the other files.
 
-= How do I change a specific color/font style/background? =
+= How do I change a specific color/font style/background? = 
 
-You can override a specific value globally using the Rule/Value tab. See "Rule/Value," below.
+You can override a specific value globally using the Rule/Value tab. See Rule/Value, above.
 
-= How do I add styles that aren't in the Parent Theme? =
+= How do I add styles that aren't in the Parent Theme? = 
 
-You can add queries and selectors using the "Raw CSS" textarea on the Query/Selector tab. See "Query/Selector," below.
+You can add queries and selectors using the "Raw CSS" textarea on the Query/Selector tab. See Query/Selector, above.
 
-= How do I use background images from the Parent Theme? =
-
-Use a relative path in the Child Theme value, e.g., 'url(../parent_theme/images/background.png)', where 'parent_theme' is the parent theme's slug.
-
-= How do I remove a style from the Parent Theme? =
+= How do I remove a style from the Parent Theme? = 
 
 You shouldn't really "remove" a style from the Parent. You can, however, set the rule to "inherit," "none," or zero (depending on the rule). This will negate the Parent value. Some experimentation may be necessary.
 
-= How do I remove a style from the Child Theme? =
+= How do I remove a style from the Child Theme? = 
 
 Delete the value from the input for the rule you wish to remove. The Child Theme Configurator only adds overrides for rules that contain values.
 
-= How do I set the !important flag? =
+= How do I set the !important flag? = 
 
-We always recommend relying on good cascading design over global overrides. Start by verifying the style is not being controlled by a higher priority selector in the parent stylesheet and if so, creating a variation of that selector for the specific case. If all else fails, you can set rules as "important" by checking the "!" box next to the input. Because this will force the style to take priority, please use this option judiciously. 
+We always recommend relying on good cascading design over global overrides. To that end, you have ability to change the load order of child theme styles by entering a value in the "Order" field. And yes, you can now set rules as important by checking the "!" box next to each input. Please use judiciously.
 
-= How do I create cross-browser gradients? =
+= How do I create cross-browser gradients? = 
 
 The Child Theme Configurator uses a standardized syntax for gradients and only supports two-color gradients without intermediate stops. The inputs consist of origin (e.g., top, left, 135deg, etc.), start color and end color. The browser-specific syntax is generated automatically when you save these values. See Caveats, below, for more information.
 
-= How do I make my Theme responsive? =
+= How do I make my Theme responsive? = 
 
 This topic is beyond the scope of this document. The short answer is to use a responsive Parent Theme. Some common characteristics of responsive design are:
 
@@ -129,9 +133,9 @@ This topic is beyond the scope of this document. The short answer is to use a re
 * Combining floats and clears with inline and relative positions allow the elements to adjust gracefully to their container's width.
 * Showing and hiding content with Javascript.
 
-= How do I add Web Fonts? =
+= How do I add Web Fonts? = 
 
-The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts.
+The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts. 
 
 You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab.
 
@@ -144,6 +148,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.3.4 =
+* Fixes a bug with the way the @import data is stored that threw errors on php 5.3 and corrupted v1.3.2 @import data.
 
 = 1.3.3 =
 * New Feature: option to scan parent theme for additional stylesheets. This allows CTC to be used with themes such as "Responsive" by CyberChimps.
@@ -225,7 +232,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
-= 1.3.3 =
+= 1.3.3+ =
 * This version adds the ability to parse additional stylesheets from the Parent theme as well as the main style.css file.
 
 == Create Your Child Theme ==
@@ -239,7 +246,14 @@ The first step is to create a child theme and import your parent theme styles in
 3. Enter a Name for the child theme.
 4. Enter an author for the child theme.
 5. Enter the child theme version number.
-6. Click "Generate Child Theme." If you are loading an existing child theme, The Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.
+6. Check "Backup Stylesheet" if you want to backup original version of child stylesheet.
+7. Check "Scan Parent Theme for Additional Stylesheets" if your theme uses multiple stylesheets or if the the stylesheets are in a non-standard location. For example, the "Responsive" theme puts the stylesheets in a subdirectory named "core."
+8. Click "Generate Child Theme Files."
+
+If you are loading an existing child theme and checked "Backup Stylesheet," the Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.
+
+If you checked "Scan Parent Theme for additional stylesheets," the "@import" tab will appear automatically. Important: Any additional stylesheets are added as imports here. If your theme has a "right-to-left" stylesheet, it will appear here as well. Remove any @import statements that are not needed by the front end, such as admin or configuration stylesheets. 
+
 
 == Override Parent Styles ==
 
@@ -276,7 +290,9 @@ If you prefer to use shorthand syntax for rules and values instead of the inputs
 
 == Add Imports ==
 
-You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme's stylesheet automatically. You do not need to add it here.
+You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme's stylesheet automatically. Do not need to add it here.
+
+If you checked "Scan Parent Theme for additional stylesheets" when you created your child theme, the "@import" tab will appear automatically. Important: By default, any additional stylesheets are added as imports. If your theme has a "right-to-left" stylesheet, it will appear here as well. In many cases, the theme will automatically load the additional stylesheets, so you do not need to import them (for example, the "Responsive" theme). Remove any @import statements that are not needed by the front end, such as admin or configuration stylesheets, or, as in the case described above, any stylesheets that are automatically loaded by the Theme. 
 
 == Preview and Activate ==
 

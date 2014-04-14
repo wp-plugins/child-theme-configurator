@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.3.3
+    Version: 1.3.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.3.3';
+        $this->version          = '1.3.4';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -78,7 +78,7 @@ class Child_Theme_Configurator_CSS {
             case 'updates':
                 return $this->obj_to_utf8($this->updates);
             case 'imports':
-                return $this->obj_to_utf8(array_keys($this->imports['child']));
+                return $this->obj_to_utf8(is_array($this->imports['child']) ? (array_keys($this->imports['child']) !== range(0, count($this->imports['child']) - 1) ? array_keys($this->imports['child']) : array_keys(array_flip($this->imports['child']))) : array());
             case 'sel_ndx':
                 return $this->obj_to_utf8($this->denorm_sel_ndx(empty($params['key'])?null:$params['key']));
             case 'rule_val':
