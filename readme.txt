@@ -3,8 +3,8 @@ Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
-Tested up to: 3.8.2
-Stable tag: 1.3.5
+Tested up to: 3.9
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,9 @@ Why create Child Themes using the Child Theme Configurator?
 * View style changes before commiting to them
 * Add and modify individual @media queries
 * Import web fonts and use them in place of Theme fonts
+* Copy theme templates and edit them using Theme Editor
+* Upload theme images for use with stylesheets
+* Upload custom screenshot for your child theme
 * Save hours of development time
 
 == Installation ==
@@ -149,6 +152,14 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.4.0 =
+* New Feature: Theme Files tab: 
+* Copy parent templates to child theme to be edited using the Theme Editor.
+* Remove child theme templates. 
+* Upload child theme images.
+* Remove child theme images.
+* Upload child theme screenshot.
+
 = 1.3.5 =
 * Fixes a bug with the way the @import data is stored that threw errors on php 5.3 and corrupted v1.3.2 @import data.
 
@@ -232,8 +243,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Initial release.
 
 == Upgrade Notice ==
-= 1.3.3+ =
-* This version adds the ability to parse additional stylesheets from the Parent theme as well as the main style.css file.
+= 1.4.0 =
+* This version adds a Theme Files tab for copying and editing templates and uploading images for use with stylesheets.
 
 == Create Your Child Theme ==
 
