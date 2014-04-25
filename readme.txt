@@ -14,17 +14,23 @@ Create a Child Theme from any installed Theme. Each CSS selector, rule and value
 
 Created by Lilaea Media, the team that brought you IntelliWidget, the Child Theme Configurator provides a new approach to WordPress stylesheets. The Child Theme Configurator lets you identify and override only the Parent Theme style attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
 
+= New Files Tab! =
+
+Now you can copy parent theme template files into your child themes and edit them using the Theme Editor. We've also added an image uploader to add custom theme images for your stylesheets along with a screenshot uploader.
+
 = Now it works with plugins! =
 
 We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
 
-The Child Theme Configurator parses and indexes a Theme's stylesheet so that every media query, selector, rule and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the Child Theme.Finally, it saves your work so that you can fine-tune your Child Theme without the risk of losing your edits. 
+= Take Control of Your Child Themes =
+
+The Child Theme Configurator parses and indexes a Theme's stylesheet so that every media query, selector, rule and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the Child Theme. Finally, it saves your work so that you can fine-tune your Child Theme without the risk of losing your edits. 
 
 You can create any number of Child Themes from any existing Parent Theme. The Child Theme Configurator lets you choose from your installed themes (even existing Child Themes) and save the results in your Themes directory.
 
 When you are ready, just activate the Child Theme and your WordPress site takes on the new look and feel automatically.
 
-Why create Child Themes using the Child Theme Configurator?
+= Why create Child Themes using the Child Theme Configurator? =
 
 * Apply changes in a Child Theme without touching the Parent Theme
 * Identify and override exact selectors from the Parent Theme
@@ -102,7 +108,7 @@ A child theme is not a "copy" of the parent theme. It is a special feature of Wo
 
 = Where are the .php files? = 
 
-The configurator automatically adds a blank functions.php file to the child theme directory. You can add any additional files and directories you need for your Child Theme. The Child Theme Configurator helps you identify and override selectors in the Parent stylesheet without touching the other files.
+The configurator automatically adds a blank functions.php file to the child theme directory. Other parent theme files can be copied using the "Files" tab. Theme images and a custom screenshot can be uploaded there as well.
 
 = How do I change a specific color/font style/background? = 
 
@@ -304,6 +310,26 @@ If you prefer to use shorthand syntax for rules and values instead of the inputs
 You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme's stylesheet automatically. Do not need to add it here.
 
 If you checked "Scan Parent Theme for additional stylesheets" when you created your child theme, the "@import" tab will appear automatically. Important: By default, any additional stylesheets are added as imports. If your theme has a "right-to-left" stylesheet, it will appear here as well. In many cases, the theme will automatically load the additional stylesheets, so you do not need to import them (for example, the "Responsive" theme). Remove any @import statements that are not needed by the front end, such as admin or configuration stylesheets, or, as in the case described above, any stylesheets that are automatically loaded by the Theme. 
+
+== Files ==
+
+= Parent Templates =
+
+Copy PHP template files from the parent theme by checking the boxes and clicking "Copy Selected to Child Theme" and the templates will be added to the child theme directory.
+
+CAUTION: If your child theme is active, the child theme version of the file will be used instead of the parent immediately after it is copied. The functions.php file is generated separately and cannot be copied here.
+
+= Child Templates = 
+
+Templates copied from the parent are listed here. These can be edited using the Theme Editor in the Appearance Menu. Remove child theme images by checking the boxes and clicking "Remove Selected from Child Theme."</p>
+
+= Child Theme Images = 
+
+Theme images reside under the <code>images</code> directory in your child theme and are meant for stylesheet use only. Use the media gallery for content images. You can upload new images using the image upload form.
+
+= Child Theme Screenshot = 
+
+You can upload a custom screenshot for the child theme here. The theme screenshot should be a 4:3 ratio (eg., 880px x 660px) JPG, PNG or GIF. It will be renamed "screenshot".
 
 == Preview and Activate ==
 
