@@ -201,3 +201,6 @@
 .ie7 .clearfix {
     zoom: 1;
 }
+.smaller {
+    font-size: .85em;
+}

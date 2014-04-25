@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.3.5
+    Version: 1.4.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.3.5';
+        $this->version          = '1.4.0';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -261,9 +261,14 @@ class Child_Theme_Configurator_CSS {
     }
     
     function recurse_directory($rootdir, $ext = 'css') {
+        if (!$this->is_file_ok($rootdir, 'search')) return array(); // make sure we are only recursing theme and plugin files
         $files = array();
         $dirs = array($rootdir);
         $loops = 0;
+        if ('img' == $ext):
+            global $chld_thm_cfg;
+            $ext = '(' . implode('|', $chld_thm_cfg->image_formats) . ')';
+        endif;
         while(count($dirs) && $loops < CHLD_THM_CFG_MAX_RECURSE_LOOPS):
             $loops++;
             $dir = array_shift($dirs);
@@ -1036,8 +1041,9 @@ class Child_Theme_Configurator_CSS {
         // remove any ../ manipulations
         $stylesheet = preg_replace("%\.\./%", '/', $stylesheet);
         if ('read' == $permission && !is_file($stylesheet)) return false;
+        if ('search' == $permission && !is_dir($stylesheet)) return false;
         // sanity check for php files
-        if (preg_match('%php$%', $stylesheet)) return false;
+        //if (!preg_match('%' . preg_quote($ext) . '$%', $stylesheet)) return false;
         // check if in themes dir;
         if (preg_match('%^' . preg_quote(get_theme_root()) . '%', $stylesheet)) return $stylesheet;
         // check if in plugins dir
