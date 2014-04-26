@@ -64,6 +64,8 @@ We offer a premium extension to let you easily modify styles for any WordPress P
 
 https://www.youtube.com/watch?v=xL2HkWQxgOA
 
+https://www.youtube.com/watch?v=DSfx2RbZobo
+
 = Why doesn't this work with my (insert theme vendor here) theme? = 
 
 Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. 
@@ -107,8 +109,6 @@ A child theme is not a "copy" of the parent theme. It is a special feature of Wo
 = Where are the .php files? = 
 
 The configurator automatically adds a blank functions.php file to the child theme directory. Other parent theme files can be copied using the "Files" tab. Theme images and a custom screenshot can be uploaded there as well.
-
-http://youtu.be/DSfx2RbZobo
 
 = How do I change a specific color/font style/background? = 
 
