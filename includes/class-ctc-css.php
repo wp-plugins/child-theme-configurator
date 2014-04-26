@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.4.0
+    Version: 1.4.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.4.0';
+        $this->version          = '1.4.1';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -249,12 +249,14 @@ class Child_Theme_Configurator_CSS {
             if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'read')):
                 $import_url = preg_replace('%^' . preg_quote($themedir) . '/%', '', $stylesheet_verified);
                 $styles .= @file_get_contents($stylesheet_verified) . "\n";
-                if ($styles && isset($_POST['ctc_scan_subdirs']) && 'parnt' == $template && (empty($configtype) || 'theme' == $configtype) && 'style.css' != $import_url):
+                /*if ($styles && isset($_POST['ctc_scan_subdirs']) 
+                    && 'parnt' == $template 
+                    && (empty($configtype) || 'theme' == $configtype) 
+                    && 'style.css' != $import_url):
                     $this->imports['child']["@import url('../" . $source . '/' . $import_url . "')"] = 1;
-                    
                     // convert relative urls to absolute 
                     $this->convert_parent_rel_url_to_abs_url($import_url, $styles);
-                endif;
+                endif;*/
             endif;
         endforeach;
         return $styles;
