@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.4.1
+    Version: 1.4.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct() {
         // scalars
-        $this->version          = '1.4.1';
+        $this->version          = '1.4.3';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -452,17 +452,17 @@ class Child_Theme_Configurator_CSS {
             );
         endif;
         // break into @ segments
-        $regex = '#(\@media.+?)\{(.*?\})\s*\}#s';
+        $regex = '#(\@media[^\{]+?)\{([^\@]*)\}#s'; // *?\})\s
         preg_match_all($regex, $styles, $matches);
         foreach ($matches[1] as $segment):
             $ruleset[trim($segment)] = array_shift($matches[2]);
         endforeach;
-        // remove rulesets from styles
+        // stripping rulesets leaves base styles
         $ruleset[$basequery] = preg_replace($regex, '', $styles);
         foreach ($ruleset as $query => $segment):
             // make sure there is semicolon before closing brace
             $segment = preg_replace('#(\})#', ";$1", $segment);
-            $regex = '#\s([\.\#\:\w][\w\-\s\[\]\'\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s'; 
+            $regex = '#\s([\.\#\:\w][\w\-\s\(\)\[\]\'\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s';  //
             preg_match_all($regex, $segment, $matches);
             foreach($matches[1] as $sel):
                 $stuff  = array_shift($matches[2]);

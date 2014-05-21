@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.9
-Stable tag: 1.4.1
+Stable tag: 1.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -158,7 +158,10 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
-= 1.4.1 =
+= 1.4.3 = 
+* updated parser to match selectors containing parentheses and empty media rulesets
+
+= 1.4.2 =
 * Tweaked the Files tab options and added check for DISALLOW_FILE_EDIT
 * Removed automatic @import rules for additional stylesheets that are loaded.
 * Fixed bug caused by new jQuery .css function handling of empty css values (preview swatch).
@@ -255,10 +258,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-= 1.4.1 =
-* New Files Tab!
-* Now you can copy parent theme template files into your child themes and edit them using the Theme Editor. 
-* We've also added an image uploader to add custom theme images for your stylesheets along with a screenshot uploader.
+= 1.4.3 =
+* This release fixes a bug in the parser that was ignoring selectors containing parentheses.
 
 == Create Your Child Theme ==
 
