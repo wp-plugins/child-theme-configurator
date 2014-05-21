@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.9
-Stable tag: 1.4.0
+Stable tag: 1.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,8 @@ Now you can copy parent theme template files into your child themes and edit the
 We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
 
 = Take Control of Your Child Themes =
+
+https://www.youtube.com/watch?v=xL2HkWQxgOA
 
 The Child Theme Configurator parses and indexes a Theme's stylesheet so that every media query, selector, rule and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the Child Theme. Finally, it saves your work so that you can fine-tune your Child Theme without the risk of losing your edits. 
 
@@ -62,6 +64,8 @@ We offer a premium extension to let you easily modify styles for any WordPress P
 
 https://www.youtube.com/watch?v=xL2HkWQxgOA
 
+https://www.youtube.com/watch?v=DSfx2RbZobo
+
 = Why doesn't this work with my (insert theme vendor here) theme? = 
 
 Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. 
@@ -71,10 +75,6 @@ Contact the vendor directly to ask for this core functionality. It is our opinio
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
 Your Parent theme is probably using a non-standard location for the stylesheets. Check "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again.
-
-= Why is everything backwards? = 
-
-More than likely you selected "Scan Parent Theme for additional stylesheets" and your theme uses a "right-to-left" (rtl) stylesheet. Go to the @imports tab and remove the rtl stylesheet from the list of imported stylesheets.
 
 = Where is it in the Admin? = 
 
@@ -157,6 +157,14 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.4.3 = 
+* updated parser to match selectors containing parentheses and empty media rulesets
+
+= 1.4.2 =
+* Tweaked the Files tab options and added check for DISALLOW_FILE_EDIT
+* Removed automatic @import rules for additional stylesheets that are loaded.
+* Fixed bug caused by new jQuery .css function handling of empty css values (preview swatch).
 
 = 1.4.0 =
 * New Feature: Theme Files tab: 
@@ -250,10 +258,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-= 1.4.0 =
-* New Files Tab!
-* Now you can copy parent theme template files into your child themes and edit them using the Theme Editor. 
-* We've also added an image uploader to add custom theme images for your stylesheets along with a screenshot uploader.
+= 1.4.3 =
+* This release fixes a bug in the parser that was ignoring selectors containing parentheses.
 
 == Create Your Child Theme ==
 
@@ -271,9 +277,6 @@ The first step is to create a child theme and import your parent theme styles in
 8. Click "Generate Child Theme Files."
 
 If you are loading an existing child theme and checked "Backup Stylesheet," the Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.
-
-If you checked "Scan Parent Theme for additional stylesheets," the "@import" tab will appear automatically. Important: Any additional stylesheets are added as imports here. If your theme has a "right-to-left" stylesheet, it will appear here as well. Remove any @import statements that are not needed by the front end, such as admin or configuration stylesheets. 
-
 
 == Override Parent Styles ==
 
@@ -312,13 +315,11 @@ If you prefer to use shorthand syntax for rules and values instead of the inputs
 
 You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme's stylesheet automatically. Do not need to add it here.
 
-If you checked "Scan Parent Theme for additional stylesheets" when you created your child theme, the "@import" tab will appear automatically. Important: By default, any additional stylesheets are added as imports. If your theme has a "right-to-left" stylesheet, it will appear here as well. In many cases, the theme will automatically load the additional stylesheets, so you do not need to import them (for example, the "Responsive" theme). Remove any @import statements that are not needed by the front end, such as admin or configuration stylesheets, or, as in the case described above, any stylesheets that are automatically loaded by the Theme. 
-
 == Files ==
 
 = Parent Templates =
 
-Copy PHP template files from the parent theme by checking the boxes and clicking "Copy Selected to Child Theme" and the templates will be added to the child theme directory.
+You can copy PHP template files from the parent theme by checking the boxes. Click "Copy Selected to Child Theme" and the templates will be added to the child theme directory.
 
 CAUTION: If your child theme is active, the child theme version of the file will be used instead of the parent immediately after it is copied. The functions.php file is generated separately and cannot be copied here.
 

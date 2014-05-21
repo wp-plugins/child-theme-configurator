@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.3.5
+    Version: 1.4.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -265,7 +265,7 @@ class Child_Theme_Configurator {
                     $this->css->reset_updates();
                     update_option($this->optionsName, $this->css);
                     do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
-                    $msg = isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
+                    $msg = 1; //isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
                 endif;
             elseif (isset($_POST['ctc_parnt_templates_submit']) && isset($_POST['ctc_file_parnt'])):
                 foreach ($_POST['ctc_file_parnt'] as $file):
@@ -287,6 +287,10 @@ class Child_Theme_Configurator {
                 $this->handle_file_upload('ctc_theme_image', 'images');
                 $msg = '8&tab=file_options';
             elseif (isset($_POST['ctc_theme_screenshot_submit']) && isset($_FILES['ctc_theme_screenshot'])):
+                // remove old screenshot
+                foreach($this->image_formats as $ext):
+                    $this->delete_child_file('screenshot', $ext);
+                endforeach;
                 $this->handle_file_upload('ctc_theme_screenshot');
                 $msg = '8&tab=file_options';
             else:
@@ -399,7 +403,7 @@ class Child_Theme_Configurator {
             // Undefined | Multiple Files | $_FILES Corruption Attack
             // If this request falls under any of them, treat it invalid.
             if ( !isset($_FILES[$field]['error']) || is_array($_FILES[$field]['error']) ):
-                throw new RuntimeException('Invalid parameters.');
+                throw new RuntimeException(__('Invalid parameters.', 'chld_thm_cfg'));
             endif;
 
             // Check $_FILES['upfile']['error'] value.
@@ -407,16 +411,16 @@ class Child_Theme_Configurator {
                 case UPLOAD_ERR_OK:
                     break;
                 case UPLOAD_ERR_NO_FILE:
-                    throw new RuntimeException('Please select a file to upload.');
+                    throw new RuntimeException(__('Please select a file to upload.', 'chld_thm_cfg'));
                 case UPLOAD_ERR_INI_SIZE:
                 case UPLOAD_ERR_FORM_SIZE:
-                    throw new RuntimeException('File is too large.');
+                    throw new RuntimeException(__('File is too large.', 'chld_thm_cfg'));
                 default:
-                    throw new RuntimeException('There was a problem uploading the file.');
+                    throw new RuntimeException(__('There was a problem uploading the file.', 'chld_thm_cfg'));
             endswitch;
 
             if ($_FILES[$field]['size'] > 1024 * 1024):
-                throw new RuntimeException('Theme images cannot be over 1MB.');
+                throw new RuntimeException(__('Theme images cannot be over 1MB.', 'chld_thm_cfg'));
             endif;
             
             if (false === ($ext = array_search(
@@ -428,7 +432,7 @@ class Child_Theme_Configurator {
                 ),
                 true
             ))):
-                throw new RuntimeException('Theme images must be JPG, PNG or GIF.');
+                throw new RuntimeException(__('Theme images must be JPG, PNG or GIF.', 'chld_thm_cfg'));
             endif;
             // strip extension
             $filename = preg_replace('%\.[^\.]+$%', '', $_FILES[$field]['name']);
@@ -439,16 +443,16 @@ class Child_Theme_Configurator {
             $targetdir = dirname($target);
             if (! is_dir($targetdir)):
                 if (! @mkdir($targetdir, 0755, true)):
-                    throw new RuntimeException('Unable to create directory.');
+                    throw new RuntimeException(__('Unable to create directory.', 'chld_thm_cfg'));
                 endif;
             elseif (! is_writable($targetdir)):
-                throw new RuntimeException('Child theme directory is not writable.');
+                throw new RuntimeException(__('Child theme directory is not writable.', 'chld_thm_cfg'));
             endif;
             if (!$target || !move_uploaded_file(
                 $_FILES[$field]['tmp_name'],
                 $target
             )):
-                throw new RuntimeException('There was a problem uploading the file.');
+                throw new RuntimeException(__('There was a problem uploading the file.', 'chld_thm_cfg'));
             endif;
 
         } catch (RuntimeException $e) {

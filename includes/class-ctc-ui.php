@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.4.0
+    Version: 1.4.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -77,7 +77,7 @@ class Child_Theme_Configurator_UI {
     <i id="ctc_status_preview"></i></h2>
   <div class="ctc-option-panel-container">
     <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
-      <form id="ctc_load_form" method="post" action="">
+      <form id="ctc_load_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>">
         <?php wp_nonce_field( 'ctc_update' ); ?>
         <div class="ctc-input-row clearfix" id="input_row_parnt">
           <div class="ctc-input-cell"> <strong>
@@ -177,7 +177,7 @@ class Child_Theme_Configurator_UI {
     </div>
     <div id="rule_value_options_panel" 
         class="ctc-option-panel<?php echo 'rule_value_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
-      <form id="ctc_rule_value_form" method="post" action="">
+      <form id="ctc_rule_value_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=rule_value_options">
         <?php wp_nonce_field( 'ctc_update' ); ?>
         <div class="ctc-input-row clearfix" id="ctc_input_row_rule_menu">
           <div class="ctc-input-cell"> <strong>
@@ -208,7 +208,7 @@ class Child_Theme_Configurator_UI {
     </div>
     <div id="query_selector_options_panel" 
         class="ctc-option-panel<?php echo 'query_selector_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
-      <form id="ctc_query_selector_form" method="post" action="">
+      <form id="ctc_query_selector_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=query_selector_options">
         <div class="ctc-input-row clearfix" id="input_row_query">
           <div class="ctc-input-cell"> <strong>
             <?php _e('Query', 'chld_thm_cfg'); ?>
@@ -294,7 +294,7 @@ class Child_Theme_Configurator_UI {
     </div>
     <div id="import_options_panel" 
         class="ctc-option-panel<?php echo 'import_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
-      <form id="ctc_import_form" method="post" action="">
+      <form id="ctc_import_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=import_options">
         <?php wp_nonce_field( 'ctc_update' ); ?>
         <div class="ctc-input-row clearfix" id="ctc_child_imports_row">
           <div class="ctc-input-cell"> <strong>
@@ -327,13 +327,13 @@ class Child_Theme_Configurator_UI {
       <?php $this->render_file_form('child'); ?>
       <?php $this->render_image_form(); ?>
       <div class="ctc-input-row clearfix" id="input_row_theme_image">
-        <form id="ctc_<?php echo $template; ?>_theme_image_form" method="post" action="" enctype="multipart/form-data">
+        <form id="ctc_<?php echo $template; ?>_theme_image_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" enctype="multipart/form-data">
           <?php wp_nonce_field( 'ctc_update' ); ?>
           <div class="ctc-input-cell"> <strong>
             <?php _e('Upload New Child Theme Image', 'chld_thm_cfg'); ?>
             </strong>
             <p class="howto">
-              <?php _e('Theme images reside under the <code>images</code> directory in your child theme and are meant for stylesheet use only. Use the media gallery for content images.', 'chld_thm_cfg'); ?>
+              <?php _e('Theme images reside under the <code>images</code> directory in your child theme and are meant for stylesheet use only. Use the Media Library for content images.', 'chld_thm_cfg'); ?>
             </p>
           </div>
           <div class="ctc-input-cell-wide">
@@ -353,13 +353,13 @@ class Child_Theme_Configurator_UI {
       </div>
       <?php endif; ?>
       <div class="ctc-input-row clearfix" id="input_row_screenshot">
-        <form id="ctc_screenshot_form" method="post" action="" enctype="multipart/form-data">
+        <form id="ctc_screenshot_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" enctype="multipart/form-data">
           <?php wp_nonce_field( 'ctc_update' ); ?>
           <div class="ctc-input-cell"> <strong>
             <?php _e('Upload New Screenshot', 'chld_thm_cfg'); ?>
             </strong>
             <p class="howto">
-              <?php _e('The theme screenshot should be a 4:3 ratio (eg., 880px x 660px) JPG, PNG or GIF. It will be renamed <code>screenshot</code>.', 'chld_thm_cfg'); ?>
+              <?php _e('The theme screenshot should be a 4:3 ratio (e.g., 880px x 660px) JPG, PNG or GIF. It will be renamed <code>screenshot</code>.', 'chld_thm_cfg'); ?>
             </p>
           </div>
           <div class="ctc-input-cell-wide">
@@ -416,11 +416,19 @@ class Child_Theme_Configurator_UI {
   <?php echo $templatefile; ?></label>
 <?php             
             endforeach;
+            $linktext = __('Click here to edit template files using the Theme Editor', 'chld_thm_cfg');
+            $editorlink = '<a href="' . admin_url('theme-editor.php?file=functions.php&theme=' . $chld_thm_cfg->css->get_prop('child')) . '" title="' . $linktext . '">';
+            $editorlinkend = '</a>';
+            if (defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT):
+                $linktext = __('The Theme editor has been disabled. Template files must be edited offline.', 'chld_thm_cfg');
+                $editorlink = '';
+                $editorlinkend = '';
+            endif;
             $inputs = ob_get_contents();
             ob_end_clean();
             if ($counter): ?>
 <div class="ctc-input-row clearfix" id="input_row_<?php echo $template; ?>_templates">
-  <form id="ctc_<?php echo $template; ?>_templates_form" method="post">
+  <form id="ctc_<?php echo $template; ?>_templates_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options">
     <?php wp_nonce_field( 'ctc_update' ); ?>
     <div class="ctc-input-cell"> <strong>
       <?php _e(('parnt' == $template ? 'Parent' : 'Child') . ' Templates', 'chld_thm_cfg'); ?>
@@ -433,12 +441,11 @@ class Child_Theme_Configurator_UI {
         <?php _e('CAUTION: If your child theme is active, the child theme version of the file will be used instead of the parent immediately after it is copied.', 'chld_thm_cfg');?>
         </strong></p>
       <p class="howto">
-        <?php _e('The <code>functions.php</code> file is generated separately and cannot be copied here.', 'chld_thm_cfg');
+        <?php echo sprintf(__('The %s file is generated separately and cannot be copied here.', 'chld_thm_cfg'), 
+        $editorlink . '<code>functions.php</code>' . $editorlinkend
+        );
             else:
-            $linktext = __('Click here to edit template files using the Theme Editor', 'chld_thm_cfg');
-            $editorlink = 'theme-editor.php?file=functions.php&theme=' . $theme;
-            ?>
-        <a href="<?php echo admin_url($editorlink); ?>" title="<?php echo $linktext; ?>"><?php echo $linktext; ?></a></p>
+                echo $editorlink . $linktext . $editorlinkend; ?></p>
       <p class="howto">
         <?php _e('Remove child theme templates by selecting them here.', 'chld_thm_cfg');
             endif; ?>
@@ -483,7 +490,7 @@ class Child_Theme_Configurator_UI {
             ob_end_clean();
             if ($counter): ?>
 <div class="ctc-input-row clearfix" id="input_row_images">
-  <form id="ctc_image_form" method="post" action="">
+  <form id="ctc_image_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options">
     <?php wp_nonce_field( 'ctc_update' ); ?>
     <div class="ctc-input-cell"> <strong>
       <?php _e('Child Theme Images', 'chld_thm_cfg'); ?>
