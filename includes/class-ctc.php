@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.4.3
+    Version: 1.4.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -32,6 +32,8 @@ class Child_Theme_Configurator {
     var $is_ajax;
     var $updated;
     var $image_formats;
+    var $updates = array();
+    var $cache_updates;
     
     function __construct($file) {
         $this->dir = dirname( $file );
@@ -45,7 +47,7 @@ class Child_Theme_Configurator {
         $this->pluginPath       = $this->dir . '/';
         $this->pluginURL        = plugin_dir_url($file);
         $this->image_formats    = array('jpg','jpeg','gif','png','JPG','JPEG','GIF','PNG');
-
+        $this->cache_updates    = true;
         // setup plugin hooks
         add_action('admin_menu',                array(&$this, 'admin_menu'));
         add_action('admin_enqueue_scripts',     array(&$this, 'enqueue_scripts'));
@@ -154,9 +156,7 @@ class Child_Theme_Configurator {
             $this->load_config();
             $this->css->parse_post_data();
             $this->css->write_css();
-            $result = $this->css->get_prop('updates');
-            // clear updates so they aren't saved in options object
-            $this->css->reset_updates();
+            $result = $this->css->obj_to_utf8($this->updates);
             update_option($this->optionsName, $this->css);
             // send all updates back to browser to update cache
             die(json_encode($result));
@@ -195,9 +195,10 @@ class Child_Theme_Configurator {
             || ! $this->check_theme_exists($this->css->get_prop('parnt'))            
             // upgrade to v.1.1.1 
             || !($version = $this->css->get_prop('version'))
-            )
-
-            $this->css = new Child_Theme_Configurator_CSS();
+            ):
+            $parent = get_template();
+            $this->css = new Child_Theme_Configurator_CSS($parent);
+        endif;
     }
     
     function write_config() {
@@ -208,7 +209,6 @@ class Child_Theme_Configurator {
             && !isset($_POST['ctc_theme_image_submit'])
             && !isset($_POST['ctc_theme_screenshot_submit'])) return false;
         $this->errors = array();
-        //die(print_r($_POST, true));
         if (current_user_can('install_themes')): // && $this->validate_post()):
             if (isset($_POST['ctc_load_styles'])):
                 foreach (array(
@@ -258,11 +258,15 @@ class Child_Theme_Configurator {
                     do_action('chld_thm_cfg_addl_files', $this);   // hook for add'l plugin files and subdirectories
                     $this->css->parse_css_file('parnt');
                     $this->css->parse_css_file('child');
+                    if (isset($_POST['ctc_additional_css']) && is_array($_POST['ctc_additional_css'])):
+                        foreach ($_POST['ctc_additional_css'] as $file):
+                            $this->css->parse_css_file('parnt', $file);
+                        endforeach;
+                    endif;
                     if (false === $this->css->write_css(isset($_POST['ctc_backup']))):
                         $this->errors[] = __('Your stylesheet is not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
                         return false;
                     endif; 
-                    $this->css->reset_updates();
                     update_option($this->optionsName, $this->css);
                     do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
                     $msg = 1; //isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
@@ -396,6 +400,17 @@ class Child_Theme_Configurator {
         
         
     }
+    
+    function get_additional_css($parnt) {
+        $themedir = get_theme_root() . '/' . $parnt;
+        $files = array();
+        foreach ($this->css->recurse_directory($themedir) as $file):
+            $file = preg_replace('%^' . preg_quote($themedir) . '\/%', '', $file);
+            if ('style.css' != $file) $files[] = $file;
+        endforeach;
+        return $files;
+    }
+    
     
     function handle_file_upload($field, $childdir = NULL){
         /* adapted from http://www.php.net/manual/en/features.file-upload.php#114004 */

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.9.1
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,9 +50,18 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 == Installation ==
 
-1. Download the Child Theme Configurator plugin archive and unzip it.
-2. Upload the child-theme-configurator directory to your WordPress plugins directory (e.g., /path/to/wordpress/wp-content/plugins/)
-3. Activate the plugin through the 'Plugins' menu in WordPress
+1. To install from the Plugins repository:
+    * In the WordPress Admin, go to "Plugins > Add New."
+    * Type "child theme" in the "Search" box and click "Search Plugins."
+    * Locate "Child Theme Configurator" in the list and click "Install Now."
+
+2. To install manually:
+    * Download the IntelliWidget plugin from http://wordpress.org/plugins/child-theme-configurator
+    * In the WordPress Admin, go to "Plugins > Add New."
+    * Click the "Upload" link at the top of the page.
+    * Browse for the zip file, select and click "Install."
+
+3. In the WordPress Admin, go to "Plugins > Installed Plugins." Locate "Child Theme Configurator" in the list and click "Activate."
    
 == Frequently Asked Questions ==
 
@@ -136,11 +145,15 @@ The Child Theme Configurator uses a standardized syntax for gradients and only s
 
 = How do I make my Theme responsive? = 
 
-This topic is beyond the scope of this document. The short answer is to use a responsive Parent Theme. Some common characteristics of responsive design are:
+The short answer is to use a responsive Parent Theme. Some common characteristics of responsive design are:
 
 * Avoiding fixed width and height values. Using max- and min-height values and percentages are ways to make your designs respond to the viewer's browser size.
 * Combining floats and clears with inline and relative positions allow the elements to adjust gracefully to their container's width.
 * Showing and hiding content with Javascript.
+
+For more information view "Make a Theme Responsive":
+
+https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 = How do I add Web Fonts? = 
 
@@ -157,6 +170,13 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.4.4 = 
+* Refactored the way CTC caches updates and returns them to the UI controller to reduce memory consumption. 
+* Prevent out of memory fatals when generating new child theme.
+* Changed "Scan Parent for Additional Stylesheets" to individual checkbox options for each file with a toggle to show/hide in the Parent/Child tab.
+* Added automatic update of form when Parent Theme is changed.
+* Pre-populate Parent/Child form when parent slug is passed to CTC options.
 
 = 1.4.3 = 
 * updated parser to match selectors containing parentheses and empty media rulesets
@@ -258,8 +278,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-= 1.4.3 =
-* This release fixes a bug in the parser that was ignoring selectors containing parentheses.
+= 1.4.4 =
+* This release fixes out of memory errors when generating child themes for parent themes with numerous additional stylesheets.
+* Added ability to select individual parent stylesheets for parsing.
 
 == Create Your Child Theme ==
 
@@ -272,11 +293,9 @@ The first step is to create a child theme and import your parent theme styles in
 3. Enter a Name for the child theme.
 4. Enter an author for the child theme.
 5. Enter the child theme version number.
-6. Check "Backup Stylesheet" if you want to backup original version of child stylesheet.
-7. Check "Scan Parent Theme for Additional Stylesheets" if your theme uses multiple stylesheets or if the the stylesheets are in a non-standard location. For example, the "Responsive" theme puts the stylesheets in a subdirectory named "core."
+6. If you check "Backup Stylesheet", The Child Theme Configurator will create a backup in the theme directory.
+7. If your theme uses additional stylesheets they will appear as checkbox options. Select only the stylesheets you wish to customize to reduce overhead.
 8. Click "Generate Child Theme Files."
-
-If you are loading an existing child theme and checked "Backup Stylesheet," the Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.
 
 == Override Parent Styles ==
 

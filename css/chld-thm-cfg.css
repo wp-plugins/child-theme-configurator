@@ -1,6 +1,9 @@
 
-.nav-tab, .nav-tab:focus, .nav-tab:active {
+a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     outline: none;
+    -moz-box-shadow:none;
+    -webkit-box-shadow:none;
+    box-shadow:none;
 }
 
 .nav-tab-active {
@@ -186,7 +189,21 @@
 .ctc-child-input-cell input[type="text"].ctc-input-wide {
     width: 200px;
 }
-
+#ctc_additional_css_label {
+    cursor:pointer;
+}
+#ctc_additional_css_label span {
+    white-space:nowrap;
+}
+#ctc_additional_css_label span:after {
+    content: "\f140";
+    font: 400 20px/1 dashicons;
+    color:#999;
+    vertical-align:bottom;
+}
+#ctc_additional_css_label.open span:after {
+    content: "\f142";
+}
 .clearfix:after, .clearfix:before {
     content: ' ';
     display: table;
