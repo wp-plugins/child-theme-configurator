@@ -14,14 +14,6 @@ Create a Child Theme from any installed Theme. Each CSS selector, rule and value
 
 Created by Lilaea Media, the team that brought you IntelliWidget, the Child Theme Configurator provides a new approach to WordPress stylesheets. The Child Theme Configurator lets you identify and override only the Parent Theme style attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
 
-= New Files Tab! =
-
-Now you can copy parent theme template files into your child themes and edit them using the Theme Editor. We've also added an image uploader to add custom theme images for your stylesheets along with a screenshot uploader.
-
-= Now it works with plugins! =
-
-We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
-
 = Take Control of Your Child Themes =
 
 https://www.youtube.com/watch?v=xL2HkWQxgOA
@@ -47,6 +39,22 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Upload theme images for use with stylesheets
 * Upload custom screenshot for your child theme
 * Save hours of development time
+
+= Now it works with plugins! =
+
+We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. 
+
+https://www.youtube.com/watch?v=mJ3i6gsuL1E
+
+Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
+
+= IntelliWidget Responsive Menu =
+
+Break free from your theme's built-in responsive menu options and take control over the mobile user experience with our premium menu plugin.
+
+https://www.youtube.com/watch?v=JDbxvaEt7VE
+
+Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 == Installation ==
 
