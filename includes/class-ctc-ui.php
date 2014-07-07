@@ -689,7 +689,7 @@ class Child_Theme_Configurator_UI {
 <h5>Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator?</h5>
 <p>You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.</p>
 <h5>Why doesn\'t the Parent Theme have any styles when I "View Parent CSS"?</h5>
-<p>Your Parent theme is probably using a non-standard location for the stylesheets. Check "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again.</p>
+<p>Your Parent theme is probably using a separate location for the stylesheets. Select individual stylesheets from the "Parse Additional Stylesheets" section of the Parent/Child tab and click "Generate Child Theme Files" again.</p>
 <h5 id="menus-broken">Why are my menus displaying incorrectly when I activate the new child theme?</h5>
 <p>The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance &gt; Menus and assign locations to each of the menus for the new Child Theme.</p>
 <h5 "preview-not-loading">Why do the preview tabs return "Stylesheet could not be displayed"?</h5>
