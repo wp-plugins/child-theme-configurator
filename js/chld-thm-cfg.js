@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.4.0
+ *  Version: 1.4.5
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -16,7 +16,11 @@ jQuery(document).ready(function($){
         saveEvents = {},
         rewrite_id, 
         rewrite_sel,
+        quot_regex = new RegExp('"', 'g'),
     // initialize functions
+    esc_quot = function(str){
+        return str.replace(quot_regex, '&quot;');
+    },
     ctc_setup_iris = function(obj) {
         $(obj).iris({
             change: function() {
@@ -72,6 +76,7 @@ jQuery(document).ready(function($){
                 $('#'+important).prop('checked', false);
                 return;
             }*/
+            if ('' != value) {
             // handle specific inputs
             if (false === ctc_is_empty(rulepart)) {
                 switch(rulepart) {
@@ -128,6 +133,7 @@ jQuery(document).ready(function($){
                 } else {
                     cssrules[inputtheme][inputrule] = value;
                 }
+            }
             }
         });
         // update swatch
@@ -326,7 +332,7 @@ jQuery(document).ready(function($){
                         + '<input type="text" id="' + id + '" name="' + id + '" class="ctc-child-value' 
                         + ((newname + rule).toString().match(/color/) ? ' color-picker' : '') 
                         + ((newname).toString().match(/url/) ? ' ctc-input-wide' : '')
-                        + '" value="' + newval + '" />' + lf;
+                        + '" value="' + esc_quot(newval) + '" />' + lf;
                     html += '</div>' + lf;
                 });
                 html += '<label for="' + impid + '"><input type="checkbox" id="' + impid + '" name="' + impid + '" value="1" '
@@ -579,7 +585,7 @@ jQuery(document).ready(function($){
             postdata,
             //on success function  
             function(response){
-                // console.log(response);
+                //console.log(response);
                 // release button
                 $(obj).prop('disabled', false);
                 // hide spinner
@@ -867,8 +873,8 @@ jQuery(document).ready(function($){
         } else {
             origval = $('#ctc_sel_ovrd_selector_selected').text();
             $('#ctc_sel_ovrd_selector_selected').html('<input id="ctc_rewrite_selector" name="ctc_rewrite_selector" type="text" value="' 
-                + origval + '" autocomplete="off" /><input id="ctc_rewrite_selector_orig" name="ctc_rewrite_selector_orig" type="hidden" value="' 
-                + origval + '"/>');
+                + esc_quot(origval) + '" autocomplete="off" /><input id="ctc_rewrite_selector_orig" name="ctc_rewrite_selector_orig" type="hidden" value="' 
+                + esc_quot(origval) + '"/>');
             $(obj).text(ctcAjax.cancel_txt);
         }
     }
@@ -940,7 +946,15 @@ jQuery(document).ready(function($){
         e.preventDefault();
         ctc_selector_input_toggle(this);
     });//ctc_rewrite_toggle
-    
+    $(document).on('change', '#ctc_theme_parnt', function(e) {
+        $(this).parents('.ctc-input-row').first().append('<span class="ctc-status-icon spinner"></span>');
+        $('.spinner').show();
+        document.location='?page=chld_thm_cfg_menu&ctc_parent=' + $(this).val();
+    });
+    $(document).on('click', '#ctc_additional_css_label', function(e){
+        $(this).toggleClass('open');
+        $('#ctc_additional_css_files').slideToggle('fast');
+    });
     // initialize menus
     ctc_setup_menus();
     ctc_set_query(currentQuery);

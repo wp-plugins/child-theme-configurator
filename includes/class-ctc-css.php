@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.4.0
+    Version: 1.4.5
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -34,7 +34,7 @@ class Child_Theme_Configurator_CSS {
     var $valkey;        // counter for dict_val
     // miscellaneous properties
     var $imports;       // @import rules
-    var $updates;       // temporary update cache
+    var $styles;        // temporary update cache
     var $child;         // child theme slug
     var $parnt;         // parent theme slug
     var $configtype;    // theme or plugin extension
@@ -42,16 +42,16 @@ class Child_Theme_Configurator_CSS {
     var $child_author;  // stylesheet author
     var $child_version; // stylesheet version
     
-    function __construct() {
+    function __construct($parent = '') {
         // scalars
-        $this->version          = '1.4.0';
+        $this->version          = '1.4.5';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
         $this->rulekey          = 0;
         $this->valkey           = 0;
         $this->child            = '';
-        $this->parnt            = '';
+        $this->parnt            = $parent;
         $this->configtype       = 'theme';
         $this->child_name       = '';
         $this->child_author     = 'Child Theme Configurator by Lilaea Media';
@@ -66,7 +66,6 @@ class Child_Theme_Configurator_CSS {
         $this->sel_ndx          = array();
         $this->val_ndx          = array();
         $this->imports          = array('child' => array(), 'parnt' => array());
-        $this->updates          = array();
     }
     
     /*
@@ -75,8 +74,6 @@ class Child_Theme_Configurator_CSS {
      */
     function get_prop($objname, $params = null) {
         switch ($objname):
-            case 'updates':
-                return $this->obj_to_utf8($this->updates);
             case 'imports':
                 return $this->obj_to_utf8(is_array($this->imports['child']) ? (current($this->imports['child']) == 1 ? array_keys($this->imports['child']) : array_keys(array_flip($this->imports['child']))) : array());
             case 'sel_ndx':
@@ -107,7 +104,8 @@ class Child_Theme_Configurator_CSS {
                 return $this->child_version;
             case 'preview':
                 $template = (empty($params['key']) || 'child' == $params['key']) ? 'child' : 'parnt';
-                return $this->get_raw_css($template);
+                $this->get_raw_css($template);
+                return $this->styles;
         endswitch;
         return false;
     }
@@ -123,14 +121,13 @@ class Child_Theme_Configurator_CSS {
     }
     
     function get_raw_css($template = 'child') {
-        if ($styles = $this->read_stylesheet($template)):
-            if (preg_match("/\}[\w\#\.]/", $styles)):                       // prettify compressed CSS
-                $styles = preg_replace("/\*\/\s*/s", "*/\n", $styles);      // end comment
-                $styles = preg_replace("/\{\s*/s", " {\n    ", $styles);    // open brace
-                $styles = preg_replace("/;\s*/s", ";\n    ", $styles);      // semicolon
-                $styles = preg_replace("/\s*\}\s*/s", "\n}\n", $styles);    // close brace
+        if ($this->read_stylesheet($template, 'style.css')):
+            if (preg_match("/\}[\w\#\.]/", $this->styles)):                       // prettify compressed CSS
+                $this->styles = preg_replace("/\*\/\s*/s", "*/\n", $this->styles);      // end comment
+                $this->styles = preg_replace("/\{\s*/s", " {\n    ", $this->styles);    // open brace
+                $this->styles = preg_replace("/;\s*/s", ";\n    ", $this->styles);      // semicolon
+                $this->styles = preg_replace("/\s*\}\s*/s", "\n}\n", $this->styles);    // close brace
             endif;
-            return $styles;
         endif;
     }
    
@@ -161,6 +158,7 @@ class Child_Theme_Configurator_CSS {
      * Update cache is returned to UI via AJAX to refresh page
      */
     function update_arrays($template, $query, $sel, $rule = null, $value = null, $important = 0, $seq = null) {
+        global $chld_thm_cfg;
         // normalize selector styling
         $sel = implode(', ', preg_split('#\s*,\s*#s', trim($sel)));
         // add selector and query to index
@@ -174,15 +172,16 @@ class Child_Theme_Configurator_CSS {
             $this->dict_qs[$this->qskey]['q'] = $this->dict_query[$query];
             // tell the UI to update a single cached query/selector lookup by passing 'qsid' as the key
             // (normally the entire array is replaced):
-            $this->updates[] = array(
-                'obj'   => 'sel_ndx',
-                'key'   => 'qsid',
-                'data'  => array(
-                    'query'     => $query,
-                    'selector'  => $sel,
-                    'qsid'      => $this->qskey,
-                ),
-            );
+            if ($chld_thm_cfg->cache_updates)
+                $chld_thm_cfg->updates[] = array(
+                    'obj'   => 'sel_ndx',
+                    'key'   => 'qsid',
+                    'data'  => array(
+                        'query'     => $query,
+                        'selector'  => $sel,
+                        'qsid'      => $this->qskey,
+                    ),
+                );
         endif;
         if (!isset($this->dict_seq[$this->qskey]))
             $this->dict_seq[$this->qskey] = $this->qskey;
@@ -191,11 +190,13 @@ class Child_Theme_Configurator_CSS {
             if (!isset($this->dict_rule[$rule])):
                 $this->dict_rule[$rule] = ++$this->rulekey;
                 // tell the UI to update a single cached rule:
-                $this->updates[] = array(
-                    'obj'   => 'rule',
-                    'key'   => $this->rulekey,
-                    'data'  => $rule,
-                );
+                if ($chld_thm_cfg->cache_updates):
+                    $chld_thm_cfg->updates[] = array(
+                        'obj'   => 'rule',
+                        'key'   => $this->rulekey,
+                        'data'  => $rule,
+                    );
+                endif;
             endif;
             $qsid = $this->sel_ndx[$this->dict_query[$query]][$this->dict_sel[$sel]];
             $ruleid = $this->dict_rule[$rule];
@@ -206,61 +207,43 @@ class Child_Theme_Configurator_CSS {
             // set the important flag for this value
             $this->val_ndx[$qsid][$ruleid]['i_' . $template] = $important;
             // tell the UI to add a single cached query/selector data array:
-            $updatearr = array(
-                'obj'   => 'sel_val',
-                'key'   => $qsid,
-                'data'  => $this->denorm_sel_val($qsid),
-            );
-            $this->updates[] = $updatearr;
+            if ($chld_thm_cfg->cache_updates):
+                $updatearr = array(
+                    'obj'   => 'sel_val',
+                    'key'   => $qsid,
+                    'data'  => $this->denorm_sel_val($qsid),
+                );
+                $chld_thm_cfg->updates[] = $updatearr;
+            endif;
             if (isset($seq)): // this is a renamed selector
                 $this->dict_seq[$qsid] = $seq;
-                $this->updates[] = array(
-                    'obj'   => 'rewrite',
-                    'key'   => $qsid,
-                    'data'  => $sel,
-                );
+                if ($chld_thm_cfg->cache_updates):
+                    $chld_thm_cfg->updates[] = array(
+                        'obj'   => 'rewrite',
+                        'key'   => $qsid,
+                        'data'  => $sel,
+                    );
+                endif;
             endif;
         endif;
     }
 
-    /*
-     * reset_updates
-     * clears temporary update cache 
-     */
-    function reset_updates() {
-        $this->updates = array();
-    }
-
-    function read_stylesheet($template = 'child') {
+    function read_stylesheet($template = 'child', $file = 'style.css') {
         $source = $this->get_prop($template);
         $configtype = $this->get_prop('configtype');
         if (empty($source) || !is_scalar($source)) return false;
-        $stylesheets = array();
         $themedir = get_theme_root() . '/' . $source;
-        if ('parnt' == $template && (empty($configtype) || 'theme' == $configtype) && isset($_POST['ctc_scan_subdirs'])):
-            $stylesheets = $this->recurse_directory($themedir);
-        else:
-            $stylesheets[] = apply_filters('chld_thm_cfg_' . $template, $themedir . '/style.css', $this);
-        endif;
+        $stylesheet = apply_filters('chld_thm_cfg_' . $template, $themedir . '/' . $file , $this);
         
-        // read stylesheets
-        $styles = '';
-        foreach ($stylesheets as $stylesheet):
-            if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'read')):
-                $import_url = preg_replace('%^' . preg_quote($themedir) . '/%', '', $stylesheet_verified);
-                $styles .= @file_get_contents($stylesheet_verified) . "\n";
-                if ($styles && isset($_POST['ctc_scan_subdirs']) && 'parnt' == $template && (empty($configtype) || 'theme' == $configtype) && 'style.css' != $import_url):
-                    $this->imports['child']["@import url('../" . $source . '/' . $import_url . "')"] = 1;
-                    
-                    // convert relative urls to absolute 
-                    $this->convert_parent_rel_url_to_abs_url($import_url, $styles);
-                endif;
-            endif;
-        endforeach;
-        return $styles;
+        // read stylesheet
+        $this->styles = '';
+        if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'read')):
+            $import_url = preg_replace('%^' . preg_quote($themedir) . '/%', '', $stylesheet_verified);
+            $this->styles .= @file_get_contents($stylesheet_verified) . "\n";
+        endif;
     }
     
-    function recurse_directory($rootdir, $ext = 'css') {
+    function recurse_directory($rootdir, $ext = 'css', $relative = false) {
         if (!$this->is_file_ok($rootdir, 'search')) return array(); // make sure we are only recursing theme and plugin files
         $files = array();
         $dirs = array($rootdir);
@@ -288,7 +271,7 @@ class Child_Theme_Configurator_CSS {
         return $files;
     }
     
-    function convert_parent_rel_url_to_abs_url($url, &$styles) {
+    function convert_parent_rel_url_to_abs_url($url) {
         $source = $this->get_prop('parnt');
         $spliton = '%[/\\\\]%';
         $dirname = dirname($url);
@@ -301,7 +284,7 @@ class Child_Theme_Configurator_CSS {
             $dds .= '\.\.\/';
             $regex = '%url\([\'" ]*' . $dds . '(.+?)[\'" ]*\)%';
             $fullurl = $themeuri . '/' . $source . '/' . $upone . ('' == $upone ? '' : '/' );
-            $styles = preg_replace($regex, "url(" . $fullurl . "$1)", $styles);
+            $this->styles = preg_replace($regex, "url(" . $fullurl . "$1)", $this->styles);
         endwhile;
     }
     /*
@@ -309,15 +292,17 @@ class Child_Theme_Configurator_CSS {
      * Parse user form input into separate properties and pass to update_arrays
      */
     function parse_post_data() {
+        $this->cache_updates = true;
         if (isset($_POST['ctc_new_selectors'])):
-            
-            $this->parse_css('child', LF . $this->parse_css_input($_POST['ctc_new_selectors']), 
+            $this->styles = $this->parse_css_input(LF . $_POST['ctc_new_selectors']);
+            $this->parse_css('child', 
                 (isset($_POST['ctc_sel_ovrd_query'])?trim($_POST['ctc_sel_ovrd_query']):null), false);
         elseif (isset($_POST['ctc_child_imports'])):
             $this->imports['child'] = array();
-            $this->parse_css('child', $this->parse_css_input($_POST['ctc_child_imports']));
+            $this->styles = $this->parse_css_input($_POST['ctc_child_imports']);
+            $this->parse_css('child');
         else:
-            $newselector = isset($_POST['ctc_rewrite_selector']) ? sanitize_text_field($this->parse_css_input(($_POST['ctc_rewrite_selector']))) : NULL;
+            $newselector = isset($_POST['ctc_rewrite_selector']) ? sanitize_text_field($this->parse_css_input($_POST['ctc_rewrite_selector'])) : NULL;
             // set the custom sequence value
             foreach (preg_grep('#^ctc_ovrd_child_seq_#', array_keys($_POST)) as $post_key):
                 if (preg_match('#^ctc_ovrd_child_seq_(\d+)$#', $post_key, $matches)):
@@ -333,7 +318,7 @@ class Child_Theme_Configurator_CSS {
                     if (null == $rule || !isset($this->dict_rule[$rule])) continue;
                     $ruleid = $this->dict_rule[$rule];
                     $qsid = $matches[3];
-                    $value  = sanitize_text_field($this->parse_css_input(($_POST[$post_key])));
+                    $value  = $this->normalize_color($this->parse_css_input($_POST[$post_key]));
                     $important = $this->is_important($value);
                     if (!empty($_POST['ctc_' . $valid . '_child_' . $rule . '_i_' . $qsid])) $important = 1;
                     
@@ -408,59 +393,74 @@ class Child_Theme_Configurator_CSS {
      * TODO: this is a stub for future use
      */
     function parse_css_input($styles) {
-        return stripslashes($styles);
+        return $this->sanitize($styles);
+    }
+    
+    function sanitize($styles) {
+        return $this->repl_octal(sanitize_text_field(stripslashes($this->esc_octal($styles))));
     }
 
+    function esc_octal($styles){
+        return preg_replace("#(['\"])\\\\([0-9a-f]{4})(['\"])#i", "$1##bs##$2$3", $styles);
+    }
+    function repl_octal($styles) {
+        return str_replace("##bs##", "\\", $styles);
+    }
     /*
      * parse_css_file
      * reads stylesheet to get WordPress meta data and passes rest to parse_css 
      */
-    function parse_css_file($template) {
-        $styles = $this->read_stylesheet($template);
+    function parse_css_file($template, $file = 'style.css') {
+        global $chld_thm_cfg;
+        $chld_thm_cfg->cache_updates = false;
+        $this->read_stylesheet($template, $file);
         // get theme name
         $regex = '#Theme Name:\s*(.+?)\n#i';
-        preg_match($regex, $styles, $matches);
+        preg_match($regex, $this->styles, $matches);
         $child_name = $this->get_prop('child_name');
         if (!empty($matches[1]) && 'child' == $template && empty($child_name)) $this->set_prop('child_name', $matches[1]);
-        $this->parse_css($template, $styles);
+        $this->parse_css($template);
     }
 
     /*
      * parse_css
      * accepts raw CSS as text and parses into separate properties 
      */
-    function parse_css($template, $styles, $basequery = null, $parse_imports = true) {
+    function parse_css($template, $basequery = null, $parse_imports = true) {
         if (false === strpos($basequery, '@')):
             $basequery = 'base';
         endif;
         $ruleset = array();
         // ignore commented code
-        $styles = preg_replace('#\/\*.*?\*\/#s', '', $styles);
+        $this->styles = preg_replace('#\/\*.*?\*\/#s', '', $this->styles);
         // space brace to ensure correct matching
-        $styles = preg_replace('#(\{\s*)#', "$1\n", $styles);
+        $this->styles = preg_replace('#(\{\s*)#', "$1\n", $this->styles);
         // get all imports
         if ($parse_imports):
+            global $chld_thm_cfg;
             $regex = '#(\@import.+?);#';
-            preg_match_all($regex, $styles, $matches);
+            preg_match_all($regex, $this->styles, $matches);
             foreach (preg_grep('#style\.css#', $matches[1], PREG_GREP_INVERT) as $import)
                 $this->imports[$template][$import] = 1;
-            $this->updates[] = array(
-                'obj'  => 'imports',
-                'data' => array_keys($this->imports[$template]),
-            );
+            if ($chld_thm_cfg->cache_updates):
+                $chld_thm_cfg->updates[] = array(
+                    'obj'  => 'imports',
+                    'data' => array_keys($this->imports[$template]),
+                );
+            endif;
         endif;
         // break into @ segments
-        $regex = '#(\@media.+?)\{(.*?\})\s*\}#s';
-        preg_match_all($regex, $styles, $matches);
+        $regex = '#(\@media[^\{]+?)\{([^\@]*)\}#s'; // *?\})\s
+        preg_match_all($regex, $this->styles, $matches);
         foreach ($matches[1] as $segment):
             $ruleset[trim($segment)] = array_shift($matches[2]);
         endforeach;
-        // remove rulesets from styles
-        $ruleset[$basequery] = preg_replace($regex, '', $styles);
+        // stripping rulesets leaves base styles
+        $ruleset[$basequery] = preg_replace($regex, '', $this->styles);
         foreach ($ruleset as $query => $segment):
             // make sure there is semicolon before closing brace
             $segment = preg_replace('#(\})#', ";$1", $segment);
-            $regex = '#\s([\.\#\:\w][\w\-\s\[\]\'\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s'; 
+            $regex = '#\s([\.\#\:\w][\w\-\s\(\)\[\]\'\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s';  //
             preg_match_all($regex, $segment, $matches);
             foreach($matches[1] as $sel):
                 $stuff  = array_shift($matches[2]);
@@ -471,11 +471,13 @@ class Child_Theme_Configurator_CSS {
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
                     $rule   = preg_replace_callback("/[^\w\-]/", array($this, 'to_ascii'), $rule);
-                    $value  = stripslashes(trim($value));
+                    $value  = $this->sanitize($value);
                     
                     $rules = $values = array();
                     // save important flag
                     $important = $this->is_important($value);
+                    // normalize color
+                    $value = $this->normalize_color($value);
                     // normalize font
                     if ('font' == $rule):
                         $this->normalize_font($value, $rules, $values);
@@ -553,7 +555,7 @@ class Child_Theme_Configurator_CSS {
                             endif;
                             $important_parnt = empty($valid['i_parnt']) ? 0 : 1;
                             $important = isset($valid['i_child']) ? $valid['i_child'] : $important_parnt;
-                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], stripslashes($valarr[$valid['child']]), $shorthand, $important);
+                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], $this->sanitize($valarr[$valid['child']]), $shorthand, $important);
                         endif;
                     endforeach;
                     $sel_output .= $this->encode_shorthand($shorthand); // . ($important ? ' !important' : '');
@@ -1049,6 +1051,9 @@ class Child_Theme_Configurator_CSS {
         // check if in plugins dir
         if (preg_match('%^' . preg_quote(WP_PLUGIN_DIR) . '%', $stylesheet)) return $stylesheet;
         return false;
+    }
+    function normalize_color($value) {
+        return preg_replace("/#([0-9A-F])\\1([0-9A-F])\\2([0-9A-F])\\3/i",strtolower("#$1$2$3"), $value);
     }
 }
 ?>
