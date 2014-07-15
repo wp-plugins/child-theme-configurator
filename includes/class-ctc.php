@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.3.5
+    Version: 1.4.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -32,6 +32,8 @@ class Child_Theme_Configurator {
     var $is_ajax;
     var $updated;
     var $image_formats;
+    var $updates = array();
+    var $cache_updates;
     
     function __construct($file) {
         $this->dir = dirname( $file );
@@ -45,7 +47,7 @@ class Child_Theme_Configurator {
         $this->pluginPath       = $this->dir . '/';
         $this->pluginURL        = plugin_dir_url($file);
         $this->image_formats    = array('jpg','jpeg','gif','png','JPG','JPEG','GIF','PNG');
-
+        $this->cache_updates    = true;
         // setup plugin hooks
         add_action('admin_menu',                array(&$this, 'admin_menu'));
         add_action('admin_enqueue_scripts',     array(&$this, 'enqueue_scripts'));
@@ -69,7 +71,7 @@ class Child_Theme_Configurator {
             wp_enqueue_script('iris');
 //            wp_enqueue_script('thickbox');
             wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('iris'), '1.0');
-            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
+            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js',
                 array('jquery-ui-autocomplete'), '1.0', true);
             wp_localize_script( 'chld-thm-cfg-admin', 'ctcAjax', 
                 apply_filters('chld_thm_cfg_localize_script', array(
@@ -154,9 +156,7 @@ class Child_Theme_Configurator {
             $this->load_config();
             $this->css->parse_post_data();
             $this->css->write_css();
-            $result = $this->css->get_prop('updates');
-            // clear updates so they aren't saved in options object
-            $this->css->reset_updates();
+            $result = $this->css->obj_to_utf8($this->updates);
             update_option($this->optionsName, $this->css);
             // send all updates back to browser to update cache
             die(json_encode($result));
@@ -195,9 +195,10 @@ class Child_Theme_Configurator {
             || ! $this->check_theme_exists($this->css->get_prop('parnt'))            
             // upgrade to v.1.1.1 
             || !($version = $this->css->get_prop('version'))
-            )
-
-            $this->css = new Child_Theme_Configurator_CSS();
+            ):
+            $parent = get_template();
+            $this->css = new Child_Theme_Configurator_CSS($parent);
+        endif;
     }
     
     function write_config() {
@@ -208,7 +209,6 @@ class Child_Theme_Configurator {
             && !isset($_POST['ctc_theme_image_submit'])
             && !isset($_POST['ctc_theme_screenshot_submit'])) return false;
         $this->errors = array();
-        //die(print_r($_POST, true));
         if (current_user_can('install_themes')): // && $this->validate_post()):
             if (isset($_POST['ctc_load_styles'])):
                 foreach (array(
@@ -258,14 +258,18 @@ class Child_Theme_Configurator {
                     do_action('chld_thm_cfg_addl_files', $this);   // hook for add'l plugin files and subdirectories
                     $this->css->parse_css_file('parnt');
                     $this->css->parse_css_file('child');
+                    if (isset($_POST['ctc_additional_css']) && is_array($_POST['ctc_additional_css'])):
+                        foreach ($_POST['ctc_additional_css'] as $file):
+                            $this->css->parse_css_file('parnt', $file);
+                        endforeach;
+                    endif;
                     if (false === $this->css->write_css(isset($_POST['ctc_backup']))):
                         $this->errors[] = __('Your stylesheet is not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
                         return false;
                     endif; 
-                    $this->css->reset_updates();
                     update_option($this->optionsName, $this->css);
                     do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
-                    $msg = isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
+                    $msg = 1; //isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
                 endif;
             elseif (isset($_POST['ctc_parnt_templates_submit']) && isset($_POST['ctc_file_parnt'])):
                 foreach ($_POST['ctc_file_parnt'] as $file):
@@ -287,6 +291,10 @@ class Child_Theme_Configurator {
                 $this->handle_file_upload('ctc_theme_image', 'images');
                 $msg = '8&tab=file_options';
             elseif (isset($_POST['ctc_theme_screenshot_submit']) && isset($_FILES['ctc_theme_screenshot'])):
+                // remove old screenshot
+                foreach($this->image_formats as $ext):
+                    $this->delete_child_file('screenshot', $ext);
+                endforeach;
                 $this->handle_file_upload('ctc_theme_screenshot');
                 $msg = '8&tab=file_options';
             else:
@@ -393,13 +401,24 @@ class Child_Theme_Configurator {
         
     }
     
+    function get_additional_css($parnt) {
+        $themedir = get_theme_root() . '/' . $parnt;
+        $files = array();
+        foreach ($this->css->recurse_directory($themedir) as $file):
+            $file = preg_replace('%^' . preg_quote($themedir) . '\/%', '', $file);
+            if ('style.css' != $file) $files[] = $file;
+        endforeach;
+        return $files;
+    }
+    
+    
     function handle_file_upload($field, $childdir = NULL){
         /* adapted from http://www.php.net/manual/en/features.file-upload.php#114004 */
         try {
             // Undefined | Multiple Files | $_FILES Corruption Attack
             // If this request falls under any of them, treat it invalid.
             if ( !isset($_FILES[$field]['error']) || is_array($_FILES[$field]['error']) ):
-                throw new RuntimeException('Invalid parameters.');
+                throw new RuntimeException(__('Invalid parameters.', 'chld_thm_cfg'));
             endif;
 
             // Check $_FILES['upfile']['error'] value.
@@ -407,16 +426,16 @@ class Child_Theme_Configurator {
                 case UPLOAD_ERR_OK:
                     break;
                 case UPLOAD_ERR_NO_FILE:
-                    throw new RuntimeException('Please select a file to upload.');
+                    throw new RuntimeException(__('Please select a file to upload.', 'chld_thm_cfg'));
                 case UPLOAD_ERR_INI_SIZE:
                 case UPLOAD_ERR_FORM_SIZE:
-                    throw new RuntimeException('File is too large.');
+                    throw new RuntimeException(__('File is too large.', 'chld_thm_cfg'));
                 default:
-                    throw new RuntimeException('There was a problem uploading the file.');
+                    throw new RuntimeException(__('There was a problem uploading the file.', 'chld_thm_cfg'));
             endswitch;
 
             if ($_FILES[$field]['size'] > 1024 * 1024):
-                throw new RuntimeException('Theme images cannot be over 1MB.');
+                throw new RuntimeException(__('Theme images cannot be over 1MB.', 'chld_thm_cfg'));
             endif;
             
             if (false === ($ext = array_search(
@@ -428,7 +447,7 @@ class Child_Theme_Configurator {
                 ),
                 true
             ))):
-                throw new RuntimeException('Theme images must be JPG, PNG or GIF.');
+                throw new RuntimeException(__('Theme images must be JPG, PNG or GIF.', 'chld_thm_cfg'));
             endif;
             // strip extension
             $filename = preg_replace('%\.[^\.]+$%', '', $_FILES[$field]['name']);
@@ -439,16 +458,16 @@ class Child_Theme_Configurator {
             $targetdir = dirname($target);
             if (! is_dir($targetdir)):
                 if (! @mkdir($targetdir, 0755, true)):
-                    throw new RuntimeException('Unable to create directory.');
+                    throw new RuntimeException(__('Unable to create directory.', 'chld_thm_cfg'));
                 endif;
             elseif (! is_writable($targetdir)):
-                throw new RuntimeException('Child theme directory is not writable.');
+                throw new RuntimeException(__('Child theme directory is not writable.', 'chld_thm_cfg'));
             endif;
             if (!$target || !move_uploaded_file(
                 $_FILES[$field]['tmp_name'],
                 $target
             )):
-                throw new RuntimeException('There was a problem uploading the file.');
+                throw new RuntimeException(__('There was a problem uploading the file.', 'chld_thm_cfg'));
             endif;
 
         } catch (RuntimeException $e) {

@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.4.0
+    Version: 1.4.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -27,7 +27,7 @@ class Child_Theme_Configurator_UI {
         global $chld_thm_cfg; 
         $css        = $chld_thm_cfg->css;
         $themes     = $chld_thm_cfg->themes;
-        $parent     = $css->get_prop('parnt');
+        $parent     = isset($_GET['ctc_parent']) ? sanitize_text_field($_GET['ctc_parent']) : $css->get_prop('parnt');
         $child      = $css->get_prop('child');
         $configtype = $css->get_prop('configtype');
         $hidechild  = (count($themes['child']) ? '' : 'style="display:none"');
@@ -77,7 +77,7 @@ class Child_Theme_Configurator_UI {
     <i id="ctc_status_preview"></i></h2>
   <div class="ctc-option-panel-container">
     <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
-      <form id="ctc_load_form" method="post" action="">
+      <form id="ctc_load_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>">
         <?php wp_nonce_field( 'ctc_update' ); ?>
         <div class="ctc-input-row clearfix" id="input_row_parnt">
           <div class="ctc-input-cell"> <strong>
@@ -157,15 +157,29 @@ class Child_Theme_Configurator_UI {
                 value="1" />
           </div>
         </div>
+        <?php if (empty($configtype) || 'theme' == $configtype): 
+        $stylesheets = $chld_thm_cfg->get_additional_css($parent);
+        if (count($stylesheets)):?>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
-          <div class="ctc-input-cell"> <strong>
-            <?php _e('Scan Parent Theme<br/>for Additional Stylesheets', 'chld_thm_cfg'); ?>
-            </strong> </div>
-          <div class="ctc-input-cell">
-            <input class="ctc_checkbox" id="ctc_scan_subdirs" name="ctc_scan_subdirs" type="checkbox" 
-                value="1" />
+          <div class="ctc-input-cell" id="ctc_additional_css_label"> <strong> <span><?php _e('Parse additional stylesheets:', 'chld_thm_cfg'); ?></span> </strong>
+            <p><?php _e('(click to toggle)', 'chld_thm_cfg'); ?></p>
+          </div>
+          <div class="ctc-input-cell-wide" id="ctc_additional_css_files" style="display:none">
+            <p style="margin-top:0">
+              <?php _e('Select only the stylesheets you wish to customize to reduce overhead.', 'chld_thm_cfg'); ?>
+            </p>
+            <?php 
+            foreach ($stylesheets as $stylesheet): ?>
+            <div class="ctc-input-cell">
+              <label>
+                <input class="ctc_checkbox" name="ctc_additional_css[]" type="checkbox" 
+                value="<?php echo $stylesheet; ?>" />
+                <?php echo $stylesheet; ?></label>
+            </div>
+            <?php endforeach; ?>
           </div>
         </div>
+        <?php endif; endif; ?>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
           <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
           <div class="ctc-input-cell">
@@ -177,7 +191,7 @@ class Child_Theme_Configurator_UI {
     </div>
     <div id="rule_value_options_panel" 
         class="ctc-option-panel<?php echo 'rule_value_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
-      <form id="ctc_rule_value_form" method="post" action="">
+      <form id="ctc_rule_value_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=rule_value_options">
         <?php wp_nonce_field( 'ctc_update' ); ?>
         <div class="ctc-input-row clearfix" id="ctc_input_row_rule_menu">
           <div class="ctc-input-cell"> <strong>
@@ -208,7 +222,7 @@ class Child_Theme_Configurator_UI {
     </div>
     <div id="query_selector_options_panel" 
         class="ctc-option-panel<?php echo 'query_selector_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
-      <form id="ctc_query_selector_form" method="post" action="">
+      <form id="ctc_query_selector_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=query_selector_options">
         <div class="ctc-input-row clearfix" id="input_row_query">
           <div class="ctc-input-cell"> <strong>
             <?php _e('Query', 'chld_thm_cfg'); ?>
@@ -294,7 +308,7 @@ class Child_Theme_Configurator_UI {
     </div>
     <div id="import_options_panel" 
         class="ctc-option-panel<?php echo 'import_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
-      <form id="ctc_import_form" method="post" action="">
+      <form id="ctc_import_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=import_options">
         <?php wp_nonce_field( 'ctc_update' ); ?>
         <div class="ctc-input-row clearfix" id="ctc_child_imports_row">
           <div class="ctc-input-cell"> <strong>
@@ -327,13 +341,13 @@ class Child_Theme_Configurator_UI {
       <?php $this->render_file_form('child'); ?>
       <?php $this->render_image_form(); ?>
       <div class="ctc-input-row clearfix" id="input_row_theme_image">
-        <form id="ctc_<?php echo $template; ?>_theme_image_form" method="post" action="" enctype="multipart/form-data">
+        <form id="ctc_<?php echo $template; ?>_theme_image_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" enctype="multipart/form-data">
           <?php wp_nonce_field( 'ctc_update' ); ?>
           <div class="ctc-input-cell"> <strong>
             <?php _e('Upload New Child Theme Image', 'chld_thm_cfg'); ?>
             </strong>
             <p class="howto">
-              <?php _e('Theme images reside under the <code>images</code> directory in your child theme and are meant for stylesheet use only. Use the media gallery for content images.', 'chld_thm_cfg'); ?>
+              <?php _e('Theme images reside under the <code>images</code> directory in your child theme and are meant for stylesheet use only. Use the Media Library for content images.', 'chld_thm_cfg'); ?>
             </p>
           </div>
           <div class="ctc-input-cell-wide">
@@ -353,13 +367,13 @@ class Child_Theme_Configurator_UI {
       </div>
       <?php endif; ?>
       <div class="ctc-input-row clearfix" id="input_row_screenshot">
-        <form id="ctc_screenshot_form" method="post" action="" enctype="multipart/form-data">
+        <form id="ctc_screenshot_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" enctype="multipart/form-data">
           <?php wp_nonce_field( 'ctc_update' ); ?>
           <div class="ctc-input-cell"> <strong>
             <?php _e('Upload New Screenshot', 'chld_thm_cfg'); ?>
             </strong>
             <p class="howto">
-              <?php _e('The theme screenshot should be a 4:3 ratio (eg., 880px x 660px) JPG, PNG or GIF. It will be renamed <code>screenshot</code>.', 'chld_thm_cfg'); ?>
+              <?php _e('The theme screenshot should be a 4:3 ratio (e.g., 880px x 660px) JPG, PNG or GIF. It will be renamed <code>screenshot</code>.', 'chld_thm_cfg'); ?>
             </p>
           </div>
           <div class="ctc-input-cell-wide">
@@ -416,11 +430,19 @@ class Child_Theme_Configurator_UI {
   <?php echo $templatefile; ?></label>
 <?php             
             endforeach;
+            $linktext = __('Click here to edit template files using the Theme Editor', 'chld_thm_cfg');
+            $editorlink = '<a href="' . admin_url('theme-editor.php?file=functions.php&theme=' . $chld_thm_cfg->css->get_prop('child')) . '" title="' . $linktext . '">';
+            $editorlinkend = '</a>';
+            if (defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT):
+                $linktext = __('The Theme editor has been disabled. Template files must be edited offline.', 'chld_thm_cfg');
+                $editorlink = '';
+                $editorlinkend = '';
+            endif;
             $inputs = ob_get_contents();
             ob_end_clean();
             if ($counter): ?>
 <div class="ctc-input-row clearfix" id="input_row_<?php echo $template; ?>_templates">
-  <form id="ctc_<?php echo $template; ?>_templates_form" method="post">
+  <form id="ctc_<?php echo $template; ?>_templates_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options">
     <?php wp_nonce_field( 'ctc_update' ); ?>
     <div class="ctc-input-cell"> <strong>
       <?php _e(('parnt' == $template ? 'Parent' : 'Child') . ' Templates', 'chld_thm_cfg'); ?>
@@ -432,13 +454,11 @@ class Child_Theme_Configurator_UI {
       <p><strong>
         <?php _e('CAUTION: If your child theme is active, the child theme version of the file will be used instead of the parent immediately after it is copied.', 'chld_thm_cfg');?>
         </strong></p>
-      <p class="howto">
-        <?php _e('The <code>functions.php</code> file is generated separately and cannot be copied here.', 'chld_thm_cfg');
+      <p class="howto"> <?php echo sprintf(__('The %s file is generated separately and cannot be copied here.', 'chld_thm_cfg'), 
+        $editorlink . '<code>functions.php</code>' . $editorlinkend
+        );
             else:
-            $linktext = __('Click here to edit template files using the Theme Editor', 'chld_thm_cfg');
-            $editorlink = 'theme-editor.php?file=functions.php&theme=' . $theme;
-            ?>
-        <a href="<?php echo admin_url($editorlink); ?>" title="<?php echo $linktext; ?>"><?php echo $linktext; ?></a></p>
+                echo $editorlink . $linktext . $editorlinkend; ?></p>
       <p class="howto">
         <?php _e('Remove child theme templates by selecting them here.', 'chld_thm_cfg');
             endif; ?>
@@ -483,7 +503,7 @@ class Child_Theme_Configurator_UI {
             ob_end_clean();
             if ($counter): ?>
 <div class="ctc-input-row clearfix" id="input_row_images">
-  <form id="ctc_image_form" method="post" action="">
+  <form id="ctc_image_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options">
     <?php wp_nonce_field( 'ctc_update' ); ?>
     <div class="ctc-input-cell"> <strong>
       <?php _e('Child Theme Images', 'chld_thm_cfg'); ?>
@@ -568,8 +588,9 @@ class Child_Theme_Configurator_UI {
 <li>Enter a Name for the child theme.</li>
 <li>Enter an author for the child theme.</li>
 <li>Enter the child theme version number.</li>
-<li>If your theme uses multiple stylesheets, check "Scan Parent Theme for additional stylesheets.</li>
-<li>Click "Generate Child Theme." If you are loading an existing child theme, The Child Theme Configurator will create a backup of your existing stylesheet in the theme directory.</li></ol>
+<li>If you check "Backup Stylesheet", The Child Theme Configurator will create a backup in the theme directory.</li>
+<li>If your theme uses additional stylesheets they will appear as checkbox options. Select only the stylesheets you wish to customize to reduce overhead.</li>
+<li>Click "Generate Child Theme."</li></ol>
 				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
@@ -668,9 +689,7 @@ class Child_Theme_Configurator_UI {
 <h5>Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator?</h5>
 <p>You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.</p>
 <h5>Why doesn\'t the Parent Theme have any styles when I "View Parent CSS"?</h5>
-<p>Your Parent theme is probably using a non-standard location for the stylesheets. Check "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again.</p>
-<h5>Why is everything backwards?</h5>
-<p>More than likely you selected "Scan Parent Theme for additional stylesheets" and your theme uses a "right-to-left" (rtl) stylesheet. Go to the @imports tab and remove the rtl stylesheet from the list of imported stylesheets.</p>
+<p>Your Parent theme is probably using a separate location for the stylesheets. Select individual stylesheets from the "Parse Additional Stylesheets" section of the Parent/Child tab and click "Generate Child Theme Files" again.</p>
 <h5 id="menus-broken">Why are my menus displaying incorrectly when I activate the new child theme?</h5>
 <p>The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance &gt; Menus and assign locations to each of the menus for the new Child Theme.</p>
 <h5 "preview-not-loading">Why do the preview tabs return "Stylesheet could not be displayed"?</h5>
@@ -688,10 +707,11 @@ class Child_Theme_Configurator_UI {
 <h5 id="gradients">How do I create cross-browser gradients?</h5>
 <p>The Child Theme Configurator automatically generates the vendor prefixes and filters to display gradients across most browsers. It uses a normalized syntax and only supports two colors without intermediate stops. The inputs consist of origin (e.g., top, left, 135deg, etc.), start color and end color. The browser-specific syntax is generated automatically when you save these values. <strong>Note:</strong> For Internet Explorer, a filter rule approximates the gradient but can only be horizontal (origin top) or vertical (origin left). The legacy webkit-gradient syntax is not supported.</p>
 <h5 id="responsive">How do I make my Theme responsive?</h5>
-<p>This topic is beyond the scope of this document. The short answer is to use a responsive Parent Theme. Some common characteristics of responsive design are:
+<p>The short answer is to use a responsive Parent Theme. Some common characteristics of responsive design are:</p>
 <ul><li>Avoiding fixed width and height values. Using max- and min-height values and percentages are ways to make your designs respond to the viewer\'s browser size.</li>
 <li>Combining floats and clears with inline and relative positions allow the elements to adjust gracefully to their container\'s width.</li>
 <li>Showing and hiding content with Javascript.</li></ul>
+<iframe width="480" height="270" src="//www.youtube.com/embed/iBiiAgsK4G4?rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe> 
 <h5 id="web_fonts">How do I add Web Fonts?</h5>
 <p>The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the <strong>font-family</strong> rule. Be sure you understand the license for any embedded fonts.</p>
 <p>You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. <strong>Note:</strong> Currently the Child Theme Configurator does not generate previews of imported web fonts, but will in a later release.</p>
