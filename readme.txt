@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.9.1
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -179,6 +179,11 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.4.5 = 
+* Fix: escape quotes in text inputs. This has bugged me for a while now.
+* Fix: Escape backslash for octal content values. Thanks Laurent for reporting this.
+* Fix: Normalize colors to lowercase and short form when possible to prevent duplicate entries in the data
+
 = 1.4.4 = 
 * Refactored the way CTC caches updates and returns them to the UI controller to reduce memory consumption. 
 * Prevent out of memory fatals when generating new child theme.
@@ -286,9 +291,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-= 1.4.4 =
-* This release fixes out of memory errors when generating child themes for parent themes with numerous additional stylesheets.
-* Added ability to select individual parent stylesheets for parsing.
+= 1.4.5 =
+* Fixed a number of issues with text inputs. See changelog for details.
 
 == Create Your Child Theme ==
 

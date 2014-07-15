@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.4.4
+    Version: 1.4.5
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -232,18 +232,23 @@ class Child_Theme_Configurator {
                     $this->errors[] = __('Please select a valid Parent Theme', 'chld_thm_cfg');
                 endif;
                 if ('new' == $type):
-                    $configtype = 'theme'; // no custom stylesheets until style.css exists!
-                    $child = strtolower(preg_replace("%[^\w\-]%", '', $template));
-                    if ($this->check_theme_exists($child)):
-                        $this->errors[] = sprintf(__('<strong>%s</strong> exists. Please enter a different Child Theme template name', 'chld_thm_cfg'), $child);
+                    if (empty($template) && empty($name)):
+                        $this->errors[] = __('Please enter a valid Child Theme template name', 'chld_thm_cfg');
+                    else:
+                        $configtype = 'theme'; // no custom stylesheets until style.css exists!
+                        $child = strtolower(preg_replace("%[^\w\-]%", '', empty($template) ? $name : $template));
+                        if ($this->check_theme_exists($child)):
+                            $this->errors[] = sprintf(__('<strong>%s</strong> exists. Please enter a different Child Theme template name', 'chld_thm_cfg'), $child);
+                        endif;
                     endif;
                 endif;
-                if (empty($child)):
-                    $this->errors[] = __('Please enter a valid Child Theme template name', 'chld_thm_cfg');
-                endif;
                 if (empty($name)):
+                    $name = ucfirst($child);
+                endif;
+                if (empty($child)):
                     $this->errors[] = __('Please enter a valid Child Theme name', 'chld_thm_cfg');
                 endif;
+                
                 if (false === $this->verify_child_theme($child)):
                     $this->errors[] = __('Your theme directories are not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
                 endif;

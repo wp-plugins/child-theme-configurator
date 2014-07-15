@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.4.4
+    Version: 1.4.5
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct($parent = '') {
         // scalars
-        $this->version          = '1.4.4';
+        $this->version          = '1.4.5';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -318,7 +318,7 @@ class Child_Theme_Configurator_CSS {
                     if (null == $rule || !isset($this->dict_rule[$rule])) continue;
                     $ruleid = $this->dict_rule[$rule];
                     $qsid = $matches[3];
-                    $value  = sanitize_text_field($this->parse_css_input($_POST[$post_key]));
+                    $value  = $this->normalize_color($this->parse_css_input($_POST[$post_key]));
                     $important = $this->is_important($value);
                     if (!empty($_POST['ctc_' . $valid . '_child_' . $rule . '_i_' . $qsid])) $important = 1;
                     
@@ -393,9 +393,19 @@ class Child_Theme_Configurator_CSS {
      * TODO: this is a stub for future use
      */
     function parse_css_input($styles) {
-        return stripslashes($styles);
+        return $this->sanitize($styles);
+    }
+    
+    function sanitize($styles) {
+        return $this->repl_octal(sanitize_text_field(stripslashes($this->esc_octal($styles))));
     }
 
+    function esc_octal($styles){
+        return preg_replace("#(['\"])\\\\([0-9a-f]{4})(['\"])#i", "$1##bs##$2$3", $styles);
+    }
+    function repl_octal($styles) {
+        return str_replace("##bs##", "\\", $styles);
+    }
     /*
      * parse_css_file
      * reads stylesheet to get WordPress meta data and passes rest to parse_css 
@@ -461,11 +471,13 @@ class Child_Theme_Configurator_CSS {
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
                     $rule   = preg_replace_callback("/[^\w\-]/", array($this, 'to_ascii'), $rule);
-                    $value  = stripslashes(trim($value));
+                    $value  = $this->sanitize($value);
                     
                     $rules = $values = array();
                     // save important flag
                     $important = $this->is_important($value);
+                    // normalize color
+                    $value = $this->normalize_color($value);
                     // normalize font
                     if ('font' == $rule):
                         $this->normalize_font($value, $rules, $values);
@@ -543,7 +555,7 @@ class Child_Theme_Configurator_CSS {
                             endif;
                             $important_parnt = empty($valid['i_parnt']) ? 0 : 1;
                             $important = isset($valid['i_child']) ? $valid['i_child'] : $important_parnt;
-                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], stripslashes($valarr[$valid['child']]), $shorthand, $important);
+                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], $this->sanitize($valarr[$valid['child']]), $shorthand, $important);
                         endif;
                     endforeach;
                     $sel_output .= $this->encode_shorthand($shorthand); // . ($important ? ' !important' : '');
@@ -1039,6 +1051,9 @@ class Child_Theme_Configurator_CSS {
         // check if in plugins dir
         if (preg_match('%^' . preg_quote(WP_PLUGIN_DIR) . '%', $stylesheet)) return $stylesheet;
         return false;
+    }
+    function normalize_color($value) {
+        return preg_replace("/#([0-9A-F])\\1([0-9A-F])\\2([0-9A-F])\\3/i",strtolower("#$1$2$3"), $value);
     }
 }
 ?>
