@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 3.9.1
-Stable tag: 1.4.5.1
+Stable tag: 1.4.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -179,6 +179,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.4.5.2 = 
+* Fix: javascript bug
+
 = 1.4.5.1 = 
 * Fix: regression bug - sanitizing broke raw input selectors
 
@@ -294,7 +297,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-= 1.4.5.1 =
+= 1.4.5.2 =
+* Fixed JavaScript bug introduced in 1.4.5
 * Fixed regression bug introduced in 1.4.5 that broke raw css input
 
 == Create Your Child Theme ==
