@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.4.5
+    Version: 1.4.5.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct($parent = '') {
         // scalars
-        $this->version          = '1.4.5';
+        $this->version          = '1.4.5.1';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -302,7 +302,7 @@ class Child_Theme_Configurator_CSS {
             $this->styles = $this->parse_css_input($_POST['ctc_child_imports']);
             $this->parse_css('child');
         else:
-            $newselector = isset($_POST['ctc_rewrite_selector']) ? sanitize_text_field($this->parse_css_input($_POST['ctc_rewrite_selector'])) : NULL;
+            $newselector = isset($_POST['ctc_rewrite_selector']) ? $this->parse_css_input($_POST['ctc_rewrite_selector']) : NULL;
             // set the custom sequence value
             foreach (preg_grep('#^ctc_ovrd_child_seq_#', array_keys($_POST)) as $post_key):
                 if (preg_match('#^ctc_ovrd_child_seq_(\d+)$#', $post_key, $matches)):
@@ -318,7 +318,7 @@ class Child_Theme_Configurator_CSS {
                     if (null == $rule || !isset($this->dict_rule[$rule])) continue;
                     $ruleid = $this->dict_rule[$rule];
                     $qsid = $matches[3];
-                    $value  = $this->normalize_color($this->parse_css_input($_POST[$post_key]));
+                    $value  = $this->normalize_color($this->sanitize($_POST[$post_key]));
                     $important = $this->is_important($value);
                     if (!empty($_POST['ctc_' . $valid . '_child_' . $rule . '_i_' . $qsid])) $important = 1;
                     
@@ -393,7 +393,7 @@ class Child_Theme_Configurator_CSS {
      * TODO: this is a stub for future use
      */
     function parse_css_input($styles) {
-        return $this->sanitize($styles);
+        return $this->repl_octal(stripslashes($this->esc_octal($styles)));
     }
     
     function sanitize($styles) {
@@ -471,7 +471,7 @@ class Child_Theme_Configurator_CSS {
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
                     $rule   = preg_replace_callback("/[^\w\-]/", array($this, 'to_ascii'), $rule);
-                    $value  = $this->sanitize($value);
+                    //$value  = $this->sanitize($value);
                     
                     $rules = $values = array();
                     // save important flag
@@ -555,7 +555,7 @@ class Child_Theme_Configurator_CSS {
                             endif;
                             $important_parnt = empty($valid['i_parnt']) ? 0 : 1;
                             $important = isset($valid['i_child']) ? $valid['i_child'] : $important_parnt;
-                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], $this->sanitize($valarr[$valid['child']]), $shorthand, $important);
+                            $sel_output .= $this->add_vendor_rules($rulearr[$ruleid], $valarr[$valid['child']], $shorthand, $important);
                         endif;
                     endforeach;
                     $sel_output .= $this->encode_shorthand($shorthand); // . ($important ? ' !important' : '');
