@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.4.5.1
+    Version: 1.4.5.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -44,7 +44,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct($parent = '') {
         // scalars
-        $this->version          = '1.4.5.1';
+        $this->version          = '1.4.5.2';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -302,7 +302,7 @@ class Child_Theme_Configurator_CSS {
             $this->styles = $this->parse_css_input($_POST['ctc_child_imports']);
             $this->parse_css('child');
         else:
-            $newselector = isset($_POST['ctc_rewrite_selector']) ? $this->parse_css_input($_POST['ctc_rewrite_selector']) : NULL;
+            $newselector = isset($_POST['ctc_rewrite_selector']) ? $this->sanitize($this->parse_css_input($_POST['ctc_rewrite_selector'])) : NULL;
             // set the custom sequence value
             foreach (preg_grep('#^ctc_ovrd_child_seq_#', array_keys($_POST)) as $post_key):
                 if (preg_match('#^ctc_ovrd_child_seq_(\d+)$#', $post_key, $matches)):
@@ -318,7 +318,7 @@ class Child_Theme_Configurator_CSS {
                     if (null == $rule || !isset($this->dict_rule[$rule])) continue;
                     $ruleid = $this->dict_rule[$rule];
                     $qsid = $matches[3];
-                    $value  = $this->normalize_color($this->sanitize($_POST[$post_key]));
+                    $value  = $this->normalize_color($this->sanitize($this->parse_css_input($_POST[$post_key])));
                     $important = $this->is_important($value);
                     if (!empty($_POST['ctc_' . $valid . '_child_' . $rule . '_i_' . $qsid])) $important = 1;
                     
@@ -397,7 +397,7 @@ class Child_Theme_Configurator_CSS {
     }
     
     function sanitize($styles) {
-        return $this->repl_octal(sanitize_text_field(stripslashes($this->esc_octal($styles))));
+        return sanitize_text_field($styles);
     }
 
     function esc_octal($styles){
@@ -427,6 +427,7 @@ class Child_Theme_Configurator_CSS {
      * accepts raw CSS as text and parses into separate properties 
      */
     function parse_css($template, $basequery = null, $parse_imports = true) {
+        //echo $this->styles;
         if (false === strpos($basequery, '@')):
             $basequery = 'base';
         endif;
@@ -471,7 +472,7 @@ class Child_Theme_Configurator_CSS {
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
                     $rule   = preg_replace_callback("/[^\w\-]/", array($this, 'to_ascii'), $rule);
-                    //$value  = $this->sanitize($value);
+                    $value  = trim($value);
                     
                     $rules = $values = array();
                     // save important flag

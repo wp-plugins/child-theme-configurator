@@ -123,9 +123,9 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     min-height: 300px;
     max-height: 500px;
     position: absolute;
-    width: 90%;
+    width: 80%;
     overflow: auto;
-    left: 0;
+    left: 15%;
     top: 30px;
     display: none;
     z-index: 99999;
