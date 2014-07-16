@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.4.5
+ *  Version: 1.4.5.2
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -19,7 +19,7 @@ jQuery(document).ready(function($){
         quot_regex = new RegExp('"', 'g'),
     // initialize functions
     esc_quot = function(str){
-        return str.replace(quot_regex, '&quot;');
+        return ctc_is_empty(str) ? str : str.toString().replace(quot_regex, '&quot;');
     },
     ctc_setup_iris = function(obj) {
         $(obj).iris({
