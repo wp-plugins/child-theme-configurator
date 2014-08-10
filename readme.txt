@@ -183,6 +183,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Feature: export child theme as zip archive
 * Added transform to list of vendor rules
 * Bug fixed: parser not loading multiple instances of same @media rulesets
+* Refactored uploader to use wp core functions for compatibility and security
 * Increased CHLD_THM_CFG_MAX_RECURSE_LOOPS to 1000 to accommodate complex parent frameworks
 
 = 1.4.5.2 = 
@@ -307,6 +308,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Feature: export child theme as zip archive
 * Added transform to list of vendor rules
 * Bug fixed: parser not loading multiple instances of same @media rulesets
+* Refactored uploader to use wp core functions for compatibility and security
 * Increased CHLD_THM_CFG_MAX_RECURSE_LOOPS to 1000 to accommodate complex parent frameworks
 
 == Create Your Child Theme ==
