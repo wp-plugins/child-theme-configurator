@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.4.5.2
+    Version: 1.4.6
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -41,10 +41,11 @@ class Child_Theme_Configurator_CSS {
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
     var $child_version; // stylesheet version
+    var $vendorrule;
     
     function __construct($parent = '') {
         // scalars
-        $this->version          = '1.4.5.2';
+        $this->version          = '1.4.6';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -56,6 +57,14 @@ class Child_Theme_Configurator_CSS {
         $this->child_name       = '';
         $this->child_author     = 'Child Theme Configurator by Lilaea Media';
         $this->child_version    = '1.0';
+        $this->vendorrule       = array(
+            "box-sizing",
+            "font-smoothing",
+            "border-radius",
+            "box-shadow",
+            "transition",
+            "transform"
+        );
         // multi-dim arrays
         $this->dict_qs          = array();
         $this->dict_sel         = array();
@@ -250,7 +259,7 @@ class Child_Theme_Configurator_CSS {
         $loops = 0;
         if ('img' == $ext):
             global $chld_thm_cfg;
-            $ext = '(' . implode('|', $chld_thm_cfg->image_formats) . ')';
+            $ext = '(' . implode('|', array_keys($chld_thm_cfg->imgmimes)) . ')';
         endif;
         while(count($dirs) && $loops < CHLD_THM_CFG_MAX_RECURSE_LOOPS):
             $loops++;
@@ -261,7 +270,7 @@ class Child_Theme_Configurator_CSS {
                     $filepath  = $dir . '/' . $file;
                     if (is_dir($filepath)):
                         array_unshift($dirs, $filepath);
-                    elseif (is_file($filepath) && preg_match("/\.".$ext."$/", $filepath)):
+                    elseif (is_file($filepath) && preg_match("/\.".$ext."$/i", $filepath)):
                         $files[] = $filepath;
                     endif;
                 endwhile;
@@ -451,10 +460,10 @@ class Child_Theme_Configurator_CSS {
             endif;
         endif;
         // break into @ segments
-        $regex = '#(\@media[^\{]+?)\{([^\@]*)\}#s'; // *?\})\s
+        $regex = '#(\@media[^\{]+?)\{(((?!\@media).)*?\})\s*?\}#s';
         preg_match_all($regex, $this->styles, $matches);
         foreach ($matches[1] as $segment):
-            $ruleset[trim($segment)] = array_shift($matches[2]);
+            $ruleset[trim($segment)] = array_shift($matches[2]) . (isset($ruleset[trim($segment)])?$ruleset[trim($segment)]:'');
         endforeach;
         // stripping rulesets leaves base styles
         $ruleset[$basequery] = preg_replace($regex, '', $this->styles);
@@ -506,7 +515,7 @@ class Child_Theme_Configurator_CSS {
                             $value = $this->encode_gradient($value);
                         endif;
                         // normalize common vendor prefixes
-                        $rule = preg_replace('#(\-(o|ms|moz|webkit)\-)?(box\-sizing|font\-smoothing|border\-radius|box\-shadow|transition)#', "$3", $rule);
+                        $rule = preg_replace('#(\-(o|ms|moz|webkit)\-)?(' . implode('|', $this->vendorrule) . ')#', "$3", $rule);
                         $this->update_arrays($template, $query, $sel, $rule, $value, $important);
                     endforeach;
                 endforeach;
@@ -596,7 +605,7 @@ class Child_Theme_Configurator_CSS {
         if (preg_match("/^(margin|padding)\-(top|right|bottom|left)$/", $rule, $matches)):
             $shorthand[$matches[1]][$matches[2]] = $value . $importantstr;
             return '';
-        elseif (preg_match("/^(box\-sizing|font\-smoothing|border\-radius|box\-shadow|transition)$/", $rule)):
+        elseif (preg_match('/^(' . implode('|', $this->vendorrule) . ')$/', $rule)):
             foreach(array('moz', 'webkit', 'o') as $prefix):
                 $rules .= '    -' . $prefix . '-' . $rule . ': ' . $value . $importantstr . ';' . LF;
             endforeach;
