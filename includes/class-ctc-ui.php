@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.4.5.2
+    Version: 1.5.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -33,12 +33,14 @@ class Child_Theme_Configurator_UI {
         $hidechild  = (count($themes['child']) ? '' : 'style="display:none"');
         $imports    = $css->get_prop('imports');
         $id         = 0;
+        $chld_thm_cfg->fs_method = get_filesystem_method();
         add_thickbox();    ?>
 
 <div class="wrap">
   <div id="icon-tools" class="icon32"></div>
   <?php echo $this->extLink; ?>
   <h2><?php echo $chld_thm_cfg->pluginName; ?></h2>
+  <?php if (empty($chld_thm_cfg->fs_prompt)):?>
   <div id="ctc_error_notice">
     <?php $this->settings_errors(); ?>
   </div>
@@ -73,7 +75,7 @@ class Child_Theme_Configurator_UI {
     </a>
     <?php 
     endif; 
-    do_action('chld_thm_cfg_tabs', $chld_thm_cfg, $active_tab, $hidechild);?>
+    if (empty($chld_thm_cfg->fs_plugins)) do_action('chld_thm_cfg_tabs', $chld_thm_cfg, $active_tab, $hidechild);?>
     <i id="ctc_status_preview"></i></h2>
   <div class="ctc-option-panel-container">
     <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
@@ -129,7 +131,7 @@ class Child_Theme_Configurator_UI {
                 value="<?php echo esc_attr($css->get_prop('child_name')); ?>" placeholder="<?php _e('Theme Name', 'chld_thm_cfg'); ?>" autocomplete="off" />
           </div>
         </div>
-        <?php if ('' == $hidechild) do_action('chld_thm_cfg_controls', $chld_thm_cfg); ?>
+        <?php if (empty($chld_thm_cfg->fs_plugins) && '' == $hidechild) do_action('chld_thm_cfg_controls', $chld_thm_cfg); ?>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
           <div class="ctc-input-cell"> <strong>
             <?php _e('Author', 'chld_thm_cfg'); ?>
@@ -384,11 +386,46 @@ class Child_Theme_Configurator_UI {
           </div>
         </form>
       </div>
+      <div class="ctc-input-row clearfix" id="input_row_screenshot">
+        <form id="ctc_export_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options">
+          <?php wp_nonce_field( 'ctc_update' ); ?>
+          <div class="ctc-input-cell"> <strong>
+            <?php _e('Export Child Theme as Zip Archive', 'chld_thm_cfg'); ?>
+            </strong>
+          </div>
+          <div class="ctc-input-cell-wide">
+            <input class="ctc_submit button button-primary" id="ctc_export_child_zip" 
+                name="ctc_export_child_zip"  type="submit" 
+                value="<?php _e('Export', 'chld_thm_cfg'); ?>" />
+          </div>
+        </form>
+      </div>
+      <?php if ('direct' != $chld_thm_cfg->fs_method): ?>
+      <div class="ctc-input-row clearfix" id="input_row_permissions">
+        <form id="ctc_permission_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options">
+          <?php wp_nonce_field( 'ctc_update' ); ?>
+          <div class="ctc-input-cell"> <strong>
+            <?php _e('Secure Child Theme', 'chld_thm_cfg'); ?>
+            </strong>
+            <p class="howto">
+              <?php _e('Attempt to reset child theme permissions to user ownership and read-only access.', 'chld_thm_cfg'); ?>
+            </p>
+          </div>
+          <div class="ctc-input-cell-wide">
+            <input class="ctc_submit button button-primary" id="ctc_reset_permission" 
+                name="ctc_reset_permission"  type="submit" 
+                value="<?php _e('Reset Permissions', 'chld_thm_cfg'); ?>" />
+          </div>
+        </form>
+      </div><?php endif; ?>
     </div>
     <?php endif; ?>
-    <?php do_action('chld_thm_cfg_panels', $chld_thm_cfg, $active_tab, $hidechild); ?>
-  </div>
-</div>
+    <?php if (empty($chld_thm_cfg->fs_plugins)) do_action('chld_thm_cfg_panels', $chld_thm_cfg, $active_tab, $hidechild); ?>
+  </div><?php
+    else:
+        echo $chld_thm_cfg->fs_prompt;
+    endif;
+?></div>
 <style type="text/css">
 .ctc-status-icon.success {
     display: block;
@@ -416,14 +453,14 @@ class Child_Theme_Configurator_UI {
         global $chld_thm_cfg; 
         if ($theme = $chld_thm_cfg->css->get_prop($template)):
             $themeroot = get_theme_root() . '/' . $theme;
-            $files = $chld_thm_cfg->css->recurse_directory($themeroot, 'php');
+            $files = $chld_thm_cfg->css->recurse_directory(trailingslashit(get_theme_root()) . $theme, 'php');
             $counter = 0;
             sort($files);
             ob_start();
             foreach ($files as $file):
-                $templatefile = preg_replace('%(^' . preg_quote($themeroot) . '\/|\.php$)%', '', $file);
-                if (preg_match('%^(inc|core|lang|css|js)%',$templatefile) || 'functions' == basename($templatefile)) continue; ?>
-<label class="ctc-input-cell smaller">
+                $templatefile = preg_replace('%\.php$%', '', $chld_thm_cfg->theme_basename($theme, $file));
+                if ('parnt' == $template && (preg_match('%^(inc|core|lang|css|js)%',$templatefile) || 'functions' == basename($templatefile))) continue; ?>
+<label class="ctc-input-cell smaller<?php echo 'child' == $template && is_writable($file) ? ' writable' : ''; ?>">
   <input class="ctc_checkbox" id="ctc_file_<?php echo $template . '_' . ++$counter; ?>" 
                     name="ctc_file_<?php echo $template; ?>[]" type="checkbox" 
                     value="<?php echo $templatefile; ?>" />
@@ -460,16 +497,21 @@ class Child_Theme_Configurator_UI {
             else:
                 echo $editorlink . $linktext . $editorlinkend; ?></p>
       <p class="howto">
-        <?php _e('Remove child theme templates by selecting them here.', 'chld_thm_cfg');
+        <?php _e('Delete child theme templates or make them writable by selecting them here.', 'chld_thm_cfg');
             endif; ?>
       </p>
     </div>
     <div class="ctc-input-cell-wide"> <?php echo $inputs; ?> </div>
     <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
     <div class="ctc-input-cell-wide" style="margin-top:10px;margin-bottom:10px">
+              <?php if ('child' == $template && 'direct' != $chld_thm_cfg->fs_method): ?>
+      <input class="ctc_submit button button-primary" id="ctc_templates_writable_submit" 
+              name="ctc_templates_writable_submit" type="submit" 
+              value="<?php _e('Make Selected Writable', 'chld_thm_cfg'); ?>" />&nbsp; &nbsp;
+              <?php endif; ?>
       <input class="ctc_submit button button-primary" id="ctc_<?php echo $template; ?>_templates_submit" 
               name="ctc_<?php echo $template; ?>_templates_submit" type="submit" 
-              value="<?php echo ('parnt' == $template ?  __('Copy Selected to Child Theme', 'chld_thm_cfg') : __('Remove Selected from Child Theme', 'chld_thm_cfg')); ?>" />
+              value="<?php echo ('parnt' == $template ?  __('Copy Selected to Child Theme', 'chld_thm_cfg') : __('Delete Selected', 'chld_thm_cfg')); ?>" />
     </div>
   </form>
 </div>
@@ -481,14 +523,15 @@ class Child_Theme_Configurator_UI {
     function render_image_form() {
         global $chld_thm_cfg; 
         if ($theme = $chld_thm_cfg->css->get_prop('child')):
-            $themeroot  = get_theme_root() . '/' . $theme . '/images';
-            $themeuri   = get_theme_root_uri() . '/' . $theme . '/images/';
-            $files = $chld_thm_cfg->css->recurse_directory($themeroot, 'img');
+            $imgdir  = trailingslashit($theme) . 'images';
+            $themeuri   = trailingslashit(get_theme_root_uri()) . trailingslashit($imgdir);
+            $files = $chld_thm_cfg->css->recurse_directory(trailingslashit(get_theme_root()) . $imgdir, 'img');
+            
             $counter = 0;
             sort($files);
             ob_start();
             foreach ($files as $file):
-                $templatefile = preg_replace('%^' . preg_quote($themeroot) . '/%', '', $file); ?>
+                $templatefile = $chld_thm_cfg->theme_basename($imgdir, $file);  ?>
 <div class="ctc-input-cell" style="height:100px">
   <label class="smaller">
     <input class="ctc_checkbox" id="ctc_img_<?php echo ++$counter; ?>" 
@@ -528,13 +571,13 @@ class Child_Theme_Configurator_UI {
     
     function get_theme_screenshot() {
         global $chld_thm_cfg;
-        foreach ($chld_thm_cfg->image_formats as $ext):
+        foreach (array_keys($chld_thm_cfg->imgmimes) as $extreg): foreach (explode('|', $extreg) as $ext):
             if ($screenshot = $chld_thm_cfg->css->is_file_ok($chld_thm_cfg->css->get_child_target('screenshot.' . $ext))):
-                $screenshot = preg_replace('%^' . preg_quote(get_theme_root()) . '%', get_theme_root_uri(), $screenshot);
+                $screenshot = trailingslashit(get_theme_root_uri()) . $chld_thm_cfg->theme_basename('', $screenshot);
                 return $screenshot . '?' . time();
             endif;
-        endforeach;
-        return false;
+        endforeach; endforeach;
+        return FALSE;
     }
     
     function settings_errors() {
@@ -552,6 +595,7 @@ class Child_Theme_Configurator_UI {
             else:
                 echo '<p>' . apply_filters('chld_thm_cfg_update_msg', sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.', 'chld_thm_cfg'),
                 $chld_thm_cfg->css->get_prop('child_name')), $chld_thm_cfg) . LF
+                . (1 == $_GET['updated'] && 'direct' != $chld_thm_cfg->fs_method ? '<br/>' . __( 'To make Child Theme Configurator easier to use, the stylesheet has been made writable. You can change this back when you are finished editing for security by clicking "Reset Permissions" under the "Files" tab.', 'chld_thm_cfg') : '')
                 . '</p>';
             endif;
             if ( 9 == $_GET['updated']) echo '<p>' . __('Please verify the imports below and remove any imports that are not needed by the front end, such as admin or configuration stylesheets.', 'chld_thm_cfg') . '</p>' . LF;

@@ -1,7 +1,7 @@
 /*!
  * CTC Gradient Functions
  * Adapted from Iris
- * Copyright (c) 2012–2013 Automattic.
+ * Copyright (c) 2012–2014 Automattic.
  * Licensed under the GPLv2 license. 
  */   
 (function( $, undef ){
