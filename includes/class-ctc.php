@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.4.5.2
+    Version: 1.4.7
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -31,9 +31,10 @@ class Child_Theme_Configurator {
     var $hook;
     var $is_ajax;
     var $updated;
-    var $image_formats;
     var $updates = array();
     var $cache_updates;
+    var $uploadsubdir;
+    var $imgmimes = array();
     
     function __construct($file) {
         $this->dir = dirname( $file );
@@ -46,7 +47,11 @@ class Child_Theme_Configurator {
         $this->shortName        = __('Child Themes', 'chld_thm_cfg');
         $this->pluginPath       = $this->dir . '/';
         $this->pluginURL        = plugin_dir_url($file);
-        $this->image_formats    = array('jpg','jpeg','gif','png','JPG','JPEG','GIF','PNG');
+        $this->imgmimes         = array(
+        	'jpg|jpeg|jpe'  => 'image/jpeg',
+	        'gif'           => 'image/gif',
+	        'png'           => 'image/png',
+        );
         $this->cache_updates    = true;
         // setup plugin hooks
         add_action('admin_menu',                array(&$this, 'admin_menu'));
@@ -207,9 +212,10 @@ class Child_Theme_Configurator {
             && !isset($_POST['ctc_child_templates_submit'])
             && !isset($_POST['ctc_image_submit'])
             && !isset($_POST['ctc_theme_image_submit'])
-            && !isset($_POST['ctc_theme_screenshot_submit'])) return false;
+            && !isset($_POST['ctc_theme_screenshot_submit'])
+            && !isset($_POST['ctc_export_child_zip'])) return false;
         $this->errors = array();
-        if (current_user_can('install_themes')): // && $this->validate_post()):
+        if ($this->validate_post()): //current_user_can('install_themes')): // && $this->validate_post()):
             if (isset($_POST['ctc_load_styles'])):
                 foreach (array(
                     'ctc_theme_parnt', 
@@ -258,7 +264,7 @@ class Child_Theme_Configurator {
                     $this->css->set_prop('child', $child);
                     $this->css->set_prop('child_name', $name);
                     $this->css->set_prop('child_author', $author);
-                    $this->css->set_prop('child_version', $version);
+                    $this->css->set_prop('child_version', strlen($version) ? $version : '1.0');
                     $this->css->set_prop('configtype', $configtype);
                     do_action('chld_thm_cfg_addl_files', $this);   // hook for add'l plugin files and subdirectories
                     $this->css->parse_css_file('parnt');
@@ -293,25 +299,28 @@ class Child_Theme_Configurator {
                 endforeach;
                 $msg = '8&tab=file_options';
             elseif (isset($_POST['ctc_theme_image_submit']) && isset($_FILES['ctc_theme_image'])):
-                $this->handle_file_upload('ctc_theme_image', 'images');
+                $this->handle_file_upload('ctc_theme_image', 'images', $this->imgmimes);
                 $msg = '8&tab=file_options';
             elseif (isset($_POST['ctc_theme_screenshot_submit']) && isset($_FILES['ctc_theme_screenshot'])):
                 // remove old screenshot
-                foreach($this->image_formats as $ext):
+                foreach(array_keys($this->imgmimes) as $extreg): foreach (explode('|', $extreg) as $ext):
                     $this->delete_child_file('screenshot', $ext);
-                endforeach;
-                $this->handle_file_upload('ctc_theme_screenshot');
+                endforeach; endforeach;
+                $this->handle_file_upload('ctc_theme_screenshot', NULL, $this->imgmimes);
                 $msg = '8&tab=file_options';
+            elseif (isset($_POST['ctc_export_child_zip'])):
+                $this->export_zip();
+                $this->errors[] = __('Zip file creation failed.', 'chld_thm_cfg');
             else:
                 $msg = '8&tab=file_options';
-            endif;
-            if (empty($this->errors)):
-                $this->update_redirect($msg);
             endif;
         else:
             $this->errors[] = __('You do not have permission to configure child themes.', 'chld_thm_cfg');
         endif;
-
+        if (empty($this->errors)):
+            $this->update_redirect($msg);
+        endif;
+        return false;
         //$this->errors[] = sprintf(__('Child Theme %s was unchanged.', 'chld_thm_cfg'), $name, $this->optionsName);
     }
     
@@ -373,9 +382,9 @@ class Child_Theme_Configurator {
     function copy_parent_file($file, $ext = 'php') {
         $parent_file = NULL;
         if ('screenshot' == $file):
-            foreach ($this->image_formats as $ext):
+            foreach (array_keys($this->imgmimes) as $extreg): foreach(explode('|', $extreg) as $ext):
                 if ($parent_file = $this->css->is_file_ok($this->css->get_parent_source('screenshot.' . $ext))) break;
-            endforeach;
+            endforeach; endforeach;
         else:
             $parent_file = $this->css->is_file_ok($this->css->get_parent_source($file . '.' . $ext));
         endif;
@@ -417,66 +426,67 @@ class Child_Theme_Configurator {
     }
     
     
-    function handle_file_upload($field, $childdir = NULL){
-        /* adapted from http://www.php.net/manual/en/features.file-upload.php#114004 */
-        try {
-            // Undefined | Multiple Files | $_FILES Corruption Attack
-            // If this request falls under any of them, treat it invalid.
-            if ( !isset($_FILES[$field]['error']) || is_array($_FILES[$field]['error']) ):
-                throw new RuntimeException(__('Invalid parameters.', 'chld_thm_cfg'));
-            endif;
+    function handle_file_upload($field, $childdir = NULL, $mimes = NULL){
+        
+        $this->uploadsubdir = $childdir ? '/' . $childdir : NULL;
+        $uploadedfile = $_FILES[$field];
+        $upload_overrides = array( 
+            'test_form' => false,
+            'unique_filename_callback' => ($childdir ? NULL : array($this, 'set_filename')),
+            'mimes' => (is_array($mimes) ? $mimes : NULL)
+        );
+        add_filter('upload_dir', array($this, 'upload_dir'));
+        if ( ! function_exists( 'wp_handle_upload' ) ) require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        $movefile = wp_handle_upload( $uploadedfile, $upload_overrides );
+        if (isset($movefile['error'])) $this->errors[] = $movefile['error'];
+        remove_filter('upload_dir', array($this, 'upload_dir'));
+        
+    }
+    
+    function export_zip() {
+        if (($child = $this->css->get_prop('child')) 
+            && ($dir = $this->css->is_file_ok(dirname($this->css->get_child_target()), 'search'))
+            && ($version = preg_replace("%[^\w\.\-]%", '', $this->css->get_prop('version')))):
+            if (!file_exists($this->pluginPath . 'tmp')) mkdir($this->pluginPath . 'tmp', 0755);
+            $file = $this->pluginPath . 'tmp/' . $child . '-' . $version . '.zip';
+            mbstring_binary_safe_encoding();
 
-            // Check $_FILES['upfile']['error'] value.
-            switch ($_FILES[$field]['error']):
-                case UPLOAD_ERR_OK:
-                    break;
-                case UPLOAD_ERR_NO_FILE:
-                    throw new RuntimeException(__('Please select a file to upload.', 'chld_thm_cfg'));
-                case UPLOAD_ERR_INI_SIZE:
-                case UPLOAD_ERR_FORM_SIZE:
-                    throw new RuntimeException(__('File is too large.', 'chld_thm_cfg'));
-                default:
-                    throw new RuntimeException(__('There was a problem uploading the file.', 'chld_thm_cfg'));
-            endswitch;
+            require_once(ABSPATH . 'wp-admin/includes/class-pclzip.php');
 
-            if ($_FILES[$field]['size'] > 1024 * 1024):
-                throw new RuntimeException(__('Theme images cannot be over 1MB.', 'chld_thm_cfg'));
-            endif;
-            
-            if (false === ($ext = array_search(
-                exif_imagetype($_FILES[$field]['tmp_name']),
-                array(
-                    'jpg' => IMAGETYPE_JPEG,
-                    'png' => IMAGETYPE_PNG,
-                    'gif' => IMAGETYPE_GIF,
-                ),
-                true
-            ))):
-                throw new RuntimeException(__('Theme images must be JPG, PNG or GIF.', 'chld_thm_cfg'));
-            endif;
-            // strip extension
-            $filename = preg_replace('%\.[^\.]+$%', '', $_FILES[$field]['name']);
-            // strip non alphas and replace with dash
-            $filename = preg_replace('%[^\w]+%', '-', $filename);
-            // Ensure target is in child theme
-            $target = $this->css->get_child_target(isset($childdir) ? $childdir . '/' . $filename . '.' . $ext : 'screenshot.' . $ext);
-            $targetdir = dirname($target);
-            if (! is_dir($targetdir)):
-                if (! @mkdir($targetdir, 0755, true)):
-                    throw new RuntimeException(__('Unable to create directory.', 'chld_thm_cfg'));
-                endif;
-            elseif (! is_writable($targetdir)):
-                throw new RuntimeException(__('Child theme directory is not writable.', 'chld_thm_cfg'));
-            endif;
-            if (!$target || !move_uploaded_file(
-                $_FILES[$field]['tmp_name'],
-                $target
-            )):
-                throw new RuntimeException(__('There was a problem uploading the file.', 'chld_thm_cfg'));
-            endif;
-
-        } catch (RuntimeException $e) {
-            $this->errors[] = $e->getMessage();
-        }
+            $archive = new PclZip($file);
+            if ($archive->create($dir, PCLZIP_OPT_REMOVE_PATH, dirname($dir)) == 0) return false;
+        	reset_mbstring_encoding();
+            header( 'Content-Description: File Transfer' );
+            header( 'Content-Type: application/octet-stream' );
+            header( 'Content-Length: ' . filesize($file) );
+            header( 'Content-Disposition: attachment; filename=' . basename($file) );
+            header( 'Expires: 0');
+            header( 'Cache-Control: must-revalidate');
+            header( 'Pragma: public');
+            readfile($file);
+            unlink($file);
+            die();
+        endif;
+    }
+    
+    function upload_dir($uploads) {
+        $filename = basename($uploads['path']);
+        $basedir    = get_theme_root() . '/' . $this->css->get_prop('child');
+        $baseurl    = get_theme_root_uri() . '/' . $this->css->get_prop('child');
+        $dir       = $basedir . $this->uploadsubdir;
+        $url        = $baseurl . $this->uploadsubdir;
+	    $uploads = array(
+			'path'    => $dir,
+			'url'     => $url,
+			'subdir'  => $this->uploadsubdir,
+			'basedir' => $basedir,
+			'baseurl' => $baseurl,
+			'error'   => false,
+		);
+        return $uploads;
+    }
+    
+    function set_filename($dir, $basename, $ext) {
+        return 'screenshot' . $ext;
     }
 }

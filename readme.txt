@@ -3,8 +3,8 @@ Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
-Tested up to: 3.9.1
-Stable tag: 1.4.5.2
+Tested up to: 4.0
+Stable tag: 1.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -179,6 +179,16 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.4.7 =
+* Fixed uninitialized variable in files UI.
+
+= 1.4.6 =
+* Feature: export child theme as zip archive
+* Added transform to list of vendor rules
+* Bug fixed: parser not loading multiple instances of same @media rulesets
+* Refactored uploader to use wp core functions for compatibility and security
+* Increased CHLD_THM_CFG_MAX_RECURSE_LOOPS to 1000 to accommodate complex parent frameworks
+
 = 1.4.5.2 = 
 * Fix: javascript bug
 
@@ -297,9 +307,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-= 1.4.5.2 =
-* Fixed JavaScript bug introduced in 1.4.5
-* Fixed regression bug introduced in 1.4.5 that broke raw css input
+Fixed uninitialized variable in files UI.
 
 == Create Your Child Theme ==
 

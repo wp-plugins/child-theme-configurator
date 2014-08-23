@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.4.5.2
+    Version: 1.4.7
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -341,7 +341,7 @@ class Child_Theme_Configurator_UI {
       <?php $this->render_file_form('child'); ?>
       <?php $this->render_image_form(); ?>
       <div class="ctc-input-row clearfix" id="input_row_theme_image">
-        <form id="ctc_<?php echo $template; ?>_theme_image_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" enctype="multipart/form-data">
+        <form id="ctc_theme_image_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" enctype="multipart/form-data">
           <?php wp_nonce_field( 'ctc_update' ); ?>
           <div class="ctc-input-cell"> <strong>
             <?php _e('Upload New Child Theme Image', 'chld_thm_cfg'); ?>
@@ -381,6 +381,20 @@ class Child_Theme_Configurator_UI {
             <input class="ctc_submit button button-primary" id="ctc_theme_screenshot_submit" 
                 name="ctc_theme_screenshot_submit"  type="submit" 
                 value="<?php _e('Upload', 'chld_thm_cfg'); ?>" />
+          </div>
+        </form>
+      </div>
+      <div class="ctc-input-row clearfix" id="input_row_screenshot">
+        <form id="ctc_export_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options">
+          <?php wp_nonce_field( 'ctc_update' ); ?>
+          <div class="ctc-input-cell"> <strong>
+            <?php _e('Export Child Theme as Zip Archive', 'chld_thm_cfg'); ?>
+            </strong>
+          </div>
+          <div class="ctc-input-cell-wide">
+            <input class="ctc_submit button button-primary" id="ctc_export_child_zip" 
+                name="ctc_export_child_zip"  type="submit" 
+                value="<?php _e('Export', 'chld_thm_cfg'); ?>" />
           </div>
         </form>
       </div>
@@ -528,12 +542,12 @@ class Child_Theme_Configurator_UI {
     
     function get_theme_screenshot() {
         global $chld_thm_cfg;
-        foreach ($chld_thm_cfg->image_formats as $ext):
+        foreach (array_keys($chld_thm_cfg->imgmimes) as $extreg): foreach (explode('|', $extreg) as $ext):
             if ($screenshot = $chld_thm_cfg->css->is_file_ok($chld_thm_cfg->css->get_child_target('screenshot.' . $ext))):
                 $screenshot = preg_replace('%^' . preg_quote(get_theme_root()) . '%', get_theme_root_uri(), $screenshot);
                 return $screenshot . '?' . time();
             endif;
-        endforeach;
+        endforeach; endforeach;
         return false;
     }
     
