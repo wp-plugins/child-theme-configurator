@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.4.6
+    Version: 1.4.7
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -341,7 +341,7 @@ class Child_Theme_Configurator_UI {
       <?php $this->render_file_form('child'); ?>
       <?php $this->render_image_form(); ?>
       <div class="ctc-input-row clearfix" id="input_row_theme_image">
-        <form id="ctc_<?php echo $template; ?>_theme_image_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" enctype="multipart/form-data">
+        <form id="ctc_theme_image_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" enctype="multipart/form-data">
           <?php wp_nonce_field( 'ctc_update' ); ?>
           <div class="ctc-input-cell"> <strong>
             <?php _e('Upload New Child Theme Image', 'chld_thm_cfg'); ?>
