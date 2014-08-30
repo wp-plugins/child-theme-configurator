@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 4.0
-Stable tag: 1.4.8
+Stable tag: 1.4.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,13 +40,13 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Upload custom screenshot for your child theme
 * Save hours of development time
 
-= Now it works with plugins! =
+= Build your WordPress website exactly the way you want it. =
 
-We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. 
+PageCells is a WordPress theme framework aimed at web developers and website designers who use WordPress to build multiple websites. Everything about the site is configurable through an innovative drag-and-drop interface, from the number and position of sidebar widget areas to the sequence and behavior of post meta data.
 
-https://www.youtube.com/watch?v=mJ3i6gsuL1E
+https://www.youtube.com/watch?v=q6g2Jm7bf3U
 
-Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
+Learn more at http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework
 
 = IntelliWidget Responsive Menu =
 
@@ -179,7 +179,11 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
-= 1.4.8 =
+= 1.4.8.1 =
+* Added version number to options page
+* Handle empty @media query blocks during parse
+
+= 1.4.8
 * Removed backtrace in main CSS parser regex due to high memory usage.
 
 = 1.4.7 =

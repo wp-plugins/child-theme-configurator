@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.4.8
+    Version: 1.4.8.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -20,7 +20,7 @@ class Child_Theme_Configurator_UI {
     
     function __construct() {
         $this->swatch_text  = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';  
-        $this->extLink      = '<a href="http://www.lilaeamedia.com/plugins/child-theme-configurator-plugins/" target="_blank" title="' . __('Easily customize your plugins with the CTC Plugin Extension', 'chld_thm_cfg') . '" style="float:right">' . __('Use this to customize your plugins', 'chld_thm_cfg') . '</a>';
+        $this->extLink      = '<a href="http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework/" target="_blank" title="' . __('Total WordPress Customization with PageCells Responsive Theme Framework', 'chld_thm_cfg') . '" style="float:right">' . __('Need a theme that gives you total control?', 'chld_thm_cfg') . '</a>';
     }
     
     function render_options() { 
@@ -38,7 +38,7 @@ class Child_Theme_Configurator_UI {
 <div class="wrap">
   <div id="icon-tools" class="icon32"></div>
   <?php echo $this->extLink; ?>
-  <h2><?php echo $chld_thm_cfg->pluginName; ?></h2>
+  <h2><?php echo $chld_thm_cfg->pluginName; ?> v.<?php echo CHLD_THM_CFG_VERSION;?></h2>
   <div id="ctc_error_notice">
     <?php $this->settings_errors(); ?>
   </div>
