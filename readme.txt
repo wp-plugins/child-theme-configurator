@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 4.0
-Stable tag: 1.4.7
+Stable tag: 1.4.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -179,6 +179,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.4.8 =
+* Removed backtrace in main CSS parser regex due to high memory usage.
+
 = 1.4.7 =
 * Fixed uninitialized variable in files UI.
 
@@ -307,7 +310,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-Fixed uninitialized variable in files UI.
+Removed backtrace in main CSS parser regex due to high memory usage. This should fix the 500 Server errors from large parent stylesheets
 
 == Create Your Child Theme ==
 
