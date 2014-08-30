@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.4.7
+    Version: 1.5.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -45,7 +45,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct($parent = '') {
         // scalars
-        $this->version          = '1.4.7';
+        $this->version          = '1.5.0';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -116,7 +116,7 @@ class Child_Theme_Configurator_CSS {
                 $this->get_raw_css($template);
                 return $this->styles;
         endswitch;
-        return false;
+        return FALSE;
     }
 
     /*
@@ -126,7 +126,7 @@ class Child_Theme_Configurator_CSS {
     function set_prop($prop, $value) {
         if (is_scalar($this->{$prop}))
             $this->{$prop} = $value;
-        else return false;
+        else return FALSE;
     }
     
     function get_raw_css($template = 'child') {
@@ -154,10 +154,10 @@ class Child_Theme_Configurator_CSS {
     }
    
     function get_child_target($file = 'style.css') {
-        return get_theme_root() . '/' . $this->get_prop('child') . '/' . $file;
+        return trailingslashit(get_theme_root()) . trailingslashit($this->get_prop('child')) . $file;
     }
     function get_parent_source($file = 'style.css') {
-        return get_theme_root() . '/' . $this->get_prop('parnt') . '/' . $file;
+        return trailingslashit(get_theme_root()) . trailingslashit($this->get_prop('parnt')) . $file;
     }
    
     /*
@@ -240,7 +240,7 @@ class Child_Theme_Configurator_CSS {
     function read_stylesheet($template = 'child', $file = 'style.css') {
         $source = $this->get_prop($template);
         $configtype = $this->get_prop('configtype');
-        if (empty($source) || !is_scalar($source)) return false;
+        if (empty($source) || !is_scalar($source)) return FALSE;
         $themedir = get_theme_root() . '/' . $source;
         $stylesheet = apply_filters('chld_thm_cfg_' . $template, $themedir . '/' . $file , $this);
         
@@ -252,7 +252,7 @@ class Child_Theme_Configurator_CSS {
         endif;
     }
     
-    function recurse_directory($rootdir, $ext = 'css', $relative = false) {
+    function recurse_directory($rootdir, $ext = 'css', $all = FALSE) {
         if (!$this->is_file_ok($rootdir, 'search')) return array(); // make sure we are only recursing theme and plugin files
         $files = array();
         $dirs = array($rootdir);
@@ -265,12 +265,15 @@ class Child_Theme_Configurator_CSS {
             $loops++;
             $dir = array_shift($dirs);
             if ($handle = opendir($dir)):
-                while (false !== ($file = readdir($handle))):
+                while (FALSE !== ($file = readdir($handle))):
                     if (preg_match("/^\./", $file)) continue;
-                    $filepath  = $dir . '/' . $file;
+                    $filepath  = trailingslashit($dir) . $file;
                     if (is_dir($filepath)):
                         array_unshift($dirs, $filepath);
-                    elseif (is_file($filepath) && preg_match("/\.".$ext."$/i", $filepath)):
+                        if ($all): 
+                            $files[] = $filepath; 
+                        endif;
+                    elseif (is_file($filepath) && ($all || preg_match("/\.".$ext."$/i", $filepath))):
                         $files[] = $filepath;
                     endif;
                 endwhile;
@@ -301,11 +304,11 @@ class Child_Theme_Configurator_CSS {
      * Parse user form input into separate properties and pass to update_arrays
      */
     function parse_post_data() {
-        $this->cache_updates = true;
+        $this->cache_updates = TRUE;
         if (isset($_POST['ctc_new_selectors'])):
             $this->styles = $this->parse_css_input(LF . $_POST['ctc_new_selectors']);
             $this->parse_css('child', 
-                (isset($_POST['ctc_sel_ovrd_query'])?trim($_POST['ctc_sel_ovrd_query']):null), false);
+                (isset($_POST['ctc_sel_ovrd_query'])?trim($_POST['ctc_sel_ovrd_query']):null), FALSE);
         elseif (isset($_POST['ctc_child_imports'])):
             $this->imports['child'] = array();
             $this->styles = $this->parse_css_input($_POST['ctc_child_imports']);
@@ -421,7 +424,7 @@ class Child_Theme_Configurator_CSS {
      */
     function parse_css_file($template, $file = 'style.css') {
         global $chld_thm_cfg;
-        $chld_thm_cfg->cache_updates = false;
+        $chld_thm_cfg->cache_updates = FALSE;
         $this->read_stylesheet($template, $file);
         // get theme name
         $regex = '#Theme Name:\s*(.+?)\n#i';
@@ -435,9 +438,9 @@ class Child_Theme_Configurator_CSS {
      * parse_css
      * accepts raw CSS as text and parses into separate properties 
      */
-    function parse_css($template, $basequery = null, $parse_imports = true) {
+    function parse_css($template, $basequery = null, $parse_imports = TRUE) {
         //echo $this->styles;
-        if (false === strpos($basequery, '@')):
+        if (FALSE === strpos($basequery, '@')):
             $basequery = 'base';
         endif;
         $ruleset = array();
@@ -477,7 +480,7 @@ class Child_Theme_Configurator_CSS {
                 $this->update_arrays($template, $query, $sel);
                 foreach (explode(';', $stuff) as $ruleval):
                     if ($this->qskey > CHLD_THM_CFG_MAX_SELECTORS) break;
-                    if (false === strpos($ruleval, ':')) continue;
+                    if (FALSE === strpos($ruleval, ':')) continue;
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
                     $rule   = preg_replace_callback("/[^\w\-]/", array($this, 'to_ascii'), $rule);
@@ -506,12 +509,12 @@ class Child_Theme_Configurator_CSS {
                         // normalize zero values
                         $value = preg_replace('#([: ])0(px|r?em)#', "$1\0", $value);
                         // normalize gradients
-                        if (false !== strpos($value, 'gradient')):
-                            if (false !== strpos($rule, 'filter')):
+                        if (FALSE !== strpos($value, 'gradient')):
+                            if (FALSE !== strpos($rule, 'filter')):
                                 $rule = 'background-image';
                                 continue; // treat as background-image, we'll add filter rule later
                             endif;
-                            if (false !== strpos($value, 'webkit-gradient')) continue; // bail on legacy webkit, we'll add it later
+                            if (FALSE !== strpos($value, 'webkit-gradient')) continue; // bail on legacy webkit, we'll add it later
                             $value = $this->encode_gradient($value);
                         endif;
                         // normalize common vendor prefixes
@@ -530,7 +533,7 @@ class Child_Theme_Configurator_CSS {
      * @media query blocks are sorted using internal heuristics (see sort_queries)
      * New selectors are appended to the end of each media query block.
      */
-    function write_css($backup = false) {
+    function write_css($backup = FALSE) {
         // write new stylesheet
         $output = apply_filters('chld_thm_cfg_css_header', $this->get_css_header(), $this);
         $imports = $this->get_prop('imports');
@@ -581,15 +584,22 @@ class Child_Theme_Configurator_CSS {
         if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'write')):
             // backup current stylesheet
             if ($backup && is_file($stylesheet_verified)):
-                $timestamp  = date('YmdHis', current_time('timestamp'));
-                $bakfile    = preg_replace("/\.css$/", '', $stylesheet_verified) . '-' . $timestamp . '.css';
-                if (false === file_put_contents($bakfile, file_get_contents($stylesheet_verified))) return false;
+                global $chld_thm_cfg;
+                if ($chld_thm_cfg->fs):
+                    global $wp_filesystem; // this was initialized earlier;
+                    
+                    $timestamp  = date('YmdHis', current_time('timestamp'));
+                    $bakfile    = preg_replace("/\.css$/", '', $stylesheet_verified) . '-' . $timestamp . '.css';
+                    if (!$wp_filesystem->copy($chld_thm_cfg->fspath($stylesheet_verified), $chld_thm_cfg->fspath($bakfile))) return FALSE;
+                endif;
             endif;
-            // write new stylesheet
-            if (false === file_put_contents($stylesheet_verified, $output)) return false; 
-            return true;  
+            // write new stylesheet:
+            // we are bypassing wp_filesystem here to allow ajax methods
+            // stylesheet must already exist and be writable by web server
+            if (!is_writeable($stylesheet_verified) || FALSE === file_put_contents($stylesheet_verified, $output)) return FALSE; 
+            return TRUE;  
         endif;   
-        return false;
+        return FALSE;
     }
     
     /*
@@ -600,7 +610,7 @@ class Child_Theme_Configurator_CSS {
      */
     function add_vendor_rules($rule, $value, &$shorthand, $important = 0) {
         $rules = '';
-        if ('filter' == $rule && (false !== strpos($value, 'progid:DXImageTransform.Microsoft.Gradient'))) return;
+        if ('filter' == $rule && (FALSE !== strpos($value, 'progid:DXImageTransform.Microsoft.Gradient'))) return;
         $importantstr = $important ? ' !important' : '';
         if (preg_match("/^(margin|padding)\-(top|right|bottom|left)$/", $rule, $matches)):
             $shorthand[$matches[1]][$matches[2]] = $value . $importantstr;
@@ -657,7 +667,7 @@ class Child_Theme_Configurator_CSS {
      * normalized rule/value pairs for each property
      */
     function normalize_background($value, &$rules, &$values){
-        if (false !== strpos($value, 'gradient')):
+        if (FALSE !== strpos($value, 'gradient')):
             // only supporting linear syntax
             if (preg_match('#(linear\-|Microsoft\.)#', $value)):
                 $values[] = $value;
@@ -683,7 +693,7 @@ class Child_Theme_Configurator_CSS {
                 $position = array();
                 foreach(preg_split('/ +/', trim($parts[1])) as $part):
                     if ('' === $part) continue; // empty($part) || 
-                    if (false === strpos($part, 'repeat')):
+                    if (FALSE === strpos($part, 'repeat')):
                         $position[] = $part;
                     else:
                         $rules[] = 'background-repeat';
@@ -875,7 +885,7 @@ class Child_Theme_Configurator_CSS {
                 'stop2'  => empty($parts[4]) ? '' : $parts[4],
             );
         endif;
-        return false;
+        return FALSE;
     }
 
     /*
@@ -1023,6 +1033,7 @@ class Child_Theme_Configurator_CSS {
     /*
      * obj_to_utf8
      * sets object data to UTF8
+     * flattens to array
      * and stringifies NULLs
      */
     function obj_to_utf8($data) {
@@ -1052,15 +1063,15 @@ class Child_Theme_Configurator_CSS {
     function is_file_ok($stylesheet, $permission = 'read') {
         // remove any ../ manipulations
         $stylesheet = preg_replace("%\.\./%", '/', $stylesheet);
-        if ('read' == $permission && !is_file($stylesheet)) return false;
-        if ('search' == $permission && !is_dir($stylesheet)) return false;
+        if ('read' == $permission && !is_file($stylesheet)) return FALSE;
+        if ('search' == $permission && !is_dir($stylesheet)) return FALSE;
         // sanity check for php files
-        //if (!preg_match('%' . preg_quote($ext) . '$%', $stylesheet)) return false;
+        //if (!preg_match('%' . preg_quote($ext) . '$%', $stylesheet)) return FALSE;
         // check if in themes dir;
         if (preg_match('%^' . preg_quote(get_theme_root()) . '%', $stylesheet)) return $stylesheet;
         // check if in plugins dir
         if (preg_match('%^' . preg_quote(WP_PLUGIN_DIR) . '%', $stylesheet)) return $stylesheet;
-        return false;
+        return FALSE;
     }
     function normalize_color($value) {
         return preg_replace("/#([0-9A-F])\\1([0-9A-F])\\2([0-9A-F])\\3/i",strtolower("#$1$2$3"), $value);

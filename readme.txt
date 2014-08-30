@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 4.0
-Stable tag: 1.4.7
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -179,8 +179,13 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
-= 1.4.7 =
-* Fixed uninitialized variable in files UI.
+= 1.5.0 =
+* We have completely refactored CTC to use the WP_Filesystem API. 
+* If your web host is configured to use suExec (meaning it runs under the user of the web account being accessed), the changes will be completely transparent. 
+* Other configurations will now require user credentials to add, remove or update Child Theme files. 
+* To make things easier we added the ability for you to make the files writable while editing and then to reset permissions when you are done.
+* **IMPORTANT:** If you are using CTC for PLUGINS, you must upgrade it to version 1.1.0. 
+* Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
 
 = 1.4.6 =
 * Feature: export child theme as zip archive
@@ -307,7 +312,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-Fixed uninitialized variable in files UI.
+CTC now uses the WP_Filesystem API. **IMPORTANT:** If you are using CTC for PLUGINS, you must upgrade it to version 1.1.0. If your web host is configured to run under the user of the web account being accessed the changes will be completely transparent. Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
 
 == Create Your Child Theme ==
 

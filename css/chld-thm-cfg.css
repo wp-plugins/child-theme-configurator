@@ -221,3 +221,6 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .smaller {
     font-size: .85em;
 }
+.writable {
+    color: red;
+}
