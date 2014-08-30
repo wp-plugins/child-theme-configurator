@@ -170,15 +170,25 @@ class Child_Theme_Configurator_CSS {
         global $chld_thm_cfg;
         // normalize selector styling
         $sel = implode(', ', preg_split('#\s*,\s*#s', trim($sel)));
+        
+        /* compression */
+        $qcomp = $this->maybe_deflate($query);
+        $scomp = $this->maybe_deflate($sel);
+        if (!isset($this->dict_query[$qcomp])) $this->dict_query[$qcomp] = ++$this->querykey;
+        if (!isset($this->dict_sel[$scomp])) $this->dict_sel[$scomp] = ++$this->selkey;
+        /* end compression */
         // add selector and query to index
-        if (!isset($this->dict_query[$query])) $this->dict_query[$query] = ++$this->querykey;
-        if (!isset($this->dict_sel[$sel])) $this->dict_sel[$sel] = ++$this->selkey;
-        if (!isset($this->sel_ndx[$this->dict_query[$query]][$this->dict_sel[$sel]])):
+        //if (!isset($this->dict_query[$query])) $this->dict_query[$query] = ++$this->querykey;
+        //if (!isset($this->dict_sel[$sel])) $this->dict_sel[$sel] = ++$this->selkey;
+        if (!isset($this->sel_ndx[$this->dict_query[$qcomp]][$this->dict_sel[$scomp]])):
             // increment key number
-            $this->sel_ndx[$this->dict_query[$query]][$this->dict_sel[$sel]] = ++$this->qskey;
+            $this->sel_ndx[$this->dict_query[$qcomp]][$this->dict_sel[$scomp]] = ++$this->qskey;
+//            $this->sel_ndx[$this->dict_query[$query]][$this->dict_sel[$sel]] = ++$this->qskey;
             
-            $this->dict_qs[$this->qskey]['s'] = $this->dict_sel[$sel];
-            $this->dict_qs[$this->qskey]['q'] = $this->dict_query[$query];
+            $this->dict_qs[$this->qskey]['s'] = $this->dict_sel[$scomp];
+            $this->dict_qs[$this->qskey]['q'] = $this->dict_query[$qcomp];
+//            $this->dict_qs[$this->qskey]['s'] = $this->dict_sel[$sel];
+//            $this->dict_qs[$this->qskey]['q'] = $this->dict_query[$query];
             // tell the UI to update a single cached query/selector lookup by passing 'qsid' as the key
             // (normally the entire array is replaced):
             if ($chld_thm_cfg->cache_updates)
@@ -186,8 +196,8 @@ class Child_Theme_Configurator_CSS {
                     'obj'   => 'sel_ndx',
                     'key'   => 'qsid',
                     'data'  => array(
-                        'query'     => $query,
-                        'selector'  => $sel,
+                        'query'     => $qcomp,
+                        'selector'  => $scomp,
                         'qsid'      => $this->qskey,
                     ),
                 );
@@ -207,7 +217,7 @@ class Child_Theme_Configurator_CSS {
                     );
                 endif;
             endif;
-            $qsid = $this->sel_ndx[$this->dict_query[$query]][$this->dict_sel[$sel]];
+            $qsid = $this->sel_ndx[$this->dict_query[$qcomp]][$this->dict_sel[$scomp]];
             $ruleid = $this->dict_rule[$rule];
             if (!isset($this->dict_val[$value])):
                 $this->dict_val[$value] = ++$this->valkey;
@@ -230,13 +240,20 @@ class Child_Theme_Configurator_CSS {
                     $chld_thm_cfg->updates[] = array(
                         'obj'   => 'rewrite',
                         'key'   => $qsid,
-                        'data'  => $sel,
+                        'data'  => $scomp,
                     );
                 endif;
             endif;
         endif;
     }
-
+    function maybe_deflate($string) {
+        if (function_exists('gzdeflate')) return gzdeflate($string);
+        return $string;
+    }
+    function maybe_inflate($string) {
+        if (function_exists('gzdeflate')) return gzinflate($string);
+        return $string;
+    }
     function read_stylesheet($template = 'child', $file = 'style.css') {
         $source = $this->get_prop($template);
         $configtype = $this->get_prop('configtype');
@@ -552,7 +569,7 @@ class Child_Theme_Configurator_CSS {
             if ('base' != $query) $sel_output .=  $query . ' {' . LF;
             foreach ($selectors as $selid => $qsid):
                 $has_value = 0;
-                $sel = $selarr[$selid];
+                $sel = $this->maybe_inflate($selarr[$selid]);
                 if (!empty($this->val_ndx[$qsid])):
                     $shorthand = array();
                     foreach ($this->val_ndx[$qsid] as $ruleid => $valid):
@@ -926,8 +943,8 @@ class Child_Theme_Configurator_CSS {
         $this->dict_seq[$qsid]  = isset($this->dict_seq[$qsid]) ? $this->dict_seq[$qsid] : $qsid;
         return array(
             'id'        => $qsid,
-            'query'     => $queryarr[$this->dict_qs[$qsid]['q']],
-            'selector'  => $selarr[$this->dict_qs[$qsid]['s']],
+            'query'     => $queryarr[$this->maybe_inflate($this->dict_qs[$qsid]['q'])],
+            'selector'  => $selarr[$this->maybe_inflate($this->dict_qs[$qsid]['s'])],
             'seq'       => $this->dict_seq[$qsid],
         );
     }
@@ -968,7 +985,7 @@ class Child_Theme_Configurator_CSS {
         $selarr = array_flip($this->dict_sel);
         foreach($this->sel_ndx as $queryid => $sel):
             foreach($sel as $selid => $qsid):
-                $sel_ndx_norm[$queryarr[$queryid]][$selarr[$selid]] = $qsid;
+                $sel_ndx_norm[$this->maybe_inflate($queryarr[$queryid])][$this->maybe_inflate($selarr[$selid])] = $qsid;
             endforeach;
         endforeach;
         return empty($query) ? $sel_ndx_norm : $sel_ndx_norm[$query];
@@ -997,7 +1014,7 @@ class Child_Theme_Configurator_CSS {
         $queries = array();
         $queryarr = array_flip($this->dict_query);
         foreach (array_keys($this->sel_ndx) as $queryid):
-            $query = $queryarr[$queryid];
+            $query = $this->maybe_inflate($queryarr[$queryid]);
             if ('base' == $query):
                 $queries['base'] = -999999;
                 continue;

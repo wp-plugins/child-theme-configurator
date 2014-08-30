@@ -267,20 +267,32 @@ class Child_Theme_Configurator {
                     $this->css->set_prop('child_version', strlen($version) ? $version : '1.0');
                     $this->css->set_prop('configtype', $configtype);
                     do_action('chld_thm_cfg_addl_files', $this);   // hook for add'l plugin files and subdirectories
-                    $this->css->parse_css_file('parnt');
-                    $this->css->parse_css_file('child');
-                    if (isset($_POST['ctc_additional_css']) && is_array($_POST['ctc_additional_css'])):
-                        foreach ($_POST['ctc_additional_css'] as $file):
-                            $this->css->parse_css_file('parnt', $file);
-                        endforeach;
-                    endif;
-                    if (false === $this->css->write_css(isset($_POST['ctc_backup']))):
-                        $this->errors[] = __('Your stylesheet is not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
-                        return false;
-                    endif; 
-                    update_option($this->optionsName, $this->css);
-                    do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
-                    $msg = 1; //isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
+                    try {
+                        $this->css->parse_css_file('parnt');
+                    } catch (Exception $e) {
+                        $this->errors[] = $e->getMessage();
+                    }
+                    try {
+                        $this->css->parse_css_file('child');
+                    } catch (Exception $e) {
+                        $this->errors[] = $e->getMessage();
+                    }
+                    try {
+                        if (isset($_POST['ctc_additional_css']) && is_array($_POST['ctc_additional_css'])):
+                            foreach ($_POST['ctc_additional_css'] as $file):
+                                $this->css->parse_css_file('parnt', $file);
+                            endforeach;
+                        endif;
+                        if (false === $this->css->write_css(isset($_POST['ctc_backup']))):
+                            $this->errors[] = __('Your stylesheet is not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
+                            return false;
+                        endif; 
+                        update_option($this->optionsName, $this->css);
+                        do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
+                        $msg = 1; //isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
+                    } catch (Exception $e) {
+                        $this->errors[] = $e->getMessage();
+                    }
                 endif;
             elseif (isset($_POST['ctc_parnt_templates_submit']) && isset($_POST['ctc_file_parnt'])):
                 foreach ($_POST['ctc_file_parnt'] as $file):
@@ -317,6 +329,7 @@ class Child_Theme_Configurator {
         else:
             $this->errors[] = __('You do not have permission to configure child themes.', 'chld_thm_cfg');
         endif;
+        die(print_r($this->errors, true));
         if (empty($this->errors)):
             $this->update_redirect($msg);
         endif;
