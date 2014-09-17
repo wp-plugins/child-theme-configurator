@@ -463,13 +463,18 @@ class Child_Theme_Configurator_CSS {
             endif;
         endif;
         // break into @ segments
-        $regex = '#(\@media[^\{]+?)\{(((?!\@media).)*?\})\s*?\}#s';
-        preg_match_all($regex, $this->styles, $matches);
-        foreach ($matches[1] as $segment):
-            $ruleset[trim($segment)] = array_shift($matches[2]) . (isset($ruleset[trim($segment)])?$ruleset[trim($segment)]:'');
+        foreach (array(
+            '#(\@media[^\{]+?)\{(\s*?)\}#', // get an placehoder (empty) media queries
+            '#(\@media[^\{]+?)\{(.*?\})?\s*?\}#s', // get all other media queries
+        ) as $regex): // (((?!\@media).) backtrace too memory intensive - rolled back in v 1.4.8.1
+            preg_match_all($regex, $this->styles, $matches);
+            foreach ($matches[1] as $segment):
+                $ruleset[trim($segment)] = array_shift($matches[2]) . (isset($ruleset[trim($segment)])?$ruleset[trim($segment)]:'');
+            endforeach;
+            // stripping rulesets leaves base styles
+            $this->styles = preg_replace($regex, '', $this->styles);
         endforeach;
-        // stripping rulesets leaves base styles
-        $ruleset[$basequery] = preg_replace($regex, '', $this->styles);
+        $ruleset[$basequery] = $this->styles;
         foreach ($ruleset as $query => $segment):
             // make sure there is semicolon before closing brace
             $segment = preg_replace('#(\})#', ";$1", $segment);

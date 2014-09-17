@@ -48,6 +48,14 @@ https://www.youtube.com/watch?v=mJ3i6gsuL1E
 
 Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
 
+= Build your WordPress website exactly the way you want it. =
+
+PageCells is a WordPress theme framework aimed at web developers and website designers who use WordPress to build multiple websites. Everything about the site is configurable through an innovative drag-and-drop interface, from the number and position of sidebar widget areas to the sequence and behavior of post meta data.
+
+https://www.youtube.com/watch?v=q6g2Jm7bf3U
+
+Learn more at http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework
+
 = IntelliWidget Responsive Menu =
 
 Break free from your theme's built-in responsive menu options and take control over the mobile user experience with our premium menu plugin.
@@ -187,6 +195,12 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * **IMPORTANT:** If you are using CTC for PLUGINS, you must upgrade it to version 1.1.0. 
 * Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
 
+= 1.4.8 =
+* Removed backtrace in main CSS parser regex due to high memory usage.
+
+= 1.4.7 =
+* Fixed uninitialized variable in files UI.
+
 = 1.4.6 =
 * Feature: export child theme as zip archive
 * Added transform to list of vendor rules
@@ -312,7 +326,11 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
+<<<<<<< .working
 CTC now uses the WP_Filesystem API. **IMPORTANT:** If you are using CTC for PLUGINS, you must upgrade it to version 1.1.0. If your web host is configured to run under the user of the web account being accessed the changes will be completely transparent. Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
+=======
+Removed backtrace in main CSS parser regex due to high memory usage. This should fix the 500 Server errors from large parent stylesheets
+>>>>>>> .merge-right.r992211
 
 == Create Your Child Theme ==
 
