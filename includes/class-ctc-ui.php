@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.4.8.1
+    Version: 1.5.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -20,7 +20,7 @@ class Child_Theme_Configurator_UI {
     
     function __construct() {
         $this->swatch_text  = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';  
-        $this->extLink      = '<a href="http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework/" target="_blank" title="' . __('Total WordPress Customization with PageCells Responsive Theme Framework', 'chld_thm_cfg') . '" style="float:right">' . __('Need a theme that gives you total control?', 'chld_thm_cfg') . '</a>';
+        $this->extLink      = '<a href="http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework/" target="_blank" title="' . __('Total WordPress Customization with PageCells Responsive Theme Framework', 'chld_thm_cfg') . '" style="float:right"><img src="http://www.lilaeamedia.com/images/logos/pagecells-310.png" height="40" width="310" alt="PageCells Responsive Framework" /></a>';
     }
     
     function render_options() { 
@@ -33,12 +33,16 @@ class Child_Theme_Configurator_UI {
         $hidechild  = (count($themes['child']) ? '' : 'style="display:none"');
         $imports    = $css->get_prop('imports');
         $id         = 0;
+        $chld_thm_cfg->fs_method = get_filesystem_method();
         add_thickbox();    ?>
 
 <div class="wrap">
   <div id="icon-tools" class="icon32"></div>
   <?php echo $this->extLink; ?>
   <h2><?php echo $chld_thm_cfg->pluginName; ?> v.<?php echo CHLD_THM_CFG_VERSION;?></h2>
+  <?php if ('POST' == $_SERVER['REQUEST_METHOD'] && !$chld_thm_cfg->fs):
+        echo $chld_thm_cfg->fs_prompt;
+    else: ?>
   <div id="ctc_error_notice">
     <?php $this->settings_errors(); ?>
   </div>
@@ -65,7 +69,7 @@ class Child_Theme_Configurator_UI {
     <?php _e('Parent CSS', 'chld_thm_cfg'); ?>
     </a>
     <?php 
-    if ('' == $hidechild && (empty($configtype) || 'theme' == $configtype)): 
+    if ('' == $hidechild): // && (empty($configtype) || 'theme' == $configtype)): 
     ?>
     <a id="file_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" 
                     class="nav-tab<?php echo 'file_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
@@ -73,6 +77,7 @@ class Child_Theme_Configurator_UI {
     </a>
     <?php 
     endif; 
+ 
     do_action('chld_thm_cfg_tabs', $chld_thm_cfg, $active_tab, $hidechild);?>
     <i id="ctc_status_preview"></i></h2>
   <div class="ctc-option-panel-container">
@@ -334,7 +339,7 @@ class Child_Theme_Configurator_UI {
         class="ctc-option-panel<?php echo 'view_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
     <div id="view_parnt_options_panel" 
         class="ctc-option-panel<?php echo 'view_parnt_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
-    <?php if ('' == $hidechild && (empty($configtype) || 'theme' == $configtype)): ?>
+    <?php if ('' == $hidechild): // && (empty($configtype) || 'theme' == $configtype)): ?>
     <div id="file_options_panel" 
         class="ctc-option-panel<?php echo 'file_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
       <?php $this->render_file_form('parnt'); ?>
@@ -398,11 +403,30 @@ class Child_Theme_Configurator_UI {
           </div>
         </form>
       </div>
+      <?php if ('direct' != $chld_thm_cfg->fs_method): ?>
+      <div class="ctc-input-row clearfix" id="input_row_permissions">
+        <form id="ctc_permission_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options">
+          <?php wp_nonce_field( 'ctc_update' ); ?>
+          <div class="ctc-input-cell"> <strong>
+            <?php _e('Secure Child Theme', 'chld_thm_cfg'); ?>
+            </strong>
+            <p class="howto">
+              <?php _e('Attempt to reset child theme permissions to user ownership and read-only access.', 'chld_thm_cfg'); ?>
+            </p>
+          </div>
+          <div class="ctc-input-cell-wide">
+            <input class="ctc_submit button button-primary" id="ctc_reset_permission" 
+                name="ctc_reset_permission"  type="submit" 
+                value="<?php _e('Make read-only', 'chld_thm_cfg'); ?>" />
+          </div>
+        </form>
+      </div><?php endif; ?>
     </div>
     <?php endif; ?>
     <?php do_action('chld_thm_cfg_panels', $chld_thm_cfg, $active_tab, $hidechild); ?>
-  </div>
-</div>
+  </div><?php
+    endif;
+?></div>
 <style type="text/css">
 .ctc-status-icon.success {
     display: block;
@@ -427,17 +451,17 @@ class Child_Theme_Configurator_UI {
     } 
     
     function render_file_form($template = 'parnt') {
-        global $chld_thm_cfg; 
+        global $chld_thm_cfg, $wp_filesystem; 
         if ($theme = $chld_thm_cfg->css->get_prop($template)):
             $themeroot = get_theme_root() . '/' . $theme;
-            $files = $chld_thm_cfg->css->recurse_directory($themeroot, 'php');
+            $files = $chld_thm_cfg->css->recurse_directory(trailingslashit(get_theme_root()) . $theme, 'php');
             $counter = 0;
             sort($files);
             ob_start();
             foreach ($files as $file):
-                $templatefile = preg_replace('%(^' . preg_quote($themeroot) . '\/|\.php$)%', '', $file);
-                if (preg_match('%^(inc|core|lang|css|js)%',$templatefile) || 'functions' == basename($templatefile)) continue; ?>
-<label class="ctc-input-cell smaller">
+                $templatefile = preg_replace('%\.php$%', '', $chld_thm_cfg->theme_basename($theme, $file));
+                if ('parnt' == $template && (preg_match('%^(inc|core|lang|css|js)%',$templatefile) || 'functions' == basename($templatefile))) continue; ?>
+<label class="ctc-input-cell smaller<?php echo 'child' == $template && !$chld_thm_cfg->fs && is_writable($file) ? ' writable' : ''; ?>">
   <input class="ctc_checkbox" id="ctc_file_<?php echo $template . '_' . ++$counter; ?>" 
                     name="ctc_file_<?php echo $template; ?>[]" type="checkbox" 
                     value="<?php echo $templatefile; ?>" />
@@ -474,16 +498,25 @@ class Child_Theme_Configurator_UI {
             else:
                 echo $editorlink . $linktext . $editorlinkend; ?></p>
       <p class="howto">
-        <?php _e('Remove child theme templates by selecting them here.', 'chld_thm_cfg');
+        <?php if ($chld_thm_cfg->fs):
+                _e('Delete child theme templates by selecting them here.', 'chld_thm_cfg');
+            else:
+                _e('Delete child theme templates or make them writable by selecting them here. Writable files are displayed in <span style="color:red">red</span>.', 'chld_thm_cfg');
+                endif;
             endif; ?>
       </p>
     </div>
     <div class="ctc-input-cell-wide"> <?php echo $inputs; ?> </div>
     <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
     <div class="ctc-input-cell-wide" style="margin-top:10px;margin-bottom:10px">
+              <?php if ('child' == $template && !$chld_thm_cfg->fs): ?>
+      <input class="ctc_submit button button-primary" id="ctc_templates_writable_submit" 
+              name="ctc_templates_writable_submit" type="submit" 
+              value="<?php _e('Make Selected Writable', 'chld_thm_cfg'); ?>" />&nbsp; &nbsp;
+              <?php endif; ?>
       <input class="ctc_submit button button-primary" id="ctc_<?php echo $template; ?>_templates_submit" 
               name="ctc_<?php echo $template; ?>_templates_submit" type="submit" 
-              value="<?php echo ('parnt' == $template ?  __('Copy Selected to Child Theme', 'chld_thm_cfg') : __('Remove Selected from Child Theme', 'chld_thm_cfg')); ?>" />
+              value="<?php echo ('parnt' == $template ?  __('Copy Selected to Child Theme', 'chld_thm_cfg') : __('Delete Selected', 'chld_thm_cfg')); ?>" />
     </div>
   </form>
 </div>
@@ -495,14 +528,15 @@ class Child_Theme_Configurator_UI {
     function render_image_form() {
         global $chld_thm_cfg; 
         if ($theme = $chld_thm_cfg->css->get_prop('child')):
-            $themeroot  = get_theme_root() . '/' . $theme . '/images';
-            $themeuri   = get_theme_root_uri() . '/' . $theme . '/images/';
-            $files = $chld_thm_cfg->css->recurse_directory($themeroot, 'img');
+            $imgdir  = trailingslashit($theme) . 'images';
+            $themeuri   = trailingslashit(get_theme_root_uri()) . trailingslashit($imgdir);
+            $files = $chld_thm_cfg->css->recurse_directory(trailingslashit(get_theme_root()) . $imgdir, 'img');
+            
             $counter = 0;
             sort($files);
             ob_start();
             foreach ($files as $file):
-                $templatefile = preg_replace('%^' . preg_quote($themeroot) . '/%', '', $file); ?>
+                $templatefile = $chld_thm_cfg->theme_basename($imgdir, $file);  ?>
 <div class="ctc-input-cell" style="height:100px">
   <label class="smaller">
     <input class="ctc_checkbox" id="ctc_img_<?php echo ++$counter; ?>" 
@@ -544,11 +578,11 @@ class Child_Theme_Configurator_UI {
         global $chld_thm_cfg;
         foreach (array_keys($chld_thm_cfg->imgmimes) as $extreg): foreach (explode('|', $extreg) as $ext):
             if ($screenshot = $chld_thm_cfg->css->is_file_ok($chld_thm_cfg->css->get_child_target('screenshot.' . $ext))):
-                $screenshot = preg_replace('%^' . preg_quote(get_theme_root()) . '%', get_theme_root_uri(), $screenshot);
+                $screenshot = trailingslashit(get_theme_root_uri()) . $chld_thm_cfg->theme_basename('', $screenshot);
                 return $screenshot . '?' . time();
             endif;
         endforeach; endforeach;
-        return false;
+        return FALSE;
     }
     
     function settings_errors() {
@@ -564,9 +598,11 @@ class Child_Theme_Configurator_UI {
             if ( 8 == $_GET['updated']):
                 echo '<p>' . __('Child Theme files modified successfully.', 'chld_thm_cfg') . '</p>' . LF;
             else:
-                echo '<p>' . apply_filters('chld_thm_cfg_update_msg', sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.', 'chld_thm_cfg'),
+                echo '<p>' . apply_filters('chld_thm_cfg_update_msg', sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.
+                ', 'chld_thm_cfg'),
                 $chld_thm_cfg->css->get_prop('child_name')), $chld_thm_cfg) . LF
-                . '</p>';
+                //. (1 == $_GET['updated'] && 'direct' != $chld_thm_cfg->fs_method ? '<br/>' . __( 'To enable Child Theme Configurator for editing, the stylesheet has been made writable. You can change this back when you are finished editing for security by clicking "Make read-only" under the "Files" tab.', 'chld_thm_cfg') : '')
+                . '<strong>IMPORTANT: <a href="http://www.lilaeamedia.com/plugins/child-theme-configurator/#preview_activate">Test your child theme</a> before activating.</strong></p>';
             endif;
             if ( 9 == $_GET['updated']) echo '<p>' . __('Please verify the imports below and remove any imports that are not needed by the front end, such as admin or configuration stylesheets.', 'chld_thm_cfg') . '</p>' . LF;
             echo '</div>' . LF;
@@ -603,7 +639,7 @@ class Child_Theme_Configurator_UI {
 <li>Enter an author for the child theme.</li>
 <li>Enter the child theme version number.</li>
 <li>If you check "Backup Stylesheet", The Child Theme Configurator will create a backup in the theme directory.</li>
-<li>If your theme uses additional stylesheets they will appear as checkbox options. Select only the stylesheets you wish to customize to reduce overhead.</li>
+<li>If your theme uses additional stylesheets they will appear as checkbox options when you open the toggle arrow. Select only the stylesheets you wish to customize to reduce overhead. Remember to select them again if you reload your configuration.</li>
 <li>Click "Generate Child Theme."</li></ol>
 				    ', 'chld_thm_cfg'
 			    ),
@@ -649,10 +685,9 @@ class Child_Theme_Configurator_UI {
 
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_imports',
-			    'title'	=> __( '@imports', 'chld_thm_cfg' ),
+			    'title'	=> __( '@imports and Web Fonts', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. <strong>Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme\'s stylesheet automatically. Do not need to add it here.</strong></p>
-<p><strong>Important:</strong> If you chose "Scan Parent Theme for additional stylesheets," the Child Theme Configurator automically places @import rules for the additional stylesheets here. Be sure to delete any imports that are not needed by the front end, such as admin or configuration stylesheets.</p>
 <p>Below is an example that loads a local custom stylesheet (you would have to add the "fonts" directory and stylesheet) as well as the web font "Open Sans" from Google Web Fonts:</p>
 <blockquote><pre><code>
 @import url(fonts/stylesheet.css);
@@ -682,11 +717,25 @@ class Child_Theme_Configurator_UI {
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_preview',
 			    'title'	=> __( 'Preview and Activate', 'chld_thm_cfg' ),
-			    'content'	=> __( '
-<p>Click the Child or Parent CSS tab to reference the stylesheet code. To preview the stylesheet as a WordPress theme follow these steps:</p>
+			    'content'	=> __( '<p><strong>IMPORTANT: <a target="_blank" href="http://www.lilaeamedia.com/plugins/child-theme-configurator/#preview_activate" title="Test your child theme before activating!">Test your child theme before activating!</a></strong> Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not correctly load parent template files or automatically load child theme stylesheets or php files. <strong>In the worst cases they will break your website when you activate the child theme.</strong></p>
 <ol><li>Navigate to Appearance > Themes in the WordPress Admin. You will now see the new Child Theme as one of the installed Themes.</li>
 <li>Click "Live Preview" below the new Child Theme to see it in action.</li>
 <li>When you are ready to take the Child Theme live, click "Activate."</li></ol>
+<p>You can also click the Child or Parent CSS tab to reference the stylesheet code.</p>
+				    ', 'chld_thm_cfg'
+			    ),
+		    ) );
+
+		    $screen->add_help_tab( array(
+		    	'id'	=> 'ctc_permissions',
+			    'title'	=> __( 'File Permissions', 'chld_thm_cfg' ),
+			    'content'	=> __( '
+<p>WordPress was designed to work on a number of server configurations. Child Theme Configurator uses the WordPress Filesystem API to allow changes to sites that require user permission to edit files.</p><p>However, because most of the functionality occurs via AJAX (background) requests, the child theme stylesheet must be writable by the web server.</p><p>The plugin will automatically detect your configuration and provide a number of options to resolve this requirement. Use the links provided to find out more about the options available, including:</p>
+<ol><li>Temporarily making the stylesheet writable through the plugin.</li>
+<li>Adding your FTP/SSH credentials to the WordPress config file.</li>
+<li>Setting the stylesheet write permissions on the server manually</li>
+<li>Configuring your web server to allow write access in certain situations.</li>
+</ol>
 				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
@@ -698,7 +747,8 @@ class Child_Theme_Configurator_UI {
 <h5>Does it work with Plugins?</h5>
 <p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles" title="Child Theme Configurator Extension">Learn more</a></p>
 <h5 id="doesnt_work">Why doesn’t this work with my (insert theme vendor here) theme?</h5>
-<p>Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade.</p>
+<p>Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not correctly load parent template files or automatically load child theme stylesheets or php files.</p>
+<p>This is unfortunate, because in the best case they effectively prohibit the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. <strong>In the worst case they will break your website when you activate the child theme.</strong></p>
 <p>Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.</p>
 <h5>Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator?</h5>
 <p>You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.</p>
