@@ -40,7 +40,9 @@ class Child_Theme_Configurator_UI {
   <div id="icon-tools" class="icon32"></div>
   <?php echo $this->extLink; ?>
   <h2><?php echo $chld_thm_cfg->pluginName; ?> v.<?php echo CHLD_THM_CFG_VERSION;?></h2>
-  <?php if (empty($chld_thm_cfg->fs_prompt)):?>
+  <?php if ('POST' == $_SERVER['REQUEST_METHOD'] && !$chld_thm_cfg->fs):
+        echo $chld_thm_cfg->fs_prompt;
+    else: ?>
   <div id="ctc_error_notice">
     <?php $this->settings_errors(); ?>
   </div>
@@ -67,7 +69,7 @@ class Child_Theme_Configurator_UI {
     <?php _e('Parent CSS', 'chld_thm_cfg'); ?>
     </a>
     <?php 
-    if ('' == $hidechild && (empty($configtype) || 'theme' == $configtype)): 
+    if ('' == $hidechild): // && (empty($configtype) || 'theme' == $configtype)): 
     ?>
     <a id="file_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" 
                     class="nav-tab<?php echo 'file_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
@@ -75,7 +77,8 @@ class Child_Theme_Configurator_UI {
     </a>
     <?php 
     endif; 
-    if (empty($chld_thm_cfg->fs_plugins)) do_action('chld_thm_cfg_tabs', $chld_thm_cfg, $active_tab, $hidechild);?>
+ 
+    do_action('chld_thm_cfg_tabs', $chld_thm_cfg, $active_tab, $hidechild);?>
     <i id="ctc_status_preview"></i></h2>
   <div class="ctc-option-panel-container">
     <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
@@ -131,7 +134,7 @@ class Child_Theme_Configurator_UI {
                 value="<?php echo esc_attr($css->get_prop('child_name')); ?>" placeholder="<?php _e('Theme Name', 'chld_thm_cfg'); ?>" autocomplete="off" />
           </div>
         </div>
-        <?php if (empty($chld_thm_cfg->fs_plugins) && '' == $hidechild) do_action('chld_thm_cfg_controls', $chld_thm_cfg); ?>
+        <?php if ('' == $hidechild) do_action('chld_thm_cfg_controls', $chld_thm_cfg); ?>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
           <div class="ctc-input-cell"> <strong>
             <?php _e('Author', 'chld_thm_cfg'); ?>
@@ -336,7 +339,7 @@ class Child_Theme_Configurator_UI {
         class="ctc-option-panel<?php echo 'view_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
     <div id="view_parnt_options_panel" 
         class="ctc-option-panel<?php echo 'view_parnt_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
-    <?php if ('' == $hidechild && (empty($configtype) || 'theme' == $configtype)): ?>
+    <?php if ('' == $hidechild): // && (empty($configtype) || 'theme' == $configtype)): ?>
     <div id="file_options_panel" 
         class="ctc-option-panel<?php echo 'file_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
       <?php $this->render_file_form('parnt'); ?>
@@ -414,16 +417,14 @@ class Child_Theme_Configurator_UI {
           <div class="ctc-input-cell-wide">
             <input class="ctc_submit button button-primary" id="ctc_reset_permission" 
                 name="ctc_reset_permission"  type="submit" 
-                value="<?php _e('Reset Permissions', 'chld_thm_cfg'); ?>" />
+                value="<?php _e('Make read-only', 'chld_thm_cfg'); ?>" />
           </div>
         </form>
       </div><?php endif; ?>
     </div>
     <?php endif; ?>
-    <?php if (empty($chld_thm_cfg->fs_plugins)) do_action('chld_thm_cfg_panels', $chld_thm_cfg, $active_tab, $hidechild); ?>
+    <?php do_action('chld_thm_cfg_panels', $chld_thm_cfg, $active_tab, $hidechild); ?>
   </div><?php
-    else:
-        echo $chld_thm_cfg->fs_prompt;
     endif;
 ?></div>
 <style type="text/css">
@@ -450,7 +451,7 @@ class Child_Theme_Configurator_UI {
     } 
     
     function render_file_form($template = 'parnt') {
-        global $chld_thm_cfg; 
+        global $chld_thm_cfg, $wp_filesystem; 
         if ($theme = $chld_thm_cfg->css->get_prop($template)):
             $themeroot = get_theme_root() . '/' . $theme;
             $files = $chld_thm_cfg->css->recurse_directory(trailingslashit(get_theme_root()) . $theme, 'php');
@@ -460,7 +461,7 @@ class Child_Theme_Configurator_UI {
             foreach ($files as $file):
                 $templatefile = preg_replace('%\.php$%', '', $chld_thm_cfg->theme_basename($theme, $file));
                 if ('parnt' == $template && (preg_match('%^(inc|core|lang|css|js)%',$templatefile) || 'functions' == basename($templatefile))) continue; ?>
-<label class="ctc-input-cell smaller<?php echo 'child' == $template && is_writable($file) ? ' writable' : ''; ?>">
+<label class="ctc-input-cell smaller<?php echo 'child' == $template && !$chld_thm_cfg->fs && is_writable($file) ? ' writable' : ''; ?>">
   <input class="ctc_checkbox" id="ctc_file_<?php echo $template . '_' . ++$counter; ?>" 
                     name="ctc_file_<?php echo $template; ?>[]" type="checkbox" 
                     value="<?php echo $templatefile; ?>" />
@@ -497,14 +498,18 @@ class Child_Theme_Configurator_UI {
             else:
                 echo $editorlink . $linktext . $editorlinkend; ?></p>
       <p class="howto">
-        <?php _e('Delete child theme templates or make them writable by selecting them here.', 'chld_thm_cfg');
+        <?php if ($chld_thm_cfg->fs):
+                _e('Delete child theme templates by selecting them here.', 'chld_thm_cfg');
+            else:
+                _e('Delete child theme templates or make them writable by selecting them here. Writable files are displayed in <span style="color:red">red</span>.', 'chld_thm_cfg');
+                endif;
             endif; ?>
       </p>
     </div>
     <div class="ctc-input-cell-wide"> <?php echo $inputs; ?> </div>
     <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
     <div class="ctc-input-cell-wide" style="margin-top:10px;margin-bottom:10px">
-              <?php if ('child' == $template && 'direct' != $chld_thm_cfg->fs_method): ?>
+              <?php if ('child' == $template && !$chld_thm_cfg->fs): ?>
       <input class="ctc_submit button button-primary" id="ctc_templates_writable_submit" 
               name="ctc_templates_writable_submit" type="submit" 
               value="<?php _e('Make Selected Writable', 'chld_thm_cfg'); ?>" />&nbsp; &nbsp;
@@ -595,7 +600,7 @@ class Child_Theme_Configurator_UI {
             else:
                 echo '<p>' . apply_filters('chld_thm_cfg_update_msg', sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.', 'chld_thm_cfg'),
                 $chld_thm_cfg->css->get_prop('child_name')), $chld_thm_cfg) . LF
-                . (1 == $_GET['updated'] && 'direct' != $chld_thm_cfg->fs_method ? '<br/>' . __( 'To make Child Theme Configurator easier to use, the stylesheet has been made writable. You can change this back when you are finished editing for security by clicking "Reset Permissions" under the "Files" tab.', 'chld_thm_cfg') : '')
+                //. (1 == $_GET['updated'] && 'direct' != $chld_thm_cfg->fs_method ? '<br/>' . __( 'To enable Child Theme Configurator for editing, the stylesheet has been made writable. You can change this back when you are finished editing for security by clicking "Make read-only" under the "Files" tab.', 'chld_thm_cfg') : '')
                 . '</p>';
             endif;
             if ( 9 == $_GET['updated']) echo '<p>' . __('Please verify the imports below and remove any imports that are not needed by the front end, such as admin or configuration stylesheets.', 'chld_thm_cfg') . '</p>' . LF;

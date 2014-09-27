@@ -191,8 +191,8 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * We have completely refactored CTC to use the WP_Filesystem API. 
 * If your web host is configured to use suExec (meaning it runs under the user of the web account being accessed), the changes will be completely transparent. 
 * Other configurations will now require user credentials to add, remove or update Child Theme files. 
-* To make things easier we added the ability for you to make the files writable while editing and then to reset permissions when you are done.
-* **IMPORTANT:** If you are using CTC for PLUGINS, you must upgrade it to version 1.1.0. 
+* To make things easier we added the ability for you to make the files writable while editing and then make them read-only when you are done.
+* You can also set your credentials in wp-config.php: http://codex.wordpress.org/Editing_wp-config.php#WordPress_Upgrade_Constants
 * Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
 
 = 1.4.8 =

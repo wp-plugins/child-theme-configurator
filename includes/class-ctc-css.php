@@ -453,7 +453,7 @@ class Child_Theme_Configurator_CSS {
             global $chld_thm_cfg;
             $regex = '#(\@import.+?);#';
             preg_match_all($regex, $this->styles, $matches);
-            foreach (preg_grep('#style\.css#', $matches[1], PREG_GREP_INVERT) as $import)
+            foreach (preg_grep('#' . $this->get_prop('parnt') . '\/style\.css#', $matches[1], PREG_GREP_INVERT) as $import)
                 $this->imports[$template][$import] = 1;
             if ($chld_thm_cfg->cache_updates):
                 $chld_thm_cfg->updates[] = array(
@@ -587,22 +587,22 @@ class Child_Theme_Configurator_CSS {
         endforeach;
         $stylesheet = apply_filters('chld_thm_cfg_target', $this->get_child_target(), $this);
         if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'write')):
-            // backup current stylesheet
-            if ($backup && is_file($stylesheet_verified)):
-                global $chld_thm_cfg;
-                if ($chld_thm_cfg->fs):
-                    global $wp_filesystem; // this was initialized earlier;
-                    
+            global $chld_thm_cfg, $wp_filesystem; // this was initialized earlier;
+                // backup current stylesheet
+                if ($backup && is_file($stylesheet_verified)):
                     $timestamp  = date('YmdHis', current_time('timestamp'));
                     $bakfile    = preg_replace("/\.css$/", '', $stylesheet_verified) . '-' . $timestamp . '.css';
+                    // don't write new stylesheet if backup fails
                     if (!$wp_filesystem->copy($chld_thm_cfg->fspath($stylesheet_verified), $chld_thm_cfg->fspath($bakfile))) return FALSE;
                 endif;
-            endif;
-            // write new stylesheet:
-            // we are bypassing wp_filesystem here to allow ajax methods
-            // stylesheet must already exist and be writable by web server
-            if (!is_writeable($stylesheet_verified) || FALSE === file_put_contents($stylesheet_verified, $output)) return FALSE; 
-            return TRUE;  
+                // write new stylesheet:
+                // try direct write first, then wp_filesystem write
+                // stylesheet must already exist and be writable by web server
+                if (FALSE !== @file_put_contents($stylesheet_verified, $output)): //is_writable($stylesheet_verified) && 
+                    return TRUE;
+                elseif (FALSE !== $wp_filesystem->put_contents($chld_thm_cfg->fspath($stylesheet_verified), $output)): 
+                    return TRUE;
+                endif;
         endif;   
         return FALSE;
     }

@@ -36,7 +36,6 @@ class Child_Theme_Configurator {
     var $fs;
     var $fs_prompt;
     var $fs_method;
-    var $fs_plugins;
     var $postarrays;
     var $imgmimes;
     var $updates;
@@ -138,7 +137,7 @@ class Child_Theme_Configurator {
     function ctc_page_init () {
         $this->get_themes();
         $this->load_config();
-        if (empty($this->fs_plugins)) do_action('chld_thm_cfg_forms', $this);  // hook for custom forms
+        do_action('chld_thm_cfg_forms', $this);  // hook for custom forms
         $this->write_config();
         $this->ui = new Child_Theme_Configurator_UI();
         $this->ui->render_help_tabs();
@@ -167,6 +166,7 @@ class Child_Theme_Configurator {
     function ajax_save_postdata() {
         $this->is_ajax = TRUE;
         if ($this->validate_post()):
+            $this->verify_creds();
             $this->load_config();
             $this->css->parse_post_data();
             $this->css->write_css();
@@ -207,28 +207,21 @@ class Child_Theme_Configurator {
             || !is_object($this->css) 
             || ! $this->check_theme_exists($this->css->get_prop('child'))
             || ! $this->check_theme_exists($this->css->get_prop('parnt'))            
-            // upgrade to v.1.1.1 
             || !($version = $this->css->get_prop('version'))
             ):
             $parent = get_template();
             $this->css = new Child_Theme_Configurator_CSS($parent);
-        elseif ($_SERVER['REQUEST_METHOD'] != 'post'):
-            if (($stylesheet = $this->css->get_child_target()) && !is_writeable($stylesheet)):
+        endif;
+        if ('POST' != $_SERVER['REQUEST_METHOD']):
+            $this->verify_creds();
+            $stylesheet = $this->css->get_child_target('style.css');
+            if (!is_writable($stylesheet) && !$this->fs):
 	            add_action('admin_notices', array($this, 'writable_notice')); 	
             endif;
             if (fileowner($this->css->get_child_target('')) != fileowner(ABSPATH)):
 	            add_action('admin_notices', array($this, 'owner_notice')); 
             endif;
-            // check if latest ctc for plugins is being used
         endif;	
-        if ('direct' != get_filesystem_method()):
-            include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-            $pluginshandle = 'child-theme-configurator-plugins/child-theme-configurator-plugins.php';
-            if (($plugins = get_plugins()) && isset($plugins[$pluginshandle]) && $plugins[$pluginshandle]['Version'] < '1.1.0'):
-                $this->fs_plugins = TRUE;
-                add_action('admin_notices', array($this, 'plugins_notice')); 
-            endif;
-        endif;
     }
     
     function write_config() {
@@ -255,6 +248,7 @@ class Child_Theme_Configurator {
                 endif;
                 $args = preg_grep("/nonce/", array_keys($_POST), PREG_GREP_INVERT);
                 $this->verify_creds($args);
+                
                 if ($this->fs):
                     if (isset($_POST['ctc_load_styles'])):
                         foreach (array(
@@ -269,6 +263,7 @@ class Child_Theme_Configurator {
                             $varparts = explode('_', $postfield);
                             $varname = end($varparts);
                             ${$varname} = empty($_POST[$postfield])?'':sanitize_text_field($_POST[$postfield]);
+                            //echo $varname . ': ' . ${$varname} . LF;
                         endforeach;
                         if ($parnt):
                             if (! $this->check_theme_exists($parnt)):
@@ -289,6 +284,12 @@ class Child_Theme_Configurator {
                                     $this->errors[] = sprintf(__('<strong>%s</strong> exists. Please enter a different Child Theme template name', 'chld_thm_cfg'), $child);
                                 endif;
                             endif;
+                        elseif (empty($configtype) || 'theme' == $configtype):
+                            add_action('chld_thm_cfg_addl_files',   array(&$this, 'add_base_files'), 10, 2);
+                        elseif(has_action('chld_thm_cfg_addl_files')):
+                            remove_all_actions('chld_thm_cfg_addl_files');
+                            // back compat for plugins extension
+                            add_action('chld_thm_cfg_addl_files', array(&$this, 'write_addl_files'), 10, 2);
                         endif;
                         if (empty($name)):
                             $name = ucfirst($child);
@@ -298,7 +299,8 @@ class Child_Theme_Configurator {
                         endif;
                         if (FALSE === $this->verify_child_dir($child)):
                             //echo 'failed verify_child_dir' . LF;
-                            $this->errors[] = __('Your theme directories are not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
+                            $this->errors[] = __('Your theme directories are not writable.', 'chld_thm_cfg');
+	                        add_action('admin_notices', array($this, 'writable_notice')); 	
                         endif;
                         if (empty($this->errors)):
                             $this->css = new Child_Theme_Configurator_CSS();
@@ -320,11 +322,12 @@ class Child_Theme_Configurator {
                                 endforeach;
                             endif;
                             if (FALSE === $this->css->write_css(isset($_POST['ctc_backup']))):
-                                $this->errors[] = __('Your stylesheet is not writable. Please adjust permissions and try again.', 'chld_thm_cfg');
+                                $this->errors[] = __('Your stylesheet is not writable.', 'chld_thm_cfg');
+	                            add_action('admin_notices', array($this, 'writable_notice')); 	
                                 return FALSE;
                             endif; 
                             update_option($this->optionsName, $this->css);
-                            if (empty($this->fs_plugins)) do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
+                            do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
                             $msg = 1; //isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
                         endif;
                     elseif (isset($_POST['ctc_parnt_templates_submit']) && isset($_POST['ctc_file_parnt'])):
@@ -377,7 +380,6 @@ class Child_Theme_Configurator {
         endif;
         $this->errors[] = __('You do not have permission to configure child themes.', 'chld_thm_cfg');
         return FALSE;
-        //$this->errors[] = sprintf(__('Child Theme %s was unchanged.', 'chld_thm_cfg'), $name, $this->optionsName);
     }
     
     function render_menu($template = 'child', $selected = null) {
@@ -436,7 +438,7 @@ class Child_Theme_Configurator {
         global $wp_filesystem;
         // add functions.php file
         $contents = "<?php\n// Exit if accessed directly\nif ( !defined('ABSPATH')) exit;\n\n/* Add custom functions below */";
-        if (FALSE === $this->write_child_file('functions.php', $contents) || FALSE === $this->write_child_file('style.css', '')) return FALSE;
+        if (FALSE === $this->write_child_file('functions.php', $contents) || FALSE === $this->write_child_file('style.css', $this->css->get_css_header())) return FALSE;
     }
     
     function write_child_file($file, $contents) {
@@ -445,10 +447,16 @@ class Child_Theme_Configurator {
         global $wp_filesystem;
         $file = $this->fspath($this->css->is_file_ok($this->css->get_child_target($file), 'write'));
         //echo 'file: ' . $file . LF;
-        if ($file && !$wp_filesystem->exists($file)):
-            // create file with write permissions
-            if (FALSE === $wp_filesystem->put_contents($file, 
-                $contents, fileperms( ABSPATH . 'index.php' ) & 0777 | 0666)) return FALSE;
+        if ($file):
+            if ($wp_filesystem->exists($file)):
+                //if (FALSE === $wp_filesystem->chmod($this->fspath($file), fileperms( ABSPATH . 'index.php' ) & 0777 | 0666)):
+                //    return FALSE;
+                //endif;
+            else:
+                // create file with write permissions
+                if (FALSE === $wp_filesystem->put_contents($file, 
+                $contents)) return FALSE; //, fileperms( ABSPATH . 'index.php' ) & 0777 | 0666)) return FALSE;
+            endif;
         endif;
     }
     
@@ -537,12 +545,15 @@ class Child_Theme_Configurator {
     }
     
     function set_writable($file = NULL) {
-        $file = isset($file) ? $file . '.php' : 'style.css';
-        if (!$this->fs) return FALSE; // return if no filesystem access
-        global $wp_filesystem;
-        $file = $this->css->get_child_target($file);
-        if ($file && !$wp_filesystem->chmod($this->fspath($file), 0666))
-            $this->errors[] = __('Could not set write permissions.', 'chld_thm_cfg');
+
+        $file = isset($file) ? $this->css->get_child_target($file . '.php') : apply_filters('chld_thm_cfg_target', $this->css->get_child_target(), $this->css);
+        if ($this->fs): // filesystem access
+            global $wp_filesystem;
+            if ($file && $wp_filesystem->chmod($this->fspath($file), 0666)) return;
+        endif;
+        $this->errors[] = __('Could not set write permissions.', 'chld_thm_cfg');
+        add_action('admin_notices', array($this, 'writable_notice')); 	
+        return FALSE;
     }
     
     function unset_writable() {
@@ -568,7 +579,7 @@ class Child_Theme_Configurator {
         // n -> copy entire folder (as user)
         $files = $this->css->recurse_directory($dir, NULL, TRUE);
         //echo 'files: ' . LF . print_r($files, TRUE) . LF;
-        $errors = 0;
+        $errors = array();
         foreach ($files as $file):
             $childfile  = $this->theme_basename($child, wp_normalize_path($file));
             $newfile    = trailingslashit($newchild) . $childfile;
@@ -577,10 +588,10 @@ class Child_Theme_Configurator {
             if ($copy):
                 if ($this->verify_child_dir(is_dir($file)?$newfile:dirname($newfile))):
                     if (is_file($file) && !$wp_filesystem->copy($childpath, $newpath)):
-                        $errors++;
+                        $errors[] = 'could not copy ' . $newpath;
                     endif;
                 else:
-                    $errors++;
+                    $errors[] = 'invalid dir: ' . $newfile;
                 endif;
             else:
                 $wp_filesystem->chmod($this->fspath($file));
@@ -589,7 +600,7 @@ class Child_Theme_Configurator {
         if ($copy):
             // verify copy (as webserver)
             $newfiles = $this->css->recurse_directory(trailingslashit($themedir) . $newchild, NULL, TRUE);
-        //echo 'newfiles: ' . LF . print_r($newfiles, TRUE) . LF;
+            //echo 'newfiles: ' . LF . print_r($newfiles, TRUE) . LF;
             $deleteddirs = $deletedfiles = 0;
             if (count($newfiles) == count($files)):
                 // rename old (as webserver)
@@ -601,24 +612,30 @@ class Child_Theme_Configurator {
                 // remove old files (as webserver)
                 $oldfiles = $this->css->recurse_directory(trailingslashit($themedir) . $child . '-old', NULL, TRUE);
                 array_unshift($oldfiles, trailingslashit($themedir) . $child . '-old');
-        //echo 'oldfiles: ' . LF . print_r($oldfiles, TRUE) . LF;
+                //echo 'oldfiles: ' . LF . print_r($oldfiles, TRUE) . LF;
                 foreach (array_reverse($oldfiles) as $file):
-                //echo 'deleting: ' . $file . LF;
                     if ($wp_filesystem->delete($this->fspath($file)) || (is_dir($file) && @rmdir($file)) || (is_file($file) && @unlink($file))):
+                        //echo 'deleting: ' . $file . LF;
                         $deletedfiles++;
                     endif;
                 endforeach;
-                if ($deletedfiles != count($files)):
-                    $errors++;
+                if ($deletedfiles != count($oldfiles)):
+                    $errors[] = 'deleted: ' . $deletedfiles . ' != ' . count($oldfiles) . ' files';
                 endif;
             else:
-                $errors++;
+                $errors[] = 'newfiles != files';
             endif;
         endif;
         //echo 'files: ' . count($files) . LF . 'newfiles: ' . count($newfiles) . LF 
         //    . 'oldfiles: ' . count($oldfiles) . LF . 'deletedfiles: ' . $deletedfiles . LF ;
         //echo '</code></pre>' . LF;
-        if ($errors) $this->errors[] = __('There were errors while resetting permissions.', 'chld_thm_cfg');   
+        if (count($errors)):
+            $this->errors[] = __('There were errors while resetting permissions.', 'chld_thm_cfg') ;
+            //. count($errors) 
+            //. implode("\n", $errors) 
+            //. count($errors) . LF;   
+            add_action('admin_notices', array($this, 'writable_notice')); 	
+        endif;
     }
     
     function handle_file_upload($field, $childdir = NULL, $mimes = NULL){
@@ -699,6 +716,9 @@ class Child_Theme_Configurator {
             else
                 // incorrect credentials, get form with error flag
                 $creds = request_filesystem_credentials($url, '', TRUE, FALSE, $args);
+        else:
+            // no credentials, initialize unpriveledged filesystem object
+            WP_Filesystem();
         endif;
         // if form was generated, store it
         $this->fs_prompt = ob_get_contents();
@@ -726,25 +746,48 @@ class Child_Theme_Configurator {
     }
     
     function writable_notice() {
-    ?>
-    <div class="update-nag">
-        <p><?php _e( 'Your server requires write permission to edit the Child Theme files. To make Child Theme Configurator easier to use, you can make the stylesheet writable by clicking the button below. You can change this back when you are finished editing for security by clicking "Reset Permissions" under the "Files" tab.', 'chld_thm_cfg') ?></p>
+?>    <div class="update-nag">
+        <p><?php _e( 'Child Theme Configurator is unable to write to the stylesheet. This can be resolved by:<ol><li>Adding your FTP credentials to the WordPress config file (recommended).</li><li>Temporarily setting the stylesheet to writable by clicking the button below (*nix systems only). You should change this back when you are finished editing for security by clicking "Make read-only" under the "Files" tab.</li><li>Assigning WordPress to an application pool that has write permissions (Windows systems).</li><li>Setting write permissions to the stylesheet on the server manually (not recommended).</li></ol>', 'chld_thm_cfg') ?></p>
 <form action="" method="post"><?php wp_nonce_field( 'ctc_update' ); ?>
-<input name="ctc_set_writable" class="button" type="submit" value="<?php _e('Make Child Theme writable', 'chld_thm_cfg'); ?>"/></form>    </div>
+<input name="ctc_set_writable" class="button" type="submit" value="<?php _e('Make stylesheet writable temporarily (option 2)', 'chld_thm_cfg'); ?>"/></form>    </div>
     <?php
     }
     function owner_notice() {
     ?>
     <div class="update-nag">
-        <p><?php _e( 'This Child Theme is not owned by your website account. It may have been created by a prior version of this plugin or by another program. Moving forward, it must be owned to your website account to make changes. Child Theme Configurator will attempt to correct this when you click the button below.', 'chld_thm_cfg') ?></p>
+        <p><?php _e( 'This Child Theme is not owned by your website account. It may have been created by a prior version of this plugin or by another program. Moving forward, it must be owned by your website account to make changes. Child Theme Configurator will attempt to correct this when you click the button below.', 'chld_thm_cfg') ?></p>
 <form action="" method="post"><?php wp_nonce_field( 'ctc_update' ); ?>
 <input name="ctc_reset_permission" class="button" type="submit" value="<?php _e('Correct Child Theme Permissions', 'chld_thm_cfg'); ?>"/></form>    </div>
     <?php
     }
-    function plugins_notice() {
-    ?>
-    <div class="error">
-        <p><?php _e( 'This version of Child Theme Configurator Extension for PLUGINS is not compatible with the current version of Child Theme Configurator. If you are unable to upgrade using the Plugins Admin, please <a href="http://www.lilaeamedia.com/about/contact">contact us</a> to get the latest version.', 'chld_thm_cfg') ?></p></div>
-    <?php
+
+    // back compatibility function for plugins extension
+    function write_addl_files($chld_thm_cfg) {
+        global $chld_thm_cfg_plugins;
+        if (!is_object($chld_thm_cfg_plugins) || !$chld_thm_cfg->fs) return FALSE;
+        $configtype = $chld_thm_cfg->css->get_prop('configtype');
+        if ('theme' == $configtype || !($def = $chld_thm_cfg_plugins->defs->get_def($configtype))) return FALSE;
+        $child = trailingslashit($chld_thm_cfg->css->get_prop('child'));
+        if (isset($def['addl']) && is_array($def['addl']) && count($def['addl'])):
+            foreach ($def['addl'] as $path => $type):
+            
+                // sanitize the crap out of the target data -- it will be used to create paths
+                $path = wp_normalize_path(preg_replace("%[^\w\\//\-]%", '', sanitize_text_field($child . $path)));
+                if (('dir' == $type && FALSE === $chld_thm_cfg->verify_child_dir($path))
+                    || ('dir' != $type && FALSE === $chld_thm_cfg->write_child_file($path, ''))):
+                    $chld_thm_cfg->errors[] = 
+                        __('Your theme directories are not writable.', 'chld_thm_cfg_plugins');
+                endif;
+            endforeach;
+        endif;
+        // write main def file
+        if (isset($def['target'])):
+            $path = wp_normalize_path(preg_replace("%[^\w\\//\-\.]%", '', sanitize_text_field($def['target']))); //$child . 
+            if (FALSE === $chld_thm_cfg->write_child_file($path, '')):
+                $chld_thm_cfg->errors[] = 
+                    __('Your stylesheet is not writable.', 'chld_thm_cfg_plugins');
+                return FALSE;
+            endif;
+        endif;        
     }
 }
