@@ -20,7 +20,7 @@ class Child_Theme_Configurator_UI {
     
     function __construct() {
         $this->swatch_text  = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';  
-        $this->extLink      = '<a href="http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework/" target="_blank" title="' . __('Total WordPress Customization with PageCells Responsive Theme Framework', 'chld_thm_cfg') . '" style="float:right">' . __('Need a theme that gives you total control?', 'chld_thm_cfg') . '</a>';
+        $this->extLink      = '<a href="http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework/" target="_blank" title="' . __('Total WordPress Customization with PageCells Responsive Theme Framework', 'chld_thm_cfg') . '" style="float:right"><img src="http://www.lilaeamedia.com/images/logos/pagecells-310.png" height="40" width="310" alt="PageCells Responsive Framework" /></a>';
     }
     
     function render_options() { 
@@ -598,10 +598,11 @@ class Child_Theme_Configurator_UI {
             if ( 8 == $_GET['updated']):
                 echo '<p>' . __('Child Theme files modified successfully.', 'chld_thm_cfg') . '</p>' . LF;
             else:
-                echo '<p>' . apply_filters('chld_thm_cfg_update_msg', sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.', 'chld_thm_cfg'),
+                echo '<p>' . apply_filters('chld_thm_cfg_update_msg', sprintf(__('Child Theme <strong>%s</strong> has been generated successfully.
+                ', 'chld_thm_cfg'),
                 $chld_thm_cfg->css->get_prop('child_name')), $chld_thm_cfg) . LF
                 //. (1 == $_GET['updated'] && 'direct' != $chld_thm_cfg->fs_method ? '<br/>' . __( 'To enable Child Theme Configurator for editing, the stylesheet has been made writable. You can change this back when you are finished editing for security by clicking "Make read-only" under the "Files" tab.', 'chld_thm_cfg') : '')
-                . '</p>';
+                . '<strong>IMPORTANT: <a href="http://www.lilaeamedia.com/plugins/child-theme-configurator/#preview_activate">Test your child theme</a> before activating.</strong></p>';
             endif;
             if ( 9 == $_GET['updated']) echo '<p>' . __('Please verify the imports below and remove any imports that are not needed by the front end, such as admin or configuration stylesheets.', 'chld_thm_cfg') . '</p>' . LF;
             echo '</div>' . LF;
@@ -638,7 +639,7 @@ class Child_Theme_Configurator_UI {
 <li>Enter an author for the child theme.</li>
 <li>Enter the child theme version number.</li>
 <li>If you check "Backup Stylesheet", The Child Theme Configurator will create a backup in the theme directory.</li>
-<li>If your theme uses additional stylesheets they will appear as checkbox options. Select only the stylesheets you wish to customize to reduce overhead.</li>
+<li>If your theme uses additional stylesheets they will appear as checkbox options when you open the toggle arrow. Select only the stylesheets you wish to customize to reduce overhead. Remember to select them again if you reload your configuration.</li>
 <li>Click "Generate Child Theme."</li></ol>
 				    ', 'chld_thm_cfg'
 			    ),
@@ -684,10 +685,9 @@ class Child_Theme_Configurator_UI {
 
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_imports',
-			    'title'	=> __( '@imports', 'chld_thm_cfg' ),
+			    'title'	=> __( '@imports and Web Fonts', 'chld_thm_cfg' ),
 			    'content'	=> __( '
 <p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. <strong>Important: The Child Theme Configurator adds the @import rule that loads the Parent Theme\'s stylesheet automatically. Do not need to add it here.</strong></p>
-<p><strong>Important:</strong> If you chose "Scan Parent Theme for additional stylesheets," the Child Theme Configurator automically places @import rules for the additional stylesheets here. Be sure to delete any imports that are not needed by the front end, such as admin or configuration stylesheets.</p>
 <p>Below is an example that loads a local custom stylesheet (you would have to add the "fonts" directory and stylesheet) as well as the web font "Open Sans" from Google Web Fonts:</p>
 <blockquote><pre><code>
 @import url(fonts/stylesheet.css);
@@ -717,11 +717,25 @@ class Child_Theme_Configurator_UI {
 		    $screen->add_help_tab( array(
 		    	'id'	=> 'ctc_preview',
 			    'title'	=> __( 'Preview and Activate', 'chld_thm_cfg' ),
-			    'content'	=> __( '
-<p>Click the Child or Parent CSS tab to reference the stylesheet code. To preview the stylesheet as a WordPress theme follow these steps:</p>
+			    'content'	=> __( '<p><strong>IMPORTANT: <a target="_blank" href="http://www.lilaeamedia.com/plugins/child-theme-configurator/#preview_activate" title="Test your child theme before activating!">Test your child theme before activating!</a></strong> Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not correctly load parent template files or automatically load child theme stylesheets or php files. <strong>In the worst cases they will break your website when you activate the child theme.</strong></p>
 <ol><li>Navigate to Appearance > Themes in the WordPress Admin. You will now see the new Child Theme as one of the installed Themes.</li>
 <li>Click "Live Preview" below the new Child Theme to see it in action.</li>
 <li>When you are ready to take the Child Theme live, click "Activate."</li></ol>
+<p>You can also click the Child or Parent CSS tab to reference the stylesheet code.</p>
+				    ', 'chld_thm_cfg'
+			    ),
+		    ) );
+
+		    $screen->add_help_tab( array(
+		    	'id'	=> 'ctc_permissions',
+			    'title'	=> __( 'File Permissions', 'chld_thm_cfg' ),
+			    'content'	=> __( '
+<p>WordPress was designed to work on a number of server configurations. Child Theme Configurator uses the WordPress Filesystem API to allow changes to sites that require user permission to edit files.</p><p>However, because most of the functionality occurs via AJAX (background) requests, the child theme stylesheet must be writable by the web server.</p><p>The plugin will automatically detect your configuration and provide a number of options to resolve this requirement. Use the links provided to find out more about the options available, including:</p>
+<ol><li>Temporarily making the stylesheet writable through the plugin.</li>
+<li>Adding your FTP/SSH credentials to the WordPress config file.</li>
+<li>Setting the stylesheet write permissions on the server manually</li>
+<li>Configuring your web server to allow write access in certain situations.</li>
+</ol>
 				    ', 'chld_thm_cfg'
 			    ),
 		    ) );
@@ -733,7 +747,8 @@ class Child_Theme_Configurator_UI {
 <h5>Does it work with Plugins?</h5>
 <p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles" title="Child Theme Configurator Extension">Learn more</a></p>
 <h5 id="doesnt_work">Why doesn’t this work with my (insert theme vendor here) theme?</h5>
-<p>Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade.</p>
+<p>Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not correctly load parent template files or automatically load child theme stylesheets or php files.</p>
+<p>This is unfortunate, because in the best case they effectively prohibit the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. <strong>In the worst case they will break your website when you activate the child theme.</strong></p>
 <p>Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.</p>
 <h5>Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator?</h5>
 <p>You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.</p>

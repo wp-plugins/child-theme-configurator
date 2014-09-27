@@ -213,10 +213,12 @@ class Child_Theme_Configurator {
             $this->css = new Child_Theme_Configurator_CSS($parent);
         endif;
         if ('POST' != $_SERVER['REQUEST_METHOD']):
-            $this->verify_creds();
-            $stylesheet = $this->css->get_child_target('style.css');
-            if (!is_writable($stylesheet) && !$this->fs):
-	            add_action('admin_notices', array($this, 'writable_notice')); 	
+            if ($this->css->get_prop('child')):
+                $this->verify_creds();
+                $stylesheet = $this->css->get_child_target('style.css');
+                if (!is_writable($stylesheet) && !$this->fs):
+	                add_action('admin_notices', array($this, 'writable_notice')); 	
+                endif;
             endif;
             if (fileowner($this->css->get_child_target('')) != fileowner(ABSPATH)):
 	            add_action('admin_notices', array($this, 'owner_notice')); 
@@ -286,6 +288,7 @@ class Child_Theme_Configurator {
                             endif;
                         elseif (empty($configtype) || 'theme' == $configtype):
                             add_action('chld_thm_cfg_addl_files',   array(&$this, 'add_base_files'), 10, 2);
+                            add_action('chld_thm_cfg_addl_files',   array(&$this, 'copy_screenshot'), 10, 2);
                         elseif(has_action('chld_thm_cfg_addl_files')):
                             remove_all_actions('chld_thm_cfg_addl_files');
                             // back compat for plugins extension
@@ -442,21 +445,11 @@ class Child_Theme_Configurator {
     }
     
     function write_child_file($file, $contents) {
-        //echo 'in write_child_file' . LF;
         if (!$this->fs) return FALSE; // return if no filesystem access
         global $wp_filesystem;
         $file = $this->fspath($this->css->is_file_ok($this->css->get_child_target($file), 'write'));
-        //echo 'file: ' . $file . LF;
-        if ($file):
-            if ($wp_filesystem->exists($file)):
-                //if (FALSE === $wp_filesystem->chmod($this->fspath($file), fileperms( ABSPATH . 'index.php' ) & 0777 | 0666)):
-                //    return FALSE;
-                //endif;
-            else:
-                // create file with write permissions
-                if (FALSE === $wp_filesystem->put_contents($file, 
-                $contents)) return FALSE; //, fileperms( ABSPATH . 'index.php' ) & 0777 | 0666)) return FALSE;
-            endif;
+        if ($file && !$wp_filesystem->exists($file)):
+                if (FALSE === $wp_filesystem->put_contents($file, $contents)) return FALSE; 
         endif;
     }
     
@@ -484,6 +477,8 @@ class Child_Theme_Configurator {
         endif;
         // get child theme + file + ext (passing empty string and full child path to theme_basename )
         $child_file = $this->css->get_child_target($file . '.' . $ext);
+        // return true if file already exists
+        if ($wp_filesystem->exists($this->fspath($child_file))) return TRUE;
         $child_dir = dirname($this->theme_basename('', $child_file));
         if ($parent_file // sanity check
             && $child_file // sanity check
@@ -747,9 +742,19 @@ class Child_Theme_Configurator {
     
     function writable_notice() {
 ?>    <div class="update-nag">
-        <p><?php _e( 'Child Theme Configurator is unable to write to the stylesheet. This can be resolved by:<ol><li>Adding your FTP credentials to the WordPress config file (recommended).</li><li>Temporarily setting the stylesheet to writable by clicking the button below (*nix systems only). You should change this back when you are finished editing for security by clicking "Make read-only" under the "Files" tab.</li><li>Assigning WordPress to an application pool that has write permissions (Windows systems).</li><li>Setting write permissions to the stylesheet on the server manually (not recommended).</li></ol>', 'chld_thm_cfg') ?></p>
-<form action="" method="post"><?php wp_nonce_field( 'ctc_update' ); ?>
-<input name="ctc_set_writable" class="button" type="submit" value="<?php _e('Make stylesheet writable temporarily (option 2)', 'chld_thm_cfg'); ?>"/></form>    </div>
+        <p><?php _e( 'Child Theme Configurator is unable to write to the stylesheet. This can be resolved using one of the following options:<ol>', 'chld_thm_cfg');
+        if (isset($_SERVER['SERVER_SOFTWARE']) && preg_match('%unix%i',$_SERVER['SERVER_SOFTWARE'])):
+            _e('<li>Temporarily make the stylesheet writable by clicking the button below. You should change this back when you are finished editing for security by clicking "Make read-only" under the "Files" tab.</li>', 'chld_thm_cfg');
+?><form action="" method="post"><?php wp_nonce_field( 'ctc_update' ); ?>
+<input name="ctc_set_writable" class="button" type="submit" value="<?php _e('Temporarily make stylesheet writable', 'chld_thm_cfg'); ?>"/></form><?php   endif;
+        _e('<li><a target="_blank"  href="http://codex.wordpress.org/Editing_wp-config.php#WordPress_Upgrade_Constants" title="Editin wp-config.php">Add your FTP/SSH credentials to the WordPress config file</a>.</li>', 'chld_thm_cfg');
+        if (isset($_SERVER['SERVER_SOFTWARE']) && preg_match('%iis%i',$_SERVER['SERVER_SOFTWARE']))
+            _e('<li><a target="_blank" href="http://technet.microsoft.com/en-us/library/cc771170" title="Setting Application Pool Identity">Assign WordPress to an application pool that has write permissions</a> (Windows IIS systems).</li>', 'chld_thm_cfg');
+        _e('<li><a target="_blank" href="http://codex.wordpress.org/Changing_File_Permissions" title="Changing File Permissions">Set the stylesheet write permissions on the server manually</a> (not recommended).</li>', 'chld_thm_cfg');
+        if (isset($_SERVER['SERVER_SOFTWARE']) && preg_match('%unix%i',$_SERVER['SERVER_SOFTWARE']))
+            _e('<li>Run PHP under Apache with suEXEC (contact your web host).</li>', 'chld_thm_cfg') ?>
+        </ol></p>
+</div>
     <?php
     }
     function owner_notice() {

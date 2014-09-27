@@ -79,6 +79,8 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 3. In the WordPress Admin, go to "Plugins > Installed Plugins." Locate "Child Theme Configurator" in the list and click "Activate."
    
+4. ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING (See "Preview and Activate").
+
 == Frequently Asked Questions ==
 
 = Does it work with plugins? =
@@ -93,9 +95,11 @@ https://www.youtube.com/watch?v=DSfx2RbZobo
 
 = Why doesn't this work with my (insert theme vendor here) theme? = 
 
-Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not automatically load child theme stylesheets or php files. This is unfortunate, because it effectively prohibits the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. 
+Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not correctly load parent template files or automatically load child theme stylesheets or php files.
 
-Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org.
+This is unfortunate, because in the best case they effectively prohibit the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. **In the worst case they will break your website when you activate the child theme.** 
+
+Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org and ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING (See "Preview and Activate").
 
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
@@ -326,11 +330,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-<<<<<<< .working
-CTC now uses the WP_Filesystem API. **IMPORTANT:** If you are using CTC for PLUGINS, you must upgrade it to version 1.1.0. If your web host is configured to run under the user of the web account being accessed the changes will be completely transparent. Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
-=======
-Removed backtrace in main CSS parser regex due to high memory usage. This should fix the 500 Server errors from large parent stylesheets
->>>>>>> .merge-right.r992211
+CTC now uses the WP_Filesystem API (see changelog). The changes will be transparent to most users. Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
 
 == Create Your Child Theme ==
 
@@ -346,6 +346,7 @@ The first step is to create a child theme and import your parent theme styles in
 6. If you check "Backup Stylesheet", The Child Theme Configurator will create a backup in the theme directory.
 7. If your theme uses additional stylesheets they will appear as checkbox options. Select only the stylesheets you wish to customize to reduce overhead.
 8. Click "Generate Child Theme Files."
+9. ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING!
 
 == Override Parent Styles ==
 
@@ -406,14 +407,21 @@ You can upload a custom screenshot for the child theme here. The theme screensho
 
 == Preview and Activate ==
 
-Click the Preview CSS tab to see your new masterpiece as CSS code. To preview the stylesheet as a WordPress theme follow these steps:
+**IMPORTANT: Test your child theme before activating!**
+
+Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not correctly load parent template files or automatically load child theme stylesheets or php files.
+
+**In the worst cases they will break your website when you activate the child theme.**
 
 1. Navigate to Appearance > Themes in the WordPress Admin. You will now see the new Child Theme as one of the installed Themes.
 2. Click "Live Preview" below the new Child Theme to see it in action.
 3. When you are ready to take the Child Theme live, click "Activate."
 
+You can also click the Preview CSS tab to see your new masterpiece as CSS code.
+
 == Caveats ==
 
+* ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING (See "Preview and Activate," above).
 * No web font preview. Look for live preview of imported fonts in a later release.
 * No webkit-gradient. The Child Theme Configurator plugin does not support the legacy webkit gradient. If there is a demand, we will add it in a future release, but most Chrome and Safari users should have upgraded by now.
 * Only two-color gradients. The Child Theme Configurator plugin is powerful, but we have simplified the gradient interface. You can use any gradient you want as long as it has two colors and no intermediate stops.
