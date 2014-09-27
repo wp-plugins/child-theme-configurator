@@ -439,7 +439,6 @@ class Child_Theme_Configurator_CSS {
      * accepts raw CSS as text and parses into separate properties 
      */
     function parse_css($template, $basequery = null, $parse_imports = TRUE) {
-        //echo $this->styles;
         if (FALSE === strpos($basequery, '@')):
             $basequery = 'base';
         endif;
