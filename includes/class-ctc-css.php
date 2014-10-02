@@ -465,7 +465,7 @@ class Child_Theme_Configurator_CSS {
         foreach (array(
             '#(\@media[^\{]+?)\{(\s*?)\}#', // get an placehoder (empty) media queries
             '#(\@media[^\{]+?)\{(.*?\})?\s*?\}#s', // get all other media queries
-        ) as $regex): // (((?!\@media).) backtrace too memory intensive - rolled back in v 1.4.8.1
+        ) as $regex): // (((?!\@media).) backreference too memory intensive - rolled back in v 1.4.8.1
             preg_match_all($regex, $this->styles, $matches);
             foreach ($matches[1] as $segment):
                 $ruleset[trim($segment)] = array_shift($matches[2]) . (isset($ruleset[trim($segment)])?$ruleset[trim($segment)]:'');
