@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.5.0
+    Version: 1.5.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -324,6 +324,11 @@ class Child_Theme_Configurator {
 	                            add_action('admin_notices', array($this, 'writable_notice')); 	
                                 return FALSE;
                             endif; 
+                            
+                            // copy parent theme mods
+                            if (isset($_POST['ctc_parent_mods']) && ($parent_mods = get_option('theme_mods_' . $parnt))):
+                                update_option('theme_mods_' . $child, $parent_mods);
+                            endif;
                             update_option($this->optionsName, $this->css);
                             do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
                             $msg = 1; //isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 4.0
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -125,9 +125,9 @@ You have to load a child theme from the Parent/Child tab for the preview to disp
 
 You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
 
-= Why are my menus displaying incorrectly when I activate the new child theme? = 
+= Why are my menus/widgets/headers displaying incorrectly when I activate the new child theme? = 
 
-The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance > Menus and assign locations to each of the menus for the new Child Theme. 
+The child theme creates a new instance in the WordPress options data and the menus have to be assigned. As of version 1.5.1 you can check "Copy parent theme menus, widgets and other options" when you generate the child theme files. Otherwise, go to Appearance and set options for the new Child Theme. 
 
 = If the parent theme changes (e.g., upgrade), do I have to update the child theme? = 
 
@@ -190,6 +190,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 5. Example of the Preview CSS Panel.
 
 == Changelog ==
+
+= 1.5.1 =
+* Added copy option to Parent/Child tab to assign menu locations, sidebars/widgets, custom header, background, and other options to the new Child Theme. 
 
 = 1.5.0 =
 * We have completely refactored CTC to use the WP_Filesystem API. 
@@ -330,7 +333,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-CTC now uses the WP_Filesystem API (see changelog). The changes will be transparent to most users. Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
+Added copy option to Parent/Child tab to assign menu locations, sidebars/widgets, custom header, background, and other options to the new Child Theme.
 
 == Create Your Child Theme ==
 
@@ -343,10 +346,11 @@ The first step is to create a child theme and import your parent theme styles in
 3. Enter a Name for the child theme.
 4. Enter an author for the child theme.
 5. Enter the child theme version number.
-6. If you check "Backup Stylesheet", The Child Theme Configurator will create a backup in the theme directory.
-7. If your theme uses additional stylesheets they will appear as checkbox options. Select only the stylesheets you wish to customize to reduce overhead.
-8. Click "Generate Child Theme Files."
-9. ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING!
+6. Check "Copy Parent Theme Menus, Widgets and other Options", to copy parent theme modifications to the child theme. Depending on the theme, some options may need to be applied using separate theme option controls. **IMPORTANT: This will overwrite existing child theme options.**
+7. Check "Backup Stylesheet", to create a backup of the child theme stylesheet in the child theme directory.
+8. If your theme uses additional stylesheets they will appear as checkbox options. Select only the stylesheets you wish to customize to reduce overhead.
+9. Click "Generate Child Theme Files."
+10. ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING!
 
 == Override Parent Styles ==
 
