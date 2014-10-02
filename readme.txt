@@ -203,7 +203,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
 
 = 1.4.8 =
-* Removed backtrace in main CSS parser regex due to high memory usage.
+* Removed backreference in main CSS parser regex due to high memory usage.
 
 = 1.4.7 =
 * Fixed uninitialized variable in files UI.
