@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.5.1
+    Version: 1.5.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -37,6 +37,7 @@ class Child_Theme_Configurator_CSS {
     var $styles;        // temporary update cache
     var $child;         // child theme slug
     var $parnt;         // parent theme slug
+    var $parntss;        // parent additional stylesheets
     var $configtype;    // theme or plugin extension
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
@@ -45,7 +46,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct($parent = '') {
         // scalars
-        $this->version          = '1.5.1';
+        $this->version          = '1.5.2';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -74,6 +75,7 @@ class Child_Theme_Configurator_CSS {
         $this->dict_seq         = array();
         $this->sel_ndx          = array();
         $this->val_ndx          = array();
+        $this->parntss          = array();
         $this->imports          = array('child' => array(), 'parnt' => array());
     }
     
@@ -103,6 +105,8 @@ class Child_Theme_Configurator_CSS {
                 return $this->child;
             case 'parnt':
                 return $this->parnt;
+            case 'parntss':
+                return isset($this->parntss) ? $this->parntss : array();
             case 'configtype':
                 return $this->configtype;
             case 'child_name':
@@ -112,8 +116,15 @@ class Child_Theme_Configurator_CSS {
             case 'version':
                 return $this->child_version;
             case 'preview':
-                $template = (empty($params['key']) || 'child' == $params['key']) ? 'child' : 'parnt';
-                $this->get_raw_css($template);
+                $this->styles = '';
+                if (empty($params['key']) || 'child' == $params['key']):
+                    $this->read_stylesheet('child');
+                else:
+                    foreach ($this->parntss as $template)
+                        $this->read_stylesheet('parnt', $template);
+                    $this->read_stylesheet('parnt');
+                endif;
+                $this->normalize_css();
                 return $this->styles;
         endswitch;
         return FALSE;
@@ -129,14 +140,12 @@ class Child_Theme_Configurator_CSS {
         else return FALSE;
     }
     
-    function get_raw_css($template = 'child') {
-        if ($this->read_stylesheet($template, 'style.css')):
-            if (preg_match("/\}[\w\#\.]/", $this->styles)):                       // prettify compressed CSS
-                $this->styles = preg_replace("/\*\/\s*/s", "*/\n", $this->styles);      // end comment
-                $this->styles = preg_replace("/\{\s*/s", " {\n    ", $this->styles);    // open brace
-                $this->styles = preg_replace("/;\s*/s", ";\n    ", $this->styles);      // semicolon
-                $this->styles = preg_replace("/\s*\}\s*/s", "\n}\n", $this->styles);    // close brace
-            endif;
+    function normalize_css() {
+        if (preg_match("/\}[\w\#\.]/", $this->styles)):                       // prettify compressed CSS
+            $this->styles = preg_replace("/\*\/\s*/s", "*/\n", $this->styles);      // end comment
+            $this->styles = preg_replace("/\{\s*/s", " {\n    ", $this->styles);    // open brace
+            $this->styles = preg_replace("/;\s*/s", ";\n    ", $this->styles);      // semicolon
+            $this->styles = preg_replace("/\s*\}\s*/s", "\n}\n", $this->styles);    // close brace
         endif;
     }
    
@@ -245,7 +254,6 @@ class Child_Theme_Configurator_CSS {
         $stylesheet = apply_filters('chld_thm_cfg_' . $template, $themedir . '/' . $file , $this);
         
         // read stylesheet
-        $this->styles = '';
         if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'read')):
             $import_url = preg_replace('%^' . preg_quote($themedir) . '/%', '', $stylesheet_verified);
             $this->styles .= @file_get_contents($stylesheet_verified) . "\n";

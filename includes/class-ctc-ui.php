@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.5.1
+    Version: 1.5.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -20,7 +20,6 @@ class Child_Theme_Configurator_UI {
     
     function __construct() {
         $this->swatch_text  = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';  
-        $this->extLink      = '<a href="http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework/" target="_blank" title="' . __('Total WordPress Customization with PageCells Responsive Theme Framework', 'chld_thm_cfg') . '" style="float:right"><img src="http://www.lilaeamedia.com/images/logos/pagecells-310.png" height="40" width="310" alt="PageCells Responsive Framework" /></a>';
     }
     
     function render_options() { 
@@ -37,8 +36,7 @@ class Child_Theme_Configurator_UI {
         add_thickbox();    ?>
 
 <div class="wrap">
-  <div id="icon-tools" class="icon32"></div>
-  <?php echo $this->extLink; ?>
+  <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles/" target="_blank" title="<?php _e('Get CTC for Plugins and other tools', 'chld_thm_cfg'); ?>" style="float:right"><img src="<?php echo $chld_thm_cfg->pluginURL; ?>/css/lilaea-logo.png" height="36" width="145" alt="<?php _e('Lilaea Media - Responsive Tools for a Mobile World', 'chld_thm_cfg'); ?>" /></a>
   <h2><?php echo $chld_thm_cfg->pluginName; ?> v.<?php echo CHLD_THM_CFG_VERSION;?></h2>
   <?php if ('POST' == $_SERVER['REQUEST_METHOD'] && !$chld_thm_cfg->fs):
         echo $chld_thm_cfg->fs_prompt;
@@ -189,8 +187,7 @@ class Child_Theme_Configurator_UI {
             <div class="ctc-input-cell">
               <label>
                 <input class="ctc_checkbox" name="ctc_additional_css[]" type="checkbox" 
-                value="<?php echo $stylesheet; ?>" />
-                <?php echo $stylesheet; ?></label>
+                value="<?php echo $stylesheet; ?>" /><?php echo $stylesheet; ?></label>
             </div>
             <?php endforeach; ?>
           </div>
