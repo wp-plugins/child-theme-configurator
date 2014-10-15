@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.5.1
+    Version: 1.5.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -84,10 +84,11 @@ class Child_Theme_Configurator {
             wp_enqueue_script('iris');
 //            wp_enqueue_script('thickbox');
             wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('iris'), '1.0');
-            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
+            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js',
                 array('jquery-ui-autocomplete'), '1.0', TRUE);
             wp_localize_script( 'chld-thm-cfg-admin', 'ctcAjax', 
                 apply_filters('chld_thm_cfg_localize_script', array(
+                    'homeurl'           => get_home_url(),
                     'ajaxurl'           => admin_url( 'admin-ajax.php' ),
                     'theme_uri'         => get_theme_root_uri(),
                     'themes'            => $this->themes,
@@ -97,6 +98,7 @@ class Child_Theme_Configurator {
                                             . $this->css->get_prop('child') . '/style.css', $this->css),
                     'parnt'             => $this->css->get_prop('parnt'),
                     'child'             => $this->css->get_prop('child'),
+                    'addl_css'          => $this->css->get_prop('parntss'),
                     'imports'           => $this->css->get_prop('imports'),
                     'rule'              => $this->css->get_prop('rule'),
                     'sel_ndx'           => $this->css->get_prop('sel_ndx'),
@@ -315,8 +317,10 @@ class Child_Theme_Configurator {
                             $this->css->parse_css_file('parnt');
                             $this->css->parse_css_file('child');
                             if (isset($_POST['ctc_additional_css']) && is_array($_POST['ctc_additional_css'])):
+                                $this->css->parentss = array();
                                 foreach ($_POST['ctc_additional_css'] as $file):
                                     $this->css->parse_css_file('parnt', $file);
+                                    $this->css->parntss[] = $file;
                                 endforeach;
                             endif;
                             if (FALSE === $this->css->write_css(isset($_POST['ctc_backup']))):
