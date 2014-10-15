@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.5.0
+    Version: 1.5.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -155,7 +155,18 @@ class Child_Theme_Configurator_UI {
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
           <div class="ctc-input-cell"> <strong>
-            <?php _e('Backup Stylesheet', 'chld_thm_cfg'); ?>
+            <?php _e('Copy Parent Theme Menus, Widgets and other Options', 'chld_thm_cfg'); ?>
+            </strong> 
+            <p><?php _e('NOTE: This will overwrite existing child theme options.', 'chld_thm_cfg'); ?></p>
+            </div>
+          <div class="ctc-input-cell">
+            <input class="ctc_checkbox" id="ctc_parent_mods" name="ctc_parent_mods" type="checkbox" 
+                value="1" />
+          </div>
+        </div>
+        <div class="ctc-input-row clearfix" id="input_row_child_template">
+          <div class="ctc-input-cell"> <strong>
+            <?php _e('Backup Child Stylesheet', 'chld_thm_cfg'); ?>
             </strong> </div>
           <div class="ctc-input-cell">
             <input class="ctc_checkbox" id="ctc_backup" name="ctc_backup" type="checkbox" 
@@ -638,9 +649,11 @@ class Child_Theme_Configurator_UI {
 <li>Enter a Name for the child theme.</li>
 <li>Enter an author for the child theme.</li>
 <li>Enter the child theme version number.</li>
-<li>If you check "Backup Stylesheet", The Child Theme Configurator will create a backup in the theme directory.</li>
+<li>Check "Copy Parent Theme Menus, Widgets and other Options", to copy parent theme modifications to the child theme. Depending on the theme, some options may need to be applied using separate theme option controls. <strong>IMPORTANT: This will overwrite existing child theme options.</strong></li>
+<li>Check "Backup Stylesheet", to create a backup of the child theme stylesheet in the child theme directory.</li>
 <li>If your theme uses additional stylesheets they will appear as checkbox options when you open the toggle arrow. Select only the stylesheets you wish to customize to reduce overhead. Remember to select them again if you reload your configuration.</li>
-<li>Click "Generate Child Theme."</li></ol>
+<li>Click "Generate Child Theme."</li>
+<li><strong>ALWAYS <a target="_blank" href="http://www.lilaeamedia.com/plugins/child-theme-configurator/#preview_activate" title="Test your child theme before activating!">TEST YOUR CHILD THEME</a> BEFORE ACTIVATING!</strong></li></ol>
 				    ', 'chld_thm_cfg'
 			    ),
 		    ) );

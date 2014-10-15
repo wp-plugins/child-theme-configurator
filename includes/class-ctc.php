@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.5.0
+    Version: 1.5.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -84,10 +84,11 @@ class Child_Theme_Configurator {
             wp_enqueue_script('iris');
 //            wp_enqueue_script('thickbox');
             wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('iris'), '1.0');
-            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
+            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js',
                 array('jquery-ui-autocomplete'), '1.0', TRUE);
             wp_localize_script( 'chld-thm-cfg-admin', 'ctcAjax', 
                 apply_filters('chld_thm_cfg_localize_script', array(
+                    'homeurl'           => get_home_url(),
                     'ajaxurl'           => admin_url( 'admin-ajax.php' ),
                     'theme_uri'         => get_theme_root_uri(),
                     'themes'            => $this->themes,
@@ -97,6 +98,7 @@ class Child_Theme_Configurator {
                                             . $this->css->get_prop('child') . '/style.css', $this->css),
                     'parnt'             => $this->css->get_prop('parnt'),
                     'child'             => $this->css->get_prop('child'),
+                    'addl_css'          => $this->css->get_prop('parntss'),
                     'imports'           => $this->css->get_prop('imports'),
                     'rule'              => $this->css->get_prop('rule'),
                     'sel_ndx'           => $this->css->get_prop('sel_ndx'),
@@ -265,7 +267,6 @@ class Child_Theme_Configurator {
                             $varparts = explode('_', $postfield);
                             $varname = end($varparts);
                             ${$varname} = empty($_POST[$postfield])?'':sanitize_text_field($_POST[$postfield]);
-                            //echo $varname . ': ' . ${$varname} . LF;
                         endforeach;
                         if ($parnt):
                             if (! $this->check_theme_exists($parnt)):
@@ -301,7 +302,6 @@ class Child_Theme_Configurator {
                             $this->errors[] = __('Please enter a valid Child Theme name', 'chld_thm_cfg');
                         endif;
                         if (FALSE === $this->verify_child_dir($child)):
-                            //echo 'failed verify_child_dir' . LF;
                             $this->errors[] = __('Your theme directories are not writable.', 'chld_thm_cfg');
 	                        add_action('admin_notices', array($this, 'writable_notice')); 	
                         endif;
@@ -313,15 +313,14 @@ class Child_Theme_Configurator {
                             $this->css->set_prop('child_author', $author);
                             $this->css->set_prop('child_version', strlen($version) ? $version : '1.0');
                             $this->css->set_prop('configtype', $configtype);
-                            //echo 'configtype: ' . $configtype . LF;
-//                            global $wp_filter;
-//                            die(print_r($wp_filter, TRUE));
                             do_action('chld_thm_cfg_addl_files', $this);   // hook for add'l plugin files and subdirectories
                             $this->css->parse_css_file('parnt');
                             $this->css->parse_css_file('child');
                             if (isset($_POST['ctc_additional_css']) && is_array($_POST['ctc_additional_css'])):
+                                $this->css->parentss = array();
                                 foreach ($_POST['ctc_additional_css'] as $file):
                                     $this->css->parse_css_file('parnt', $file);
+                                    $this->css->parntss[] = $file;
                                 endforeach;
                             endif;
                             if (FALSE === $this->css->write_css(isset($_POST['ctc_backup']))):
@@ -329,6 +328,11 @@ class Child_Theme_Configurator {
 	                            add_action('admin_notices', array($this, 'writable_notice')); 	
                                 return FALSE;
                             endif; 
+                            
+                            // copy parent theme mods
+                            if (isset($_POST['ctc_parent_mods']) && ($parent_mods = get_option('theme_mods_' . $parnt))):
+                                update_option('theme_mods_' . $child, $parent_mods);
+                            endif;
                             update_option($this->optionsName, $this->css);
                             do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
                             $msg = 1; //isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
@@ -413,16 +417,13 @@ class Child_Theme_Configurator {
     }
     
     function verify_child_dir($path) {
-        //echo 'in verify_child_dir' . LF;
         if (!$this->fs) return FALSE; // return if no filesystem access
         global $wp_filesystem;
         $themedir = $wp_filesystem->find_folder(get_theme_root());
         if (! $wp_filesystem->is_writable($themedir)) return FALSE;
-        //echo 'verify chld dir entire path: ' . $path . LF;
         $childparts = explode('/', wp_normalize_path($path));
         while (count($childparts)):
             $subdir = array_shift($childparts);
-            //echo 'verify child dir subdir: ' . $subdir . LF;
             if (empty($subdir)) continue;
             $themedir = trailingslashit($themedir) . $subdir;
             if (! $wp_filesystem->is_dir($themedir)):
@@ -554,7 +555,6 @@ class Child_Theme_Configurator {
     function unset_writable() {
         if (!$this->fs) return FALSE; // return if no filesystem access
         global $wp_filesystem;
-        //echo '<pre><code>' . LF;
         $dir        = untrailingslashit($this->css->get_child_target(''));
         $child      = $this->theme_basename('', $dir);
         $newchild   = untrailingslashit($child) . '-new';
@@ -573,7 +573,6 @@ class Child_Theme_Configurator {
         endif;
         // n -> copy entire folder (as user)
         $files = $this->css->recurse_directory($dir, NULL, TRUE);
-        //echo 'files: ' . LF . print_r($files, TRUE) . LF;
         $errors = array();
         foreach ($files as $file):
             $childfile  = $this->theme_basename($child, wp_normalize_path($file));
@@ -595,7 +594,6 @@ class Child_Theme_Configurator {
         if ($copy):
             // verify copy (as webserver)
             $newfiles = $this->css->recurse_directory(trailingslashit($themedir) . $newchild, NULL, TRUE);
-            //echo 'newfiles: ' . LF . print_r($newfiles, TRUE) . LF;
             $deleteddirs = $deletedfiles = 0;
             if (count($newfiles) == count($files)):
                 // rename old (as webserver)
@@ -607,10 +605,8 @@ class Child_Theme_Configurator {
                 // remove old files (as webserver)
                 $oldfiles = $this->css->recurse_directory(trailingslashit($themedir) . $child . '-old', NULL, TRUE);
                 array_unshift($oldfiles, trailingslashit($themedir) . $child . '-old');
-                //echo 'oldfiles: ' . LF . print_r($oldfiles, TRUE) . LF;
                 foreach (array_reverse($oldfiles) as $file):
                     if ($wp_filesystem->delete($this->fspath($file)) || (is_dir($file) && @rmdir($file)) || (is_file($file) && @unlink($file))):
-                        //echo 'deleting: ' . $file . LF;
                         $deletedfiles++;
                     endif;
                 endforeach;
@@ -621,14 +617,8 @@ class Child_Theme_Configurator {
                 $errors[] = 'newfiles != files';
             endif;
         endif;
-        //echo 'files: ' . count($files) . LF . 'newfiles: ' . count($newfiles) . LF 
-        //    . 'oldfiles: ' . count($oldfiles) . LF . 'deletedfiles: ' . $deletedfiles . LF ;
-        //echo '</code></pre>' . LF;
         if (count($errors)):
             $this->errors[] = __('There were errors while resetting permissions.', 'chld_thm_cfg') ;
-            //. count($errors) 
-            //. implode("\n", $errors) 
-            //. count($errors) . LF;   
             add_action('admin_notices', array($this, 'writable_notice')); 	
         endif;
     }

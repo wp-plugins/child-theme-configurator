@@ -2,14 +2,14 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.5.0
+ *  Version: 1.5.1
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
  *  Copyright (C) 2014 Lilaea Media
  */
 jQuery(document).ready(function($){
-
+    // initialize vars
     var lf = "\n", 
         currentQuery = 'base',
         currentSel,
@@ -17,27 +17,45 @@ jQuery(document).ready(function($){
         rewrite_id, 
         rewrite_sel,
         quot_regex = new RegExp('"', 'g'),
+        // ajax semaphores: 0 = reload, 1 = loading, 2 = loaded
+        loading = {
+            'rule':     2,
+            'sel_ndx':  2,
+            'val_qry':  0,
+            'rule_val': 0,
+            'sel_val':  0,
+            'preview':  0
+        },
+        ctc_selectors       = [],
+        ctc_queries         = [],
+        ctc_rules           = [];
+    // -- end var definitions
+
     // initialize functions
-    esc_quot = function(str){
+    function esc_quot(str){
         return ctc_is_empty(str) ? str : str.toString().replace(quot_regex, '&quot;');
-    },
-    ctc_setup_iris = function(obj) {
+    }
+    
+    function ctc_setup_iris(obj) { 
         $(obj).iris({
             change: function() {
                 ctc_coalesce_inputs(obj);
             }   
         });
-    },
-    from_ascii = function(str) {
+    }
+    
+    function from_ascii(str) { 
         var ascii = parseInt(str),
             chr = String.fromCharCode(ascii)
         return chr;
-    },
-    to_ascii = function(str) {
+    }
+    
+    function to_ascii(str) { 
         var ascii = str.charCodeAt(0);
         return ascii;
-    },
-    ctc_coalesce_inputs = function(obj) {
+    }
+    
+    function ctc_coalesce_inputs(obj) { 
         var regex       = /^(ctc_(ovrd|\d+)_(parent|child)_([0-9a-z\-]+)_(\d+))(_\w+)?$/,
             $container  = $(obj).parents('.ctc-selector-row, .ctc-parent-row').first(),
             $swatch     = $container.find('.ctc-swatch').first(),
@@ -147,8 +165,9 @@ jQuery(document).ready(function($){
             }
         }
         return postdata;
-    },
-    ctc_update_cache = function(response) {
+    }
+    
+    function ctc_update_cache(response) { 
         var currQuery, currSelId, currRuleId;
         $(response).each(function(){
             switch (this.obj) {
@@ -193,8 +212,9 @@ jQuery(document).ready(function($){
                     break;
             }
         });
-    },
-    ctc_image_url = function(theme, value) {
+    }
+    
+    function ctc_image_url(theme, value) { 
         var parts = value.toString().match(/url\(['" ]*(.+?)['" ]*\)/),
             path = ctc_is_empty(parts) ? null : parts[1],
             url = ctcAjax.theme_uri + '/' + ('parent' == theme ? ctcAjax.parnt : ctcAjax.child) + '/',
@@ -207,9 +227,9 @@ jQuery(document).ready(function($){
             image_url = 'url(' + url + path + ')'; 
         }
         return image_url;
-    },
+    }
     
-    ctc_is_empty = function(obj) {
+    function ctc_is_empty(obj) { 
         // first bail when definitely empty or undefined (true) NOTE: zero is not empty
         if ('undefined' == typeof obj || false === obj || null === obj || '' === obj) { return true; }
         // then, if this is bool, string or number it must not be empty (false)
@@ -233,9 +253,9 @@ jQuery(document).ready(function($){
         // this must be an unsupported datatype, so return not empty
         return false; 
     
-    },
+    }
     
-    ctc_load_queries = function() {
+    function ctc_load_queries() { 
         var arr = [];
         if (1 === loading.sel_ndx) return arr;
         if (0 === loading.sel_ndx) { // {
@@ -251,9 +271,9 @@ jQuery(document).ready(function($){
             });
         }
         return arr;
-    },
+    }
     
-    ctc_load_selectors = function(query) {
+    function ctc_load_selectors(query) { 
         var arr = [];
         if (1 === loading.sel_ndx) {
             return arr;
@@ -271,9 +291,9 @@ jQuery(document).ready(function($){
             });
         }
         return arr;
-    },
+    }
     
-    ctc_load_rules = function() {
+    function ctc_load_rules() { 
         var arr = [];
         if (1 === loading.rule) return arr;
         if (0 === loading.rule) { 
@@ -294,9 +314,9 @@ jQuery(document).ready(function($){
                 return -1;
             return 0;
         });
-    },
+    }
     
-    ctc_render_child_rule_input = function(qsid, rule, seq) {
+    function ctc_render_child_rule_input(qsid, rule, seq) { 
         var html        = '', 
             value       = (ctc_is_empty(ctcAjax.sel_val[qsid]) 
                 || ctc_is_empty(ctcAjax.sel_val[qsid].value) 
@@ -347,8 +367,9 @@ jQuery(document).ready(function($){
             html += '</div><!-- end input row -->' + lf;
         }
         return html;
-    },
-    ctc_render_selector_inputs = function(qsid) {
+    }
+    
+    function ctc_render_selector_inputs(qsid) { 
         if (1 === loading.sel_val) {
             return false;
         }
@@ -383,7 +404,8 @@ jQuery(document).ready(function($){
             }
         }
     }
-    ctc_render_css_preview = function(theme) {
+    
+    function ctc_render_css_preview(theme) {
         if (1 === loading.preview) {
             return false;
         }
@@ -401,8 +423,9 @@ jQuery(document).ready(function($){
             $('#view_'+theme+'_options_panel').text(ctcAjax.previewResponse); 
             loading.preview = 0;       
         }
-    },
-    ctc_render_rule_value_inputs = function(ruleid) {
+    }
+    
+    function ctc_render_rule_value_inputs(ruleid) { 
         if (1 === loading.rule_val) return false;
 
         if (0 == loading.rule_val) { 
@@ -434,9 +457,9 @@ jQuery(document).ready(function($){
         $('#ctc_rule_value_inputs').html(html).find('.ctc-swatch').each(function() {
             ctc_coalesce_inputs(this);
         });
-    },
+    }
 
-    ctc_render_selector_value_inputs = function(valid) {
+    function ctc_render_selector_value_inputs(valid) { 
         if (1 == loading.val_qry) return false;
         var params, 
             page_ruleid, 
@@ -471,8 +494,9 @@ jQuery(document).ready(function($){
             ctc_coalesce_inputs(this);
         });
 
-    },
-    ctc_query_css = function(obj, key, callback, params) {
+    }
+    
+    function ctc_query_css(obj, key, callback, params) { 
         var postdata = { 'ctc_query_obj' : obj, 'ctc_query_key': key },
             status_sel = '#ctc_status_' + obj + ('val_qry' == obj ? '_' + key : '');
         
@@ -535,8 +559,9 @@ jQuery(document).ready(function($){
             
         });  
         return false; 
-    },
-    ctc_save = function(obj) {
+    }
+    
+    function ctc_save(obj) { 
         var postdata = {},
             $selector, $query, $imports, $rule,
             id = $(obj).attr('id'), newsel;
@@ -615,8 +640,9 @@ jQuery(document).ready(function($){
             $('.ctc-status-icon').addClass('failure');
         });  
         return false;  
-    },
-    ctc_decode_value = function(rule, value) {
+    }
+    
+    function ctc_decode_value(rule, value) { 
         value = ('undefined' == typeof value ? '' : value);
         var obj = { 'orig':   value };
         if (rule.toString().match(/^border(\-(top|right|bottom|left))?$/)) {
@@ -653,9 +679,9 @@ jQuery(document).ready(function($){
             obj['values']   = [ value ];
         }
         return obj;
-    },
+    }
     
-    ctc_set_query = function(value) {
+    function ctc_set_query(value) { 
         currentQuery = value;
         $('#ctc_sel_ovrd_query').val('');
         $('#ctc_sel_ovrd_query_selected').text(value);
@@ -665,9 +691,9 @@ jQuery(document).ready(function($){
         ctc_setup_selector_menu(value);
         ctc_coalesce_inputs('#ctc_child_all_0_swatch');
         $('#ctc_new_selector_row').show();
-    },
+    }
     
-    ctc_set_selector = function(value,label) {
+    function ctc_set_selector(value,label) { 
         $('#ctc_sel_ovrd_selector').val('');
         $('#ctc_sel_ovrd_selector_selected').text(label);
         $('#ctc_sel_ovrd_qsid').val(value);
@@ -676,17 +702,18 @@ jQuery(document).ready(function($){
         ctc_render_selector_inputs(value);
         $('.ctc-rewrite-toggle').text(ctcAjax.rename_txt);
         $('#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header,#ctc_sel_ovrd_rule_inputs_container,#ctc_sel_ovrd_rule_inputs,.ctc-rewrite-toggle').show();
-    },
+    }
     
-    ctc_set_rule = function(value,label) {
+    function ctc_set_rule(value,label) { 
         $('#ctc_rule_menu').val('');
         $('#ctc_rule_menu_selected').text(label);
         if (1 != loading.rule_val) loading.rule_val = 0;
         ctc_render_rule_value_inputs(value);
         $('.ctc-rewrite-toggle').text(ctcAjax.rename_txt);
         $('#ctc_rule_value_inputs,#ctc_input_row_rule_header').show();
-    },
-    ctc_setup_query_menu = function() {
+    }
+    
+    function ctc_setup_query_menu() { 
         ctc_queries = ctc_load_queries();
         $('#ctc_sel_ovrd_query').autocomplete({
             source: ctc_queries,
@@ -699,8 +726,9 @@ jQuery(document).ready(function($){
             },
             focus: function(e) { e.preventDefault(); }
         });
-    },
-    ctc_setup_selector_menu = function(query) {
+    }
+    
+    function ctc_setup_selector_menu(query) { 
         ctc_selectors = ctc_load_selectors(query);
         $('#ctc_sel_ovrd_selector').autocomplete({
             source: ctc_selectors,
@@ -712,8 +740,9 @@ jQuery(document).ready(function($){
             },
             focus: function(e) { e.preventDefault(); }
         });
-    },
-    ctc_setup_rule_menu = function() {
+    }
+    
+    function ctc_setup_rule_menu() { 
         ctc_rules = ctc_load_rules();
         $('#ctc_rule_menu').autocomplete({
             source: ctc_rules,
@@ -726,8 +755,9 @@ jQuery(document).ready(function($){
             },
             focus: function(e) { e.preventDefault(); }
         });
-    },
-    ctc_filtered_rules = function(request, response) {
+    }
+    
+    function ctc_filtered_rules(request, response) { 
         var arr = [],
             noval = (ctc_is_empty(ctcAjax.sel_val[currentSel])) || (ctc_is_empty(ctcAjax.sel_val[currentSel].value));
         if (ctc_is_empty(ctc_rules)) { 
@@ -754,8 +784,9 @@ jQuery(document).ready(function($){
             }
         });
         response(arr);
-    },
-    ctc_setup_new_rule_menu = function() {
+    }
+    
+    function ctc_setup_new_rule_menu() { 
         $('#ctc_new_rule_menu').autocomplete({
             source: ctc_filtered_rules,
             //minLength: 0,
@@ -779,14 +810,16 @@ jQuery(document).ready(function($){
             },
             focus: function(e) { e.preventDefault(); }
         });
-    },
-    ctc_setup_menus = function() {
+    }
+    
+    function ctc_setup_menus() { 
         ctc_setup_query_menu();
         ctc_setup_selector_menu(currentQuery);
         ctc_setup_rule_menu();
         ctc_setup_new_rule_menu();
-    },
-    ctc_theme_exists = function(testslug, testtype) {
+    }
+    
+    function ctc_theme_exists(testslug, testtype) { 
         var exists = false;
         $.each(ctcAjax.themes, function(type, theme){
             $.each(theme, function(slug, data){
@@ -798,9 +831,9 @@ jQuery(document).ready(function($){
             if (exists) return false;
         });
         return exists;
-    },
+    }
     
-    ctc_set_notice = function(noticearr) {
+    function ctc_set_notice(noticearr) { 
         var errorHtml = '';
         if (false === ctc_is_empty(noticearr)) {
             $.each(noticearr, function(type, list){
@@ -812,8 +845,9 @@ jQuery(document).ready(function($){
             });
         }
         $('#ctc_error_notice').html(errorHtml);
-    },
-    ctc_validate = function() {
+    }
+    
+    function ctc_validate() { 
         var regex = /[^\w\-]/,
             newslug = $('#ctc_child_template').val().toString().replace(regex).toLowerCase(),
             slug = $('#ctc_theme_child').val().toString().replace(regex).toLowerCase(),
@@ -834,19 +868,40 @@ jQuery(document).ready(function($){
             return false;
         }
         return true;
-    },
-    ctc_set_theme_menu = function(e) {
+    }
+    
+    function ctc_set_theme_menu(e) { 
         var slug = $('#ctc_theme_child').val();
         if (false === ctc_is_empty(ctcAjax.themes.child[slug])) {
             $('#ctc_child_name').val(ctcAjax.themes.child[slug].Name);
             $('#ctc_child_author').val(ctcAjax.themes.child[slug].Author);
             $('#ctc_child_version').val(ctcAjax.themes.child[slug].Version);
         }
-    },
-    fade_update_notice = function() {
+    }
+    
+    function fade_update_notice() { 
         $('.updated, .error').slideUp('slow', function(){ $('.updated').remove(); });
-    },
-    ctc_focus_panel = function(id) {
+    }
+    
+    function ctc_set_addl_css() { 
+        var template = $('#ctc_theme_parnt').val(),
+            url = ctcAjax.homeurl + '?preview=1&template=' + template + '&stylesheet=' + template,
+            regex = new RegExp("<link rel=[\"']stylesheet[\"'][^>]+?" + ctcAjax.theme_uri + '/' + template + '/(.+?\\.css)[^>]+?>', 'g'),
+            head,
+            additional;
+        if (ctc_is_empty(template)) return;
+        $.get(url, function(data){
+            while (additional = regex.exec(data)){
+                ctcAjax.addl_css.push(additional[1]);
+                if ('style.css' == additional[1]) break; // bail after main stylesheet
+                $('.ctc_checkbox').each(function(ndx,el){
+                    if ($(this).val() == additional[1]) $(this).prop('checked', true);
+                });
+            }
+        });
+    }
+    
+    function ctc_focus_panel(id) {
         var panelid = id + '_panel';
         $('.nav-tab').removeClass('nav-tab-active');
         $('.ctc-option-panel').removeClass('ctc-option-panel-active');
@@ -854,8 +909,9 @@ jQuery(document).ready(function($){
         $(id).addClass('nav-tab-active');
         $('.ctc-option-panel-container').scrollTop(0);
         $(panelid).addClass('ctc-option-panel-active');
-    },
-    ctc_selector_edit = function(obj) {
+    }
+    
+    function ctc_selector_edit(obj) { 
         var qsid = $(obj).attr('id').match(/_(\d+)$/)[1],
             q = ctcAjax.sel_val[qsid].query,
             s = ctcAjax.sel_val[qsid].selector,
@@ -863,8 +919,9 @@ jQuery(document).ready(function($){
         ctc_set_query(q);
         ctc_set_selector(qsid, s);
         ctc_focus_panel(id);        
-    },
-    ctc_selector_input_toggle = function(obj) {
+    }
+    
+    function ctc_selector_input_toggle(obj) { 
         var origval;
         if ($('#ctc_rewrite_selector').length) {
             origval = $('#ctc_rewrite_selector_orig').val();
@@ -878,21 +935,6 @@ jQuery(document).ready(function($){
             $(obj).text(ctcAjax.cancel_txt);
         }
     }
-    // initialize vars
-    // ajax semaphores: 0 = reload, 1 = loading, 2 = loaded
-    loading = {
-        'rule':     2,
-        'sel_ndx':  2,
-        'val_qry':  0,
-        'rule_val': 0,
-        'sel_val':  0,
-        'preview':  0
-    },
-    
-    ctc_selectors       = [],
-    ctc_queries         = [],
-    ctc_rules           = [];
-    // -- end var definitions
     
     // initialize Iris color picker    
     $('.color-picker').each(function() {
@@ -958,8 +1000,7 @@ jQuery(document).ready(function($){
     // initialize menus
     ctc_setup_menus();
     ctc_set_query(currentQuery);
+    ctc_set_addl_css();
     $('input[type=submit],input[type=button]').prop('disabled', false);
     setTimeout(fade_update_notice, 6000);
 });
-
-

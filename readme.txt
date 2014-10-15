@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 4.0
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,43 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 == Frequently Asked Questions ==
 
+= Why are my menus displaying incorrectly when I activate the new child theme? =
+...or...
+= Why is my custom header missing when I activate the new child theme? =
+...or...
+= Why does my custom background go back to the default when I activate the new child theme? =
+...or...
+= Why do my theme options disappear when I activate the new child theme? =
+
+These options are specific to each theme and are saved separately in the database. When you create a new child theme, its options are blank.
+
+Many of these options can be copied over to the child theme by checking "Copy Parent Theme Menus, Widgets and other Options" when you generate the child theme files on the Parent/Child tab.
+
+If you want to set different options you can either apply them after you activate the child theme, or by using the "Live Preview" under Appearance > Themes.
+
+* Menus: Go to Appearance > Menus and click the "Locations" tab. By default, the primary menu will generate the links automatically from the existing pages. Select your customized Menu from the dropdown and click "Use New Menu." This will replace the default menu and you will see the correct links.
+* Header: Go to Appearance > Header. Some themes will show the "Title" and "Tagline" from your "General Settings" by default. Click "Choose Image" and find the header from the Media Library or upload a new image. This will replace default with your custom image.
+* Background: Go to Appearance > Background and choose a new background color or image.
+* Options: Every theme handles options in its own way. Most often, they will create a set of options and store them in the WordPress database. Some options are specific to the active theme (or child theme), and some are specific to the parent theme only (meaning the child theme CANNOT override them). You will have to find out from the theme author which are which.
+
+= How do I add Web Fonts? =
+
+The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts.
+
+You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. 
+
+= Does it work with Multi site? =
+
+Using with WordPress Network sites requires additional steps:
+
+1. Install as Network Admin and Network Enable the Plugin.
+2. Go to the site you want to customize.
+3. Go to Tools > Child Themes and configure a child theme for the parent theme you want to use
+4. Go back to Network Admin and Network Enable the new Child theme.
+5. Go back the site and activate the child theme.
+
+Now you can edit your child theme from Tools > Child Themes. NOTE: Only users with "edit_theme_options" capability will have access to the Child Theme Configurator.
+
 = Does it work with plugins? =
 
 We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
@@ -101,13 +138,20 @@ This is unfortunate, because in the best case they effectively prohibit the webm
 
 Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org and ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING (See "Preview and Activate").
 
+= Will this slow down my site? =
+
+The biggest performance hit occurs when you generate the Child Theme files, especially with style-heavy themes. CTC has been known to use as much as 32MB to parse large stylesheets, but this is a one-time event.
+
+Once the child theme stylesheet is created, CTC adds very little overhead to the front-end since all of the functionality is in the admin. 
+
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
 Your Parent theme is probably using a non-standard location for the stylesheets. Check "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again.
 
 = Where is it in the Admin? = 
 
-The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started.
+The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started. NOTE: Only users with "edit_theme_options" capability will have access to the Child Theme Configurator.
+
 Click the "Help" tab at the top right for a quick reference.
 
 = Where are the styles? The configurator doesn't show anything! = 
@@ -125,10 +169,6 @@ You have to load a child theme from the Parent/Child tab for the preview to disp
 
 You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
 
-= Why are my menus displaying incorrectly when I activate the new child theme? = 
-
-The child theme creates a new instance in the WordPress options data and the menus have to be assigned. Go to Appearance > Menus and assign locations to each of the menus for the new Child Theme. 
-
 = If the parent theme changes (e.g., upgrade), do I have to update the child theme? = 
 
 No. This is the point of using child themes. Changes to the parent theme are automatically inherited by the child theme.
@@ -137,7 +177,7 @@ A child theme is not a "copy" of the parent theme. It is a special feature of Wo
 
 = Where are the .php files? = 
 
-The configurator automatically adds a blank functions.php file to the child theme directory. Other parent theme files can be copied using the "Files" tab. Theme images and a custom screenshot can be uploaded there as well.
+The Child Theme Configurator automatically adds a blank functions.php file to the child theme directory. You can copy parent theme template files using the Files tab. If you want to create new templates and directories you will have to create/upload them manually via FTP or SSH. Remember that a child theme will automatically inherit the parent theme's templates unless they also exist in the child theme directory. Only copy templates that you intend to customize.
 
 = How do I change a specific color/font style/background? = 
 
@@ -175,11 +215,6 @@ For more information view "Make a Theme Responsive":
 
 https://www.youtube.com/watch?v=iBiiAgsK4G4
 
-= How do I add Web Fonts? = 
-
-The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts. 
-
-You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab.
 
 == Screenshots ==
 
@@ -191,6 +226,9 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Changelog ==
 
+= 1.5.1 =
+* Added copy option to Parent/Child tab to assign menu locations, sidebars/widgets, custom header, background, and other options to the new Child Theme. 
+
 = 1.5.0 =
 * We have completely refactored CTC to use the WP_Filesystem API. 
 * If your web host is configured to use suExec (meaning it runs under the user of the web account being accessed), the changes will be completely transparent. 
@@ -200,7 +238,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 * Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
 
 = 1.4.8 =
-* Removed backtrace in main CSS parser regex due to high memory usage.
+* Removed backreference in main CSS parser regex due to high memory usage.
 
 = 1.4.7 =
 * Fixed uninitialized variable in files UI.
@@ -330,7 +368,7 @@ You can also create a secondary stylesheet that contains @font-face rules and im
 
 == Upgrade Notice ==
 
-CTC now uses the WP_Filesystem API (see changelog). The changes will be transparent to most users. Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
+Added copy option to Parent/Child tab to assign menu locations, sidebars/widgets, custom header, background, and other options to the new Child Theme.
 
 == Create Your Child Theme ==
 
@@ -343,10 +381,11 @@ The first step is to create a child theme and import your parent theme styles in
 3. Enter a Name for the child theme.
 4. Enter an author for the child theme.
 5. Enter the child theme version number.
-6. If you check "Backup Stylesheet", The Child Theme Configurator will create a backup in the theme directory.
-7. If your theme uses additional stylesheets they will appear as checkbox options. Select only the stylesheets you wish to customize to reduce overhead.
-8. Click "Generate Child Theme Files."
-9. ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING!
+6. Check "Copy Parent Theme Menus, Widgets and other Options", to copy parent theme modifications to the child theme. Depending on the theme, some options may need to be applied using separate theme option controls. **IMPORTANT: This will overwrite existing child theme options.**
+7. Check "Backup Stylesheet", to create a backup of the child theme stylesheet in the child theme directory.
+8. If your theme uses additional stylesheets they will appear as checkbox options. Select only the stylesheets you wish to customize to reduce overhead.
+9. Click "Generate Child Theme Files."
+10. ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING!
 
 == Override Parent Styles ==
 
@@ -423,7 +462,7 @@ You can also click the Preview CSS tab to see your new masterpiece as CSS code.
 
 * ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING (See "Preview and Activate," above).
 * No web font preview. Look for live preview of imported fonts in a later release.
-* No webkit-gradient. The Child Theme Configurator plugin does not support the legacy webkit gradient. If there is a demand, we will add it in a future release, but most Chrome and Safari users should have upgraded by now.
+* No legacy webkit-gradient. The Child Theme Configurator plugin does not support the legacy webkit gradient. If there is a demand, we will add it in a future release, but most Chrome and Safari users should have upgraded by now.
 * Only two-color gradients. The Child Theme Configurator plugin is powerful, but we have simplified the gradient interface. You can use any gradient you want as long as it has two colors and no intermediate stops.
 * No @font-face rules. The Child Theme Configurator plugin only supports @media and @import. If you need other @rules, put them in a separate stylesheet and import them into the Child Theme stylesheet.
 * Menus may not include certain rules. The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. If you find rules are missing from the menus, you can add them using a filter. Stay tuned for details.

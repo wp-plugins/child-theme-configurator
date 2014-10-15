@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Child Theme Configurator package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Child Theme Configurator 1.5.0\n"
+"Project-Id-Version: Child Theme Configurator 1.5.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/child-theme-configurator\n"
-"POT-Creation-Date: 2014-09-27 19:30:32+00:00\n"
+"POT-Creation-Date: 2014-10-02 04:17:38+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,11 +20,11 @@ msgstr ""
 msgid "Parent/Child"
 msgstr ""
 
-#: includes/class-ctc-ui.php:57 includes/class-ctc-ui.php:650
+#: includes/class-ctc-ui.php:57 includes/class-ctc-ui.php:663
 msgid "Query/Selector"
 msgstr ""
 
-#: includes/class-ctc-ui.php:60 includes/class-ctc-ui.php:664
+#: includes/class-ctc-ui.php:60 includes/class-ctc-ui.php:677
 msgid "Rule/Value"
 msgstr ""
 
@@ -40,7 +40,7 @@ msgstr ""
 msgid "Parent CSS"
 msgstr ""
 
-#: includes/class-ctc-ui.php:76 includes/class-ctc-ui.php:702
+#: includes/class-ctc-ui.php:76 includes/class-ctc-ui.php:715
 msgid "Files"
 msgstr ""
 
@@ -81,219 +81,227 @@ msgid "Version"
 msgstr ""
 
 #: includes/class-ctc-ui.php:158
-msgid "Backup Stylesheet"
+msgid "Copy Parent Theme Menus, Widgets and other Options"
+msgstr ""
+
+#: includes/class-ctc-ui.php:160
+msgid "NOTE: This will overwrite existing child theme options."
 msgstr ""
 
 #: includes/class-ctc-ui.php:169
+msgid "Backup Child Stylesheet"
+msgstr ""
+
+#: includes/class-ctc-ui.php:180
 msgid "Parse additional stylesheets:"
 msgstr ""
 
-#: includes/class-ctc-ui.php:170
+#: includes/class-ctc-ui.php:181
 msgid "(click to toggle)"
 msgstr ""
 
-#: includes/class-ctc-ui.php:174
+#: includes/class-ctc-ui.php:185
 msgid "Select only the stylesheets you wish to customize to reduce overhead."
 msgstr ""
 
-#: includes/class-ctc-ui.php:192
+#: includes/class-ctc-ui.php:203
 msgid "Generate Child Theme Files"
 msgstr ""
 
-#: includes/class-ctc-ui.php:203 includes/class-ctc-ui.php:272
+#: includes/class-ctc-ui.php:214 includes/class-ctc-ui.php:283
 msgid "Rule"
 msgstr ""
 
-#: includes/class-ctc-ui.php:216
+#: includes/class-ctc-ui.php:227
 msgid "Value"
 msgstr ""
 
-#: includes/class-ctc-ui.php:219 includes/class-ctc-ui.php:257
+#: includes/class-ctc-ui.php:230 includes/class-ctc-ui.php:268
 #: includes/class-ctc.php:117
 msgid "Sample"
 msgstr ""
 
-#: includes/class-ctc-ui.php:222 includes/class-ctc.php:119
+#: includes/class-ctc-ui.php:233 includes/class-ctc.php:119
 msgid "Selectors"
 msgstr ""
 
-#: includes/class-ctc-ui.php:233
+#: includes/class-ctc-ui.php:244
 msgid "Query"
 msgstr ""
 
-#: includes/class-ctc-ui.php:244
+#: includes/class-ctc-ui.php:255
 msgid "Selector"
 msgstr ""
 
-#: includes/class-ctc-ui.php:265 includes/class-ctc-ui.php:305
-#: includes/class-ctc-ui.php:324
+#: includes/class-ctc-ui.php:276 includes/class-ctc-ui.php:316
+#: includes/class-ctc-ui.php:335
 msgid "Save"
 msgstr ""
 
-#: includes/class-ctc-ui.php:275
+#: includes/class-ctc-ui.php:286
 msgid "Parent Value"
 msgstr ""
 
-#: includes/class-ctc-ui.php:278
+#: includes/class-ctc-ui.php:289
 msgid "Child Value"
 msgstr ""
 
-#: includes/class-ctc-ui.php:284
+#: includes/class-ctc-ui.php:295
 msgid "New Rule"
 msgstr ""
 
-#: includes/class-ctc-ui.php:294
+#: includes/class-ctc-ui.php:305
 msgid "Order"
 msgstr ""
 
-#: includes/class-ctc-ui.php:301
+#: includes/class-ctc-ui.php:312
 msgid "Raw CSS"
 msgstr ""
 
-#: includes/class-ctc-ui.php:320
+#: includes/class-ctc-ui.php:331
 msgid "@import Statements"
 msgstr ""
 
-#: includes/class-ctc-ui.php:352
+#: includes/class-ctc-ui.php:363
 msgid "Upload New Child Theme Image"
 msgstr ""
 
-#: includes/class-ctc-ui.php:355
+#: includes/class-ctc-ui.php:366
 msgid ""
 "Theme images reside under the <code>images</code> directory in your child "
 "theme and are meant for stylesheet use only. Use the Media Library for "
 "content images."
 msgstr ""
 
-#: includes/class-ctc-ui.php:362 includes/class-ctc-ui.php:388
+#: includes/class-ctc-ui.php:373 includes/class-ctc-ui.php:399
 msgid "Upload"
 msgstr ""
 
-#: includes/class-ctc-ui.php:369
+#: includes/class-ctc-ui.php:380
 msgid "Child Theme Screenshot"
 msgstr ""
 
-#: includes/class-ctc-ui.php:378
+#: includes/class-ctc-ui.php:389
 msgid "Upload New Screenshot"
 msgstr ""
 
-#: includes/class-ctc-ui.php:381
+#: includes/class-ctc-ui.php:392
 msgid ""
 "The theme screenshot should be a 4:3 ratio (e.g., 880px x 660px) JPG, PNG or "
 "GIF. It will be renamed <code>screenshot</code>."
 msgstr ""
 
-#: includes/class-ctc-ui.php:396
+#: includes/class-ctc-ui.php:407
 msgid "Export Child Theme as Zip Archive"
 msgstr ""
 
-#: includes/class-ctc-ui.php:402
+#: includes/class-ctc-ui.php:413
 msgid "Export"
 msgstr ""
 
-#: includes/class-ctc-ui.php:411
+#: includes/class-ctc-ui.php:422
 msgid "Secure Child Theme"
 msgstr ""
 
-#: includes/class-ctc-ui.php:414
+#: includes/class-ctc-ui.php:425
 msgid ""
 "Attempt to reset child theme permissions to user ownership and read-only "
 "access."
 msgstr ""
 
-#: includes/class-ctc-ui.php:420
+#: includes/class-ctc-ui.php:431
 msgid "Make read-only"
 msgstr ""
 
-#: includes/class-ctc-ui.php:471
+#: includes/class-ctc-ui.php:482
 msgid "Click here to edit template files using the Theme Editor"
 msgstr ""
 
-#: includes/class-ctc-ui.php:475
+#: includes/class-ctc-ui.php:486
 msgid ""
 "The Theme editor has been disabled. Template files must be edited offline."
 msgstr ""
 
-#: includes/class-ctc-ui.php:490
+#: includes/class-ctc-ui.php:501
 msgid "Copy PHP template files from the parent theme by selecting them here."
 msgstr ""
 
-#: includes/class-ctc-ui.php:493
+#: includes/class-ctc-ui.php:504
 msgid ""
 "CAUTION: If your child theme is active, the child theme version of the file "
 "will be used instead of the parent immediately after it is copied."
 msgstr ""
 
-#: includes/class-ctc-ui.php:495
+#: includes/class-ctc-ui.php:506
 msgid "The %s file is generated separately and cannot be copied here."
 msgstr ""
 
-#: includes/class-ctc-ui.php:502
+#: includes/class-ctc-ui.php:513
 msgid "Delete child theme templates by selecting them here."
 msgstr ""
 
-#: includes/class-ctc-ui.php:504
+#: includes/class-ctc-ui.php:515
 msgid ""
 "Delete child theme templates or make them writable by selecting them here. "
 "Writable files are displayed in <span style=\"color:red\">red</span>."
 msgstr ""
 
-#: includes/class-ctc-ui.php:515
+#: includes/class-ctc-ui.php:526
 msgid "Make Selected Writable"
 msgstr ""
 
-#: includes/class-ctc-ui.php:519
+#: includes/class-ctc-ui.php:530
 msgid "Copy Selected to Child Theme"
 msgstr ""
 
-#: includes/class-ctc-ui.php:519
+#: includes/class-ctc-ui.php:530
 msgid "Delete Selected"
 msgstr ""
 
-#: includes/class-ctc-ui.php:557
+#: includes/class-ctc-ui.php:568
 msgid "Child Theme Images"
 msgstr ""
 
-#: includes/class-ctc-ui.php:560
+#: includes/class-ctc-ui.php:571
 msgid "Remove child theme images by selecting them here."
 msgstr ""
 
-#: includes/class-ctc-ui.php:568
+#: includes/class-ctc-ui.php:579
 msgid "Remove Selected"
 msgstr ""
 
-#: includes/class-ctc-ui.php:599
+#: includes/class-ctc-ui.php:610
 msgid "Child Theme files modified successfully."
 msgstr ""
 
-#: includes/class-ctc-ui.php:601
+#: includes/class-ctc-ui.php:612
 msgid ""
 "Child Theme <strong>%s</strong> has been generated successfully.\n"
 "                "
 msgstr ""
 
-#: includes/class-ctc-ui.php:607
+#: includes/class-ctc-ui.php:618
 msgid ""
 "Please verify the imports below and remove any imports that are not needed "
 "by the front end, such as admin or configuration stylesheets."
 msgstr ""
 
-#: includes/class-ctc-ui.php:624
+#: includes/class-ctc-ui.php:635
 msgid "Tutorial Video"
 msgstr ""
 
-#: includes/class-ctc-ui.php:625
+#: includes/class-ctc-ui.php:636
 msgid ""
 "<iframe width=\"480\" height=\"270\" src=\"//www.youtube.com/embed/"
 "xL2HkWQxgOA?rel=0&modestbranding=1\" frameborder=\"0\" allowfullscreen></"
 "iframe>"
 msgstr ""
 
-#: includes/class-ctc-ui.php:631
+#: includes/class-ctc-ui.php:642
 msgid "Start Here"
 msgstr ""
 
-#: includes/class-ctc-ui.php:632
+#: includes/class-ctc-ui.php:643
 msgid ""
 "\n"
 "<p>The first step is to create a child theme and import your parent theme "
@@ -308,17 +316,26 @@ msgid ""
 "<li>Enter a Name for the child theme.</li>\n"
 "<li>Enter an author for the child theme.</li>\n"
 "<li>Enter the child theme version number.</li>\n"
-"<li>If you check \"Backup Stylesheet\", The Child Theme Configurator will "
-"create a backup in the theme directory.</li>\n"
+"<li>Check \"Copy Parent Theme Menus, Widgets and other Options\", to copy "
+"parent theme modifications to the child theme. Depending on the theme, some "
+"options may need to be applied using separate theme option controls. "
+"<strong>IMPORTANT: This will overwrite existing child theme options.</"
+"strong></li>\n"
+"<li>Check \"Backup Stylesheet\", to create a backup of the child theme "
+"stylesheet in the child theme directory.</li>\n"
 "<li>If your theme uses additional stylesheets they will appear as checkbox "
 "options when you open the toggle arrow. Select only the stylesheets you wish "
 "to customize to reduce overhead. Remember to select them again if you reload "
 "your configuration.</li>\n"
-"<li>Click \"Generate Child Theme.\"</li></ol>\n"
+"<li>Click \"Generate Child Theme.\"</li>\n"
+"<li><strong>ALWAYS <a target=\"_blank\" href=\"http://www.lilaeamedia.com/"
+"plugins/child-theme-configurator/#preview_activate\" title=\"Test your child "
+"theme before activating!\">TEST YOUR CHILD THEME</a> BEFORE ACTIVATING!</"
+"strong></li></ol>\n"
 "\t\t\t\t    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:651
+#: includes/class-ctc-ui.php:664
 msgid ""
 "\n"
 "<p>There are two ways to identify and override parent styles. The Child "
@@ -351,7 +368,7 @@ msgid ""
 "\t\t\t\t    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:665
+#: includes/class-ctc-ui.php:678
 msgid ""
 "\n"
 "<p>There are two ways to identify and override parent styles. The Child "
@@ -378,11 +395,11 @@ msgid ""
 "\t\t\t\t    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:677
+#: includes/class-ctc-ui.php:690
 msgid "Add New Styles"
 msgstr ""
 
-#: includes/class-ctc-ui.php:678
+#: includes/class-ctc-ui.php:691
 msgid ""
 "\n"
 "<p>If you wish to add additional rules to a given selector, first load the "
@@ -402,11 +419,11 @@ msgid ""
 "\t\t\t\t    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:688
+#: includes/class-ctc-ui.php:701
 msgid "@imports and Web Fonts"
 msgstr ""
 
-#: includes/class-ctc-ui.php:689
+#: includes/class-ctc-ui.php:702
 msgid ""
 "\n"
 "<p>You can add additional stylesheets and web fonts by typing @import rules "
@@ -424,7 +441,7 @@ msgid ""
 "\t\t\t\t    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:703
+#: includes/class-ctc-ui.php:716
 msgid ""
 "\n"
 "<h5>Parent Templates</h5><p>Copy PHP template files from the parent theme by "
@@ -450,11 +467,11 @@ msgid ""
 "\t\t\t\t    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:719
+#: includes/class-ctc-ui.php:732
 msgid "Preview and Activate"
 msgstr ""
 
-#: includes/class-ctc-ui.php:720
+#: includes/class-ctc-ui.php:733
 msgid ""
 "<p><strong>IMPORTANT: <a target=\"_blank\" href=\"http://www.lilaeamedia.com/"
 "plugins/child-theme-configurator/#preview_activate\" title=\"Test your child "
@@ -475,11 +492,11 @@ msgid ""
 "\t\t\t\t    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:731
+#: includes/class-ctc-ui.php:744
 msgid "File Permissions"
 msgstr ""
 
-#: includes/class-ctc-ui.php:732
+#: includes/class-ctc-ui.php:745
 msgid ""
 "\n"
 "<p>WordPress was designed to work on a number of server configurations. "
@@ -499,11 +516,11 @@ msgid ""
 "\t\t\t\t    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:745
+#: includes/class-ctc-ui.php:758
 msgid "FAQs"
 msgstr ""
 
-#: includes/class-ctc-ui.php:746
+#: includes/class-ctc-ui.php:759
 msgid ""
 "\n"
 "<h5>Does it work with Plugins?</h5>\n"
@@ -612,11 +629,11 @@ msgid ""
 "                    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:790
+#: includes/class-ctc-ui.php:803
 msgid "Glossary"
 msgstr ""
 
-#: includes/class-ctc-ui.php:791
+#: includes/class-ctc-ui.php:804
 msgid ""
 "\n"
 "<h3 id=\"terms\">Glossary</h3>\n"
@@ -656,31 +673,31 @@ msgid ""
 "\t\t\t\t    "
 msgstr ""
 
-#: includes/class-ctc-ui.php:814
+#: includes/class-ctc-ui.php:827
 msgid "Contact us"
 msgstr ""
 
-#: includes/class-ctc-ui.php:815
+#: includes/class-ctc-ui.php:828
 msgid "Plugin Website"
 msgstr ""
 
-#: includes/class-ctc-ui.php:816
+#: includes/class-ctc-ui.php:829
 msgid "Donate"
 msgstr ""
 
-#: includes/class-ctc-ui.php:817
+#: includes/class-ctc-ui.php:830
 msgid "Give Us 5 Stars"
 msgstr ""
 
-#: includes/class-ctc-ui.php:818
+#: includes/class-ctc-ui.php:831
 msgid "WordPress Codex"
 msgstr ""
 
-#: includes/class-ctc-ui.php:819
+#: includes/class-ctc-ui.php:832
 msgid "WordPress Answers"
 msgstr ""
 
-#. #-#-#-#-#  chld_thm_cfg.pot (Child Theme Configurator 1.5.0)  #-#-#-#-#
+#. #-#-#-#-#  chld_thm_cfg.pot (Child Theme Configurator 1.5.1)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: includes/class-ctc.php:50
 msgid "Child Theme Configurator"
@@ -754,7 +771,7 @@ msgstr ""
 msgid "Please enter a valid Child Theme"
 msgstr ""
 
-#: includes/class-ctc.php:127 includes/class-ctc.php:301
+#: includes/class-ctc.php:127 includes/class-ctc.php:300
 msgid "Please enter a valid Child Theme name"
 msgstr ""
 
@@ -766,29 +783,29 @@ msgstr ""
 msgid "Zip file creation failed."
 msgstr ""
 
-#: includes/class-ctc.php:272
+#: includes/class-ctc.php:271
 msgid "%s does not exist. Please select a valid Parent Theme"
 msgstr ""
 
-#: includes/class-ctc.php:275
+#: includes/class-ctc.php:274
 msgid "Please select a valid Parent Theme"
 msgstr ""
 
-#: includes/class-ctc.php:279
+#: includes/class-ctc.php:278
 msgid "Please enter a valid Child Theme template name"
 msgstr ""
 
-#: includes/class-ctc.php:286
+#: includes/class-ctc.php:285
 msgid ""
 "<strong>%s</strong> exists. Please enter a different Child Theme template "
 "name"
 msgstr ""
 
-#: includes/class-ctc.php:305 includes/class-ctc.php:784
+#: includes/class-ctc.php:303 includes/class-ctc.php:770
 msgid "Your theme directories are not writable."
 msgstr ""
 
-#: includes/class-ctc.php:328 includes/class-ctc.php:793
+#: includes/class-ctc.php:323 includes/class-ctc.php:779
 msgid "Your stylesheet is not writable."
 msgstr ""
 
@@ -796,47 +813,47 @@ msgstr ""
 msgid "You do not have permission to configure child themes."
 msgstr ""
 
-#: includes/class-ctc.php:487
+#: includes/class-ctc.php:484
 msgid "Could not copy file."
 msgstr ""
 
-#: includes/class-ctc.php:549
+#: includes/class-ctc.php:546
 msgid "Could not set write permissions."
 msgstr ""
 
-#: includes/class-ctc.php:628
+#: includes/class-ctc.php:617
 msgid "There were errors while resetting permissions."
 msgstr ""
 
-#: includes/class-ctc.php:666
+#: includes/class-ctc.php:652
 msgid "Could not upload file."
 msgstr ""
 
-#: includes/class-ctc.php:745
+#: includes/class-ctc.php:731
 msgid ""
 "Child Theme Configurator is unable to write to the stylesheet. This can be "
 "resolved using one of the following options:<ol>"
 msgstr ""
 
-#: includes/class-ctc.php:747
+#: includes/class-ctc.php:733
 msgid ""
 "<li>Temporarily make the stylesheet writable by clicking the button below. "
 "You should change this back when you are finished editing for security by "
 "clicking \"Make read-only\" under the \"Files\" tab.</li>"
 msgstr ""
 
-#: includes/class-ctc.php:749
+#: includes/class-ctc.php:735
 msgid "Temporarily make stylesheet writable"
 msgstr ""
 
-#: includes/class-ctc.php:750
+#: includes/class-ctc.php:736
 msgid ""
 "<li><a target=\"_blank\"  href=\"http://codex.wordpress.org/Editing_wp-"
 "config.php#WordPress_Upgrade_Constants\" title=\"Editin wp-config.php\">Add "
 "your FTP/SSH credentials to the WordPress config file</a>.</li>"
 msgstr ""
 
-#: includes/class-ctc.php:752
+#: includes/class-ctc.php:738
 msgid ""
 "<li><a target=\"_blank\" href=\"http://technet.microsoft.com/en-us/library/"
 "cc771170\" title=\"Setting Application Pool Identity\">Assign WordPress to "
@@ -844,7 +861,7 @@ msgid ""
 "li>"
 msgstr ""
 
-#: includes/class-ctc.php:753
+#: includes/class-ctc.php:739
 msgid ""
 "<li><a target=\"_blank\" href=\"http://codex.wordpress.org/"
 "Changing_File_Permissions\" title=\"Changing File Permissions\">Set the "
@@ -852,11 +869,11 @@ msgid ""
 "li>"
 msgstr ""
 
-#: includes/class-ctc.php:755
+#: includes/class-ctc.php:741
 msgid "<li>Run PHP under Apache with suEXEC (contact your web host).</li>"
 msgstr ""
 
-#: includes/class-ctc.php:763
+#: includes/class-ctc.php:749
 msgid ""
 "This Child Theme is not owned by your website account. It may have been "
 "created by a prior version of this plugin or by another program. Moving "
@@ -865,7 +882,7 @@ msgid ""
 "below."
 msgstr ""
 
-#: includes/class-ctc.php:765
+#: includes/class-ctc.php:751
 msgid "Correct Child Theme Permissions"
 msgstr ""
 
