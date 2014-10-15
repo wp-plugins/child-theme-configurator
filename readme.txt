@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 4.0
-Stable tag: 1.5.2
+Stable tag: 1.5.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -226,7 +226,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 
-= 1.5.2 =
+= 1.5.2.1 =
 * Automatically set additional stylesheets to parse based on parent theme links in head.
 * Render parent CSS including additional stylesheets 
 
