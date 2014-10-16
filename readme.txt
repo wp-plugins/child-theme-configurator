@@ -226,6 +226,9 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 
+= 1.5.2.2 =
+* Tweaked preview ajax call to handle ssl.
+
 = 1.5.2.1 =
 * Automatically set additional stylesheets to parse based on parent theme links in head.
 * Render parent CSS including additional stylesheets 
@@ -372,8 +375,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-* Automatically set additional stylesheets to parse based on parent theme links in head.
-* Render parent CSS including additional stylesheets 
+Tweaked preview ajax call to handle ssl.
 
 == Create Your Child Theme ==
 

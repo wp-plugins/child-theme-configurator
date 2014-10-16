@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.5.2.1
+    Version: 1.5.2.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -84,10 +84,11 @@ class Child_Theme_Configurator {
             wp_enqueue_script('iris');
 //            wp_enqueue_script('thickbox');
             wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('iris'), '1.0');
-            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js',
+            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
                 array('jquery-ui-autocomplete'), '1.0', TRUE);
             wp_localize_script( 'chld-thm-cfg-admin', 'ctcAjax', 
                 apply_filters('chld_thm_cfg_localize_script', array(
+                    'ssl'               => is_ssl(),
                     'homeurl'           => get_home_url(),
                     'ajaxurl'           => admin_url( 'admin-ajax.php' ),
                     'theme_uri'         => get_theme_root_uri(),

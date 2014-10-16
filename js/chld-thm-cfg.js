@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.5.2.1
+ *  Version: 1.5.2.2
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -884,16 +884,17 @@ jQuery(document).ready(function($){
     }
     
     function ctc_set_addl_css() { 
-        var template = $('#ctc_theme_parnt').val(),
-            url = ctcAjax.homeurl + '?preview=1&template=' + template + '&stylesheet=' + template,
-            regex = new RegExp("<link rel=[\"']stylesheet[\"'][^>]+?" + ctcAjax.theme_uri + '/' + template + '/(.+?\\.css)[^>]+?>', 'g'),
-            head,
+        var template    = $('#ctc_theme_parnt').val(),
+            theme_uri   = ctcAjax.theme_uri.replace(/^https?:\/\//, ''),
+            homeurl     = ctcAjax.homeurl.replace(/^https?/, ctcAjax.ssl ? 'https' : 'http'),
+            url         = homeurl + '?preview=1&p=x&template=' + template + '&stylesheet=' + template,
+            regex       = new RegExp("<link rel=[\"']stylesheet[\"'][^>]+?" + theme_uri + '/' + template + '/(.+?\\.css)[^>]+?>', 'g'),
             additional;
         if (ctc_is_empty(template)) return;
         $.get(url, function(data){
             while (additional = regex.exec(data)){
-                ctcAjax.addl_css.push(additional[1]);
                 if ('style.css' == additional[1]) break; // bail after main stylesheet
+                ctcAjax.addl_css.push(additional[1]);
                 $('.ctc_checkbox').each(function(ndx,el){
                     if ($(this).val() == additional[1]) $(this).prop('checked', true);
                 });
