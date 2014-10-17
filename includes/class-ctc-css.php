@@ -434,6 +434,7 @@ class Child_Theme_Configurator_CSS {
     function parse_css_file($template, $file = 'style.css') {
         global $chld_thm_cfg;
         $chld_thm_cfg->cache_updates = FALSE;
+        $this->styles = ''; // reset styles
         $this->read_stylesheet($template, $file);
         // get theme name
         $regex = '#Theme Name:\s*(.+?)\n#i';
