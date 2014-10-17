@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 4.0
-Stable tag: 1.5.2.1
+Stable tag: 1.5.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -146,7 +146,7 @@ Once the child theme stylesheet is created, CTC adds very little overhead to the
 
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
-Your Parent theme is probably using a non-standard location for the stylesheets. Check "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again.
+Your Parent theme is probably using a non-standard location for the stylesheets. Check the appropriate additional stylesheets under "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again. CTC tries to identify these files by fetching a page from the parent theme, but you may need to set them manually.
 
 = Where is it in the Admin? = 
 
@@ -227,6 +227,9 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 == Changelog ==
 
 = 1.5.2.2 =
+* Adding the additional styles to the parent CSS preview in v1.5.2(.1) introduced a bug 
+* that copied all of the parent styles to the child stylesheet. This is fixed in v1.5.2.2. 
+* Rolled back changes to the javascript controller that introduced a number of type errors.
 * Tweaked preview ajax call to handle ssl.
 
 = 1.5.2.1 =
@@ -375,7 +378,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-Tweaked preview ajax call to handle ssl.
+v.1.5.2.2 fixes a number of bugs that were introduced in v1.5.2(.1). See changelog for details.
 
 == Create Your Child Theme ==
 
