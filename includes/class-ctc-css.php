@@ -573,9 +573,13 @@ class Child_Theme_Configurator_CSS {
                 if (!empty($this->val_ndx[$qsid])):
                     $shorthand = array();
                     foreach ($this->val_ndx[$qsid] as $ruleid => $valid):
-                        if (isset($valid['child']) && isset($valarr[$valid['child']]) && '' !== $valarr[$valid['child']]):
+                        if (isset($valid['child']) 
+                            && isset($valarr[$valid['child']]) 
+                            && '' !== $valarr[$valid['child']]
+                            && (!isset($valid['parnt']) || $valid['parnt'] != $valid['child'])):
                             if (! $has_value): 
-                                $sel_output .= isset($this->dict_seq[$qsid])?'/*' . $this->dict_seq[$qsid] . '*/' . LF:''; // show load order
+                                $sel_output .= isset($this->dict_seq[$qsid])?'/*' . $this->dict_seq[$qsid] . '*/' . LF:''; 
+                                // show load order
                                 $sel_output .= $sel . ' {' . LF; 
                                 $has_value = 1;
                                 $has_selector = 1;
