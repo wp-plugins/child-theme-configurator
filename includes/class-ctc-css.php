@@ -203,7 +203,7 @@ class Child_Theme_Configurator_CSS {
                 );
         endif;
         // update sequence for this selector if this is a later instance to keep cascade priority
-        //if (!isset($this->dict_seq[$this->qskey]))
+        if (!isset($this->dict_seq[$this->qskey]))
             $this->dict_seq[$this->qskey] = $this->qskey;
         // set data and value
         if ($rule):
