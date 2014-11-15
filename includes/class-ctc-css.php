@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.5.2.2
+    Version: 1.5.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -46,7 +46,7 @@ class Child_Theme_Configurator_CSS {
     
     function __construct($parent = '') {
         // scalars
-        $this->version          = '1.5.2.2';
+        $this->version          = '1.5.3';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -202,7 +202,8 @@ class Child_Theme_Configurator_CSS {
                     ),
                 );
         endif;
-        if (!isset($this->dict_seq[$this->qskey]))
+        // update sequence for this selector if this is a later instance to keep cascade priority
+        //if (!isset($this->dict_seq[$this->qskey]))
             $this->dict_seq[$this->qskey] = $this->qskey;
         // set data and value
         if ($rule):
@@ -418,7 +419,7 @@ class Child_Theme_Configurator_CSS {
     }
     
     function sanitize($styles) {
-        return sanitize_text_field($styles);
+        return sanitize_text_field(preg_replace( '/[^[:print:]]/', '', $styles));
     }
 
     function esc_octal($styles){
@@ -521,7 +522,7 @@ class Child_Theme_Configurator_CSS {
                     foreach ($rules as $rule):
                         $value = trim(array_shift($values));
                         // normalize zero values
-                        $value = preg_replace('#([: ])0(px|r?em)#', "$1\0", $value);
+                        $value = preg_replace('#\b0(px|r?em)#', '0', $value);
                         // normalize gradients
                         if (FALSE !== strpos($value, 'gradient')):
                             if (FALSE !== strpos($rule, 'filter')):
