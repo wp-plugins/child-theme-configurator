@@ -83,6 +83,16 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 == Frequently Asked Questions ==
 
+= HELP! I changed a file and now I am unable to access my website or login to wp-admin to fix it! =
+
+To back out of a broken theme you have to manually rename the offending theme directory name (via FTP, SSH or your web host control panel file manager) so that WordPress can’t find it. WordPress will then throw an error and revert back to the default theme (currently twenty-fourteen).
+
+The child theme is in your themes folder, usually
+
+[wordpress]/wp-content/themes/[child-theme]
+
+To prevent this in the future, always test your child themes with Live Preview before activating them.
+
 = Why are my menus displaying incorrectly when I activate the new child theme? =
 ...or...
 = Why is my custom header missing when I activate the new child theme? =
