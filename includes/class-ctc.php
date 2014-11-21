@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.5.2.2
+    Version: 1.5.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -174,7 +174,7 @@ class Child_Theme_Configurator {
             $this->css->parse_post_data();
             $this->css->write_css();
             $result = $this->css->obj_to_utf8($this->updates);
-            update_option($this->optionsName, $this->css);
+            $this->css->save_config();
             // send all updates back to browser to update cache
             die(json_encode($result));
         else:
@@ -206,14 +206,16 @@ class Child_Theme_Configurator {
     }
     
     function load_config() {
-        if (!($this->css = get_option($this->optionsName)) 
-            || !is_object($this->css) 
+        $this->css = new Child_Theme_Configurator_CSS();
+        if ( FALSE === $this->css->read_config() )
+            $this->css = get_option($this->optionsName); // backward compatibility with < 1.5.4
+        if (! is_object($this->css)
             || ! $this->check_theme_exists($this->css->get_prop('child'))
             || ! $this->check_theme_exists($this->css->get_prop('parnt'))            
-            || !($version = $this->css->get_prop('version'))
-            ):
+            || ! ($version = $this->css->get_prop('version')) ):
+            $this->css = new Child_Theme_Configurator_CSS();
             $parent = get_template();
-            $this->css = new Child_Theme_Configurator_CSS($parent);
+            $this->css->set_prop('parnt', $parent);
         endif;
         if ('POST' != $_SERVER['REQUEST_METHOD']):
             if ($this->css->get_prop('child')):
@@ -334,7 +336,7 @@ class Child_Theme_Configurator {
                             if (isset($_POST['ctc_parent_mods']) && ($parent_mods = get_option('theme_mods_' . $parnt))):
                                 update_option('theme_mods_' . $child, $parent_mods);
                             endif;
-                            update_option($this->optionsName, $this->css);
+                            $this->css->save_config();
                             do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
                             $msg = 1; //isset($_POST['ctc_scan_subdirs']) ? '9&tab=import_options' : 1;
                         endif;
@@ -443,7 +445,8 @@ class Child_Theme_Configurator {
         global $wp_filesystem;
         // add functions.php file
         $contents = "<?php\n// Exit if accessed directly\nif ( !defined('ABSPATH')) exit;\n\n/* Add custom functions below */";
-        if (FALSE === $this->write_child_file('functions.php', $contents) || FALSE === $this->write_child_file('style.css', $this->css->get_css_header())) return FALSE;
+        if (FALSE === $this->write_child_file('functions.php', $contents) 
+            || FALSE === $this->write_child_file('style.css', $this->css->get_css_header())) return FALSE;
     }
     
     function write_child_file($file, $contents) {
