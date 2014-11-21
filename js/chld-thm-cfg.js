@@ -858,6 +858,7 @@ jQuery(document).ready(function($){
         $.get(url, function(data){
             while (additional = regex.exec(data)){
                 if ('style.css' == additional[1]) break; // bail after main stylesheet
+                if (additional[1].match(/bootstrap/)) continue; // don't autoselect Bootstrap stylesheets
                 ctcAjax.addl_css.push(additional[1]);
                 $('.ctc_checkbox').each(function(ndx,el){
                     if ($(this).val() == additional[1]) $(this).prop('checked', true);
