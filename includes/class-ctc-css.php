@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.5.3
+    Version: 1.5.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -15,7 +15,6 @@ if ( !defined('ABSPATH')) exit;
     Copyright (C) 2014 Lilaea Media
 */
 class Child_Theme_Configurator_CSS {
-    var $version;
     // data dictionaries
     var $dict_query;    // @media queries and 'base'
     var $dict_sel;      // selectors  
@@ -42,30 +41,52 @@ class Child_Theme_Configurator_CSS {
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
     var $child_version; // stylesheet version
-    var $vendorrule;
-    
-    function __construct($parent = '') {
+    var $vendorrule       = array(
+        'box-sizing',
+        'font-smoothing',
+        'border-radius',
+        'box-shadow',
+        'transition',
+        'transform'
+    );
+    var $configvars = array(
+        'parntss',
+        'imports',
+        'child_version',
+        'child_author',
+        'child_name',
+        'configtype',
+        'parnt',
+        'child',
+        'valkey',
+        'rulekey',
+        'qskey',
+        'selkey',
+        'querykey',                
+    );
+    var $dicts = array(
+        'dict_qs',
+        'dict_sel',
+        'dict_query',
+        'dict_rule',
+        'dict_val',
+        'dict_seq',
+        'sel_ndx',
+        'val_ndx'
+    );
+    function __construct() {
         // scalars
-        $this->version          = '1.5.3';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
         $this->rulekey          = 0;
         $this->valkey           = 0;
         $this->child            = '';
-        $this->parnt            = $parent;
+        $this->parnt            = '';
         $this->configtype       = 'theme';
         $this->child_name       = '';
         $this->child_author     = 'Child Theme Configurator by Lilaea Media';
         $this->child_version    = '1.0';
-        $this->vendorrule       = array(
-            "box-sizing",
-            "font-smoothing",
-            "border-radius",
-            "box-shadow",
-            "transition",
-            "transform"
-        );
         // multi-dim arrays
         $this->dict_qs          = array();
         $this->dict_sel         = array();
@@ -79,6 +100,31 @@ class Child_Theme_Configurator_CSS {
         $this->imports          = array('child' => array(), 'parnt' => array());
     }
     
+    function read_config() {
+        global $chld_thm_cfg;
+        if ($configarray = get_option(CHLD_THM_CFG_OPTIONS . '_configvars')):
+            foreach ($this->configvars as $configkey)
+                $this->{$configkey} = $configarray[$configkey];
+            foreach ($this->dicts as $configkey):
+                if ($configarray = get_option(CHLD_THM_CFG_OPTIONS . '_' . $configkey))
+                    $this->{$configkey} = $configarray;
+            endforeach;
+        else:
+            return FALSE;
+        endif;
+    }
+    
+    function save_config() {
+        global $chld_thm_cfg;
+        $configarray = array();
+        foreach ($this->configvars as $configkey)
+            $configarray[$configkey] = $this->{$configkey};
+        update_option(CHLD_THM_CFG_OPTIONS . '_configvars', $configarray);
+        foreach ($this->dicts as $configkey)
+            update_option(CHLD_THM_CFG_OPTIONS . '_' . $configkey, $this->{$configkey});
+        // remove pre 1.5.4 options
+        delete_option(CHLD_THM_CFG_OPTIONS);
+    }
     /*
      * get_prop
      * Getter interface (data sliced different ways depending on objname)
@@ -1092,8 +1138,15 @@ class Child_Theme_Configurator_CSS {
         if (preg_match('%^' . preg_quote(WP_PLUGIN_DIR) . '%', $stylesheet)) return $stylesheet;
         return FALSE;
     }
+
     function normalize_color($value) {
-        return preg_replace("/#([0-9A-F])\\1([0-9A-F])\\2([0-9A-F])\\3/i",strtolower("#$1$2$3"), $value);
+        $value = preg_replace_callback( "/#([0-9A-F]{3}([0-9A-F]{3})?)/i", array($this, 'tolower'), $value );
+        $value = preg_replace( "/#([0-9A-F])\\1([0-9A-F])\\2([0-9A-F])\\3/i", "#$1$2$3", $value );
+        return $value;
+    }
+
+    function tolower($matches) {
+        return '#' . strtolower($matches[1]);
     }
 }
 ?>
