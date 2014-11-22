@@ -142,7 +142,7 @@ https://www.youtube.com/watch?v=DSfx2RbZobo
 
 = Why doesn't this work with my (insert theme vendor here) theme? = 
 
-Some themes (particularly commercial themes) do not adhere to the Theme Development guidelines set forth by WordPress.org, and do not correctly load parent template files or automatically load child theme stylesheets or php files.
+Some themes (particularly commercial themes) do not correctly load parent template files or automatically load child theme stylesheets or php files.
 
 This is unfortunate, because in the best case they effectively prohibit the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. **In the worst case they will break your website when you activate the child theme.** 
 
@@ -150,13 +150,13 @@ Contact the vendor directly to ask for this core functionality. It is our opinio
 
 = Will this slow down my site? =
 
-The biggest performance hit occurs when you generate the Child Theme files, especially with style-heavy themes. CTC has been known to use as much as 32MB to parse large stylesheets, but this is a one-time event.
+The plugin only loads the bulk of the code in the admin when you are using the tool. The biggest performance hit occurs when you generate the Child Theme files from the Parent/Child tab.
 
-Once the child theme stylesheet is created, CTC adds very little overhead to the front-end since all of the functionality is in the admin. 
+Once the child theme stylesheet is created, CTC adds very little overhead to the front-end since all of the functionality is in the admin.
 
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
-Your Parent theme is probably using a non-standard location for the stylesheets. Check the appropriate additional stylesheets under "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again. CTC tries to identify these files by fetching a page from the parent theme, but you may need to set them manually.
+Check the appropriate additional stylesheets under "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again. CTC tries to identify these files by fetching a page from the parent theme, but you may need to set them manually.
 
 = Where is it in the Admin? = 
 
@@ -491,11 +491,10 @@ You can also click the Preview CSS tab to see your new masterpiece as CSS code.
 == Caveats ==
 
 * ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING (See "Preview and Activate," above).
-* No web font preview. Look for live preview of imported fonts in a later release.
 * No legacy webkit-gradient. The Child Theme Configurator plugin does not support the legacy webkit gradient. If there is a demand, we will add it in a future release, but most Chrome and Safari users should have upgraded by now.
 * Only two-color gradients. The Child Theme Configurator plugin is powerful, but we have simplified the gradient interface. You can use any gradient you want as long as it has two colors and no intermediate stops.
 * No @font-face rules. The Child Theme Configurator plugin only supports @media and @import. If you need other @rules, put them in a separate stylesheet and import them into the Child Theme stylesheet.
-* Menus may not include certain rules. The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. If you find rules are missing from the menus, you can add them using a filter. Stay tuned for details.
+* The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. To add new rules, use the Raw CSS input option.
 
 == Documentation ==
 
