@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 4.0
-Stable tag: 1.5.3
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -236,6 +236,12 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 
+= 1.5.4 =
+* New Feature: Now loads imported stylesheets into the CTC admin so web fonts can be previewed.
+* Spread config data across multiple option records to prevent out of memory errors with large stylesheets.
+* No longer auto selects Bootstrap CSS files as additional stylesheets
+* Added jquery ui styles that are no longer being loaded by default in the WP admin.
+
 = 1.5.3 =
 * Fixed a bug in the way zero values are handled that was breaking css output in certian situations
 * Added regex filter for non-printable (e.g., null) characters in input strings
@@ -391,7 +397,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-v.1.5.3 fixes a number of bugs. See changelog for details.
+v.1.5.4 Finally adds web font previews and fixes some bugs. See changelog for details.
 
 == Create Your Child Theme ==
 

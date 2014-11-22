@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.5.3
+    Version: 1.5.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -19,7 +19,6 @@ require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
     var $css;
-    var $optionsName;
     var $menuName;
     var $langName;
     var $pluginName;
@@ -42,7 +41,6 @@ class Child_Theme_Configurator {
     
     function __construct($file) {
         $this->dir = dirname( $file );
-        $this->optionsName      = 'chld_thm_cfg_options';
         $this->menuName         = 'chld_thm_cfg_menu';
         $lang_dir               = $this->dir . '/lang';
         load_plugin_textdomain('chld_thm_cfg', FALSE, $lang_dir, $lang_dir);
@@ -68,7 +66,7 @@ class Child_Theme_Configurator {
         add_action('admin_enqueue_scripts',     array(&$this, 'enqueue_scripts'));
         add_action('wp_ajax_ctc_update',        array(&$this, 'ajax_save_postdata' ));
         add_action('wp_ajax_ctc_query',         array(&$this, 'ajax_query_css' ));
-        //add_action('update_option_' . $this->optionsName, array(&$this, 'update_redirect'), 10);
+        //add_action('update_option_' . CHLD_THM_CFG_OPTIONS, array(&$this, 'update_redirect'), 10);
     }
 
     function admin_menu() {
@@ -208,11 +206,10 @@ class Child_Theme_Configurator {
     function load_config() {
         $this->css = new Child_Theme_Configurator_CSS();
         if ( FALSE === $this->css->read_config() )
-            $this->css = get_option($this->optionsName); // backward compatibility with < 1.5.4
+            $this->css = get_option(CHLD_THM_CFG_OPTIONS); // backward compatibility with < 1.5.4
         if (! is_object($this->css)
             || ! $this->check_theme_exists($this->css->get_prop('child'))
-            || ! $this->check_theme_exists($this->css->get_prop('parnt'))            
-            || ! ($version = $this->css->get_prop('version')) ):
+            || ! $this->check_theme_exists($this->css->get_prop('parnt')) ):          
             $this->css = new Child_Theme_Configurator_CSS();
             $parent = get_template();
             $this->css->set_prop('parnt', $parent);

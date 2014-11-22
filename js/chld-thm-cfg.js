@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.5.3
+ *  Version: 1.5.4
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -145,6 +145,7 @@ jQuery(document).ready(function($){
                 if (has_gradient.child) { $($swatch).ctcgrad(gradient.child.origin, [gradient.child.start, gradient.child.end]); }
                 $($swatch).css(cssrules.child);
             }
+            $($swatch).css({'z-index':-1});
         }
         return postdata;
     },
@@ -697,7 +698,9 @@ jQuery(document).ready(function($){
                 ctc_set_query(ui.item.value);
                 return false;
             },
-            focus: function(e) { e.preventDefault(); }
+            focus: function(e) { 
+                e.preventDefault(); 
+            }
         });
     },
     ctc_setup_selector_menu = function(query) {

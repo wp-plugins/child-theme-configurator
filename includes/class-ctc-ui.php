@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.5.3
+    Version: 1.5.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -20,6 +20,7 @@ class Child_Theme_Configurator_UI {
     
     function __construct() {
         $this->swatch_text  = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';  
+        add_action( 'admin_enqueue_scripts', array($this, 'load_imports') );
     }
     
     function render_options() { 
@@ -457,6 +458,27 @@ class Child_Theme_Configurator_UI {
 </style>
 <?php  
     } 
+    
+    function load_imports() {
+        // allows fonts and other externals to be previewed
+        // loads early not to conflict with admin stylesheets
+        global $chld_thm_cfg; 
+        $regex = "/\@import *(url)? *\( *['\"]?((https?:\/\/)?(.+?))['\"]? *\).*$/";
+        if ($imports = $chld_thm_cfg->css->get_prop('imports')):
+            foreach ($imports as $import):
+                preg_match($regex, $import, $matches);
+                if (empty($matches[3]) && !empty($matches[4])): // relative filepath
+                    $url = get_stylesheet_directory_uri();
+                    preg_replace("#\.\./#", '', $matches[4], -1, $count);
+                    for($i = 0; $i < $count; $i++):
+                        $url = dirname($url);
+                    endfor;
+                    $import = preg_replace($regex, '@import url(' . trailingslashit($url) . $matches[4] . ')', $import);
+                endif;
+                echo preg_replace($regex, "<link rel='stylesheet' href=\"$2\" type='text/css' />", $import) . "\n";
+            endforeach;
+        endif;
+    }
     
     function render_file_form($template = 'parnt') {
         global $chld_thm_cfg, $wp_filesystem; 

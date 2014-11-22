@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.5.3
+    Version: 1.5.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -15,7 +15,6 @@ if ( !defined('ABSPATH')) exit;
     Copyright (C) 2014 Lilaea Media
 */
 class Child_Theme_Configurator_CSS {
-    var $version;
     // data dictionaries
     var $dict_query;    // @media queries and 'base'
     var $dict_sel;      // selectors  
@@ -77,7 +76,6 @@ class Child_Theme_Configurator_CSS {
     );
     function __construct() {
         // scalars
-        $this->version          = '1.5.3';
         $this->querykey         = 0;
         $this->selkey           = 0;
         $this->qskey            = 0;
@@ -104,11 +102,11 @@ class Child_Theme_Configurator_CSS {
     
     function read_config() {
         global $chld_thm_cfg;
-        if ($configarray = get_option($chld_thm_cfg->optionsName . '_configvars')):
+        if ($configarray = get_option(CHLD_THM_CFG_OPTIONS . '_configvars')):
             foreach ($this->configvars as $configkey)
                 $this->{$configkey} = $configarray[$configkey];
             foreach ($this->dicts as $configkey):
-                if ($configarray = get_option($chld_thm_cfg->optionsName . '_' . $configkey))
+                if ($configarray = get_option(CHLD_THM_CFG_OPTIONS . '_' . $configkey))
                     $this->{$configkey} = $configarray;
             endforeach;
         else:
@@ -121,11 +119,11 @@ class Child_Theme_Configurator_CSS {
         $configarray = array();
         foreach ($this->configvars as $configkey)
             $configarray[$configkey] = $this->{$configkey};
-        update_option($chld_thm_cfg->optionsName . '_configvars', $configarray);
+        update_option(CHLD_THM_CFG_OPTIONS . '_configvars', $configarray);
         foreach ($this->dicts as $configkey)
-            update_option($chld_thm_cfg->optionsName . '_' . $configkey, $this->{$configkey});
+            update_option(CHLD_THM_CFG_OPTIONS . '_' . $configkey, $this->{$configkey});
         // remove pre 1.5.4 options
-        delete_option($chld_thm_cfg->optionsName);
+        delete_option(CHLD_THM_CFG_OPTIONS);
     }
     /*
      * get_prop
