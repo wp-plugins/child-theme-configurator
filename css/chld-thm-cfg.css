@@ -225,3 +225,15 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .writable {
     color: red;
 }
+/* added in 1.5.4 because it is not being loaded by the admin */
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+    background-color: #DADADA;
+    color: #212121;
+}
+.ui-menu .ui-menu-item {
+    position: relative;
+    margin: 0px;
+    padding: 3px 1em 3px 0.4em;
+    cursor: pointer;
+    min-height: 0px;
+}
