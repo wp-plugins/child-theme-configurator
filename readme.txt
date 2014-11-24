@@ -150,9 +150,9 @@ Contact the vendor directly to ask for this core functionality. It is our opinio
 
 = Will this slow down my site? =
 
-The plugin only loads the bulk of the code in the admin when you are using the tool. The biggest performance hit occurs when you generate the Child Theme files from the Parent/Child tab.
-
 Once the child theme stylesheet is created, CTC adds very little overhead to the front-end since all of the functionality is in the admin.
+
+The plugin only loads the bulk of the code in the admin when you are using the tool. The biggest performance hit occurs when you generate the Child Theme files from the Parent/Child tab.
 
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
