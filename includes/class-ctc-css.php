@@ -36,7 +36,8 @@ class Child_Theme_Configurator_CSS {
     var $styles;        // temporary update cache
     var $child;         // child theme slug
     var $parnt;         // parent theme slug
-    var $parntss;        // parent additional stylesheets
+    var $parntss;       // parent additional stylesheets
+    var $enqueue;       // load parent css ? true/false
     var $configtype;    // theme or plugin extension
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
@@ -51,6 +52,12 @@ class Child_Theme_Configurator_CSS {
     );
     var $configvars = array(
         'parntss',
+        // the enqueue flag prevents the transition from 1.5.4 
+        // from breaking the stylesheet by forcing the user to regenerate
+        // the config data before updating the stylesheet. Otherwise,
+        // removing the @import for the parent stylesheet will cause
+        // the parent core styles to be missing.
+        'enqueue', 
         'imports',
         'child_version',
         'child_author',
@@ -104,7 +111,8 @@ class Child_Theme_Configurator_CSS {
         global $chld_thm_cfg;
         if ($configarray = get_option(CHLD_THM_CFG_OPTIONS . '_configvars')):
             foreach ($this->configvars as $configkey)
-                $this->{$configkey} = $configarray[$configkey];
+                if (isset($configarray[$configkey]))
+                    $this->{$configkey} = $configarray[$configkey];
             foreach ($this->dicts as $configkey):
                 if ($configarray = get_option(CHLD_THM_CFG_OPTIONS . '_' . $configkey))
                     $this->{$configkey} = $configarray;
@@ -206,7 +214,8 @@ class Child_Theme_Configurator_CSS {
             . 'Updated: ' . current_time('mysql') . LF
             . '*/' . LF . LF
             . '@charset "UTF-8";' . LF
-            . '@import url(\'../' . $parnt . '/style.css\');' . LF;
+            //. '@import url(\'../' . $parnt . '/style.css\');' . LF
+            ;
     }
    
     function get_child_target($file = 'style.css') {

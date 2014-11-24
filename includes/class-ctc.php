@@ -14,7 +14,6 @@ if ( !defined('ABSPATH')) exit;
     License: GPLv2
     Copyright (C) 2014 Lilaea Media
 */
-require_once('class-ctc-ui.php');
 require_once('class-ctc-css.php');
 class Child_Theme_Configurator {
 
@@ -63,10 +62,8 @@ class Child_Theme_Configurator {
         $this->cache_updates    = TRUE;
         // setup plugin hooks
         add_action('admin_menu',                array(&$this, 'admin_menu'));
-        add_action('admin_enqueue_scripts',     array(&$this, 'enqueue_scripts'));
         add_action('wp_ajax_ctc_update',        array(&$this, 'ajax_save_postdata' ));
         add_action('wp_ajax_ctc_query',         array(&$this, 'ajax_query_css' ));
-        //add_action('update_option_' . CHLD_THM_CFG_OPTIONS, array(&$this, 'update_redirect'), 10);
     }
 
     function admin_menu() {
@@ -140,6 +137,8 @@ class Child_Theme_Configurator {
         $this->load_config();
         do_action('chld_thm_cfg_forms', $this);  // hook for custom forms
         $this->write_config();
+        add_action('admin_enqueue_scripts',     array(&$this, 'enqueue_scripts'));
+        include_once('class-ctc-ui.php');
         $this->ui = new Child_Theme_Configurator_UI();
         $this->ui->render_help_tabs();
 	}
@@ -221,6 +220,8 @@ class Child_Theme_Configurator {
                 if (!is_writable($stylesheet) && !$this->fs):
 	                add_action('admin_notices', array($this, 'writable_notice')); 	
                 endif;
+                if (!isset($this->css->enqueue))
+                    add_action('admin_notices', array($this, 'enqueue_notice')); 	
             endif;
             if (fileowner($this->css->get_child_target('')) != fileowner(ABSPATH)):
 	            add_action('admin_notices', array($this, 'owner_notice')); 
@@ -280,20 +281,23 @@ class Child_Theme_Configurator {
                                 $this->errors[] = __('Please enter a valid Child Theme template name', 'chld_thm_cfg');
                             else:
                                 $configtype = 'theme'; // no custom stylesheets until style.css exists!
-                                add_action('chld_thm_cfg_addl_files',   array(&$this, 'add_base_files'), 10, 2);
-                                add_action('chld_thm_cfg_addl_files',   array(&$this, 'copy_screenshot'), 10, 2);
                                 $child = strtolower(preg_replace("%[^\w\-]%", '', empty($template) ? $name : $template));
                                 if ($this->check_theme_exists($child)):
                                     $this->errors[] = sprintf(__('<strong>%s</strong> exists. Please enter a different Child Theme template name', 'chld_thm_cfg'), $child);
+                                else:
+                                    add_action( 'chld_thm_cfg_addl_files',   array( &$this, 'add_base_files' ), 10, 2);
+                                    add_action( 'chld_thm_cfg_addl_files',   array( &$this, 'copy_screenshot' ), 10, 2);
+                                    add_action( 'chld_thm_cfg_addl_files',   array( &$this, 'enqueue_parent_css' ), 15, 2);
                                 endif;
                             endif;
                         elseif (empty($configtype) || 'theme' == $configtype):
-                            add_action('chld_thm_cfg_addl_files',   array(&$this, 'add_base_files'), 10, 2);
-                            add_action('chld_thm_cfg_addl_files',   array(&$this, 'copy_screenshot'), 10, 2);
-                        elseif(has_action('chld_thm_cfg_addl_files')):
-                            remove_all_actions('chld_thm_cfg_addl_files');
+                            add_action( 'chld_thm_cfg_addl_files',   array( &$this, 'add_base_files' ), 10, 2);
+                            add_action( 'chld_thm_cfg_addl_files',   array( &$this, 'copy_screenshot' ), 10, 2);
+                            add_action( 'chld_thm_cfg_addl_files',   array( &$this, 'enqueue_parent_css' ), 15, 2);
+                        elseif(has_action( 'chld_thm_cfg_addl_files' )):
+                            remove_all_actions( 'chld_thm_cfg_addl_files' );
                             // back compat for plugins extension
-                            add_action('chld_thm_cfg_addl_files', array(&$this, 'write_addl_files'), 10, 2);
+                            add_action('chld_thm_cfg_addl_files', array( &$this, 'write_addl_files' ), 10, 2);
                         endif;
                         if (empty($name)):
                             $name = ucfirst($child);
@@ -438,12 +442,80 @@ class Child_Theme_Configurator {
     }
     
     function add_base_files($obj){
-        if (!$this->fs) return FALSE; // return if no filesystem access
-        global $wp_filesystem;
         // add functions.php file
-        $contents = "<?php\n// Exit if accessed directly\nif ( !defined('ABSPATH')) exit;\n\n/* Add custom functions below */";
+        $contents = "<?php
+// Exit if accessed directly
+if ( !defined('ABSPATH')) exit;
+";
         if (FALSE === $this->write_child_file('functions.php', $contents) 
             || FALSE === $this->write_child_file('style.css', $this->css->get_css_header())) return FALSE;
+    }
+    
+    function enqueue_parent_code(){
+        return explode("\n", apply_filters('chld_thm_cfg_enqueue_parent', "
+if (!function_exists('chld_thm_cfg_parent_css')):
+    function chld_thm_cfg_parent_css() {
+        wp_enqueue_style('chld_thm_cfg_parent', get_template_directory_uri() . '/style.css'); 
+    }
+endif;
+add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
+"));
+    }
+    
+    function enqueue_parent_css($obj) {
+        $enqueue = empty($_POST['ctc_skip_parent_css']);
+        $marker     = 'ENQUEUE PARENT ACTION';
+        $insertion  = $enqueue ? $this->enqueue_parent_code() : array();
+        if ($filename   = $this->css->is_file_ok($this->css->get_child_target('functions.php'), 'write')):
+            $this->css->enqueue = $enqueue;
+            $this->insert_with_markers( $filename, $marker, $insertion );
+        endif;
+    }
+    
+    /**
+     * we would have used WP's insert_with_markers function, 
+     * but it does not use wp_filesystem API!!!???
+     */
+    function insert_with_markers( $filename, $marker, $insertion ) {
+        if (!$this->fs) return FALSE; // return if no filesystem access
+        global $wp_filesystem;
+        if(!$wp_filesystem->exists($this->fspath($filename))):
+			$markerdata = FALSE;
+		else:
+            // get_contents_array returns extra linefeeds so just split it ourself
+			$markerdata = explode("\n", $wp_filesystem->get_contents( $this->fspath( $filename ) ) );
+		endif;
+        $newfile = '';
+		$foundit = false;
+		if ( $markerdata ) {
+			$state = true;
+			foreach ( $markerdata as $n => $markerline ) {
+				if (strpos($markerline, '// BEGIN ' . $marker) !== false)
+					$state = false;
+				if ( $state ):
+					if ( $n + 1 < count( $markerdata ) )
+						$newfile .= "{$markerline}\n";
+					else
+						$newfile .= "{$markerline}";
+				endif;
+				if (strpos($markerline, '// END ' . $marker) !== false):
+					$newfile .= "// BEGIN {$marker}\n";
+					if ( is_array( $insertion ))
+						foreach ( $insertion as $insertline )
+							$newfile .= "{$insertline}\n";
+					$newfile .= "// END {$marker}\n";
+					$state = true;
+					$foundit = true;
+				endif;
+			}
+		}
+		if (!$foundit) {
+			$newfile .= "\n// BEGIN {$marker}\n";
+			foreach ( $insertion as $insertline )
+				$newfile .= "{$insertline}\n";
+			$newfile .= "// END {$marker}\n";
+		}
+        if (FALSE === $wp_filesystem->put_contents($this->fspath($filename), $newfile)) return FALSE; 
     }
     
     function write_child_file($file, $contents) {
@@ -451,7 +523,7 @@ class Child_Theme_Configurator {
         global $wp_filesystem;
         $file = $this->fspath($this->css->is_file_ok($this->css->get_child_target($file), 'write'));
         if ($file && !$wp_filesystem->exists($file)):
-                if (FALSE === $wp_filesystem->put_contents($file, $contents)) return FALSE; 
+            if (FALSE === $wp_filesystem->put_contents($file, $contents)) return FALSE; 
         endif;
     }
     
@@ -643,7 +715,9 @@ class Child_Theme_Configurator {
         if (!$this->fs) return FALSE; // return if no filesystem access
         global $wp_filesystem;
         $source_file = sanitize_text_field($_POST['movefile']);
-        $target_file = ('' == $subdir ? preg_replace("%^.+(\.\w+)$%", "screenshot$1", basename($source_file)) : trailingslashit($subdir) . basename($source_file));
+        $target_file = ('' == $subdir ? 
+            preg_replace("%^.+(\.\w+)$%", "screenshot$1", basename($source_file)) : 
+                trailingslashit($subdir) . basename($source_file));
         if (FALSE !== $this->verify_child_dir(trailingslashit($this->css->get_prop('child')) . $subdir)):
             $source_path = $this->fspath($this->uploads_fullpath($source_file));
             if ($target_path = $this->css->is_file_ok($this->css->get_child_target($target_file), 'write')):
@@ -656,6 +730,7 @@ class Child_Theme_Configurator {
         
         $this->errors[] = __('Could not upload file.', 'chld_thm_cfg');        
     }
+    
     function export_zip() {
         if (($child = $this->css->get_prop('child')) 
             && ($dir = $this->css->is_file_ok(dirname($this->css->get_child_target()), 'search'))
@@ -754,6 +829,14 @@ class Child_Theme_Configurator {
         <p><?php _e( 'This Child Theme is not owned by your website account. It may have been created by a prior version of this plugin or by another program. Moving forward, it must be owned by your website account to make changes. Child Theme Configurator will attempt to correct this when you click the button below.', 'chld_thm_cfg') ?></p>
 <form action="" method="post"><?php wp_nonce_field( 'ctc_update' ); ?>
 <input name="ctc_reset_permission" class="button" type="submit" value="<?php _e('Correct Child Theme Permissions', 'chld_thm_cfg'); ?>"/></form>    </div>
+    <?php
+    }
+
+    function enqueue_notice() {
+    ?>
+    <div class="update-nag">
+        <p><?php _e( '<code><strong>@import</strong></code> is no longer used to load the parent stylesheet. Please set your preferences below and click "Generate Child Theme Files" to update your configuration.', 'chld_thm_cfg') ?></p>
+    </div>
     <?php
     }
 

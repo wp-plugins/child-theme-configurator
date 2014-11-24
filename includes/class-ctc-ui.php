@@ -31,6 +31,7 @@ class Child_Theme_Configurator_UI {
         $child      = $css->get_prop('child');
         $configtype = $css->get_prop('configtype');
         $hidechild  = (count($themes['child']) ? '' : 'style="display:none"');
+        $enqueueset = isset($css->enqueue);
         $imports    = $css->get_prop('imports');
         $id         = 0;
         $chld_thm_cfg->fs_method = get_filesystem_method();
@@ -51,7 +52,7 @@ class Child_Theme_Configurator_UI {
   <h2 class="nav-tab-wrapper"><a id="parent_child_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=parent_child_options" 
                     class="nav-tab<?php echo 'parent_child_options' == $active_tab ? ' nav-tab-active' : ''; ?>">
     <?php _e('Parent/Child', 'chld_thm_cfg'); ?>
-    </a><!----><a id="query_selector_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=query_selector_options" 
+    </a><?php if ($enqueueset): ?><!----><a id="query_selector_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=query_selector_options" 
                     class="nav-tab<?php echo 'query_selector_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
     <?php _e('Query/Selector', 'chld_thm_cfg'); ?>
     </a><!----><a id="rule_value_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=rule_value_options" 
@@ -76,8 +77,8 @@ class Child_Theme_Configurator_UI {
     </a>
     <?php 
     endif; 
- 
-    do_action('chld_thm_cfg_tabs', $chld_thm_cfg, $active_tab, $hidechild);?>
+ endif;
+    do_action('chld_thm_cfg_tabs', $chld_thm_cfg, $active_tab, $hidechild); ?>
     <i id="ctc_status_preview"></i></h2>
   <div class="ctc-option-panel-container">
     <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
@@ -156,11 +157,25 @@ class Child_Theme_Configurator_UI {
           <div class="ctc-input-cell"> <strong>
             <?php _e('Copy Parent Theme Menus, Widgets and other Options', 'chld_thm_cfg'); ?>
             </strong> 
-            <p><?php _e('NOTE: This will overwrite existing child theme options.', 'chld_thm_cfg'); ?></p>
             </div>
           <div class="ctc-input-cell">
             <input class="ctc_checkbox" id="ctc_parent_mods" name="ctc_parent_mods" type="checkbox" 
                 value="1" />
+          </div>
+          <div class="ctc-input-cell">
+            <strong><?php _e('NOTE:', 'chld_thm_cfg'); ?></strong> <?php _e( 'This will overwrite existing child theme options.', 'chld_thm_cfg'); ?>
+          </div>
+        </div>
+        <div class="ctc-input-row clearfix" id="input_row_child_template">
+          <div class="ctc-input-cell">
+            <strong><?php _e('DO NOT enqueue parent style.css', 'chld_thm_cfg'); ?></strong> 
+            </div>
+          <div class="ctc-input-cell">
+            <input class="ctc_checkbox" id="ctc_skip_parent_css" name="ctc_skip_parent_css" type="checkbox" 
+                value="1" />
+          </div>
+          <div class="ctc-input-cell">
+            <strong><?php _e('NOTE:', 'chld_thm_cfg'); ?></strong> <?php _e( "Check this option only if the parent theme's base styles are already handled for child themes. Leave unchecked if you are not sure.", 'chld_thm_cfg'); ?>
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -170,6 +185,9 @@ class Child_Theme_Configurator_UI {
           <div class="ctc-input-cell">
             <input class="ctc_checkbox" id="ctc_backup" name="ctc_backup" type="checkbox" 
                 value="1" />
+          </div>
+          <div class="ctc-input-cell">
+            <?php _e( "Creates a date/time stamped copy of the existing child theme style.css file. You can then access these files from the Editor or download them for use offline.", 'chld_thm_cfg'); ?>
           </div>
         </div>
         <?php if (empty($configtype) || 'theme' == $configtype): 
@@ -203,6 +221,8 @@ class Child_Theme_Configurator_UI {
         </div>
       </form>
     </div>
+<?php 
+if ($enqueueset): ?>
     <div id="rule_value_options_panel" 
         class="ctc-option-panel<?php echo 'rule_value_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
       <form id="ctc_rule_value_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=rule_value_options">
@@ -431,7 +451,9 @@ class Child_Theme_Configurator_UI {
         </form>
       </div><?php endif; ?>
     </div>
-    <?php endif; ?>
+    <?php endif; 
+endif; ?>
+
     <?php do_action('chld_thm_cfg_panels', $chld_thm_cfg, $active_tab, $hidechild); ?>
   </div><?php
     endif;
