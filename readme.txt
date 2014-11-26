@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
 Requires at least: 3.7
 Tested up to: 4.0.1
-Stable tag: 1.5.4
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -236,6 +236,13 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 
+= 1.6.0 = 
+* Added option to load parent stylesheet using wp_enqueue_style (link), @import or none.
+* Admin scripts now only load when CTC page is being viewed.
+* Fixed parent CSS preview to correctly display all parsed parent stylesheets in sequence
+* Added new theme chooser select menu with screenshot, theme info and link to live preview.
+* Added automatically generated child theme slug 
+
 = 1.5.4 =
 * New Feature: Load imported stylesheets into the CTC admin so web fonts can be previewed.
 * Set preview swatch to z-index -1 to prevent it from covering up the controls
@@ -398,7 +405,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-v.1.5.4 Finally adds web font previews and fixes some bugs. See changelog for details.
+v.1.6.0 You can now choose to externally link the parent stylesheet instead of using @import, or skip the parent stylesheet entirely. Make sure you update your configuration after upgrading (there is a notice). We have also redesigned the theme menus to display a preview of each theme and fixed a few bugs.
 
 == Create Your Child Theme ==
 

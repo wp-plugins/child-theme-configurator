@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.5.4
+    Version: 1.6.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -79,8 +79,8 @@ class Child_Theme_Configurator {
             wp_enqueue_script('iris');
 //            wp_enqueue_script('thickbox');
             wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('iris'), '1.0');
-            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
-                array('jquery-ui-autocomplete'), '1.0', TRUE);
+            wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js',
+                array('jquery-ui-autocomplete','jquery-ui-selectmenu'), '1.0', TRUE);
             wp_localize_script( 'chld-thm-cfg-admin', 'ctcAjax', 
                 apply_filters('chld_thm_cfg_localize_script', array(
                     'ssl'               => is_ssl(),
@@ -146,14 +146,14 @@ class Child_Theme_Configurator {
     function get_themes() {
         $this->themes = array('child' => array(), 'parnt' => array());
         foreach (wp_get_themes() as $theme):
-            $parent = $theme->parent();
-            if (empty($parent)):
-                $slug = $theme->get_template();
-                $this->themes['parnt'][$slug] = array('Name' => $theme->get('Name'));
-            else:
-                $slug = $theme->get_stylesheet();
-                $this->themes['child'][$slug] = array('Name' => $theme->get('Name'), 'Author' => $theme->get('Author'), 'Version' => $theme->get('Version'));
-            endif;
+            $group  = $theme->parent() ? 'child' : 'parnt';
+            $slug   = $theme->get_stylesheet();
+            $this->themes[$group][$slug] = array(
+                'Name'          => $theme->get('Name'),
+                'Author'        => $theme->get('Author'),
+                'Version'       => $theme->get('Version'),
+                'screenshot'    => $theme->get_screenshot(),
+            ); 
         endforeach;
     }
 
@@ -269,6 +269,7 @@ class Child_Theme_Configurator {
                             $varname = end($varparts);
                             ${$varname} = empty($_POST[$postfield])?'':sanitize_text_field($_POST[$postfield]);
                         endforeach;
+                        
                         if ($parnt):
                             if (! $this->check_theme_exists($parnt)):
                                 $this->errors[] = sprintf(__('%s does not exist. Please select a valid Parent Theme', 'chld_thm_cfg'), $parnt);
@@ -393,15 +394,6 @@ class Child_Theme_Configurator {
         return FALSE;
     }
     
-    function render_menu($template = 'child', $selected = null) {
-        $menu = '<option value="">Select</option>' . LF;
-        foreach ($this->themes[$template] as $slug => $theme):
-            $menu .= '<option value="' . $slug . '"' . ($slug == $selected ? ' selected' : '') . '>' 
-                . $slug . ' - "' . $theme['Name'] . '"' . '</option>' . LF;
-        endforeach;
-        return $menu;
-    }
-    
     function check_theme_exists($theme) {
         return in_array($theme, array_keys(wp_get_themes()));
     }
@@ -463,11 +455,11 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
     }
     
     function enqueue_parent_css($obj) {
-        $enqueue = empty($_POST['ctc_skip_parent_css']);
+        if (isset($_POST['ctc_parent_enqueue']))
+            $this->css->enqueue = sanitize_text_field($_POST['ctc_parent_enqueue']);
         $marker     = 'ENQUEUE PARENT ACTION';
-        $insertion  = $enqueue ? $this->enqueue_parent_code() : array();
+        $insertion  = 'enqueue' == $this->css->enqueue ? $this->enqueue_parent_code() : array();
         if ($filename   = $this->css->is_file_ok($this->css->get_child_target('functions.php'), 'write')):
-            $this->css->enqueue = $enqueue;
             $this->insert_with_markers( $filename, $marker, $insertion );
         endif;
     }
@@ -835,7 +827,7 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
     function enqueue_notice() {
     ?>
     <div class="update-nag">
-        <p><?php _e( '<code><strong>@import</strong></code> is no longer used to load the parent stylesheet. Please set your preferences below and click "Generate Child Theme Files" to update your configuration.', 'chld_thm_cfg') ?></p>
+        <p><?php _e( 'Child Theme Configurator has changed the way it loads Parent styles. Please set your preferences below and click "Generate Child Theme Files" to update your configuration.', 'chld_thm_cfg') ?></p>
     </div>
     <?php
     }

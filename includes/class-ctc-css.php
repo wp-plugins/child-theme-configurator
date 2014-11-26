@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_CSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.5.4
+    Version: 1.6.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -37,7 +37,7 @@ class Child_Theme_Configurator_CSS {
     var $child;         // child theme slug
     var $parnt;         // parent theme slug
     var $parntss;       // parent additional stylesheets
-    var $enqueue;       // load parent css ? true/false
+    var $enqueue;       // load parent css method (enqueue, import, none)
     var $configtype;    // theme or plugin extension
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
@@ -174,10 +174,16 @@ class Child_Theme_Configurator_CSS {
                 if (empty($params['key']) || 'child' == $params['key']):
                     $this->read_stylesheet('child');
                 else:
-                    if (isset($this->parentss))
-                        foreach ($this->parntss as $template)
+                    if (isset($this->parntss)):
+                        foreach ($this->parntss as $template):
+                            $this->styles .= '/*** BEGIN ' . $template . ' ***/' . LF;
                             $this->read_stylesheet('parnt', $template);
+                            $this->styles .= '/*** END ' . $template . ' ***/' . LF;
+                        endforeach;
+                    endif;
+                    $this->styles .= '/*** BEGIN style.css ***/' . LF;
                     $this->read_stylesheet('parnt');
+                    $this->styles .= '/*** END style.css ***/' . LF;
                 endif;
                 $this->normalize_css();
                 return $this->styles;
@@ -196,7 +202,7 @@ class Child_Theme_Configurator_CSS {
     }
     
     function normalize_css() {
-        if (preg_match("/\}[\w\#\.]/", $this->styles)):                       // prettify compressed CSS
+        if (preg_match("/(\}[\w\#\.]|; *\})/", $this->styles)):                       // prettify compressed CSS
             $this->styles = preg_replace("/\*\/\s*/s", "*/\n", $this->styles);      // end comment
             $this->styles = preg_replace("/\{\s*/s", " {\n    ", $this->styles);    // open brace
             $this->styles = preg_replace("/;\s*/s", ";\n    ", $this->styles);      // semicolon
@@ -213,9 +219,8 @@ class Child_Theme_Configurator_CSS {
             . 'Version: ' . $this->get_prop('version') . LF
             . 'Updated: ' . current_time('mysql') . LF
             . '*/' . LF . LF
-            . '@charset "UTF-8";' . LF
-            //. '@import url(\'../' . $parnt . '/style.css\');' . LF
-            ;
+            . '@charset "UTF-8";' . LF . LF
+            . ('import' == $this->enqueue ? '@import url(\'../' . $parnt . '/style.css\');' . LF : '');
     }
    
     function get_child_target($file = 'style.css') {
@@ -317,12 +322,12 @@ class Child_Theme_Configurator_CSS {
         endif;
     }
     
-    function recurse_directory($rootdir, $ext = 'css', $all = FALSE) {
-        if (!$this->is_file_ok($rootdir, 'search')) return array(); // make sure we are only recursing theme and plugin files
+    function recurse_directory( $rootdir, $ext = 'css', $all = FALSE ) {
+        if ( !$this->is_file_ok( $rootdir, 'search' ) ) return array(); // make sure we are only recursing theme and plugin files
         $files = array();
         $dirs = array($rootdir);
         $loops = 0;
-        if ('img' == $ext):
+        if ( 'img' == $ext ):
             global $chld_thm_cfg;
             $ext = '(' . implode('|', array_keys($chld_thm_cfg->imgmimes)) . ')';
         endif;

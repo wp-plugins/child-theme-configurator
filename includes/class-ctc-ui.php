@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.5.4
+    Version: 1.6.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -89,9 +89,7 @@ class Child_Theme_Configurator_UI {
             <?php _e('Parent Theme', 'chld_thm_cfg'); ?>
             </strong> </div>
           <div class="ctc-input-cell">
-            <select class="ctc-select" id="ctc_theme_parnt" name="ctc_theme_parnt">
-              <?php echo $chld_thm_cfg->render_menu('parnt', $parent); ?>
-            </select>
+          <?php $this->render_theme_menu('parnt', $parent); ?>
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child">
@@ -120,9 +118,7 @@ class Child_Theme_Configurator_UI {
             <input class="ctc_text" id="ctc_child_template" name="ctc_child_template" type="text" placeholder="<?php _e('Theme Slug', 'chld_thm_cfg'); ?>" autocomplete="off"/>
           </div>
           <div class="ctc-input-cell">
-            <select class="ctc-select" id="ctc_theme_child" name="ctc_theme_child" <?php echo $hidechild; ?>>
-              <?php echo $chld_thm_cfg->render_menu('child', $child); ?>
-            </select>
+          <?php $this->render_theme_menu('child', $child); ?>
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_name">
@@ -168,14 +164,18 @@ class Child_Theme_Configurator_UI {
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
           <div class="ctc-input-cell">
-            <strong><?php _e('DO NOT enqueue parent style.css', 'chld_thm_cfg'); ?></strong> 
+            <strong><?php _e('Load Parent Stylesheet', 'chld_thm_cfg'); ?></strong> 
             </div>
           <div class="ctc-input-cell">
-            <input class="ctc_checkbox" id="ctc_skip_parent_css" name="ctc_skip_parent_css" type="checkbox" 
-                value="1" />
+            <label><input class="ctc_radio" id="ctc_parent_enqueue_enqueue" name="ctc_parent_enqueue" type="radio" 
+                value="enqueue" <?php echo ( empty($css->enqueue) || 'enqueue' == $css->enqueue ? 'checked' : '' ); ?>/> <?php _e('&lt;link&gt; (default)', 'chld_thm_cfg'); ?></label><br/>
+            <label><input class="ctc_radio" id="ctc_parent_enqueue_import" name="ctc_parent_enqueue" type="radio" 
+                value="import" <?php echo ( isset($css->enqueue) && 'import' == $css->enqueue ? 'checked' : '' ); ?>/> <?php _e('@import', 'chld_thm_cfg'); ?></label><br/>
+            <label><input class="ctc_radio" id="ctc_parent_enqueue_none" name="ctc_parent_enqueue" type="radio" 
+                value="none" <?php echo ( isset($css->enqueue) && 'none' == $css->enqueue ? 'checked' : '' ); ?>/> <?php _e('handled by theme', 'chld_thm_cfg'); ?></label>
           </div>
           <div class="ctc-input-cell">
-            <strong><?php _e('NOTE:', 'chld_thm_cfg'); ?></strong> <?php _e( "Check this option only if the parent theme's base styles are already handled for child themes. Leave unchecked if you are not sure.", 'chld_thm_cfg'); ?>
+            <strong><?php _e('NOTE:', 'chld_thm_cfg'); ?></strong> <?php _e( "Only use @import for older themes that do not enqueue the stylesheet. Use 'handled by theme' if core styles are automatically loaded for child themes. Use '&lt;link&gt;' if unsure.", 'chld_thm_cfg'); ?>
           </div>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
@@ -187,15 +187,14 @@ class Child_Theme_Configurator_UI {
                 value="1" />
           </div>
           <div class="ctc-input-cell">
-            <?php _e( "Creates a date/time stamped copy of the existing child theme style.css file. You can then access these files from the Editor or download them for use offline.", 'chld_thm_cfg'); ?>
+            <?php _e( "Save a date/time stamped copy of the existing child theme style.css file for use through the Editor or offline.", 'chld_thm_cfg'); ?>
           </div>
         </div>
         <?php if (empty($configtype) || 'theme' == $configtype): 
         $stylesheets = $chld_thm_cfg->get_additional_css($parent);
         if (count($stylesheets)):?>
         <div class="ctc-input-row clearfix" id="input_row_child_template">
-          <div class="ctc-input-cell" id="ctc_additional_css_label"> <strong> <span><?php _e('Parse additional stylesheets:', 'chld_thm_cfg'); ?></span> </strong>
-            <p><?php _e('(click to toggle)', 'chld_thm_cfg'); ?></p>
+          <div class="ctc-input-cell" id="ctc_additional_css_label"> <strong> <span><?php _e('Parse additional stylesheets:', 'chld_thm_cfg'); ?></span> </strong><br/><?php _e('(click to toggle)', 'chld_thm_cfg'); ?>
           </div>
           <div class="ctc-input-cell-wide" id="ctc_additional_css_files" style="display:none">
             <p style="margin-top:0">
@@ -480,7 +479,28 @@ endif; ?>
 </style>
 <?php  
     } 
-    
+
+    function render_theme_menu($template = 'child', $selected = NULL) {
+        global $chld_thm_cfg; ?>
+        <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>"><?php
+        echo '<option value="">Select</option>' . LF;
+        foreach ($chld_thm_cfg->themes[$template] as $slug => $theme):
+            echo '<option value="' . $slug . '"' . ($slug == $selected ? ' selected' : '') . '>' 
+                . esc_attr($theme['Name']) . '</option>' . LF;
+        endforeach; ?>
+        </select>
+        <div style="display:none">
+        <?php foreach ($chld_thm_cfg->themes[$template] as $slug => $theme): ?>
+          <div id="ctc_theme_option_<?php echo $slug; ?>" class="clearfix ctc-theme-option">
+            <div class="ctc-theme-option-left"><img src="<?php echo $theme['screenshot']; ?>" class="ctc-theme-option-image"/></div>
+            <div class="ctc-theme-option-right"><h3 class="theme-name"><?php echo $theme['Name']; ?></h3>
+             <?php _e('Version: ', 'chld_thm_cfg'); echo esc_attr($theme['Version']);?><br/><?php _e('By: ', 'chld_thm_cfg'); echo esc_attr($theme['Author']);?><br/><a href="<?php echo admin_url('/customize.php?theme=' . $slug);?>" title="<?php _e('Live Preview', 'chld_thm_cfg'); ?>" class="ctc-live-preview"><?php _e('Live Preview', 'chld_thm_cfg');?></a></div>
+          </div>
+        <?php endforeach; ?>
+        </div>
+        <?php
+    }
+        
     function load_imports() {
         // allows fonts and other externals to be previewed
         // loads early not to conflict with admin stylesheets
