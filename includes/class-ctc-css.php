@@ -92,7 +92,7 @@ class Child_Theme_Configurator_CSS {
         $this->parnt            = '';
         $this->configtype       = 'theme';
         $this->child_name       = '';
-        $this->child_author     = 'Child Theme Configurator by Lilaea Media';
+        $this->child_author     = 'Child Theme Configurator';
         $this->child_version    = '1.0';
         // multi-dim arrays
         $this->dict_qs          = array();
@@ -309,6 +309,12 @@ class Child_Theme_Configurator_CSS {
     }
 
     function read_stylesheet($template = 'child', $file = 'style.css') {
+        
+        // these conditions support revert/restore option in 1.6.0+
+        if ('all' == $file) return;
+        elseif ('' == $file) $file = 'style.css';
+        // end revert/restore conditions
+        
         $source = $this->get_prop($template);
         $configtype = $this->get_prop('configtype');
         if (empty($source) || !is_scalar($source)) return FALSE;
@@ -331,7 +337,7 @@ class Child_Theme_Configurator_CSS {
             global $chld_thm_cfg;
             $ext = '(' . implode('|', array_keys($chld_thm_cfg->imgmimes)) . ')';
         endif;
-        while(count($dirs) && $loops < CHLD_THM_CFG_MAX_RECURSE_LOOPS):
+        while(count($dirs) && $loops < CHLD_THM_CFG_MAX_RECURSE_LOOPS ):
             $loops++;
             $dir = array_shift($dirs);
             if ($handle = opendir($dir)):

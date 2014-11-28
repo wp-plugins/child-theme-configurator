@@ -29,9 +29,9 @@ class Child_Theme_Configurator_UI {
         $themes     = $chld_thm_cfg->themes;
         $parent     = isset($_GET['ctc_parent']) ? sanitize_text_field($_GET['ctc_parent']) : $css->get_prop('parnt');
         $child      = $css->get_prop('child');
-        $configtype = $css->get_prop('configtype');
+        if (!$configtype = $css->get_prop('configtype')) $configtype = 'theme';
         $hidechild  = (count($themes['child']) ? '' : 'style="display:none"');
-        $enqueueset = isset($css->enqueue);
+        $enqueueset = 'theme' != $configtype || isset($css->enqueue);
         $imports    = $css->get_prop('imports');
         $id         = 0;
         $chld_thm_cfg->fs_method = get_filesystem_method();
@@ -69,7 +69,7 @@ class Child_Theme_Configurator_UI {
     <?php _e('Parent CSS', 'chld_thm_cfg'); ?>
     </a>
     <?php 
-    if ('' == $hidechild): // && (empty($configtype) || 'theme' == $configtype)): 
+    if ('' == $hidechild):  
     ?>
     <a id="file_options" href="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options" 
                     class="nav-tab<?php echo 'file_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
@@ -84,6 +84,8 @@ class Child_Theme_Configurator_UI {
     <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
       <form id="ctc_load_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>">
         <?php wp_nonce_field( 'ctc_update' ); ?>
+        <?php if ('' == $hidechild) do_action('chld_thm_cfg_controls', $chld_thm_cfg); ?>
+      <div class="ctc-theme-only" <?php echo 'theme' != $configtype ? 'style="display:none"' : ''; ?>>
         <div class="ctc-input-row clearfix" id="input_row_parnt">
           <div class="ctc-input-cell"> <strong>
             <?php _e('Parent Theme', 'chld_thm_cfg'); ?>
@@ -116,10 +118,10 @@ class Child_Theme_Configurator_UI {
           <div class="ctc-input-cell" style="clear:both"> <strong>&nbsp;</strong> </div>
           <div class="ctc-input-cell" >
             <input class="ctc_text" id="ctc_child_template" name="ctc_child_template" type="text" placeholder="<?php _e('Theme Slug', 'chld_thm_cfg'); ?>" autocomplete="off"/>
-          </div>
+          </div><?php if ('' == $hidechild): ?>
           <div class="ctc-input-cell">
           <?php $this->render_theme_menu('child', $child); ?>
-          </div>
+          </div><?php endif; ?>
         </div>
         <div class="ctc-input-row clearfix" id="input_row_child_name">
           <div class="ctc-input-cell"> <strong>
@@ -130,8 +132,8 @@ class Child_Theme_Configurator_UI {
                 value="<?php echo esc_attr($css->get_prop('child_name')); ?>" placeholder="<?php _e('Theme Name', 'chld_thm_cfg'); ?>" autocomplete="off" />
           </div>
         </div>
-        <?php if ('' == $hidechild) do_action('chld_thm_cfg_controls', $chld_thm_cfg); ?>
-        <div class="ctc-input-row clearfix" id="input_row_child_template">
+      </div>
+        <div class="ctc-input-row clearfix">
           <div class="ctc-input-cell"> <strong>
             <?php _e('Author', 'chld_thm_cfg'); ?>
             </strong> </div>
@@ -140,7 +142,7 @@ class Child_Theme_Configurator_UI {
                 value="<?php echo esc_attr($css->get_prop('author')); ?>" placeholder="<?php _e('Author', 'chld_thm_cfg'); ?>" autocomplete="off" />
           </div>
         </div>
-        <div class="ctc-input-row clearfix" id="input_row_child_template">
+        <div class="ctc-input-row clearfix">
           <div class="ctc-input-cell"> <strong>
             <?php _e('Version', 'chld_thm_cfg'); ?>
             </strong> </div>
@@ -149,7 +151,8 @@ class Child_Theme_Configurator_UI {
                 value="<?php echo esc_attr($css->get_prop('version')); ?>" placeholder="<?php _e('Version', 'chld_thm_cfg'); ?>" autocomplete="off" />
           </div>
         </div>
-        <div class="ctc-input-row clearfix" id="input_row_child_template">
+      <div class="ctc-theme-only" <?php echo 'theme' != $configtype ? 'style="display:none"' : ''; ?>>
+        <div class="ctc-input-row clearfix">
           <div class="ctc-input-cell"> <strong>
             <?php _e('Copy Parent Theme Menus, Widgets and other Options', 'chld_thm_cfg'); ?>
             </strong> 
@@ -162,9 +165,18 @@ class Child_Theme_Configurator_UI {
             <strong><?php _e('NOTE:', 'chld_thm_cfg'); ?></strong> <?php _e( 'This will overwrite existing child theme options.', 'chld_thm_cfg'); ?>
           </div>
         </div>
-        <div class="ctc-input-row clearfix" id="input_row_child_template">
+        <div class="ctc-input-row clearfix">
+          <div class="ctc-input-cell"> <strong>
+            <?php _e('Backup current stylesheet', 'chld_thm_cfg'); ?>
+            </strong> </div>
           <div class="ctc-input-cell">
-            <strong><?php _e('Load Parent Stylesheet', 'chld_thm_cfg'); ?></strong> 
+            <input class="ctc_checkbox" id="ctc_backup" name="ctc_backup" type="checkbox" 
+                value="1" />
+          </div>
+        </div>
+        <div class="ctc-input-row clearfix">
+          <div class="ctc-input-cell">
+            <strong><?php _e('Parent stylesheet handling:', 'chld_thm_cfg'); ?></strong> 
             </div>
           <div class="ctc-input-cell">
             <label><input class="ctc_radio" id="ctc_parent_enqueue_enqueue" name="ctc_parent_enqueue" type="radio" 
@@ -172,31 +184,34 @@ class Child_Theme_Configurator_UI {
             <label><input class="ctc_radio" id="ctc_parent_enqueue_import" name="ctc_parent_enqueue" type="radio" 
                 value="import" <?php echo ( isset($css->enqueue) && 'import' == $css->enqueue ? 'checked' : '' ); ?>/> <?php _e('@import', 'chld_thm_cfg'); ?></label><br/>
             <label><input class="ctc_radio" id="ctc_parent_enqueue_none" name="ctc_parent_enqueue" type="radio" 
-                value="none" <?php echo ( isset($css->enqueue) && 'none' == $css->enqueue ? 'checked' : '' ); ?>/> <?php _e('handled by theme', 'chld_thm_cfg'); ?></label>
+                value="none" <?php echo ( isset($css->enqueue) && 'none' == $css->enqueue ? 'checked' : '' ); ?>/> <?php _e('none (handled by theme)', 'chld_thm_cfg'); ?></label>
           </div>
           <div class="ctc-input-cell">
-            <strong><?php _e('NOTE:', 'chld_thm_cfg'); ?></strong> <?php _e( "Only use @import for older themes that do not enqueue the stylesheet. Use 'handled by theme' if core styles are automatically loaded for child themes. Use '&lt;link&gt;' if unsure.", 'chld_thm_cfg'); ?>
+            <strong><?php _e('NOTE:', 'chld_thm_cfg'); ?></strong> <?php _e( "Only select @import for older themes that do not enqueue the stylesheet. Select 'none' if core styles are automatically loaded for child themes. Select '&lt;link&gt;' if unsure.", 'chld_thm_cfg'); ?>
           </div>
         </div>
-        <div class="ctc-input-row clearfix" id="input_row_child_template">
-          <div class="ctc-input-cell"> <strong>
-            <?php _e('Backup Child Stylesheet', 'chld_thm_cfg'); ?>
+        <?php if ('' == $hidechild): ?><div class="ctc-input-row clearfix">
+          <div class="ctc-input-cell ctc-section-toggle" id="ctc_revert_css"> <strong>
+            <?php _e('Reset/Restore from backup:', 'chld_thm_cfg'); ?>
             </strong> </div>
-          <div class="ctc-input-cell">
-            <input class="ctc_checkbox" id="ctc_backup" name="ctc_backup" type="checkbox" 
-                value="1" />
+          <div class="ctc-input-cell-wide ctc-section-toggle-content" id="ctc_revert_css_content">
+            <label><input class="ctc_checkbox" id="ctc_revert_none" name="ctc_revert" type="radio" 
+                value="" checked="" /><?php _e('Leave unchanged', 'chld_thm_cfg');?></label><br/>
+            <label><input class="ctc_checkbox" id="ctc_revert_all" name="ctc_revert" type="radio" 
+                value="all" /><?php _e('Reset all', 'chld_thm_cfg');?></label><br/><?php
+                foreach ($chld_thm_cfg->get_files($child, 'backup') as $backup => $label): ?>
+            <label><input class="ctc_checkbox" id="ctc_revert_<?php echo $backup; ?>" name="ctc_revert" type="radio" 
+                value="<?php echo $backup; ?>" /><?php echo __('Restore backup from', 'chld_thm_cfg') . ' ' . $label; ?></label><br/><?php
+                endforeach;
+                ?>
           </div>
-          <div class="ctc-input-cell">
-            <?php _e( "Save a date/time stamped copy of the existing child theme style.css file for use through the Editor or offline.", 'chld_thm_cfg'); ?>
-          </div>
-        </div>
-        <?php if (empty($configtype) || 'theme' == $configtype): 
-        $stylesheets = $chld_thm_cfg->get_additional_css($parent);
+        </div><?php endif; 
+        $stylesheets = $chld_thm_cfg->get_files($parent, 'stylesheet');
         if (count($stylesheets)):?>
-        <div class="ctc-input-row clearfix" id="input_row_child_template">
-          <div class="ctc-input-cell" id="ctc_additional_css_label"> <strong> <span><?php _e('Parse additional stylesheets:', 'chld_thm_cfg'); ?></span> </strong><br/><?php _e('(click to toggle)', 'chld_thm_cfg'); ?>
+        <div class="ctc-input-row clearfix">
+          <div class="ctc-input-cell ctc-section-toggle" id="ctc_additional_css_files"> <strong> <span><?php _e('Parse additional stylesheets:', 'chld_thm_cfg'); ?></span> </strong>
           </div>
-          <div class="ctc-input-cell-wide" id="ctc_additional_css_files" style="display:none">
+          <div class="ctc-input-cell-wide ctc-section-toggle-content" id="ctc_additional_css_files_content">
             <p style="margin-top:0">
               <?php _e('Select only the stylesheets you wish to customize to reduce overhead.', 'chld_thm_cfg'); ?>
             </p>
@@ -209,9 +224,9 @@ class Child_Theme_Configurator_UI {
             </div>
             <?php endforeach; ?>
           </div>
-        </div>
-        <?php endif; endif; ?>
-        <div class="ctc-input-row clearfix" id="input_row_child_template">
+        </div><?php endif; ?>
+      </div>
+        <div class="ctc-input-row clearfix">
           <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
           <div class="ctc-input-cell">
             <input class="ctc_submit button button-primary" id="ctc_load_styles" name="ctc_load_styles"  type="submit" 
@@ -367,7 +382,7 @@ if ($enqueueset): ?>
         class="ctc-option-panel<?php echo 'view_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
     <div id="view_parnt_options_panel" 
         class="ctc-option-panel<?php echo 'view_parnt_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
-    <?php if ('' == $hidechild): // && (empty($configtype) || 'theme' == $configtype)): ?>
+    <?php if ('' == $hidechild): ?>
     <div id="file_options_panel" 
         class="ctc-option-panel<?php echo 'file_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
       <?php $this->render_file_form('parnt'); ?>
@@ -483,7 +498,6 @@ endif; ?>
     function render_theme_menu($template = 'child', $selected = NULL) {
         global $chld_thm_cfg; ?>
         <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>"><?php
-        echo '<option value="">Select</option>' . LF;
         foreach ($chld_thm_cfg->themes[$template] as $slug => $theme):
             echo '<option value="' . $slug . '"' . ($slug == $selected ? ' selected' : '') . '>' 
                 . esc_attr($theme['Name']) . '</option>' . LF;
@@ -525,21 +539,30 @@ endif; ?>
     function render_file_form($template = 'parnt') {
         global $chld_thm_cfg, $wp_filesystem; 
         if ($theme = $chld_thm_cfg->css->get_prop($template)):
-            $themeroot = get_theme_root() . '/' . $theme;
-            $files = $chld_thm_cfg->css->recurse_directory(trailingslashit(get_theme_root()) . $theme, 'php');
-            $counter = 0;
+            $themeroot  = trailingslashit(get_theme_root()) . trailingslashit($theme);
+            $files      = $chld_thm_cfg->get_files($theme);
+            $counter    = 0;
             sort($files);
             ob_start();
             foreach ($files as $file):
-                $templatefile = preg_replace('%\.php$%', '', $chld_thm_cfg->theme_basename($theme, $file));
-                if ('parnt' == $template && (preg_match('%^(inc|core|lang|css|js)%',$templatefile) || 'functions' == basename($templatefile))) continue; ?>
-<label class="ctc-input-cell smaller<?php echo 'child' == $template && !$chld_thm_cfg->fs && is_writable($file) ? ' writable' : ''; ?>">
+                $templatefile = preg_replace('%\.php$%', '', $file);
+                $excludes = implode("|", (array) apply_filters('chld_thm_cfg_template_excludes', $chld_thm_cfg->excludes));
+                if ('parnt' == $template && (preg_match('%^(' . $excludes . ')\w*\/%',$templatefile) || 'functions' == basename($templatefile))) continue; ?>
+<label class="ctc-input-cell smaller<?php echo 'child' == $template && !$chld_thm_cfg->fs && is_writable($themeroot . $file) ? ' writable' : ''; ?>">
   <input class="ctc_checkbox" id="ctc_file_<?php echo $template . '_' . ++$counter; ?>" 
                     name="ctc_file_<?php echo $template; ?>[]" type="checkbox" 
                     value="<?php echo $templatefile; ?>" />
-  <?php echo $templatefile; ?></label>
-<?php             
+  <?php echo $templatefile; ?></label><?php             
             endforeach;
+            if ('child' == $template && ($backups = $chld_thm_cfg->get_files($theme, 'backup'))):
+                foreach ( $backups as $backup => $label):
+                $templatefile = preg_replace('%\.css$%', '', $backup); ?>
+<label class="ctc-input-cell smaller<?php echo 'child' == $template && !$chld_thm_cfg->fs && is_writable($themeroot . $backup) ? ' writable' : ''; ?>">
+      <input class="ctc_checkbox" id="ctc_file_<?php echo $template . '_' . ++$counter; ?>" 
+                    name="ctc_file_<?php echo $template; ?>[]" type="checkbox" 
+                    value="<?php echo $templatefile; ?>" /><?php echo __('Backup', 'chld_thm_cfg') . ' ' . $label; ?></label><?php 
+                endforeach;
+            endif;
             $linktext = __('Click here to edit template files using the Theme Editor', 'chld_thm_cfg');
             $editorlink = '<a href="' . admin_url('theme-editor.php?file=functions.php&theme=' . $chld_thm_cfg->css->get_prop('child')) . '" title="' . $linktext . '">';
             $editorlinkend = '</a>';
@@ -555,7 +578,7 @@ endif; ?>
   <form id="ctc_<?php echo $template; ?>_templates_form" method="post" action="?page=<?php echo $chld_thm_cfg->menuName; ?>&amp;tab=file_options">
     <?php wp_nonce_field( 'ctc_update' ); ?>
     <div class="ctc-input-cell"> <strong>
-      <?php _e(('parnt' == $template ? 'Parent' : 'Child') . ' Templates', 'chld_thm_cfg'); ?>
+      <?php _e(('parnt' == $template ? 'Parent Templates' : 'Child Theme Files'), 'chld_thm_cfg'); ?>
       </strong>
       <p class="howto">
         <?php if ('parnt' == $template):
@@ -578,7 +601,7 @@ endif; ?>
             endif; ?>
       </p>
     </div>
-    <div class="ctc-input-cell-wide"> <?php echo $inputs; ?> </div>
+    <div class="ctc-input-cell-wide"> <?php echo $inputs; ?></div>
     <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
     <div class="ctc-input-cell-wide" style="margin-top:10px;margin-bottom:10px">
               <?php if ('child' == $template && !$chld_thm_cfg->fs): ?>
@@ -600,15 +623,14 @@ endif; ?>
     function render_image_form() {
         global $chld_thm_cfg; 
         if ($theme = $chld_thm_cfg->css->get_prop('child')):
-            $imgdir  = trailingslashit($theme) . 'images';
-            $themeuri   = trailingslashit(get_theme_root_uri()) . trailingslashit($imgdir);
-            $files = $chld_thm_cfg->css->recurse_directory(trailingslashit(get_theme_root()) . $imgdir, 'img');
+            $themeuri   = trailingslashit(get_theme_root_uri()) . trailingslashit($theme);
+            $files = $chld_thm_cfg->get_files($theme, 'img');
             
             $counter = 0;
             sort($files);
             ob_start();
-            foreach ($files as $file):
-                $templatefile = $chld_thm_cfg->theme_basename($imgdir, $file);  ?>
+            foreach ($files as $file): 
+                $templatefile = preg_replace('/^images\//', '', $file); ?>
 <div class="ctc-input-cell" style="height:100px">
   <label class="smaller">
     <input class="ctc_checkbox" id="ctc_img_<?php echo ++$counter; ?>" 
@@ -616,7 +638,7 @@ endif; ?>
                     value="<?php echo $templatefile; ?>" />
     <?php echo $templatefile; ?></label>
   <br/>
-  <a href="<?php echo $themeuri . $templatefile . '?' . time(); ?>" class="thickbox"><img src="<?php echo $themeuri . $templatefile . '?' . time(); ?>" height="72" width="72" style="max-height:72px;max-width:100%;width:auto;height:auto" /></a></div>
+  <a href="<?php echo $themeuri . $file . '?' . time(); ?>" class="thickbox"><img src="<?php echo $themeuri . $file . '?' . time(); ?>" height="72" width="72" style="max-height:72px;max-width:100%;width:auto;height:auto" /></a></div>
 <?php             
             endforeach;
             $inputs = ob_get_contents();

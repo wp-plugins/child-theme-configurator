@@ -36,6 +36,8 @@ class Child_Theme_Configurator {
     var $fs_method;
     var $postarrays;
     var $imgmimes;
+    var $files;
+    var $excludes;
     var $updates;
     
     function __construct($file) {
@@ -58,6 +60,16 @@ class Child_Theme_Configurator {
             'ctc_file_parnt',
             'ctc_file_child',
         );
+        $this->excludes = array(
+            'inc',
+            'core',
+            'lang',
+            'css',
+            'js',
+            'lib',
+            'theme',
+            'options'
+        );
         $this->updates          = array();
         $this->cache_updates    = TRUE;
         // setup plugin hooks
@@ -76,11 +88,22 @@ class Child_Theme_Configurator {
     function enqueue_scripts($hook) {
         if ($this->hook == $hook):
             wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css');
-            wp_enqueue_script('iris');
+            wp_enqueue_style('ctc-iris', $this->pluginURL . 'css/iris.min.css');
+            wp_enqueue_script('ctc-color', $this->pluginURL . 'js/color.js', array('jquery'), '1.0', FALSE);
+            wp_enqueue_script('ctc-iris', $this->pluginURL . 'js/iris.js', 
+                array(
+                    'ctc-color', 
+                    'jquery-ui-slider', 
+                    'jquery-ui-draggable'
+                ), '1.0.6', FALSE);
 //            wp_enqueue_script('thickbox');
-            wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('iris'), '1.0');
+            wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('jquery'), '1.0', TRUE);
             wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js',
-                array('jquery-ui-autocomplete','jquery-ui-selectmenu'), '1.0', TRUE);
+                array(
+                    'ctc-iris', 
+                    'jquery-ui-autocomplete',
+                    'jquery-ui-selectmenu'
+                ), '1.0', TRUE);
             wp_localize_script( 'chld-thm-cfg-admin', 'ctcAjax', 
                 apply_filters('chld_thm_cfg_localize_script', array(
                     'ssl'               => is_ssl(),
@@ -220,7 +243,7 @@ class Child_Theme_Configurator {
                 if (!is_writable($stylesheet) && !$this->fs):
 	                add_action('admin_notices', array($this, 'writable_notice')); 	
                 endif;
-                if (!isset($this->css->enqueue))
+                if ('theme' == $this->css->get_prop('configtype') && !isset($this->css->enqueue))
                     add_action('admin_notices', array($this, 'enqueue_notice')); 	
             endif;
             if (fileowner($this->css->get_child_target('')) != fileowner(ABSPATH)):
@@ -264,7 +287,8 @@ class Child_Theme_Configurator {
                             'ctc_configtype', 
                             'ctc_child_template', 
                             'ctc_child_author',
-                            'ctc_child_version') as $postfield):
+                            'ctc_child_version',
+                            'ctc_revert') as $postfield):
                             $varparts = explode('_', $postfield);
                             $varname = end($varparts);
                             ${$varname} = empty($_POST[$postfield])?'':sanitize_text_field($_POST[$postfield]);
@@ -320,7 +344,7 @@ class Child_Theme_Configurator {
                             $this->css->set_prop('configtype', $configtype);
                             do_action('chld_thm_cfg_addl_files', $this);   // hook for add'l plugin files and subdirectories
                             $this->css->parse_css_file('parnt');
-                            $this->css->parse_css_file('child');
+                            $this->css->parse_css_file('child', $revert);
                             if (isset($_POST['ctc_additional_css']) && is_array($_POST['ctc_additional_css'])):
                                 $this->css->parentss = array();
                                 foreach ($_POST['ctc_additional_css'] as $file):
@@ -349,7 +373,7 @@ class Child_Theme_Configurator {
                         $msg = '8&tab=file_options';
                     elseif (isset($_POST['ctc_child_templates_submit']) && isset($_POST['ctc_file_child'])):
                         foreach ($_POST['ctc_file_child'] as $file):
-                            $this->delete_child_file(sanitize_text_field($file));
+                            $this->delete_child_file(sanitize_text_field($file), (0 === strpos($file, 'style') ? 'css' : 'php'));
                         endforeach;
                         $msg = '8&tab=file_options';
                     elseif (isset($_POST['ctc_image_submit']) && isset($_POST['ctc_img'])):
@@ -359,7 +383,7 @@ class Child_Theme_Configurator {
                         $msg = '8&tab=file_options';
                     elseif (isset($_POST['ctc_templates_writable_submit']) && isset($_POST['ctc_file_child'])):
                         foreach ($_POST['ctc_file_child'] as $file):
-                            $this->set_writable(sanitize_text_field($file));
+                            $this->set_writable(sanitize_text_field($file), (0 === strpos($file, 'style') ? 'css' : 'php'));
                         endforeach;
                         $msg = '8&tab=file_options';
                     elseif (isset($_POST['ctc_set_writable'])):
@@ -564,15 +588,28 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
         endif;
     }
     
-    function get_additional_css($parnt) {
-        $files = array();
-        foreach ($this->css->recurse_directory(trailingslashit(get_theme_root()) . $parnt) as $file):
-            $file = $this->theme_basename($parnt, $file);
-            if ('style.css' != $file) $files[] = $file;
-        endforeach;
-        return $files;
+    function get_files($theme, $type = 'template') {
+        if (!isset($this->files[$theme])):
+            $this->files[$theme] = array();
+            $imgext = '(' . implode('|', array_keys($this->imgmimes)) . ')';
+            foreach ($this->css->recurse_directory(
+                trailingslashit(get_theme_root()) . $theme, '', TRUE) as $file):
+                $file = $this->theme_basename($theme, $file);
+                if (preg_match("/^style\-(\d+)\.css$/", $file, $matches)):
+                    $date = date_i18n('D, j M Y g:i A', strtotime($matches[1]));
+                    $this->files[$theme]['backup'][$file] = $date;
+                elseif (preg_match("/\.php$/", $file)):
+                    $this->files[$theme]['template'][] = $file;
+                elseif (preg_match("/\.css$/", $file) && 'style.css' != $file):
+                    $this->files[$theme]['stylesheet'][] = $file;
+                elseif (preg_match("/^images\/.+?\." . $imgext . "$/", $file)):
+                    $this->files[$theme]['img'][] = $file;
+                endif;
+            endforeach;
+        endif;
+        return isset($this->files[$theme][$type]) ? $this->files[$theme][$type] : array();
     }
-    
+        
     function theme_basename($theme, $file) {
         // if no theme passed, returns theme + file
         $themedir = trailingslashit(get_theme_root()) . ('' == $theme ? '' : trailingslashit($theme));
@@ -827,7 +864,7 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
     function enqueue_notice() {
     ?>
     <div class="update-nag">
-        <p><?php _e( 'Child Theme Configurator has changed the way it loads Parent styles. Please set your preferences below and click "Generate Child Theme Files" to update your configuration.', 'chld_thm_cfg') ?></p>
+        <p><?php _e( 'Child Theme Configurator has changed the way it handles the parent stylesheet. Please set your preferences below and click "Generate Child Theme Files" to update your configuration.', 'chld_thm_cfg') ?></p>
     </div>
     <?php
     }
