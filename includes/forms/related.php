@@ -1,0 +1,1 @@
+<a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles/" target="_blank" title="<?php _e('Get CTC for Plugins and other tools', 'chld_thm_cfg'); ?>" style="float:right"><img src="<?php echo $this->ctc()->pluginURL; ?>/css/lilaea-logo.png" height="36" width="145" alt="<?php _e('Lilaea Media - Responsive Tools for a Mobile World', 'chld_thm_cfg'); ?>" /></a>

@@ -15,12 +15,12 @@ jQuery(document).ready(function($){
         return ctc_is_empty(str) ? str : str.toString().replace(quot_regex, '&quot;');
     }
     function ctc_setup_iris(obj) {
-        console.log('setting up iris ' + ('undefined' != typeof $(obj).attr('id') ? $(obj).attr('id') : ''));
+        //console.log('setting up iris ' + ('undefined' != typeof $(obj).attr('id') ? $(obj).attr('id') : ''));
         $(obj).iris({
             change: function(e,ui) {
-                console.log('change event ' 
-                + ('undefined' != typeof $(this).attr('id') ? $(this).attr('id') : '') 
-                + ' ' + ui.color.toString());
+                //console.log('change event ' 
+                //+ ('undefined' != typeof $(this).attr('id') ? $(this).attr('id') : '') 
+                //+ ' ' + ui.color.toString());
                 $(obj).data('color', ui.color.toString());
                 ctc_coalesce_inputs(obj);
             }
@@ -70,7 +70,7 @@ jQuery(document).ready(function($){
                 value = $(this).data('color');
                 $(this).data('color', null);
             }
-            console.log('id: ' + inputid + ' value: ' + value);
+            //console.log('id: ' + inputid + ' value: ' + value);
             if ('child' == inputtheme) {
                 postdata[inputid] = value;
                 postdata[important] = ($('#' + important).is(':checked')) ? 1 : 0;
@@ -143,11 +143,11 @@ jQuery(document).ready(function($){
         if ('undefined' != typeof $swatch && false === ctc_is_empty($swatch.attr('id'))) {
             $swatch.removeAttr('style');
             if (has_gradient.parent) { $swatch.ctcgrad(gradient.parent.origin, [gradient.parent.start, gradient.parent.end]); }
-            console.log(cssrules.parent);
+            //console.log(cssrules.parent);
             $swatch.css(cssrules.parent);  
             if (!($swatch.attr('id').toString().match(/parent/))){
                 if (has_gradient.child) { $swatch.ctcgrad(gradient.child.origin, [gradient.child.start, gradient.child.end]); }
-            console.log(cssrules.child);
+            //console.log(cssrules.child);
                 $swatch.css(cssrules.child);
             }
             $swatch.css({'z-index':-1});
@@ -496,7 +496,7 @@ jQuery(document).ready(function($){
             postdata,
             //on success function  
             function(response){
-                // console.log(response);
+                //console.log(response);
                 // hide spinner
                 loading[obj] = 2;
                 $('.ctc-status-icon').removeClass('spinner');
@@ -852,7 +852,7 @@ jQuery(document).ready(function($){
     function ctc_set_parent_menu(obj) {
         $('#ctc_theme_parent').parents('.ctc-input-row').first().append('<span class="ctc-status-icon spinner"></span>');
         $('.spinner').show();
-        document.location='?page=chld_thm_cfg_menu&ctc_parent=' + obj.value;
+        document.location='?page=chld_thm_cfg&ctc_parent=' + obj.value;
     }
     function ctc_set_child_menu(obj) {
         if (false === ctc_is_empty(ctcAjax.themes.child[obj.value])) {
