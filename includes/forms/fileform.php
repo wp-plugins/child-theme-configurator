@@ -9,7 +9,8 @@ if (defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT):
     $editorlinkend = '';
 else:
     $linktext = __('Click here to edit template files using the Theme Editor', 'chld_thm_cfg');
-    $editorlink = '<a href="' . admin_url('theme-editor.php?theme=' . $this->ctc()->css->get_prop('child')) . '" title="' . $linktext . '">';
+    $editorlink = '<a href="' . admin_url('theme-editor.php?theme=' . $this->ctc()->css->get_prop('child'))
+        . ('parnt' == $template ? '&file=functions.php' : '') . '" title="' . $linktext . '">';
     $editorlinkend = '</a>';
 endif;
 ?>

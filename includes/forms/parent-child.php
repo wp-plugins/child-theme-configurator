@@ -5,9 +5,16 @@ if (!defined('ABSPATH')) exit;
 
 <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
   <form id="ctc_load_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU_NAME; ?>">
-    <?php wp_nonce_field( 'ctc_update' ); ?>
-    <?php if ('' == $hidechild) do_action('chld_thm_cfg_controls', $this->ctc()); ?>
-    <div class="ctc-theme-only" <?php echo 'theme' != $configtype ? 'style="display:none"' : ''; ?>>
+<?php 
+    wp_nonce_field( 'ctc_update' ); 
+    if (has_action('chld_thm_cfg_controls')):
+        if ('' == $hidechild) do_action('chld_thm_cfg_controls', $this->ctc());
+        $themeonly = 'style="display:none"';
+    else: 
+        $themeonly = '';
+    endif;
+?>
+    <div class="ctc-theme-only" <?php echo 'theme' != $configtype ? $themeonly : ''; ?>>
       <div class="ctc-input-row clearfix" id="input_row_parnt">
         <div class="ctc-input-cell"> <strong>
           <?php _e('Parent Theme', 'chld_thm_cfg'); ?>
@@ -75,7 +82,7 @@ if (!defined('ABSPATH')) exit;
                 value="<?php echo esc_attr($css->get_prop('version')); ?>" placeholder="<?php _e('Version', 'chld_thm_cfg'); ?>" autocomplete="off" />
       </div>
     </div>
-    <div class="ctc-theme-only" <?php echo 'theme' != $configtype ? 'style="display:none"' : ''; ?>>
+    <div class="ctc-theme-only" <?php echo 'theme' != $configtype ? $themeonly : ''; ?>>
       <div class="ctc-input-row clearfix">
         <div class="ctc-input-cell"> <strong>
           <?php _e('Copy Parent Theme Menus, Widgets and other Options', 'chld_thm_cfg'); ?>
@@ -90,6 +97,7 @@ if (!defined('ABSPATH')) exit;
           <?php _e( 'This will overwrite child theme options you may have already set.', 'chld_thm_cfg'); ?>
         </div>
       </div>
+        <?php if ('' == $hidechild): ?>
       <div class="ctc-input-row clearfix">
         <div class="ctc-input-cell"> <strong>
           <?php _e('Backup current stylesheet', 'chld_thm_cfg'); ?>
@@ -104,6 +112,7 @@ if (!defined('ABSPATH')) exit;
           <?php _e( 'This creates a copy of the current stylesheet before applying changes. You can remove old backup files using the Files tab.', 'chld_thm_cfg'); ?>
         </div>
       </div>
+        <?php endif; ?>
       <div class="ctc-input-row clearfix">
         <div class="ctc-input-cell"> <strong>
           <?php _e('Parent stylesheet handling:', 'chld_thm_cfg'); ?>

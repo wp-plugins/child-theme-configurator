@@ -19,6 +19,7 @@ class ChildThemeConfiguratorAdmin {
     var $css;
     var $pluginPath;
     var $pluginURL;
+    var $menuName;
     var $ns;
     var $ui;
     var $themes;
@@ -26,42 +27,17 @@ class ChildThemeConfiguratorAdmin {
     var $hook;
     var $is_ajax;
     var $updated;
-    var $cache_updates;
     var $uploadsubdir;
+    var $files;
     var $fs;
     var $fs_prompt;
     var $fs_method;
-    var $postarrays;
-    var $configfields;
-    var $imgmimes;
-    var $files;
-    var $excludes;
-    var $updates;
-    
-    function __construct($file) {
-        $this->pluginPath       = trailingslashit( dirname( $file ) );
-        $this->pluginURL        = plugin_dir_url($file);
-        $this->imgmimes         = array(
-        	'jpg|jpeg|jpe'  => 'image/jpeg',
-	        'gif'           => 'image/gif',
-	        'png'           => 'image/png',
-        );
-        $this->postarrays = array(
+    var $postarrays = array(
             'ctc_img',
             'ctc_file_parnt',
             'ctc_file_child',
         );
-        $this->excludes = array(
-            'inc',
-            'core',
-            'lang',
-            'css',
-            'js',
-            'lib',
-            'theme',
-            'options'
-        );
-        $this->configfields = array(
+    var $configfields = array(
             'theme_parnt', 
             'child_type', 
             'theme_child', 
@@ -72,7 +48,7 @@ class ChildThemeConfiguratorAdmin {
             'child_version',
             'revert'
         );
-        $this->actionfields = array(
+    var $actionfields = array(
             'load_styles',
             'parnt_templates_submit',
             'child_templates_submit',
@@ -84,8 +60,29 @@ class ChildThemeConfiguratorAdmin {
             'templates_writable_submit',
             'set_writable'
         );
-        $this->updates          = array();
-        $this->cache_updates    = TRUE;
+    var $imgmimes = array(
+        	'jpg|jpeg|jpe'  => 'image/jpeg',
+	        'gif'           => 'image/gif',
+	        'png'           => 'image/png',
+        );
+    var $excludes = array(
+            'inc',
+            'core',
+            'lang',
+            'css',
+            'js',
+            'lib',
+            'theme',
+            'options'
+        );
+    var $updates = array();
+    var $cache_updates = TRUE;
+    var $swatch_text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+    
+    function __construct($file) {
+        $this->pluginPath       = trailingslashit( dirname( $file ) );
+        $this->pluginURL        = plugin_dir_url($file);
+        $this->menuName         = CHLD_THM_CFG_MENU_NAME; // backward compatability for plugins extension       
     }
     function render() {
         $this->ui->render();
@@ -130,7 +127,7 @@ class ChildThemeConfiguratorAdmin {
                     '_border_color'         => __('Color', 'chld_thm_cfg'),
                 ),
                 'load_txt'          => __('Are you sure? This will replace your current settings.', 'chld_thm_cfg'),
-                'swatch_txt'        => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                'swatch_txt'        => $this->swatch_text,
                 'swatch_label'      => __('Sample', 'chld_thm_cfg'),
                 'important_label'   => __('<span style="font-size:10px">!</span>', 'chld_thm_cfg'),
                 'selector_txt'      => __('Selectors', 'chld_thm_cfg'),
@@ -152,6 +149,7 @@ class ChildThemeConfiguratorAdmin {
         // loads early not to conflict with admin stylesheets
         $regex = "/\@import *(url)? *\( *['\"]?((https?:\/\/)?(.+?))['\"]? *\).*$/";
         if ($imports = $this->css->get_prop('imports')):
+            $count = 1;
             foreach ($imports as $import):
                 preg_match($regex, $import, $matches);
                 if (empty($matches[3]) && !empty($matches[4])): // relative filepath
@@ -162,7 +160,7 @@ class ChildThemeConfiguratorAdmin {
                     endfor;
                     $import = preg_replace($regex, '@import url(' . trailingslashit($url) . $matches[4] . ')', $import);
                 endif;
-                wp_enqueue_style(preg_replace($regex, "$2", $import));
+                wp_enqueue_style('chld-thm-cfg-admin' . ++$count, preg_replace($regex, "$2", $import));
                 //echo preg_replace($regex, "<link rel='stylesheet' href=\"$2\" type='text/css' />", $import) . "\n";
             endforeach;
         endif;
@@ -243,26 +241,29 @@ class ChildThemeConfiguratorAdmin {
     
     function load_config() {
         include_once($this->pluginPath . 'includes/class-ctc-css.php');
-        $this->css = new Child_Theme_Configurator_CSS();
-        if ( FALSE === $this->css->read_config() )
-            $this->css = get_option(CHLD_THM_CFG_OPTIONS); // backward compatibility with < 1.5.4
-        if (! is_object($this->css)
+        $this->css = new ChildThemeConfiguratorCSS();
+        // if not new format or themes do not exist reinitialize
+        if ( FALSE === $this->css->read_config()
             || ! $this->check_theme_exists($this->css->get_prop('child'))
             || ! $this->check_theme_exists($this->css->get_prop('parnt')) ):          
-            $this->css = new Child_Theme_Configurator_CSS();
+            $this->css = new ChildThemeConfiguratorCSS();
             $parent = get_template();
             $this->css->set_prop('parnt', $parent);
         endif;
         if ('GET' == strtoupper($_SERVER['REQUEST_METHOD'])):
             if ($this->css->get_prop('child')):
+                // get filesystem credentials if available
                 $this->verify_creds();
                 $stylesheet = $this->css->get_child_target('style.css');
+                // check file permissions
                 if (!is_writable($stylesheet) && !$this->fs):
 	                add_action('admin_notices', array($this, 'writable_notice')); 	
                 endif;
+                // check for first run, enqueue flag will be null for anyone coming from < 1.6.0
                 if ('theme' == $this->css->get_prop('configtype') && !isset($this->css->enqueue))
                     add_action('admin_notices', array($this, 'enqueue_notice')); 	
             endif;
+            // check if file ownership is messed up from old version or other plugin
             if (fileowner($this->css->get_child_target('')) != fileowner(ABSPATH)):
 	            add_action('admin_notices', array($this, 'owner_notice')); 
             endif;
@@ -270,7 +271,9 @@ class ChildThemeConfiguratorAdmin {
     }
     
     /***
-     * this function handles processing for all form submissions
+     * Handles processing for all form submissions.
+     * Older versions ( < 1.6.0 ) had grown too spaghetti-like so we moved conditions 
+     * to switch statement with the main setup logic in a separate function.
      */
     function write_config() {
         // make sure this is a post
@@ -308,10 +311,12 @@ class ChildThemeConfiguratorAdmin {
                         // we have filesystem access so proceed with specific actions
                         switch( $actionfield ):
                             case 'load_styles':
+                                // main child theme setup function
                                 $msg = $this->setup_child_theme();
                                 break;
                             
                             case 'parnt_templates_submit':
+                                // copy parent templates to child
                                 if ( isset( $_POST['ctc_file_parnt'] ) ):
                                     foreach ($_POST['ctc_file_parnt'] as $file):
                                         $this->copy_parent_file(sanitize_text_field($file));
@@ -321,16 +326,22 @@ class ChildThemeConfiguratorAdmin {
                                 break;
                                 
                             case 'child_templates_submit':
+                                // delete child theme files
                                 if ( isset( $_POST['ctc_file_child'] ) ):
-                                    foreach ($_POST['ctc_file_child'] as $file):
-                                        $this->delete_child_file(sanitize_text_field($file), 
-                                            (0 === strpos($file, 'style') ? 'css' : 'php'));
-                                    endforeach;
-                                    $msg = '8&tab=file_options';
+                                    if (in_array('functions', $_POST['ctc_file_child'])):
+                                        $this->errors[] = __('The Functions file is required and cannot be deleted.', 'chld_thm_cfg');
+                                    else:
+                                        foreach ($_POST['ctc_file_child'] as $file):
+                                            $this->delete_child_file(sanitize_text_field($file), 
+                                                (0 === strpos($file, 'style') ? 'css' : 'php'));
+                                        endforeach;
+                                        $msg = '8&tab=file_options';
+                                    endif;
                                 endif;
                                 break;
                                 
                             case 'image_submit':
+                                // delete child theme images
                                 if ( isset( $_POST['ctc_img'] ) ):
                                     foreach ($_POST['ctc_img'] as $file):
                                         $this->delete_child_file('images/' . sanitize_text_field($file), 'img');
@@ -340,6 +351,7 @@ class ChildThemeConfiguratorAdmin {
                                 break;
                                 
                             case 'templates_writable_submit':
+                                // make specific files writable ( systems not running suExec )
                                 if ( isset($_POST['ctc_file_child'] ) ):
                                     foreach ($_POST['ctc_file_child'] as $file):
                                         $this->set_writable(sanitize_text_field($file), (0 === strpos($file, 'style') ? 'css' : 'php'));
@@ -349,16 +361,19 @@ class ChildThemeConfiguratorAdmin {
                                 break;
                                 
                             case 'set_writable':
+                                // make child theme writable ( systems not running suExec )
                                 $this->set_writable();
                                 $msg = '8&tab=file_options';
                                 break;
                             
                             case 'reset_permission':
+                                // make child theme read-only ( systems not running suExec )
                                 $this->unset_writable();
                                 $msg = '8&tab=file_options';
                                 break;
                             
                             case 'theme_image_submit':
+                                // move uploaded child theme images (now we have filesystem access)
                                 if ( isset($_POST['movefile'] ) ):
                                     $this->move_file_upload('images');
                                     $msg = '8&tab=file_options';
@@ -366,6 +381,7 @@ class ChildThemeConfiguratorAdmin {
                                 break;
                             
                             case 'theme_screenshot_submit':
+                                // move uploaded child theme screenshot (now we have filesystem access)
                                 if ( isset($_POST['movefile'] ) ):
                                     // remove old screenshot
                                     foreach(array_keys($this->imgmimes) as $extreg): 
@@ -377,8 +393,10 @@ class ChildThemeConfiguratorAdmin {
                                     $msg = '8&tab=file_options';
                                 endif;
                                 break;
-                            
-                                // we assume we are on the files tab so just redirect there
+                                
+                            default:
+                                // assume we are on the files tab so just redirect there
+                                $msg = '8&tab=file_options';
                         endswitch;
                     endif; // end filesystem condition
                 endif; // end zip export condition
@@ -420,7 +438,7 @@ class ChildThemeConfiguratorAdmin {
         else:
             $this->errors[] = __('Please select a valid Parent Theme', 'chld_thm_cfg');
         endif;
-        
+        // if this is a shiny brand new child theme certain rules apply
         if ('new' == $type):
             if (empty($template) && empty($name)):
                 $this->errors[] = __('Please enter a valid Child Theme template name', 'chld_thm_cfg');
@@ -464,7 +482,7 @@ class ChildThemeConfiguratorAdmin {
         
         // if no errors so far, we are good to create child theme
         if (empty($this->errors)):
-            $this->css = new Child_Theme_Configurator_CSS();
+            $this->css = new ChildThemeConfiguratorCSS();
             $this->css->set_prop('parnt', $parnt);
             $this->css->set_prop('child', $child);
             $this->css->set_prop('child_name', $name);

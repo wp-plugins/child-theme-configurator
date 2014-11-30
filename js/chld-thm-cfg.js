@@ -425,11 +425,13 @@ jQuery(document).ready(function($){
                     + ctcAjax.swatch_txt + '</div></div>' + lf;
                 html += '<div class="ctc-input-cell"><a href="#" class="ctc-selector-handle" id="ctc_selector_' + rule + '_' + valid + '">'
                     + ctcAjax.selector_txt + '</a></div>' + lf;
-                html += '<div id="ctc_selector_' + rule + '_' + valid + '_container" class="ctc-selector-container clearfix">' + lf;
-                html += '<a href="#" id="ctc_selector_' + rule + '_' + valid + '_close" class="ctc-selector-handle" style="float:right">' 
-                    + ctcAjax.close_txt + '</a><div id="ctc_status_val_qry_' + valid + '"></div>' + lf;
+                html += '<div id="ctc_selector_' + rule + '_' + valid + '_container" class="ctc-selector-container">' + lf;
+                html += '<a href="#" id="ctc_selector_' + rule + '_' + valid + '_close" class="ctc-selector-handle ctc-exit" title="' 
+                    + ctcAjax.close_txt + '"></a>';
+                html += '<div id="ctc_selector_' + rule + '_' + valid + '_inner_container" class="ctc-selector-inner-container clearfix">' + lf;
+                html += '<div id="ctc_status_val_qry_' + valid + '"></div>' + lf;
                 html += '<div id="ctc_selector_' + rule + '_' + valid + '_rows"></div>' + lf;
-                html += '</div></div>' + lf;
+                html += '</div></div></div>' + lf;
             });
             html += '</div>' + lf;
         }
@@ -1023,7 +1025,8 @@ jQuery(document).ready(function($){
         return false;
     });
     $(document).on('change', '#ctc_configtype', function(e) {
-        if ('theme' == $(this).val()) {
+        var val = $(this).val();
+        if (ctc_is_empty(val) || 'theme' == val) {
             $('.ctc-theme-only').stop().slideDown('fast');
         } else {
             $('.ctc-theme-only').stop().slideUp('fast');

@@ -35,7 +35,7 @@ if (!defined('ABSPATH')) exit;
           <?php _e('Sample', 'chld_thm_cfg'); ?>
           </strong></div>
         <div class="ctc-input-cell clearfix" style="max-height:150px;overflow:hidden">
-          <div class="ctc-swatch" id="ctc_child_all_0_swatch"><?php echo $this->swatch_text; ?></div>
+          <div class="ctc-swatch" id="ctc_child_all_0_swatch"><?php echo $this->ctc()->swatch_text; ?></div>
         </div>
         <div id="ctc_status_sel_val"></div>
         <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">

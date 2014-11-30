@@ -4,25 +4,18 @@ if (!defined('ABSPATH')) exit;
 ?>
 <style type="text/css">
 .ctc-status-icon.success {
-    display: block;
-    float: right;
-    position: relative;
-    height: 16px;
-    width: 16px;
-    margin: 4px;
  background:url(<?php echo admin_url( 'images/yes.png' );
 ?>) no-repeat;
 }
 
 .ctc-status-icon.failure {
-    display: block;
-    float: right;
-    position: relative;
-    height: 16px;
-    width: 16px;
-    margin: 4px;
- background:url(<?php echo admin_url( 'images/no.png');
+background:url(<?php echo admin_url( 'images/no.png');
 ?>) no-repeat;
+}
+
+.ctc-exit {
+background:#fff url(<?php echo includes_url('images/xit-2x.gif');
+?>) left top no-repeat;
 }
 </style>
 <div class="wrap">
@@ -38,7 +31,8 @@ else: ?>
   <?php 
     include ( $this->ctc()->pluginPath . 'includes/forms/tabs.php' ); 
 ?>
-    <i id="ctc_status_preview"></i></h2>
+  <i id="ctc_status_preview"></i>
+  </h2>
   <div class="ctc-option-panel-container">
     <?php 
     include ( $this->ctc()->pluginPath . 'includes/forms/parent-child.php' ); 

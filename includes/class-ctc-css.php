@@ -3,7 +3,7 @@
 if ( !defined('ABSPATH')) exit;
 
 /*
-    Class: Child_Theme_Configurator_CSS
+    Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
     Version: 1.6.0
@@ -14,7 +14,7 @@ if ( !defined('ABSPATH')) exit;
     License: GPLv2
     Copyright (C) 2014 Lilaea Media
 */
-class Child_Theme_Configurator_CSS {
+class ChildThemeConfiguratorCSS {
     // data dictionaries
     var $dict_query;    // @media queries and 'base'
     var $dict_sel;      // selectors  

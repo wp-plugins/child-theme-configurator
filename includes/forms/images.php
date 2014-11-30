@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) exit;
       <?php _e('Child Theme Images', 'chld_thm_cfg'); ?>
       </strong>
       <p class="howto">
-        <?php _e('Remove child theme images by selecting them here.', 'chld_thm_cfg');?>
+        <?php _e('Delete child theme images by selecting them here.', 'chld_thm_cfg');?>
       </p>
     </div>
     <div class="ctc-input-cell-wide"> <?php echo $inputs; ?> </div>
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) exit;
     <div class="ctc-input-cell-wide" style="margin-top:10px;margin-bottom:10px">
       <input class="ctc_submit button button-primary" id="ctc_image_submit" 
                 name="ctc_image_submit"  type="submit" 
-                value="<?php _e('Remove Selected', 'chld_thm_cfg'); ?>" disabled />
+                value="<?php _e('Delete Selected', 'chld_thm_cfg'); ?>" disabled />
     </div>
   </form>
 </div>

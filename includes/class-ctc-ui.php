@@ -32,12 +32,13 @@ class ChildThemeConfiguratorUI {
         $id         = 0;
         $this->ctc()->fs_method = get_filesystem_method();
         add_thickbox();
+        add_action('chld_thm_cfg_related_links', array($this, 'lilaea_plug'));
         include ($this->ctc()->pluginPath .'/includes/forms/main.php'); 
     } 
 
     function render_theme_menu($template = 'child', $selected = NULL) {
          ?>
-        <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>"><?php
+        <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>" style="visibility:hidden"><?php
         foreach ($this->ctc()->themes[$template] as $slug => $theme)
             echo '<option value="' . $slug . '"' . ($slug == $selected ? ' selected' : '') . '>' 
                 . esc_attr($theme['Name']) . '</option>' . LF; ?>
@@ -143,13 +144,12 @@ class ChildThemeConfiguratorUI {
             // then use regex to parse for help tab parameter values
             
             $regex_sidebar = '/' . preg_quote('<!-- BEGIN sidebar -->') . '(.*?)' . preg_quote('<!-- END sidebar -->') . '/s';
-            $regex_tab = '/' . preg_quote('<!-- BEGIN tab -->') . '<h\d id="(.*?)">(.*?)<\/h\d>(.*?)' . preg_quote('<!-- END tab -->') . '/s';
+            $regex_tab = '/' . preg_quote('<!-- BEGIN tab -->') . '\s*<h\d id="(.*?)">(.*?)<\/h\d>(.*?)' . preg_quote('<!-- END tab -->') . '/s';
             ob_start();
             // stub for multiple languages future release
             include($this->ctc()->pluginPath . 'includes/help/help_en_US.php');
             $help_raw = ob_get_contents();
             ob_end_clean();
-
             // parse raw html for tokens
             preg_match($regex_sidebar, $help_raw, $sidebar);
             preg_match_all($regex_tab, $help_raw, $tabs);
@@ -171,6 +171,9 @@ class ChildThemeConfiguratorUI {
                 $screen->set_help_sidebar($sidebar[1]);
 
         }
+    }
+    function lilaea_plug() {
+        include ($this->ctc()->pluginPath . 'includes/forms/related.php');
     }
 }
 ?>
