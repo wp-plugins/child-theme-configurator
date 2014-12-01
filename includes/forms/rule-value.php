@@ -1,0 +1,36 @@
+<?php  
+if (!defined('ABSPATH')) exit;
+// Rule/Value Panel
+?>
+
+<div id="rule_value_options_panel" 
+        class="ctc-option-panel<?php echo 'rule_value_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
+  <form id="ctc_rule_value_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>">
+    <?php wp_nonce_field( 'ctc_update' ); ?>
+    <div class="ctc-input-row clearfix" id="ctc_input_row_rule_menu">
+      <div class="ctc-input-cell"> <strong>
+        <?php _e('Rule', 'chld_thm_cfg'); ?>
+        </strong> </div>
+      <div class="ctc-input-cell" id="ctc_rule_menu_selected">&nbsp;</div>
+      <div id="ctc_status_rule_val"></div>
+      <div class="ctc-input-cell">
+        <div class="ui-widget">
+          <input id="ctc_rule_menu"/>
+          <div id="ctc_status_rule"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ctc-input-row clearfix" id="ctc_input_row_rule_header" style="display:none">
+      <div class="ctc-input-cell"> <strong>
+        <?php _e('Value', 'chld_thm_cfg'); ?>
+        </strong> </div>
+      <div class="ctc-input-cell"> <strong>
+        <?php _e('Sample', 'chld_thm_cfg'); ?>
+        </strong> </div>
+      <div class="ctc-input-cell"> <strong>
+        <?php _e('Selectors', 'chld_thm_cfg'); ?>
+        </strong> </div>
+    </div>
+    <div class="ctc-rule-value-input-container clearfix" id="ctc_rule_value_inputs" style="display:none"> </div>
+  </form>
+</div>

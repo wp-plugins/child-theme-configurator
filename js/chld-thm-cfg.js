@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.5.4
+ *  Version: 1.6.0
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -10,34 +10,32 @@
  */
 jQuery(document).ready(function($){
 
-    var lf = "\n", 
-        currentQuery = 'base',
-        currentSel,
-        saveEvents = {},
-        rewrite_id, 
-        rewrite_sel,
-        quot_regex = new RegExp('"', 'g'),
     // initialize functions
-    esc_quot = function(str){
+    function esc_quot(str){
         return ctc_is_empty(str) ? str : str.toString().replace(quot_regex, '&quot;');
-    },
-    ctc_setup_iris = function(obj) {
+    }
+    function ctc_setup_iris(obj) {
+        //console.log('setting up iris ' + ('undefined' != typeof $(obj).attr('id') ? $(obj).attr('id') : ''));
         $(obj).iris({
-            change: function() {
+            change: function(e,ui) {
+                //console.log('change event ' 
+                //+ ('undefined' != typeof $(this).attr('id') ? $(this).attr('id') : '') 
+                //+ ' ' + ui.color.toString());
+                $(obj).data('color', ui.color.toString());
                 ctc_coalesce_inputs(obj);
-            }   
+            }
         });
-    },
-    from_ascii = function(str) {
+    }
+    function from_ascii(str) {
         var ascii = parseInt(str),
             chr = String.fromCharCode(ascii)
         return chr;
-    },
-    to_ascii = function(str) {
+    }
+    function to_ascii(str) {
         var ascii = str.charCodeAt(0);
         return ascii;
-    },
-    ctc_coalesce_inputs = function(obj) {
+    }
+    function ctc_coalesce_inputs(obj) {
         var regex       = /^(ctc_(ovrd|\d+)_(parent|child)_([0-9a-z\-]+)_(\d+))(_\w+)?$/,
             $container  = $(obj).parents('.ctc-selector-row, .ctc-parent-row').first(),
             $swatch     = $container.find('.ctc-swatch').first(),
@@ -65,9 +63,14 @@ jQuery(document).ready(function($){
                 inputrule   = ('undefined' == typeof inputparts[4] ? '' : inputparts[4]),
                 qsid        = inputparts[5],
                 rulepart    = ('undefined' == typeof inputparts[6] ? '' : inputparts[6]),
-                value       = ('parent' == inputtheme ? $(this).text() : $(this).val()),
+                value       = ('parent' == inputtheme ? $(this).text().replace(/!$/,'') : $(this).val()),
                 important   = 'ctc_' + inputseq + '_child_' + inputrule + '_i_' + qsid,
                 parts, subparts;
+            if (false === ctc_is_empty($(this).data('color'))) {
+                value = $(this).data('color');
+                $(this).data('color', null);
+            }
+            //console.log('id: ' + inputid + ' value: ' + value);
             if ('child' == inputtheme) {
                 postdata[inputid] = value;
                 postdata[important] = ($('#' + important).is(':checked')) ? 1 : 0;
@@ -77,79 +80,81 @@ jQuery(document).ready(function($){
                 return;
             }*/
             if ('' != value) {
-            // handle specific inputs
-            if (false === ctc_is_empty(rulepart)) {
-                switch(rulepart) {
-                    case '_border_width':
-                        cssrules[inputtheme][inputrule + '-width'] = value;
-                        break;
-                    case '_border_style':
-                        cssrules[inputtheme][inputrule + '-style'] = value;
-                        break;
-                    case '_border_color':
-                        cssrules[inputtheme][inputrule + '-color'] = value;
-                        break;
-                    case '_background_url':
-                        cssrules[inputtheme]['background-image'] = ctc_image_url(inputtheme, value);
-                        break;
-                    case '_background_color':
-                        cssrules[inputtheme]['background-color'] = obj.value;
-                        break;
-                    case '_background_color1':
-                        gradient[inputtheme].start   = value;
-                        has_gradient[inputtheme] = true;
-                        break;
-                    case '_background_color2':
-                        gradient[inputtheme].end     = value;
-                        has_gradient[inputtheme] = true;
-                        break;
-                    case '_background_origin':
-                        gradient[inputtheme].origin  = value;
-                        has_gradient[inputtheme] = true;
-                        break;
-                }
-            } else {
-                // handle borders
-                if (parts = inputrule.toString().match(/^border(\-(top|right|bottom|left))?$/) && !value.match(/none/)) {
-                    subparts = value.toString().split(/ +/);
-                    cssrules[inputtheme][inputrule + '-width'] = 'undefined' == typeof subparts[0] ? '' : subparts[0];
-                    cssrules[inputtheme][inputrule + '-style'] = 'undefined' == typeof subparts[1] ? '' : subparts[1];
-                    cssrules[inputtheme][inputrule + '-color'] = 'undefined' == typeof subparts[2] ? '' : subparts[2];
-                // handle background images
-                } else if ( 'background-image' == inputrule ) {
-                    if (value.toString().match(/url\(/)) {
-                        cssrules[inputtheme]['background-image'] = ctc_image_url(inputtheme, value);
-                    } else {
-                        subparts = value.toString().split(/ +/);
-                        if (subparts.length > 2) {
-                            gradient[inputtheme].origin = 'undefined' == typeof subparts[0] ? 'top' : subparts[0];
-                            gradient[inputtheme].start  = 'undefined' == typeof subparts[1] ? 'transparent' : subparts[1];
-                            gradient[inputtheme].end    = 'undefined' == typeof subparts[2] ? 'transparent' : subparts[2];
+                // handle specific inputs
+                if (false === ctc_is_empty(rulepart)) {
+                    switch(rulepart) {
+                        case '_border_width':
+                            cssrules[inputtheme][inputrule + '-width'] = value;
+                            break;
+                        case '_border_style':
+                            cssrules[inputtheme][inputrule + '-style'] = value;
+                            break;
+                        case '_border_color':
+                            cssrules[inputtheme][inputrule + '-color'] = value;
+                            break;
+                        case '_background_url':
+                            cssrules[inputtheme]['background-image'] = ctc_image_url(inputtheme, value);
+                            break;
+                        case '_background_color':
+                            cssrules[inputtheme]['background-color'] = obj.value;
+                            break;
+                        case '_background_color1':
+                            gradient[inputtheme].start   = value;
                             has_gradient[inputtheme] = true;
-                        } else {
-                            cssrules[inputtheme]['background-image'] = value;
-                        }
+                            break;
+                        case '_background_color2':
+                            gradient[inputtheme].end     = value;
+                            has_gradient[inputtheme] = true;
+                            break;
+                        case '_background_origin':
+                            gradient[inputtheme].origin  = value;
+                            has_gradient[inputtheme] = true;
+                            break;
                     }
                 } else {
-                    cssrules[inputtheme][inputrule] = value;
+                    // handle borders
+                    if (parts = inputrule.toString().match(/^border(\-(top|right|bottom|left))?$/) && !value.match(/none/)) {
+                        subparts = value.toString().split(/ +/);
+                        cssrules[inputtheme][inputrule + '-width'] = 'undefined' == typeof subparts[0] ? '' : subparts[0];
+                        cssrules[inputtheme][inputrule + '-style'] = 'undefined' == typeof subparts[1] ? '' : subparts[1];
+                        cssrules[inputtheme][inputrule + '-color'] = 'undefined' == typeof subparts[2] ? '' : subparts[2];
+                    // handle background images
+                    } else if ( 'background-image' == inputrule ) {
+                        if (value.toString().match(/url\(/)) {
+                            cssrules[inputtheme]['background-image'] = ctc_image_url(inputtheme, value);
+                        } else {
+                            subparts = value.toString().split(/ +/);
+                            if (subparts.length > 2) {
+                                gradient[inputtheme].origin = 'undefined' == typeof subparts[0] ? 'top' : subparts[0];
+                                gradient[inputtheme].start  = 'undefined' == typeof subparts[1] ? 'transparent' : subparts[1];
+                                gradient[inputtheme].end    = 'undefined' == typeof subparts[2] ? 'transparent' : subparts[2];
+                                has_gradient[inputtheme] = true;
+                            } else {
+                                cssrules[inputtheme]['background-image'] = value;
+                            }
+                        }
+                    } else if ('seq' != inputrule) {
+                        cssrules[inputtheme][inputrule] = value;
+                    }
                 }
-            }
             }
         });
         // update swatch
         if ('undefined' != typeof $swatch && false === ctc_is_empty($swatch.attr('id'))) {
-            $($swatch).removeAttr('style');
-            if (has_gradient.parent) { $($swatch).ctcgrad(gradient.parent.origin, [gradient.parent.start, gradient.parent.end]); }
-            $($swatch).css(cssrules.parent);  
+            $swatch.removeAttr('style');
+            if (has_gradient.parent) { $swatch.ctcgrad(gradient.parent.origin, [gradient.parent.start, gradient.parent.end]); }
+            //console.log(cssrules.parent);
+            $swatch.css(cssrules.parent);  
             if (!($swatch.attr('id').toString().match(/parent/))){
-                if (has_gradient.child) { $($swatch).ctcgrad(gradient.child.origin, [gradient.child.start, gradient.child.end]); }
-                $($swatch).css(cssrules.child);
+                if (has_gradient.child) { $swatch.ctcgrad(gradient.child.origin, [gradient.child.start, gradient.child.end]); }
+            //console.log(cssrules.child);
+                $swatch.css(cssrules.child);
             }
-            $($swatch).css({'z-index':-1});
+            $swatch.css({'z-index':-1});
         }
         return postdata;
-    },
-    ctc_update_cache = function(response) {
+    }
+    function ctc_update_cache(response) {
         var currQuery, currSelId, currRuleId;
         $(response).each(function(){
             switch (this.obj) {
@@ -194,8 +199,8 @@ jQuery(document).ready(function($){
                     break;
             }
         });
-    },
-    ctc_image_url = function(theme, value) {
+    }
+    function ctc_image_url(theme, value) {
         var parts = value.toString().match(/url\(['" ]*(.+?)['" ]*\)/),
             path = ctc_is_empty(parts) ? null : parts[1],
             url = ctcAjax.theme_uri + '/' + ('parent' == theme ? ctcAjax.parnt : ctcAjax.child) + '/',
@@ -208,9 +213,8 @@ jQuery(document).ready(function($){
             image_url = 'url(' + url + path + ')'; 
         }
         return image_url;
-    },
-    
-    ctc_is_empty = function(obj) {
+    }
+    function ctc_is_empty(obj) {
         // first bail when definitely empty or undefined (true) NOTE: zero is not empty
         if ('undefined' == typeof obj || false === obj || null === obj || '' === obj) { return true; }
         // then, if this is bool, string or number it must not be empty (false)
@@ -234,9 +238,8 @@ jQuery(document).ready(function($){
         // this must be an unsupported datatype, so return not empty
         return false; 
     
-    },
-    
-    ctc_load_queries = function() {
+    }
+    function ctc_load_queries() {
         var arr = [];
         if (1 === loading.sel_ndx) return arr;
         if (0 === loading.sel_ndx) { // {
@@ -252,9 +255,8 @@ jQuery(document).ready(function($){
             });
         }
         return arr;
-    },
-    
-    ctc_load_selectors = function(query) {
+    }
+    function ctc_load_selectors(query) {
         var arr = [];
         if (1 === loading.sel_ndx) {
             return arr;
@@ -272,9 +274,9 @@ jQuery(document).ready(function($){
             });
         }
         return arr;
-    },
+    }
     
-    ctc_load_rules = function() {
+    function ctc_load_rules() {
         var arr = [];
         if (1 === loading.rule) return arr;
         if (0 === loading.rule) { 
@@ -295,9 +297,8 @@ jQuery(document).ready(function($){
                 return -1;
             return 0;
         });
-    },
-    
-    ctc_render_child_rule_input = function(qsid, rule, seq) {
+    }
+    function ctc_render_child_rule_input(qsid, rule, seq) {
         var html        = '', 
             value       = (ctc_is_empty(ctcAjax.sel_val[qsid]) 
                 || ctc_is_empty(ctcAjax.sel_val[qsid].value) 
@@ -348,8 +349,8 @@ jQuery(document).ready(function($){
             html += '</div><!-- end input row -->' + lf;
         }
         return html;
-    },
-    ctc_render_selector_inputs = function(qsid) {
+    }
+    function ctc_render_selector_inputs(qsid) {
         if (1 === loading.sel_val) {
             return false;
         }
@@ -383,8 +384,8 @@ jQuery(document).ready(function($){
                 ctc_coalesce_inputs('#ctc_child_all_0_swatch');
             }
         }
-    },
-    ctc_render_css_preview = function(theme) {
+    }
+    function ctc_render_css_preview(theme) {
         if (1 === loading.preview) {
             return false;
         }
@@ -402,8 +403,8 @@ jQuery(document).ready(function($){
             $('#view_'+theme+'_options_panel').text(ctcAjax.previewResponse); 
             loading.preview = 0;       
         }
-    },
-    ctc_render_rule_value_inputs = function(ruleid) {
+    }
+    function ctc_render_rule_value_inputs(ruleid) {
         if (1 === loading.rule_val) return false;
 
         if (0 == loading.rule_val) { 
@@ -424,20 +425,21 @@ jQuery(document).ready(function($){
                     + ctcAjax.swatch_txt + '</div></div>' + lf;
                 html += '<div class="ctc-input-cell"><a href="#" class="ctc-selector-handle" id="ctc_selector_' + rule + '_' + valid + '">'
                     + ctcAjax.selector_txt + '</a></div>' + lf;
-                html += '<div id="ctc_selector_' + rule + '_' + valid + '_container" class="ctc-selector-container clearfix">' + lf;
-                html += '<a href="#" id="ctc_selector_' + rule + '_' + valid + '_close" class="ctc-selector-handle" style="float:right">' 
-                    + ctcAjax.close_txt + '</a><div id="ctc_status_val_qry_' + valid + '"></div>' + lf;
+                html += '<div id="ctc_selector_' + rule + '_' + valid + '_container" class="ctc-selector-container">' + lf;
+                html += '<a href="#" id="ctc_selector_' + rule + '_' + valid + '_close" class="ctc-selector-handle ctc-exit" title="' 
+                    + ctcAjax.close_txt + '"></a>';
+                html += '<div id="ctc_selector_' + rule + '_' + valid + '_inner_container" class="ctc-selector-inner-container clearfix">' + lf;
+                html += '<div id="ctc_status_val_qry_' + valid + '"></div>' + lf;
                 html += '<div id="ctc_selector_' + rule + '_' + valid + '_rows"></div>' + lf;
-                html += '</div></div>' + lf;
+                html += '</div></div></div>' + lf;
             });
             html += '</div>' + lf;
         }
         $('#ctc_rule_value_inputs').html(html).find('.ctc-swatch').each(function() {
             ctc_coalesce_inputs(this);
         });
-    },
-
-    ctc_render_selector_value_inputs = function(valid) {
+    }
+    function ctc_render_selector_value_inputs(valid) {
         if (1 == loading.val_qry) return false;
         var params, 
             page_ruleid, 
@@ -472,8 +474,8 @@ jQuery(document).ready(function($){
             ctc_coalesce_inputs(this);
         });
 
-    },
-    ctc_query_css = function(obj, key, callback, params) {
+    }
+    function ctc_query_css(obj, key, callback, params) {
         var postdata = { 'ctc_query_obj' : obj, 'ctc_query_key': key },
             status_sel = '#ctc_status_' + obj + ('val_qry' == obj ? '_' + key : '');
         
@@ -496,7 +498,7 @@ jQuery(document).ready(function($){
             postdata,
             //on success function  
             function(response){
-                // console.log(response);
+                //console.log(response);
                 // hide spinner
                 loading[obj] = 2;
                 $('.ctc-status-icon').removeClass('spinner');
@@ -536,8 +538,8 @@ jQuery(document).ready(function($){
             
         });  
         return false; 
-    },
-    ctc_save = function(obj) {
+    }
+    function ctc_save(obj) {
         var postdata = {},
             $selector, $query, $imports, $rule,
             id = $(obj).attr('id'), newsel;
@@ -616,8 +618,8 @@ jQuery(document).ready(function($){
             $('.ctc-status-icon').addClass('failure');
         });  
         return false;  
-    },
-    ctc_decode_value = function(rule, value) {
+    }
+    function ctc_decode_value(rule, value) {
         value = ('undefined' == typeof value ? '' : value);
         var obj = { 'orig':   value };
         if (rule.toString().match(/^border(\-(top|right|bottom|left))?$/)) {
@@ -654,9 +656,8 @@ jQuery(document).ready(function($){
             obj['values']   = [ value ];
         }
         return obj;
-    },
-    
-    ctc_set_query = function(value) {
+    }
+    function ctc_set_query(value) {
         currentQuery = value;
         $('#ctc_sel_ovrd_query').val('');
         $('#ctc_sel_ovrd_query_selected').text(value);
@@ -666,9 +667,8 @@ jQuery(document).ready(function($){
         ctc_setup_selector_menu(value);
         ctc_coalesce_inputs('#ctc_child_all_0_swatch');
         $('#ctc_new_selector_row').show();
-    },
-    
-    ctc_set_selector = function(value,label) {
+    }
+    function ctc_set_selector(value,label) {
         $('#ctc_sel_ovrd_selector').val('');
         $('#ctc_sel_ovrd_selector_selected').text(label);
         $('#ctc_sel_ovrd_qsid').val(value);
@@ -677,17 +677,16 @@ jQuery(document).ready(function($){
         ctc_render_selector_inputs(value);
         $('.ctc-rewrite-toggle').text(ctcAjax.rename_txt);
         $('#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header,#ctc_sel_ovrd_rule_inputs_container,#ctc_sel_ovrd_rule_inputs,.ctc-rewrite-toggle').show();
-    },
-    
-    ctc_set_rule = function(value,label) {
+    }
+    function ctc_set_rule(value,label) {
         $('#ctc_rule_menu').val('');
         $('#ctc_rule_menu_selected').text(label);
         if (1 != loading.rule_val) loading.rule_val = 0;
         ctc_render_rule_value_inputs(value);
         $('.ctc-rewrite-toggle').text(ctcAjax.rename_txt);
         $('#ctc_rule_value_inputs,#ctc_input_row_rule_header').show();
-    },
-    ctc_setup_query_menu = function() {
+    }
+    function ctc_setup_query_menu() {
         ctc_queries = ctc_load_queries();
         $('#ctc_sel_ovrd_query').autocomplete({
             source: ctc_queries,
@@ -702,8 +701,8 @@ jQuery(document).ready(function($){
                 e.preventDefault(); 
             }
         });
-    },
-    ctc_setup_selector_menu = function(query) {
+    }
+    function ctc_setup_selector_menu(query) {
         ctc_selectors = ctc_load_selectors(query);
         $('#ctc_sel_ovrd_selector').autocomplete({
             source: ctc_selectors,
@@ -715,8 +714,8 @@ jQuery(document).ready(function($){
             },
             focus: function(e) { e.preventDefault(); }
         });
-    },
-    ctc_setup_rule_menu = function() {
+    }
+    function ctc_setup_rule_menu() {
         ctc_rules = ctc_load_rules();
         $('#ctc_rule_menu').autocomplete({
             source: ctc_rules,
@@ -729,8 +728,8 @@ jQuery(document).ready(function($){
             },
             focus: function(e) { e.preventDefault(); }
         });
-    },
-    ctc_filtered_rules = function(request, response) {
+    }
+    function ctc_filtered_rules(request, response) {
         var arr = [],
             noval = (ctc_is_empty(ctcAjax.sel_val[currentSel])) || (ctc_is_empty(ctcAjax.sel_val[currentSel].value));
         if (ctc_is_empty(ctc_rules)) { 
@@ -757,8 +756,8 @@ jQuery(document).ready(function($){
             }
         });
         response(arr);
-    },
-    ctc_setup_new_rule_menu = function() {
+    }
+    function ctc_setup_new_rule_menu() {
         $('#ctc_new_rule_menu').autocomplete({
             source: ctc_filtered_rules,
             //minLength: 0,
@@ -782,14 +781,14 @@ jQuery(document).ready(function($){
             },
             focus: function(e) { e.preventDefault(); }
         });
-    },
-    ctc_setup_menus = function() {
+    }
+    function ctc_setup_menus() {
         ctc_setup_query_menu();
         ctc_setup_selector_menu(currentQuery);
         ctc_setup_rule_menu();
         ctc_setup_new_rule_menu();
-    },
-    ctc_theme_exists = function(testslug, testtype) {
+    }
+    function ctc_theme_exists(testslug, testtype) {
         var exists = false;
         $.each(ctcAjax.themes, function(type, theme){
             $.each(theme, function(slug, data){
@@ -801,9 +800,23 @@ jQuery(document).ready(function($){
             if (exists) return false;
         });
         return exists;
-    },
-    
-    ctc_set_notice = function(noticearr) {
+    }
+    function autogen_slugs() {
+        var parent  = $('#ctc_theme_parnt').val(),
+            slug    = slugbase = parent + '-child',
+            name    = ctcAjax.themes.parnt[parent].Name + ' Child',
+            suffix  = '',
+            padded  = '',
+            pad     = '00';
+        while (ctc_theme_exists(slug, 'new')) {
+            suffix  = ('' == suffix ? 2 : suffix + 1);
+            padded  = pad.substring(0, pad.length - suffix.toString().length) + suffix.toString();
+            slug    = slugbase + padded;
+        }
+        testslug = slug;
+        testname = name + (padded.length ? ' ' + padded : '');
+    }
+    function ctc_set_notice(noticearr) {
         var errorHtml = '';
         if (false === ctc_is_empty(noticearr)) {
             $.each(noticearr, function(type, list){
@@ -815,8 +828,8 @@ jQuery(document).ready(function($){
             });
         }
         $('#ctc_error_notice').html(errorHtml);
-    },
-    ctc_validate = function() {
+    }
+    function ctc_validate() {
         var regex = /[^\w\-]/,
             newslug = $('#ctc_child_template').val().toString().replace(regex).toLowerCase(),
             slug = $('#ctc_theme_child').val().toString().replace(regex).toLowerCase(),
@@ -837,20 +850,23 @@ jQuery(document).ready(function($){
             return false;
         }
         return true;
-    },
-    ctc_set_theme_menu = function(e) {
-        var slug = $('#ctc_theme_child').val();
-        if (false === ctc_is_empty(ctcAjax.themes.child[slug])) {
-            $('#ctc_child_name').val(ctcAjax.themes.child[slug].Name);
-            $('#ctc_child_author').val(ctcAjax.themes.child[slug].Author);
-            $('#ctc_child_version').val(ctcAjax.themes.child[slug].Version);
+    }
+    function ctc_set_parent_menu(obj) {
+        $('#ctc_theme_parent').parents('.ctc-input-row').first().append('<span class="ctc-status-icon spinner"></span>');
+        $('.spinner').show();
+        document.location='?page=' + ctcAjax.page + '&ctc_parent=' + obj.value;
+    }
+    function ctc_set_child_menu(obj) {
+        if (false === ctc_is_empty(ctcAjax.themes.child[obj.value])) {
+            $('#ctc_child_name').val(ctcAjax.themes.child[obj.value].Name);
+            $('#ctc_child_author').val(ctcAjax.themes.child[obj.value].Author);
+            $('#ctc_child_version').val(ctcAjax.themes.child[obj.value].Version);
         }
-    },
-    fade_update_notice = function() {
+    }
+    function fade_update_notice() {
         $('.updated, .error').slideUp('slow', function(){ $('.updated').remove(); });
-    },
-    
-    ctc_set_addl_css = function () { 
+    }
+    function ctc_set_addl_css() { 
         var template    = $('#ctc_theme_parnt').val(),
             theme_uri   = ctcAjax.theme_uri.replace(/^https?:\/\//, ''),
             homeurl     = ctcAjax.homeurl.replace(/^https?/, ctcAjax.ssl ? 'https' : 'http'),
@@ -868,8 +884,8 @@ jQuery(document).ready(function($){
                 });
             }
         });
-    },
-    ctc_focus_panel = function (id) {
+    }
+    function ctc_focus_panel(id) {
         var panelid = id + '_panel';
         $('.nav-tab').removeClass('nav-tab-active');
         $('.ctc-option-panel').removeClass('ctc-option-panel-active');
@@ -877,8 +893,8 @@ jQuery(document).ready(function($){
         $(id).addClass('nav-tab-active');
         $('.ctc-option-panel-container').scrollTop(0);
         $(panelid).addClass('ctc-option-panel-active');
-    },
-    ctc_selector_edit = function(obj) {
+    }
+    function ctc_selector_edit(obj) {
         var qsid = $(obj).attr('id').match(/_(\d+)$/)[1],
             q = ctcAjax.sel_val[qsid].query,
             s = ctcAjax.sel_val[qsid].selector,
@@ -886,8 +902,8 @@ jQuery(document).ready(function($){
         ctc_set_query(q);
         ctc_set_selector(qsid, s);
         ctc_focus_panel(id);        
-    },
-    ctc_selector_input_toggle = function(obj) {
+    }
+    function ctc_selector_input_toggle(obj) {
         var origval;
         if ($('#ctc_rewrite_selector').length) {
             origval = $('#ctc_rewrite_selector_orig').val();
@@ -902,38 +918,67 @@ jQuery(document).ready(function($){
         }
     }
     // initialize vars
-    // ajax semaphores: 0 = reload, 1 = loading, 2 = loaded
-    loading = {
-        'rule':     2,
-        'sel_ndx':  2,
-        'val_qry':  0,
-        'rule_val': 0,
-        'sel_val':  0,
-        'preview':  0
-    },
-    
-    ctc_selectors       = [],
-    ctc_queries         = [],
-    ctc_rules           = [];
+    var lf = "\n", 
+        currentQuery = 'base',
+        currentSel,
+        saveEvents = {},
+        rewrite_id, 
+        rewrite_sel,
+        quot_regex = new RegExp('"', 'g'),
+        testslug    = '',
+        testname    = '',
+        // ajax semaphores: 0 = reload, 1 = loading, 2 = loaded
+        loading = {
+            'rule':     2,
+            'sel_ndx':  2,
+            'val_qry':  0,
+            'rule_val': 0,
+            'sel_val':  0,
+            'preview':  0
+        },
+        ctc_selectors       = [],
+        ctc_queries         = [],
+        ctc_rules           = [];
     // -- end var definitions
     
-    // initialize Iris color picker    
-    $('.color-picker').each(function() {
-        ctc_setup_iris(this);
+    // initialize theme menus
+    autogen_slugs();
+    $.widget('ctc.themeMenu', $.ui.selectmenu, {
+        _renderItem: function( ul, item ) {
+            var li = $( "<li>" );
+            $('#ctc_theme_option_' + item.value).detach().appendTo(li);
+            return li.appendTo( ul );
+        }    
     });
+    $('#ctc_theme_parnt').themeMenu({
+        select: function( event, ui ) {
+            ctc_set_parent_menu(ui.item);
+        }
+    });
+    if ( ctc_is_empty( ctcAjax.themes.child ) ) {
+        $('#ctc_child_name').val(testname);
+        $('#ctc_child_template').val(testslug);
+    } else {
+        $('#ctc_theme_child').themeMenu({
+            select: function( event, ui ) {
+                ctc_set_child_menu(ui.item);
+            }
+        });
+    }
+
     // bind event handlers
+    
     $('.ctc-option-panel-container').on('focus', '.color-picker', function(){
         ctc_set_notice('')
+        $('.color-picker').not(this).iris('hide');
         $(this).iris('toggle');
         $('.iris-picker').css({'position':'absolute', 'z-index':10});
     });
-    $('.ctc-option-panel-container').on('focus', 'input', function() {
-        ctc_set_notice('')
-        $('.color-picker').not(this).iris('hide');
-    });
+    
     $('.ctc-option-panel-container').on('change', '.ctc-child-value, input[type=checkbox]', function() {
         ctc_coalesce_inputs(this);
     });
+    
     $('.ctc-option-panel-container').on('click', '.ctc-selector-handle', function(e) {
         e.preventDefault();
         ctc_set_notice('')
@@ -958,7 +1003,6 @@ jQuery(document).ready(function($){
     $('#ctc_load_form').on('submit', function() {
         return (ctc_validate() && confirm(ctcAjax.load_txt) ) ;
     });
-    $('#parent_child_options_panel').on('change', '#ctc_theme_child', ctc_set_theme_menu );
     $(document).on('click', '.ctc-save-input', function(e) {
         ctc_save(this);
     });
@@ -968,20 +1012,42 @@ jQuery(document).ready(function($){
     $(document).on('click', '.ctc-rewrite-toggle', function(e) {
         e.preventDefault();
         ctc_selector_input_toggle(this);
-    });//ctc_rewrite_toggle
-    $(document).on('change', '#ctc_theme_parnt', function(e) {
-        $(this).parents('.ctc-input-row').first().append('<span class="ctc-status-icon spinner"></span>');
-        $('.spinner').show();
-        document.location='?page=chld_thm_cfg_menu&ctc_parent=' + $(this).val();
     });
-    $(document).on('click', '#ctc_additional_css_label', function(e){
+    $(document).on('click', '.ctc-section-toggle', function(e){
         $(this).toggleClass('open');
-        $('#ctc_additional_css_files').slideToggle('fast');
+        var id = $(this).attr('id') + '_content';
+        $('#' + id).slideToggle('fast');
+    });
+    $(document).on('click', '.ctc-live-preview', function(e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        document.location = $(this).prop('href');
+        return false;
+    });
+    $(document).on('change', '#ctc_configtype', function(e) {
+        var val = $(this).val();
+        if (ctc_is_empty(val) || 'theme' == val) {
+            $('.ctc-theme-only').stop().slideDown('fast');
+        } else {
+            $('.ctc-theme-only').stop().slideUp('fast');
+        }
+    });
+    $('#ctc_theme_child,#ctc_theme_child-button,#ctc_child_type_existing').on('focus click', function(){
+        $('#ctc_child_type_existing').prop('checked', true);
+        $('#ctc_child_type_new').prop('checked', false);
+        $('#ctc_child_template').val('');
+    });
+    $('#ctc_child_type_new,#ctc_child_template').on('focus click', function(){
+        $('#ctc_child_type_existing').prop('checked', false);
+        $('#ctc_child_type_new').prop('checked', true);
+        $('#ctc_child_name').val(testname);
+        $('#ctc_child_template').val(testslug);
     });
     // initialize menus
     ctc_setup_menus();
     ctc_set_query(currentQuery);
     ctc_set_addl_css();
+    // turn on submit buttons
     $('input[type=submit],input[type=button]').prop('disabled', false);
     setTimeout(fade_update_notice, 6000);
 });

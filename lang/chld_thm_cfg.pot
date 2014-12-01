@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Child Theme Configurator package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Child Theme Configurator 1.5.2.2\n"
+"Project-Id-Version: Child Theme Configurator 1.6.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/child-theme-configurator\n"
-"POT-Creation-Date: 2014-10-16 05:00:29+00:00\n"
+"POT-Creation-Date: 2014-12-01 02:23:29+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,852 +12,207 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: includes/class-ctc-ui.php:39
-msgid "Get CTC for Plugins and other tools"
+#. #-#-#-#-#  chld_thm_cfg.pot (Child Theme Configurator 1.6.0)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: child-theme-configurator.php:54 includes/forms/main.php:23
+msgid "Child Theme Configurator"
 msgstr ""
 
-#: includes/class-ctc-ui.php:39
-msgid "Lilaea Media - Responsive Tools for a Mobile World"
+#: child-theme-configurator.php:55
+msgid "Child Themes"
 msgstr ""
 
-#: includes/class-ctc-ui.php:52
-msgid "Parent/Child"
-msgstr ""
-
-#: includes/class-ctc-ui.php:55 includes/class-ctc-ui.php:660
-msgid "Query/Selector"
-msgstr ""
-
-#: includes/class-ctc-ui.php:58 includes/class-ctc-ui.php:674
-msgid "Rule/Value"
-msgstr ""
-
-#: includes/class-ctc-ui.php:61
-msgid "@import"
-msgstr ""
-
-#: includes/class-ctc-ui.php:64
-msgid "Child CSS"
-msgstr ""
-
-#: includes/class-ctc-ui.php:67
-msgid "Parent CSS"
-msgstr ""
-
-#: includes/class-ctc-ui.php:74 includes/class-ctc-ui.php:712
-msgid "Files"
-msgstr ""
-
-#: includes/class-ctc-ui.php:87
-msgid "Parent Theme"
-msgstr ""
-
-#: includes/class-ctc-ui.php:97
-msgid "Child Theme"
-msgstr ""
-
-#: includes/class-ctc-ui.php:104
-msgid "Create New Child Theme"
-msgstr ""
-
-#: includes/class-ctc-ui.php:113
-msgid "Use Existing Child Theme"
-msgstr ""
-
-#: includes/class-ctc-ui.php:118
-msgid "Theme Slug"
-msgstr ""
-
-#: includes/class-ctc-ui.php:128
-msgid "Child Theme Name"
-msgstr ""
-
-#: includes/class-ctc-ui.php:132
-msgid "Theme Name"
-msgstr ""
-
-#: includes/class-ctc-ui.php:138 includes/class-ctc-ui.php:142
-msgid "Author"
-msgstr ""
-
-#: includes/class-ctc-ui.php:147 includes/class-ctc-ui.php:151
-msgid "Version"
-msgstr ""
-
-#: includes/class-ctc-ui.php:156
-msgid "Copy Parent Theme Menus, Widgets and other Options"
-msgstr ""
-
-#: includes/class-ctc-ui.php:158
-msgid "NOTE: This will overwrite existing child theme options."
-msgstr ""
-
-#: includes/class-ctc-ui.php:167
-msgid "Backup Child Stylesheet"
-msgstr ""
-
-#: includes/class-ctc-ui.php:178
-msgid "Parse additional stylesheets:"
-msgstr ""
-
-#: includes/class-ctc-ui.php:179
-msgid "(click to toggle)"
-msgstr ""
-
-#: includes/class-ctc-ui.php:183
-msgid "Select only the stylesheets you wish to customize to reduce overhead."
-msgstr ""
-
-#: includes/class-ctc-ui.php:200
-msgid "Generate Child Theme Files"
-msgstr ""
-
-#: includes/class-ctc-ui.php:211 includes/class-ctc-ui.php:280
-msgid "Rule"
-msgstr ""
-
-#: includes/class-ctc-ui.php:224
-msgid "Value"
-msgstr ""
-
-#: includes/class-ctc-ui.php:227 includes/class-ctc-ui.php:265
-#: includes/class-ctc.php:120
-msgid "Sample"
-msgstr ""
-
-#: includes/class-ctc-ui.php:230 includes/class-ctc.php:122
-msgid "Selectors"
-msgstr ""
-
-#: includes/class-ctc-ui.php:241
-msgid "Query"
-msgstr ""
-
-#: includes/class-ctc-ui.php:252
-msgid "Selector"
-msgstr ""
-
-#: includes/class-ctc-ui.php:273 includes/class-ctc-ui.php:313
-#: includes/class-ctc-ui.php:332
-msgid "Save"
-msgstr ""
-
-#: includes/class-ctc-ui.php:283
-msgid "Parent Value"
-msgstr ""
-
-#: includes/class-ctc-ui.php:286
-msgid "Child Value"
-msgstr ""
-
-#: includes/class-ctc-ui.php:292
-msgid "New Rule"
-msgstr ""
-
-#: includes/class-ctc-ui.php:302
-msgid "Order"
-msgstr ""
-
-#: includes/class-ctc-ui.php:309
-msgid "Raw CSS"
-msgstr ""
-
-#: includes/class-ctc-ui.php:328
-msgid "@import Statements"
-msgstr ""
-
-#: includes/class-ctc-ui.php:360
-msgid "Upload New Child Theme Image"
-msgstr ""
-
-#: includes/class-ctc-ui.php:363
-msgid ""
-"Theme images reside under the <code>images</code> directory in your child "
-"theme and are meant for stylesheet use only. Use the Media Library for "
-"content images."
-msgstr ""
-
-#: includes/class-ctc-ui.php:370 includes/class-ctc-ui.php:396
-msgid "Upload"
-msgstr ""
-
-#: includes/class-ctc-ui.php:377
-msgid "Child Theme Screenshot"
-msgstr ""
-
-#: includes/class-ctc-ui.php:386
-msgid "Upload New Screenshot"
-msgstr ""
-
-#: includes/class-ctc-ui.php:389
-msgid ""
-"The theme screenshot should be a 4:3 ratio (e.g., 880px x 660px) JPG, PNG or "
-"GIF. It will be renamed <code>screenshot</code>."
-msgstr ""
-
-#: includes/class-ctc-ui.php:404
-msgid "Export Child Theme as Zip Archive"
-msgstr ""
-
-#: includes/class-ctc-ui.php:410
-msgid "Export"
-msgstr ""
-
-#: includes/class-ctc-ui.php:419
-msgid "Secure Child Theme"
-msgstr ""
-
-#: includes/class-ctc-ui.php:422
-msgid ""
-"Attempt to reset child theme permissions to user ownership and read-only "
-"access."
-msgstr ""
-
-#: includes/class-ctc-ui.php:428
-msgid "Make read-only"
-msgstr ""
-
-#: includes/class-ctc-ui.php:479
-msgid "Click here to edit template files using the Theme Editor"
-msgstr ""
-
-#: includes/class-ctc-ui.php:483
-msgid ""
-"The Theme editor has been disabled. Template files must be edited offline."
-msgstr ""
-
-#: includes/class-ctc-ui.php:498
-msgid "Copy PHP template files from the parent theme by selecting them here."
-msgstr ""
-
-#: includes/class-ctc-ui.php:501
-msgid ""
-"CAUTION: If your child theme is active, the child theme version of the file "
-"will be used instead of the parent immediately after it is copied."
-msgstr ""
-
-#: includes/class-ctc-ui.php:503
-msgid "The %s file is generated separately and cannot be copied here."
-msgstr ""
-
-#: includes/class-ctc-ui.php:510
-msgid "Delete child theme templates by selecting them here."
-msgstr ""
-
-#: includes/class-ctc-ui.php:512
-msgid ""
-"Delete child theme templates or make them writable by selecting them here. "
-"Writable files are displayed in <span style=\"color:red\">red</span>."
-msgstr ""
-
-#: includes/class-ctc-ui.php:523
-msgid "Make Selected Writable"
-msgstr ""
-
-#: includes/class-ctc-ui.php:527
-msgid "Copy Selected to Child Theme"
-msgstr ""
-
-#: includes/class-ctc-ui.php:527
-msgid "Delete Selected"
-msgstr ""
-
-#: includes/class-ctc-ui.php:565
-msgid "Child Theme Images"
-msgstr ""
-
-#: includes/class-ctc-ui.php:568
-msgid "Remove child theme images by selecting them here."
-msgstr ""
-
-#: includes/class-ctc-ui.php:576
-msgid "Remove Selected"
-msgstr ""
-
-#: includes/class-ctc-ui.php:607
+#: includes/class-ctc-ui.php:126
 msgid "Child Theme files modified successfully."
 msgstr ""
 
-#: includes/class-ctc-ui.php:609
+#: includes/class-ctc-ui.php:128
 msgid ""
 "Child Theme <strong>%s</strong> has been generated successfully.\n"
 "                "
 msgstr ""
 
-#: includes/class-ctc-ui.php:615
-msgid ""
-"Please verify the imports below and remove any imports that are not needed "
-"by the front end, such as admin or configuration stylesheets."
+#: includes/class-ctc-ui.php:131
+msgid "IMPORTANT:"
 msgstr ""
 
-#: includes/class-ctc-ui.php:632
-msgid "Tutorial Video"
+#: includes/class-ctc-ui.php:131 includes/forms/themepreview.php:16
+#: includes/forms/themepreview.php:17
+msgid "Live Preview"
 msgstr ""
 
-#: includes/class-ctc-ui.php:633
-msgid ""
-"<iframe width=\"480\" height=\"270\" src=\"//www.youtube.com/embed/"
-"xL2HkWQxgOA?rel=0&modestbranding=1\" frameborder=\"0\" allowfullscreen></"
-"iframe>"
+#: includes/class-ctc-ui.php:131
+msgid "Test your child theme"
 msgstr ""
 
-#: includes/class-ctc-ui.php:639
-msgid "Start Here"
+#: includes/class-ctc-ui.php:131
+msgid "before activating."
 msgstr ""
 
-#: includes/class-ctc-ui.php:640
-msgid ""
-"\n"
-"<p>The first step is to create a child theme and import your parent theme "
-"styles into the configurator.</p>\n"
-"<ol><li>Select an existing parent theme from the menu.</li>\n"
-"<li>Select \"New\" or \"Existing\" child theme.\n"
-"<ul><li>If creating a new theme, enter a \"slug\" (lower case, no spaces). "
-"This is used to name the theme directory and identify the theme to WordPress."
-"</li>\n"
-"<li>If using an existing theme, select a child theme from the menu.</li></"
-"ul></li>\n"
-"<li>Enter a Name for the child theme.</li>\n"
-"<li>Enter an author for the child theme.</li>\n"
-"<li>Enter the child theme version number.</li>\n"
-"<li>Check \"Copy Parent Theme Menus, Widgets and other Options\", to copy "
-"parent theme modifications to the child theme. Depending on the theme, some "
-"options may need to be applied using separate theme option controls. "
-"<strong>IMPORTANT: This will overwrite existing child theme options.</"
-"strong></li>\n"
-"<li>Check \"Backup Stylesheet\", to create a backup of the child theme "
-"stylesheet in the child theme directory.</li>\n"
-"<li>If your theme uses additional stylesheets they will appear as checkbox "
-"options when you open the toggle arrow. Select only the stylesheets you wish "
-"to customize to reduce overhead. Remember to select them again if you reload "
-"your configuration.</li>\n"
-"<li>Click \"Generate Child Theme.\"</li>\n"
-"<li><strong>ALWAYS <a target=\"_blank\" href=\"http://www.lilaeamedia.com/"
-"plugins/child-theme-configurator/#preview_activate\" title=\"Test your child "
-"theme before activating!\">TEST YOUR CHILD THEME</a> BEFORE ACTIVATING!</"
-"strong></li></ol>\n"
-"\t\t\t\t    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:661
-msgid ""
-"\n"
-"<p>There are two ways to identify and override parent styles. The Child "
-"Theme Configurator lets you search styles by <strong>selector</strong> and "
-"by <strong>rule</strong>. If you wish to change a specific selector (e.g., "
-"h1), use the \"Query/Selector\" tab. If you have a specific value you wish "
-"to change site-wide (e.g., the color of the type), use the \"Rule/Value\" "
-"tab.</p>\n"
-"<p>The Query/Selector tab lets you find specific selectors and edit them. "
-"First, find the query that contains the selector you wish to edit by typing "
-"in the <strong>Query</strong> autoselect box. Select by clicking with the "
-"mouse or by pressing the \"Enter\" or \"Tab\" keys. Selectors are in the "
-"<strong>base</strong> query by default.</p>\n"
-"<p>Next, find the selector by typing in the <strong>Selector</strong> "
-"autoselect box. Select by clicking with the mouse or by pressing the \"Enter"
-"\" or \"Tab\" keys.</p>\n"
-"<p>This will load all of the rules for that selector with the Parent values "
-"on the left and the Child values inputs on the right. Any existing child "
-"values will be automatically populated. There is also a Sample preview that "
-"displays the combination of Parent and Child overrides. Note that the "
-"<strong>border</strong> and <strong>background-image</strong> get special "
-"treatment.</p>\n"
-"<p>The \"Order\" field contains the original sequence of the selector in the "
-"parent theme stylesheet. You can change the selector order sequence by "
-"entering a lower or higher number in the \"Order\" field. You can also force "
-"style overrides (so called \"!important\" flag) by checking the \"!\" box "
-"next to each input. Please use judiciously.</p>\n"
-"<p>Click \"Save\" to update the child stylesheet and save your changes to "
-"the WordPress admin.</p>\n"
-"\t\t\t\t    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:675
-msgid ""
-"\n"
-"<p>There are two ways to identify and override parent styles. The Child "
-"Theme Configurator lets you search styles by <strong>selector</strong> and "
-"by <strong>rule</strong>. If you wish to change a specific selector (e.g., "
-"h1), use the \"Query/Selector\" tab. If you have a specific value you wish "
-"to change site-wide (e.g., the color of the type), use the \"Rule/Value\" "
-"tab.</p>\n"
-"<p>The Rule/Value tab lets you find specific values for a given rule and "
-"then edit that value for individual selectors that use that rule/value "
-"combination. First, find the rule you wish to override by typing in the "
-"<strong>Rule</strong> autoselect box. Select by clicking with the mouse or "
-"by pressing the \"Enter\" or \"Tab\" keys.</p>\n"
-"<p>This will load all of the unique values that exist for that rule in the "
-"parent stylesheet with a Sample preview for that value. If there are values "
-"that exist in the child stylesheet that do not exist in the parent "
-"stylesheet, they will be displayed as well.</p>\n"
-"<p>For each unique value, click the \"Selectors\" link to view a list of "
-"selectors that use that rule/value combination, grouped by query with a "
-"Sample preview of the value and inputs for the child value. Any existing "
-"child values will be automatically populated.</p>\n"
-"<p>Click \"Save\" to update the child stylesheet and save your changes to "
-"the WordPress admin.</p>\n"
-"\t\t\t\t    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:687
-msgid "Add New Styles"
-msgstr ""
-
-#: includes/class-ctc-ui.php:688
-msgid ""
-"\n"
-"<p>If you wish to add additional rules to a given selector, first load the "
-"selector using the Query/Selector tab. Then find the rule you wish to "
-"override by typing in the <strong>New Rule</strong> autoselect box. Select "
-"by clicking with the mouse or by pressing the \"Enter\" or \"Tab\" keys. "
-"This will add a new input row to the selector inputs.</p>\n"
-"<p>If you wish to add completely new selectors, or even new @media queries, "
-"you can enter free-form CSS in the \"New Selector\" textarea. Be aware that "
-"your syntax must be correct (i.e., balanced curly braces, etc.) for the "
-"parser to load the new styles. You will know it is invalid because a red \"X"
-"\" will appear next to the save button.</p>\n"
-"<p>If you prefer to use shorthand syntax for rules and values instead of the "
-"inputs provided by the Child Theme Configurator, you can enter them here as "
-"well. The parser will convert your input into normalized CSS code "
-"automatically.</p>\n"
-"\t\t\t\t    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:698
-msgid "@imports and Web Fonts"
-msgstr ""
-
-#: includes/class-ctc-ui.php:699
-msgid ""
-"\n"
-"<p>You can add additional stylesheets and web fonts by typing @import rules "
-"into the textarea on the @import tab. <strong>Important: The Child Theme "
-"Configurator adds the @import rule that loads the Parent Theme's stylesheet "
-"automatically. Do not need to add it here.</strong></p>\n"
-"<p>Below is an example that loads a local custom stylesheet (you would have "
-"to add the \"fonts\" directory and stylesheet) as well as the web font "
-"\"Open Sans\" from Google Web Fonts:</p>\n"
-"<blockquote><pre><code>\n"
-"@import url(fonts/stylesheet.css);\n"
-"@import url(http://fonts.googleapis.com/css?family=Open"
-"+Sans:400,400italic,700,700italic);\n"
-"</code></pre></blockquote>\n"
-"\t\t\t\t    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:713
-msgid ""
-"\n"
-"<h5>Parent Templates</h5><p>Copy PHP template files from the parent theme by "
-"checking the boxes and clicking \"Copy Selected to Child Theme\" and the "
-"templates will be added to the child theme directory.</p>\n"
-"<p><strong>CAUTION: If your child theme is active, the child theme version "
-"of the file will be used instead of the parent immediately after it is "
-"copied.</strong></p>\n"
-"<p>The <code>functions.php</code> file is generated separately and cannot be "
-"copied here.</p>\n"
-"<h5>Child Templates</h5><p>Templates copied from the parent are listed here. "
-"These can be edited using the Theme Editor in the Appearance Menu.</p>\n"
-"<p>Remove child theme images by checking the boxes and clicking \"Remove "
-"Selected from Child Theme.\"</p>\n"
-"<h5>Child Theme Images</h5><p>Theme images reside under the <code>images</"
-"code> directory in your child theme and are meant for stylesheet use only. "
-"Use the media gallery for content images.</p>\n"
-"<p>You can upload new images using the image upload form.</p>\n"
-"<h5>Child Theme Screenshot</h5><p>You can upload a custom screenshot for the "
-"child theme here.</p>\n"
-"<p>The theme screenshot should be a 4:3 ratio (eg., 880px x 660px) JPG, PNG "
-"or GIF. It will be renamed <code>screenshot</code>.</p>\n"
-"\t\t\t\t    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:729
-msgid "Preview and Activate"
-msgstr ""
-
-#: includes/class-ctc-ui.php:730
-msgid ""
-"<p><strong>IMPORTANT: <a target=\"_blank\" href=\"http://www.lilaeamedia.com/"
-"plugins/child-theme-configurator/#preview_activate\" title=\"Test your child "
-"theme before activating!\">Test your child theme before activating!</a></"
-"strong> Some themes (particularly commercial themes) do not adhere to the "
-"Theme Development guidelines set forth by WordPress.org, and do not "
-"correctly load parent template files or automatically load child theme "
-"stylesheets or php files. <strong>In the worst cases they will break your "
-"website when you activate the child theme.</strong></p>\n"
-"<ol><li>Navigate to Appearance > Themes in the WordPress Admin. You will now "
-"see the new Child Theme as one of the installed Themes.</li>\n"
-"<li>Click \"Live Preview\" below the new Child Theme to see it in action.</"
-"li>\n"
-"<li>When you are ready to take the Child Theme live, click \"Activate.\"</"
-"li></ol>\n"
-"<p>You can also click the Child or Parent CSS tab to reference the "
-"stylesheet code.</p>\n"
-"\t\t\t\t    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:741
-msgid "File Permissions"
-msgstr ""
-
-#: includes/class-ctc-ui.php:742
-msgid ""
-"\n"
-"<p>WordPress was designed to work on a number of server configurations. "
-"Child Theme Configurator uses the WordPress Filesystem API to allow changes "
-"to sites that require user permission to edit files.</p><p>However, because "
-"most of the functionality occurs via AJAX (background) requests, the child "
-"theme stylesheet must be writable by the web server.</p><p>The plugin will "
-"automatically detect your configuration and provide a number of options to "
-"resolve this requirement. Use the links provided to find out more about the "
-"options available, including:</p>\n"
-"<ol><li>Temporarily making the stylesheet writable through the plugin.</li>\n"
-"<li>Adding your FTP/SSH credentials to the WordPress config file.</li>\n"
-"<li>Setting the stylesheet write permissions on the server manually</li>\n"
-"<li>Configuring your web server to allow write access in certain situations."
-"</li>\n"
-"</ol>\n"
-"\t\t\t\t    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:755
-msgid "FAQs"
-msgstr ""
-
-#: includes/class-ctc-ui.php:756
-msgid ""
-"\n"
-"<h5>Does it work with Plugins?</h5>\n"
-"<p>We offer a premium extension to let you easily modify styles for any "
-"WordPress Plugin installed on your website. The Child Theme Configurator "
-"Plugin Extension scans your plugins and allows you to create custom "
-"stylesheets in your Child Theme. <a href=\"http://www.lilaeamedia.com/"
-"plugins/child-theme-plugin-styles\" title=\"Child Theme Configurator "
-"Extension\">Learn more</a></p>\n"
-"<h5 id=\"doesnt_work\">Why doesn’t this work with my (insert theme vendor "
-"here) theme?</h5>\n"
-"<p>Some themes (particularly commercial themes) do not adhere to the Theme "
-"Development guidelines set forth by WordPress.org, and do not correctly load "
-"parent template files or automatically load child theme stylesheets or php "
-"files.</p>\n"
-"<p>This is unfortunate, because in the best case they effectively prohibit "
-"the webmaster from adding any customizations (other than those made through "
-"the admin theme options) that will survive past an upgrade. <strong>In the "
-"worst case they will break your website when you activate the child theme.</"
-"strong></p>\n"
-"<p>Contact the vendor directly to ask for this core functionality. It is our "
-"opinion that ALL themes (especially commercial ones) must pass the Theme "
-"Unit Tests outlined by WordPress.org.</p>\n"
-"<h5>Can I edit the Child Theme stylesheet manually offline or by using the "
-"Editor or do I have to use the Configurator?</h5>\n"
-"<p>You can make any manual changes you wish to the stylesheet. Just make "
-"sure you import the revised stylesheet using the Parent/Child panel or the "
-"Configurator will overwrite your changes the next time you use it. Just "
-"follow the steps as usual but select the \"Use Existing Child Theme\" radio "
-"button as the \"Child Theme\" option. The Configurator will automatically "
-"update its internal data from the new stylesheet.</p>\n"
-"<h5>Why doesn't the Parent Theme have any styles when I \"View Parent CSS\"?"
-"</h5>\n"
-"<p>Your Parent theme is probably using a separate location for the "
-"stylesheets. Select individual stylesheets from the \"Parse Additional "
-"Stylesheets\" section of the Parent/Child tab and click \"Generate Child "
-"Theme Files\" again.</p>\n"
-"<h5 id=\"menus-broken\">Why are my menus displaying incorrectly when I "
-"activate the new child theme?</h5>\n"
-"<p>The child theme creates a new instance in the WordPress options data and "
-"the menus have to be assigned. Go to Appearance &gt; Menus and assign "
-"locations to each of the menus for the new Child Theme.</p>\n"
-"<h5 \"preview-not-loading\">Why do the preview tabs return \"Stylesheet "
-"could not be displayed\"?</h5>\n"
-"<p>You have to configure at least one child theme from the Parent/Child tab "
-"for the preview to display.</p>\n"
-"<h5 id=\"specific_color\">How do I change a specific color/font style/"
-"background?</h5>\n"
-"<p>You can override a specific value globally using the Rule/Value tab. See "
-"Rule/Value, above.</p>\n"
-"<h5 id=\"add_styles\">How do I add styles that aren't in the Parent Theme?</"
-"h5>\n"
-"<p>You can add queries and selectors using the \"New Selector(s)\" textarea "
-"on the Query/Selector tab. See Query/Selector, above.</p>\n"
-"<h5 id=\"add_styles\">How do I remove a style from the Parent Theme?</h5>\n"
-"<p>You shouldn't really \"remove\" a style from the Parent. You can, "
-"however, set the rule to \"inherit,\" \"none,\" or zero (depending on the "
-"rule). This will negate the Parent value. Some experimentation may be "
-"necessary.</p>\n"
-"<h5 id=\"remove_styles\">How do I remove a style from the Child Theme?</h5>\n"
-"<p>Delete the value from the input for the rule you wish to remove. The "
-"Child Theme Configurator only adds overrides for rules that contain values.</"
-"p>\n"
-"<h5 id=\"important_flag\">How do I set the !important flag?</h5>\n"
-"<p>We always recommend relying on good cascading design over global "
-"overrides. To that end, you have ability to change the load order of child "
-"theme styles by entering a value in the \"Order\" field. And yes, you can "
-"now set rules as important by checking the \"!\" box next to each input. "
-"Please use judiciously.</p>\n"
-"<h5 id=\"gradients\">How do I create cross-browser gradients?</h5>\n"
-"<p>The Child Theme Configurator automatically generates the vendor prefixes "
-"and filters to display gradients across most browsers. It uses a normalized "
-"syntax and only supports two colors without intermediate stops. The inputs "
-"consist of origin (e.g., top, left, 135deg, etc.), start color and end "
-"color. The browser-specific syntax is generated automatically when you save "
-"these values. <strong>Note:</strong> For Internet Explorer, a filter rule "
-"approximates the gradient but can only be horizontal (origin top) or "
-"vertical (origin left). The legacy webkit-gradient syntax is not supported.</"
-"p>\n"
-"<h5 id=\"responsive\">How do I make my Theme responsive?</h5>\n"
-"<p>The short answer is to use a responsive Parent Theme. Some common "
-"characteristics of responsive design are:</p>\n"
-"<ul><li>Avoiding fixed width and height values. Using max- and min-height "
-"values and percentages are ways to make your designs respond to the viewer's "
-"browser size.</li>\n"
-"<li>Combining floats and clears with inline and relative positions allow the "
-"elements to adjust gracefully to their container's width.</li>\n"
-"<li>Showing and hiding content with Javascript.</li></ul>\n"
-"<iframe width=\"480\" height=\"270\" src=\"//www.youtube.com/embed/"
-"iBiiAgsK4G4?rel=0&modestbranding=1\" frameborder=\"0\" allowfullscreen></"
-"iframe> \n"
-"<h5 id=\"web_fonts\">How do I add Web Fonts?</h5>\n"
-"<p>The easiest method is to paste the @import code provided by Google, Font "
-"Squirrel or any other Web Font site into the @import tab. The fonts will "
-"then be available to use as a value of the <strong>font-family</strong> "
-"rule. Be sure you understand the license for any embedded fonts.</p>\n"
-"<p>You can also create a secondary stylesheet that contains @font-face rules "
-"and import it using the @import tab. <strong>Note:</strong> Currently the "
-"Child Theme Configurator does not generate previews of imported web fonts, "
-"but will in a later release.</p>\n"
-"<h5 id=\"functions_file\">Where are the PHP files?</h5>\n"
-"<p>The configurator automatically adds a blank functions.php file to the "
-"child theme directory. Other parent theme files can be copied using the "
-"\"Files\" tab. Theme images and a custom screenshot can be uploaded there as "
-"well.</p>\n"
-"                    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:800
-msgid "Glossary"
-msgstr ""
-
-#: includes/class-ctc-ui.php:801
-msgid ""
-"\n"
-"<h3 id=\"terms\">Glossary</h3>\n"
-"<ul><li id=\"parent_theme\"><strong>Parent Theme</strong> The WordPress "
-"Theme you wish to edit. WordPress first loads the Child Theme, then loads "
-"the Parent Theme. If a style exists in the Child Theme, it overrides the "
-"Parent Theme.</li>\n"
-" <li id=\"child_theme\"><strong>Child Theme</strong> New Theme based on "
-"Parent Theme. You can create any number of Child Themes from a single Parent "
-"Theme.</li>\n"
-" <li id=\"class\"><strong>Class</strong> A term used to organize objects. "
-"For example, a &lt;div&gt; might be assigned the \"blue-text\" class. The "
-"stylesheet might then assign the \"color: blue;\" rule to members of the "
-"\"blue-text\" class. Thus, the &lt;div&gt; would display text as blue in the "
-"browser.</li>\n"
-" <li id=\"selector\"><strong>Selector</strong> One or more html elements, "
-"classes, ids or other terms used to identify groups of objects.</li>\n"
-" <li id=\"rule\"><strong>Rule</strong> One of many standardized attributes "
-"used to tell the browser how to display objects matching a given selector. "
-"Examples are <strong>color</strong>, <strong>background-image</strong> and "
-"<strong>font-size</strong>.</li>\n"
-"<li id=\"at-rule\"><strong>At-rule</strong> CSS browser instruction to "
-"extend default functionality. The Child Theme Configurator supports two At-"
-"rules:\n"
-"<ul> <li id=\"import\"><strong>@import</strong> Instructs the browser to "
-"load additional CSS information from an external source.</li>\n"
-" <li id=\"query\"><strong>@media (Media Query)</strong> Identifies blocks of "
-"styles that are used only when certain browser characteristics are true. "
-"Examples are max-width, screen and print.</li>\n"
-"</ul></li>\n"
-" <li id=\"override\"><strong>Override</strong> When a selector exists in "
-"both the Child Theme and the Parent Theme, the Child Theme takes priority "
-"over the Parent theme. This is where the Child Theme Configurator stands "
-"out: it helps you create <strong>exact overrides</strong> of selectors from "
-"the Parent Theme, eliminating hours of trial and error.</li>\n"
-" </ul> \n"
-"\t\t\t\t    "
-msgstr ""
-
-#: includes/class-ctc-ui.php:824
-msgid "Contact us"
-msgstr ""
-
-#: includes/class-ctc-ui.php:825
-msgid "Plugin Website"
-msgstr ""
-
-#: includes/class-ctc-ui.php:826
-msgid "Donate"
-msgstr ""
-
-#: includes/class-ctc-ui.php:827
-msgid "Give Us 5 Stars"
-msgstr ""
-
-#: includes/class-ctc-ui.php:828
-msgid "WordPress Codex"
-msgstr ""
-
-#: includes/class-ctc-ui.php:829
-msgid "WordPress Answers"
-msgstr ""
-
-#. #-#-#-#-#  chld_thm_cfg.pot (Child Theme Configurator 1.5.2.2)  #-#-#-#-#
-#. Plugin Name of the plugin/theme
-#: includes/class-ctc.php:50
-msgid "Child Theme Configurator"
-msgstr ""
-
-#: includes/class-ctc.php:51
-msgid "Child Themes"
-msgstr ""
-
-#: includes/class-ctc.php:110
+#: includes/class-ctc.php:122
 msgid "URL/None"
 msgstr ""
 
-#: includes/class-ctc.php:111
+#: includes/class-ctc.php:123
 msgid "Origin"
 msgstr ""
 
-#: includes/class-ctc.php:112
+#: includes/class-ctc.php:124
 msgid "Color 1"
 msgstr ""
 
-#: includes/class-ctc.php:113
+#: includes/class-ctc.php:125
 msgid "Color 2"
 msgstr ""
 
-#: includes/class-ctc.php:114
+#: includes/class-ctc.php:126
 msgid "Width"
 msgstr ""
 
-#: includes/class-ctc.php:115
+#: includes/class-ctc.php:127
 msgid "Style"
 msgstr ""
 
-#: includes/class-ctc.php:116
+#: includes/class-ctc.php:128
 msgid "Color"
 msgstr ""
 
-#: includes/class-ctc.php:118
+#: includes/class-ctc.php:130
 msgid "Are you sure? This will replace your current settings."
 msgstr ""
 
-#: includes/class-ctc.php:121
+#: includes/class-ctc.php:132 includes/forms/query-selector.php:35
+#: includes/forms/rule-value.php:28
+msgid "Sample"
+msgstr ""
+
+#: includes/class-ctc.php:133
 msgid "<span style=\"font-size:10px\">!</span>"
 msgstr ""
 
-#: includes/class-ctc.php:123
+#: includes/class-ctc.php:134 includes/forms/rule-value.php:31
+msgid "Selectors"
+msgstr ""
+
+#: includes/class-ctc.php:135
 msgid "Close"
 msgstr ""
 
-#: includes/class-ctc.php:124
+#: includes/class-ctc.php:136
 msgid "Edit"
 msgstr ""
 
-#: includes/class-ctc.php:125
+#: includes/class-ctc.php:137
 msgid "Cancel"
 msgstr ""
 
-#: includes/class-ctc.php:126
+#: includes/class-ctc.php:138
 msgid "Rename"
 msgstr ""
 
-#: includes/class-ctc.php:127
+#: includes/class-ctc.php:139
 msgid "The stylesheet cannot be displayed."
 msgstr ""
 
-#: includes/class-ctc.php:128
+#: includes/class-ctc.php:140
 msgid "(Child Only)"
 msgstr ""
 
-#: includes/class-ctc.php:129
+#: includes/class-ctc.php:141
 msgid "Please enter a valid Child Theme"
 msgstr ""
 
-#: includes/class-ctc.php:130 includes/class-ctc.php:303
+#: includes/class-ctc.php:142
 msgid "Please enter a valid Child Theme name"
 msgstr ""
 
-#: includes/class-ctc.php:131
+#: includes/class-ctc.php:143
 msgid "<strong>%s</strong> exists. Please enter a different Child Theme"
 msgstr ""
 
-#: includes/class-ctc.php:247
+#: includes/class-ctc.php:298
 msgid "Zip file creation failed."
 msgstr ""
 
-#: includes/class-ctc.php:274
+#: includes/class-ctc.php:333
+msgid "The Functions file is required and cannot be deleted."
+msgstr ""
+
+#: includes/class-ctc.php:413
+msgid "You do not have permission to configure child themes."
+msgstr ""
+
+#: includes/class-ctc.php:437
 msgid "%s does not exist. Please select a valid Parent Theme"
 msgstr ""
 
-#: includes/class-ctc.php:277
+#: includes/class-ctc.php:440
 msgid "Please select a valid Parent Theme"
 msgstr ""
 
-#: includes/class-ctc.php:281
+#: includes/class-ctc.php:445
 msgid "Please enter a valid Child Theme template name"
 msgstr ""
 
-#: includes/class-ctc.php:288
+#: includes/class-ctc.php:450
 msgid ""
 "<strong>%s</strong> exists. Please enter a different Child Theme template "
 "name"
 msgstr ""
 
-#: includes/class-ctc.php:306 includes/class-ctc.php:775
+#: includes/class-ctc.php:476
+msgid "Please enter a valid Child Theme directory"
+msgstr ""
+
+#: includes/class-ctc.php:480 includes/class-ctc.php:997
 msgid "Your theme directories are not writable."
 msgstr ""
 
-#: includes/class-ctc.php:328 includes/class-ctc.php:784
+#: includes/class-ctc.php:514 includes/class-ctc.php:1006
 msgid "Your stylesheet is not writable."
 msgstr ""
 
-#: includes/class-ctc.php:389
-msgid "You do not have permission to configure child themes."
-msgstr ""
-
-#: includes/class-ctc.php:489
+#: includes/class-ctc.php:687
 msgid "Could not copy file."
 msgstr ""
 
-#: includes/class-ctc.php:551
+#: includes/class-ctc.php:762
 msgid "Could not set write permissions."
 msgstr ""
 
-#: includes/class-ctc.php:622
+#: includes/class-ctc.php:833
 msgid "There were errors while resetting permissions."
 msgstr ""
 
-#: includes/class-ctc.php:657
+#: includes/class-ctc.php:870
 msgid "Could not upload file."
 msgstr ""
 
-#: includes/class-ctc.php:736
+#: includes/class-ctc.php:950
 msgid ""
 "Child Theme Configurator is unable to write to the stylesheet. This can be "
 "resolved using one of the following options:<ol>"
 msgstr ""
 
-#: includes/class-ctc.php:738
+#: includes/class-ctc.php:952
 msgid ""
 "<li>Temporarily make the stylesheet writable by clicking the button below. "
 "You should change this back when you are finished editing for security by "
 "clicking \"Make read-only\" under the \"Files\" tab.</li>"
 msgstr ""
 
-#: includes/class-ctc.php:740
+#: includes/class-ctc.php:954
 msgid "Temporarily make stylesheet writable"
 msgstr ""
 
-#: includes/class-ctc.php:741
+#: includes/class-ctc.php:955
 msgid ""
 "<li><a target=\"_blank\"  href=\"http://codex.wordpress.org/Editing_wp-"
 "config.php#WordPress_Upgrade_Constants\" title=\"Editin wp-config.php\">Add "
 "your FTP/SSH credentials to the WordPress config file</a>.</li>"
 msgstr ""
 
-#: includes/class-ctc.php:743
+#: includes/class-ctc.php:957
 msgid ""
 "<li><a target=\"_blank\" href=\"http://technet.microsoft.com/en-us/library/"
 "cc771170\" title=\"Setting Application Pool Identity\">Assign WordPress to "
@@ -865,7 +220,7 @@ msgid ""
 "li>"
 msgstr ""
 
-#: includes/class-ctc.php:744
+#: includes/class-ctc.php:958
 msgid ""
 "<li><a target=\"_blank\" href=\"http://codex.wordpress.org/"
 "Changing_File_Permissions\" title=\"Changing File Permissions\">Set the "
@@ -873,11 +228,11 @@ msgid ""
 "li>"
 msgstr ""
 
-#: includes/class-ctc.php:746
+#: includes/class-ctc.php:960
 msgid "<li>Run PHP under Apache with suEXEC (contact your web host).</li>"
 msgstr ""
 
-#: includes/class-ctc.php:754
+#: includes/class-ctc.php:968
 msgid ""
 "This Child Theme is not owned by your website account. It may have been "
 "created by a prior version of this plugin or by another program. Moving "
@@ -886,8 +241,342 @@ msgid ""
 "below."
 msgstr ""
 
-#: includes/class-ctc.php:756
+#: includes/class-ctc.php:970
 msgid "Correct Child Theme Permissions"
+msgstr ""
+
+#: includes/class-ctc.php:977
+msgid ""
+"Child Theme Configurator has changed the way it handles the parent "
+"stylesheet. Please set your preferences below and click \"Generate Child "
+"Theme Files\" to update your configuration."
+msgstr ""
+
+#: includes/forms/at-import.php:12
+msgid "@import Statements"
+msgstr ""
+
+#: includes/forms/at-import.php:16 includes/forms/query-selector.php:43
+#: includes/forms/query-selector.php:83
+msgid "Save"
+msgstr ""
+
+#: includes/forms/backup.php:8
+msgid "Backup"
+msgstr ""
+
+#: includes/forms/fileform.php:7
+msgid ""
+"The Theme editor has been disabled. Template files must be edited offline."
+msgstr ""
+
+#: includes/forms/fileform.php:11
+msgid "Click here to edit template files using the Theme Editor"
+msgstr ""
+
+#: includes/forms/fileform.php:21
+msgid "Parent Templates"
+msgstr ""
+
+#: includes/forms/fileform.php:21
+msgid "Child Theme Files"
+msgstr ""
+
+#: includes/forms/fileform.php:26
+msgid "Copy PHP template files from the parent theme by selecting them here."
+msgstr ""
+
+#: includes/forms/fileform.php:29
+msgid ""
+"CAUTION: If your child theme is active, the child theme version of the file "
+"will be used instead of the parent immediately after it is copied."
+msgstr ""
+
+#: includes/forms/fileform.php:31
+msgid "The %s file is generated separately and cannot be copied here."
+msgstr ""
+
+#: includes/forms/fileform.php:41
+msgid "Delete child theme templates by selecting them here."
+msgstr ""
+
+#: includes/forms/fileform.php:42
+msgid ""
+"Delete child theme templates or make them writable by selecting them here. "
+"Writable files are displayed in <span style=\"color:red\">red</span>."
+msgstr ""
+
+#: includes/forms/fileform.php:55
+msgid "Make Selected Writable"
+msgstr ""
+
+#: includes/forms/fileform.php:59
+msgid "Copy Selected to Child Theme"
+msgstr ""
+
+#: includes/forms/fileform.php:59 includes/forms/images.php:20
+msgid "Delete Selected"
+msgstr ""
+
+#: includes/forms/files.php:15
+msgid "Upload New Child Theme Image"
+msgstr ""
+
+#: includes/forms/files.php:18
+msgid ""
+"Theme images reside under the <code>images</code> directory in your child "
+"theme and are meant for stylesheet use only. Use the Media Library for "
+"content images."
+msgstr ""
+
+#: includes/forms/files.php:25 includes/forms/files.php:51
+msgid "Upload"
+msgstr ""
+
+#: includes/forms/files.php:32
+msgid "Child Theme Screenshot"
+msgstr ""
+
+#: includes/forms/files.php:41
+msgid "Upload New Screenshot"
+msgstr ""
+
+#: includes/forms/files.php:44
+msgid ""
+"The theme screenshot should be a 4:3 ratio (e.g., 880px x 660px) JPG, PNG or "
+"GIF. It will be renamed <code>screenshot</code>."
+msgstr ""
+
+#: includes/forms/files.php:59
+msgid "Export Child Theme as Zip Archive"
+msgstr ""
+
+#: includes/forms/files.php:64
+msgid "Export"
+msgstr ""
+
+#: includes/forms/files.php:73
+msgid "Secure Child Theme"
+msgstr ""
+
+#: includes/forms/files.php:76
+msgid ""
+"Attempt to reset child theme permissions to user ownership and read-only "
+"access."
+msgstr ""
+
+#: includes/forms/files.php:82
+msgid "Make read-only"
+msgstr ""
+
+#: includes/forms/images.php:9
+msgid "Child Theme Images"
+msgstr ""
+
+#: includes/forms/images.php:12
+msgid "Delete child theme images by selecting them here."
+msgstr ""
+
+#: includes/forms/main.php:23
+msgid "version"
+msgstr ""
+
+#: includes/forms/parent-child.php:20
+msgid "Parent Theme"
+msgstr ""
+
+#: includes/forms/parent-child.php:28
+msgid "Child Theme"
+msgstr ""
+
+#: includes/forms/parent-child.php:35
+msgid "Create New Child Theme"
+msgstr ""
+
+#: includes/forms/parent-child.php:44
+msgid "Use Existing Child Theme"
+msgstr ""
+
+#: includes/forms/parent-child.php:49
+msgid "Theme Slug"
+msgstr ""
+
+#: includes/forms/parent-child.php:59
+msgid "Child Theme Name"
+msgstr ""
+
+#: includes/forms/parent-child.php:63
+msgid "Theme Name"
+msgstr ""
+
+#: includes/forms/parent-child.php:69 includes/forms/parent-child.php:73
+msgid "Author"
+msgstr ""
+
+#: includes/forms/parent-child.php:78 includes/forms/parent-child.php:82
+msgid "Version"
+msgstr ""
+
+#: includes/forms/parent-child.php:88
+msgid "Copy Parent Theme Menus, Widgets and other Options"
+msgstr ""
+
+#: includes/forms/parent-child.php:95 includes/forms/parent-child.php:110
+#: includes/forms/parent-child.php:140
+msgid "NOTE:"
+msgstr ""
+
+#: includes/forms/parent-child.php:97
+msgid "This will overwrite child theme options you may have already set."
+msgstr ""
+
+#: includes/forms/parent-child.php:103
+msgid "Backup current stylesheet"
+msgstr ""
+
+#: includes/forms/parent-child.php:112
+msgid ""
+"This creates a copy of the current stylesheet before applying changes. You "
+"can remove old backup files using the Files tab."
+msgstr ""
+
+#: includes/forms/parent-child.php:118
+msgid "Parent stylesheet handling:"
+msgstr ""
+
+#: includes/forms/parent-child.php:124
+msgid "&lt;link&gt; (default)"
+msgstr ""
+
+#: includes/forms/parent-child.php:130 includes/forms/tabs.php:22
+msgid "@import"
+msgstr ""
+
+#: includes/forms/parent-child.php:136
+msgid "none (handled by theme)"
+msgstr ""
+
+#: includes/forms/parent-child.php:142
+msgid ""
+"Only select @import for older themes that do not enqueue the stylesheet. "
+"Select 'none' if core styles are automatically loaded for child themes. "
+"Select '&lt;link&gt;' if unsure."
+msgstr ""
+
+#: includes/forms/parent-child.php:148
+msgid "Reset/Restore from backup:"
+msgstr ""
+
+#: includes/forms/parent-child.php:154
+msgid "Leave unchanged"
+msgstr ""
+
+#: includes/forms/parent-child.php:160
+msgid "Reset all"
+msgstr ""
+
+#: includes/forms/parent-child.php:168
+msgid "Restore backup from"
+msgstr ""
+
+#: includes/forms/parent-child.php:180
+msgid "Parse additional stylesheets:"
+msgstr ""
+
+#: includes/forms/parent-child.php:184
+msgid ""
+"Stylesheets that are currently being loaded by the parent theme are "
+"automatically selected below (except for Bootstrap stylesheets which add a "
+"large amount data to the configuration). To further reduce overhead, select "
+"only the additional stylesheets you wish to customize."
+msgstr ""
+
+#: includes/forms/parent-child.php:203
+msgid "Generate/Rebuild Child Theme Files"
+msgstr ""
+
+#: includes/forms/query-selector.php:11
+msgid "Query"
+msgstr ""
+
+#: includes/forms/query-selector.php:22
+msgid "Selector"
+msgstr ""
+
+#: includes/forms/query-selector.php:50 includes/forms/rule-value.php:12
+msgid "Rule"
+msgstr ""
+
+#: includes/forms/query-selector.php:53
+msgid "Parent Value"
+msgstr ""
+
+#: includes/forms/query-selector.php:56
+msgid "Child Value"
+msgstr ""
+
+#: includes/forms/query-selector.php:62
+msgid "New Rule"
+msgstr ""
+
+#: includes/forms/query-selector.php:72
+msgid "Order"
+msgstr ""
+
+#: includes/forms/query-selector.php:79
+msgid "Raw CSS"
+msgstr ""
+
+#: includes/forms/related.php:1
+msgid "New user?"
+msgstr ""
+
+#: includes/forms/related.php:1
+msgid "Click help"
+msgstr ""
+
+#: includes/forms/related.php:1
+msgid "Get CTC for Plugins and other tools"
+msgstr ""
+
+#: includes/forms/related.php:1
+msgid "Lilaea Media - Responsive Tools for a Mobile World"
+msgstr ""
+
+#: includes/forms/rule-value.php:25
+msgid "Value"
+msgstr ""
+
+#: includes/forms/tabs.php:11
+msgid "Parent/Child"
+msgstr ""
+
+#: includes/forms/tabs.php:16
+msgid "Query/Selector"
+msgstr ""
+
+#: includes/forms/tabs.php:19
+msgid "Rule/Value"
+msgstr ""
+
+#: includes/forms/tabs.php:25
+msgid "Child CSS"
+msgstr ""
+
+#: includes/forms/tabs.php:28
+msgid "Parent CSS"
+msgstr ""
+
+#: includes/forms/tabs.php:35
+msgid "Files"
+msgstr ""
+
+#: includes/forms/themepreview.php:12
+msgid "Version: "
+msgstr ""
+
+#: includes/forms/themepreview.php:14
+msgid "By: "
 msgstr ""
 
 #. Plugin URI of the plugin/theme

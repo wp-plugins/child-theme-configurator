@@ -3,10 +3,10 @@
 if ( !defined('ABSPATH')) exit;
 
 /*
-    Class: Child_Theme_Configurator_CSS
+    Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.5.4
+    Version: 1.6.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -14,7 +14,7 @@ if ( !defined('ABSPATH')) exit;
     License: GPLv2
     Copyright (C) 2014 Lilaea Media
 */
-class Child_Theme_Configurator_CSS {
+class ChildThemeConfiguratorCSS {
     // data dictionaries
     var $dict_query;    // @media queries and 'base'
     var $dict_sel;      // selectors  
@@ -36,7 +36,8 @@ class Child_Theme_Configurator_CSS {
     var $styles;        // temporary update cache
     var $child;         // child theme slug
     var $parnt;         // parent theme slug
-    var $parntss;        // parent additional stylesheets
+    var $parntss;       // parent additional stylesheets
+    var $enqueue;       // load parent css method (enqueue, import, none)
     var $configtype;    // theme or plugin extension
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
@@ -51,6 +52,12 @@ class Child_Theme_Configurator_CSS {
     );
     var $configvars = array(
         'parntss',
+        // the enqueue flag prevents the transition from 1.5.4 
+        // from breaking the stylesheet by forcing the user to regenerate
+        // the config data before updating the stylesheet. Otherwise,
+        // removing the @import for the parent stylesheet will cause
+        // the parent core styles to be missing.
+        'enqueue', 
         'imports',
         'child_version',
         'child_author',
@@ -85,7 +92,7 @@ class Child_Theme_Configurator_CSS {
         $this->parnt            = '';
         $this->configtype       = 'theme';
         $this->child_name       = '';
-        $this->child_author     = 'Child Theme Configurator by Lilaea Media';
+        $this->child_author     = 'Child Theme Configurator';
         $this->child_version    = '1.0';
         // multi-dim arrays
         $this->dict_qs          = array();
@@ -100,11 +107,17 @@ class Child_Theme_Configurator_CSS {
         $this->imports          = array('child' => array(), 'parnt' => array());
     }
     
-    function read_config() {
+    function ctc() {
         global $chld_thm_cfg;
+        return $chld_thm_cfg;
+    }
+    
+    function read_config() {
+        
         if ($configarray = get_option(CHLD_THM_CFG_OPTIONS . '_configvars')):
             foreach ($this->configvars as $configkey)
-                $this->{$configkey} = $configarray[$configkey];
+                if (isset($configarray[$configkey]))
+                    $this->{$configkey} = $configarray[$configkey];
             foreach ($this->dicts as $configkey):
                 if ($configarray = get_option(CHLD_THM_CFG_OPTIONS . '_' . $configkey))
                     $this->{$configkey} = $configarray;
@@ -115,7 +128,7 @@ class Child_Theme_Configurator_CSS {
     }
     
     function save_config() {
-        global $chld_thm_cfg;
+        
         $configarray = array();
         foreach ($this->configvars as $configkey)
             $configarray[$configkey] = $this->{$configkey};
@@ -166,10 +179,16 @@ class Child_Theme_Configurator_CSS {
                 if (empty($params['key']) || 'child' == $params['key']):
                     $this->read_stylesheet('child');
                 else:
-                    if (isset($this->parentss))
-                        foreach ($this->parntss as $template)
+                    if (isset($this->parntss)):
+                        foreach ($this->parntss as $template):
+                            $this->styles .= '/*** BEGIN ' . $template . ' ***/' . LF;
                             $this->read_stylesheet('parnt', $template);
+                            $this->styles .= '/*** END ' . $template . ' ***/' . LF;
+                        endforeach;
+                    endif;
+                    $this->styles .= '/*** BEGIN style.css ***/' . LF;
                     $this->read_stylesheet('parnt');
+                    $this->styles .= '/*** END style.css ***/' . LF;
                 endif;
                 $this->normalize_css();
                 return $this->styles;
@@ -188,7 +207,7 @@ class Child_Theme_Configurator_CSS {
     }
     
     function normalize_css() {
-        if (preg_match("/\}[\w\#\.]/", $this->styles)):                       // prettify compressed CSS
+        if (preg_match("/(\}[\w\#\.]|; *\})/", $this->styles)):                       // prettify compressed CSS
             $this->styles = preg_replace("/\*\/\s*/s", "*/\n", $this->styles);      // end comment
             $this->styles = preg_replace("/\{\s*/s", " {\n    ", $this->styles);    // open brace
             $this->styles = preg_replace("/;\s*/s", ";\n    ", $this->styles);      // semicolon
@@ -205,8 +224,8 @@ class Child_Theme_Configurator_CSS {
             . 'Version: ' . $this->get_prop('version') . LF
             . 'Updated: ' . current_time('mysql') . LF
             . '*/' . LF . LF
-            . '@charset "UTF-8";' . LF
-            . '@import url(\'../' . $parnt . '/style.css\');' . LF;
+            . '@charset "UTF-8";' . LF . LF
+            . ('import' == $this->enqueue ? '@import url(\'../' . $parnt . '/style.css\');' . LF : '');
     }
    
     function get_child_target($file = 'style.css') {
@@ -223,7 +242,7 @@ class Child_Theme_Configurator_CSS {
      * Update cache is returned to UI via AJAX to refresh page
      */
     function update_arrays($template, $query, $sel, $rule = null, $value = null, $important = 0, $seq = null) {
-        global $chld_thm_cfg;
+        
         // normalize selector styling
         $sel = implode(', ', preg_split('#\s*,\s*#s', trim($sel)));
         // add selector and query to index
@@ -237,8 +256,8 @@ class Child_Theme_Configurator_CSS {
             $this->dict_qs[$this->qskey]['q'] = $this->dict_query[$query];
             // tell the UI to update a single cached query/selector lookup by passing 'qsid' as the key
             // (normally the entire array is replaced):
-            if ($chld_thm_cfg->cache_updates)
-                $chld_thm_cfg->updates[] = array(
+            if ($this->ctc()->cache_updates)
+                $this->ctc()->updates[] = array(
                     'obj'   => 'sel_ndx',
                     'key'   => 'qsid',
                     'data'  => array(
@@ -256,8 +275,8 @@ class Child_Theme_Configurator_CSS {
             if (!isset($this->dict_rule[$rule])):
                 $this->dict_rule[$rule] = ++$this->rulekey;
                 // tell the UI to update a single cached rule:
-                if ($chld_thm_cfg->cache_updates):
-                    $chld_thm_cfg->updates[] = array(
+                if ($this->ctc()->cache_updates):
+                    $this->ctc()->updates[] = array(
                         'obj'   => 'rule',
                         'key'   => $this->rulekey,
                         'data'  => $rule,
@@ -273,18 +292,18 @@ class Child_Theme_Configurator_CSS {
             // set the important flag for this value
             $this->val_ndx[$qsid][$ruleid]['i_' . $template] = $important;
             // tell the UI to add a single cached query/selector data array:
-            if ($chld_thm_cfg->cache_updates):
+            if ($this->ctc()->cache_updates):
                 $updatearr = array(
                     'obj'   => 'sel_val',
                     'key'   => $qsid,
                     'data'  => $this->denorm_sel_val($qsid),
                 );
-                $chld_thm_cfg->updates[] = $updatearr;
+                $this->ctc()->updates[] = $updatearr;
             endif;
             if (isset($seq)): // this is a renamed selector
                 $this->dict_seq[$qsid] = $seq;
-                if ($chld_thm_cfg->cache_updates):
-                    $chld_thm_cfg->updates[] = array(
+                if ($this->ctc()->cache_updates):
+                    $this->ctc()->updates[] = array(
                         'obj'   => 'rewrite',
                         'key'   => $qsid,
                         'data'  => $sel,
@@ -295,6 +314,12 @@ class Child_Theme_Configurator_CSS {
     }
 
     function read_stylesheet($template = 'child', $file = 'style.css') {
+        
+        // these conditions support revert/restore option in 1.6.0+
+        if ('all' == $file) return;
+        elseif ('' == $file) $file = 'style.css';
+        // end revert/restore conditions
+        
         $source = $this->get_prop($template);
         $configtype = $this->get_prop('configtype');
         if (empty($source) || !is_scalar($source)) return FALSE;
@@ -308,16 +333,16 @@ class Child_Theme_Configurator_CSS {
         endif;
     }
     
-    function recurse_directory($rootdir, $ext = 'css', $all = FALSE) {
-        if (!$this->is_file_ok($rootdir, 'search')) return array(); // make sure we are only recursing theme and plugin files
+    function recurse_directory( $rootdir, $ext = 'css', $all = FALSE ) {
+        if ( !$this->is_file_ok( $rootdir, 'search' ) ) return array(); // make sure we are only recursing theme and plugin files
         $files = array();
         $dirs = array($rootdir);
         $loops = 0;
-        if ('img' == $ext):
-            global $chld_thm_cfg;
-            $ext = '(' . implode('|', array_keys($chld_thm_cfg->imgmimes)) . ')';
+        if ( 'img' == $ext ):
+            
+            $ext = '(' . implode('|', array_keys($this->ctc()->imgmimes)) . ')';
         endif;
-        while(count($dirs) && $loops < CHLD_THM_CFG_MAX_RECURSE_LOOPS):
+        while(count($dirs) && $loops < CHLD_THM_CFG_MAX_RECURSE_LOOPS ):
             $loops++;
             $dir = array_shift($dirs);
             if ($handle = opendir($dir)):
@@ -479,8 +504,8 @@ class Child_Theme_Configurator_CSS {
      * reads stylesheet to get WordPress meta data and passes rest to parse_css 
      */
     function parse_css_file($template, $file = 'style.css') {
-        global $chld_thm_cfg;
-        $chld_thm_cfg->cache_updates = FALSE;
+        
+        $this->ctc()->cache_updates = FALSE;
         $this->styles = ''; // reset styles
         $this->read_stylesheet($template, $file);
         // get theme name
@@ -506,13 +531,13 @@ class Child_Theme_Configurator_CSS {
         $this->styles = preg_replace('#(\{\s*)#', "$1\n", $this->styles);
         // get all imports
         if ($parse_imports):
-            global $chld_thm_cfg;
+            
             $regex = '#(\@import.+?);#';
             preg_match_all($regex, $this->styles, $matches);
             foreach (preg_grep('#' . $this->get_prop('parnt') . '\/style\.css#', $matches[1], PREG_GREP_INVERT) as $import)
                 $this->imports[$template][$import] = 1;
-            if ($chld_thm_cfg->cache_updates):
-                $chld_thm_cfg->updates[] = array(
+            if ($this->ctc()->cache_updates):
+                $this->ctc()->updates[] = array(
                     'obj'  => 'imports',
                     'data' => array_keys($this->imports[$template]),
                 );
@@ -647,20 +672,20 @@ class Child_Theme_Configurator_CSS {
         endforeach;
         $stylesheet = apply_filters('chld_thm_cfg_target', $this->get_child_target(), $this);
         if ($stylesheet_verified = $this->is_file_ok($stylesheet, 'write')):
-            global $chld_thm_cfg, $wp_filesystem; // this was initialized earlier;
+            global $wp_filesystem; // this was initialized earlier;
                 // backup current stylesheet
                 if ($backup && is_file($stylesheet_verified)):
                     $timestamp  = date('YmdHis', current_time('timestamp'));
                     $bakfile    = preg_replace("/\.css$/", '', $stylesheet_verified) . '-' . $timestamp . '.css';
                     // don't write new stylesheet if backup fails
-                    if (!$wp_filesystem->copy($chld_thm_cfg->fspath($stylesheet_verified), $chld_thm_cfg->fspath($bakfile))) return FALSE;
+                    if (!$wp_filesystem->copy($this->ctc()->fspath($stylesheet_verified), $this->ctc()->fspath($bakfile))) return FALSE;
                 endif;
                 // write new stylesheet:
                 // try direct write first, then wp_filesystem write
                 // stylesheet must already exist and be writable by web server
                 if (FALSE !== @file_put_contents($stylesheet_verified, $output)): //is_writable($stylesheet_verified) && 
                     return TRUE;
-                elseif (FALSE !== $wp_filesystem->put_contents($chld_thm_cfg->fspath($stylesheet_verified), $output)): 
+                elseif (FALSE !== $wp_filesystem->put_contents($this->ctc()->fspath($stylesheet_verified), $output)): 
                     return TRUE;
                 endif;
         endif;   
