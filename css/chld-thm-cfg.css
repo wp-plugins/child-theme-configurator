@@ -168,7 +168,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     right: -13px;
     transition: none !important;
     z-index: 999;
-    border: 3px solid #fff;
+    border: 3px solid #f9f9f9;
     -moz-border-radius: 16px;
     -webkit-border-radius: 16px;
     border-radius: 16px;

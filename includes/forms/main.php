@@ -14,7 +14,7 @@ background:url(<?php echo admin_url( 'images/no.png');
 }
 
 .ctc-exit {
-background:#fff url(<?php echo includes_url('images/xit-2x.gif');
+background:#f9f9f9 url(<?php echo includes_url('images/xit-2x.gif');
 ?>) left top no-repeat;
 }
 </style>

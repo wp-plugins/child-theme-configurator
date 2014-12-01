@@ -1047,6 +1047,7 @@ jQuery(document).ready(function($){
     ctc_setup_menus();
     ctc_set_query(currentQuery);
     ctc_set_addl_css();
+    // turn on submit buttons
     $('input[type=submit],input[type=button]').prop('disabled', false);
     setTimeout(fade_update_notice, 6000);
 });
