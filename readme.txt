@@ -28,7 +28,7 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 * Update themes without losing customizations
 * Save hours of development time
-* Load parent theme stylesheet with <link> instead of @import
+* Link parent theme stylesheet instead of @import-ing it
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of Theme fonts
 * Apply changes in a Child Theme without touching the Parent Theme
