@@ -1,7 +1,7 @@
 === Child Theme Configurator ===
 Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
-Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator
+Tags: child, theme, custom, CSS, editor, responsive, design, generator
 Requires at least: 3.7
 Tested up to: 4.1
 Stable tag: 1.6.0
@@ -101,7 +101,7 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 7. Restore from backup (optional - new in version 1.6.0): If using an existing child theme, you can choose whether to reload the current child theme stylesheet (leave unchanged), reset all values, or restore it from a backup. If there are backup files available, they will appear as radio button options.
 
-8. Choose additional stylesheets If your theme uses additional stylesheets, you can open the "Parse Additional Stylesheets" toggle and they will appear as checkbox options. Stylesheets that are being used by the parent theme should be automatically selected for you. Only select additional stylesheets you wish to customize to reduce overhead. NOTE: If the parent theme uses Bootstrap stylesheets, they will not be automatically selected. You can select Bootstrap stylesheets manually if you need to customize them, but in most cases they add unecessary overhead to the configuration data.
+8. Choose additional stylesheets If your theme uses additional stylesheets, you can open the "Parse Additional Stylesheets" toggle and they will appear as checkbox options. Stylesheets that are being used by the parent theme should be automatically selected for you. Only select additional stylesheets you wish to customize to reduce overhead. NOTE: If the parent theme uses Bootstrap stylesheets, they will not be automatically selected. You can select Bootstrap stylesheets manually if you need to customize them, but in most cases they add unnecessary overhead to the configuration data.
 
 9. Click "Generate/Rebuild Child Theme Files."
 
@@ -278,7 +278,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Add jQuery UI styles that are no longer being loaded by default in the WP admin (autoselect menus).
 
 = 1.5.3 =
-* Fixed a bug in the way zero values are handled that was breaking css output in certian situations
+* Fixed a bug in the way zero values are handled that was breaking css output in certain situations
 * Added regex filter for non-printable (e.g., null) characters in input strings
 
 = 1.5.2.2 =
