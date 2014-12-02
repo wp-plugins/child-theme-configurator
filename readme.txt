@@ -1,7 +1,7 @@
 === Child Theme Configurator ===
 Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
-Tags: child, theme, custom, CSS, editor, responsive, design, generator
+Tags: child, theme, custom, CSS, editor, style, stylesheet, responsive, design, generator
 Requires at least: 3.7
 Tested up to: 4.1
 Stable tag: 1.6.0
