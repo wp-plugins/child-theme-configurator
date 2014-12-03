@@ -8,7 +8,7 @@ Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Create a Child Theme from any installed Theme. Each CSS selector, rule and value can then be searched, previewed and modified.
+Create a Child Theme from any installed theme. Search, preview and customize any selector, rule or value using this fast CSS editor.
 
 == Description ==
 
