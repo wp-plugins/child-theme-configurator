@@ -33,12 +33,13 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Import web fonts and use them in place of Theme fonts
 * Apply changes in a Child Theme without touching the Parent Theme
 * Identify and override exact CSS selectors from the Parent Theme
-* Change colors, backgrounds, font styles globally without changing other rules.
+* Change colors, backgrounds, font styles globally without changing other rules
 * Tweak individual CSS selectors
 * Automatically create and preview CSS3 gradients
 * Automatically generate cross-browser and vendor-prefixed rules
 * View style changes before committing to them
 * Add and modify individual @media queries
+* Uses the WP Filesystem API - will not create files you cannot remove
 
 = Not just for themes but plugins too! =
 
