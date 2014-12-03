@@ -1,7 +1,7 @@
 === Child Theme Configurator ===
 Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
-Tags: child theme, customize, CSS, responsive, editor, theme generator, stylesheet
+Tags: child theme, customize, CSS, responsive, css editor, theme generator, stylesheet, customizer
 Requires at least: 3.7
 Tested up to: 4.1
 Stable tag: 1.6.0
@@ -26,20 +26,21 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 = Why create Child Themes using the Child Theme Configurator? =
 
-* Customize themes without losing your changes when you update
+* Update themes without losing customizations
 * Save hours of development time
-* Link parent theme stylesheet instead of using @import
+* Make modifications above and beyond the theme Customizer
+* Load parent theme stylesheet with <link> instead of @import
 * Export Child Theme as Zip Archive
-* Import web fonts and use them in place of Theme fonts
-* Apply changes in a Child Theme without touching the Parent Theme
-* Identify and override exact CSS selectors from the Parent Theme
-* Change colors, backgrounds, font styles globally without changing other rules
-* Tweak individual CSS selectors
+* Import web fonts and use them in place of theme fonts
+* Apply changes in a child theme without touching the parent theme
+* Identify and override exact selectors from the parent theme
+* Change specific colors, backgrounds, font styles, etc., without changing other elements
 * Automatically create and preview CSS3 gradients
 * Automatically generate cross-browser and vendor-prefixed rules
-* View style changes before committing to them
+* Preview style changes before committing to them
 * Add and modify individual @media queries
-* Uses the WP Filesystem API - will not create files you cannot remove
+* Uses WP Filesystem API – will not create files you cannot remove
+* Nag-free, no-strings-attached user experience
 
 = Not just for themes but plugins too! =
 
