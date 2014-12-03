@@ -12,7 +12,7 @@ Create a Child Theme from any installed Theme. Each CSS selector, rule and value
 
 == Description ==
 
-Child Theme Configurator is a fast and easy to use CSS editor that allows you to customize your themes way beyond the Customizer. The Child Theme Configurator lets you identify and override only the Parent Theme CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
+Child Theme Configurator is a fast and easy to use CSS editor that allows you to create Child Themes and customize them well beyond the Theme Customizer. The Child Theme Configurator lets you identify and override only the Parent Theme CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
 
 = Take Control of Your Child Themes =
 
@@ -26,9 +26,9 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 = Why create Child Themes using the Child Theme Configurator? =
 
-* Update themes without losing customizations
+* Customize themes without losing your changes when you update
 * Save hours of development time
-* Link parent theme stylesheet instead of @import-ing it
+* Link parent theme stylesheet instead of using @import
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of Theme fonts
 * Apply changes in a Child Theme without touching the Parent Theme
@@ -449,6 +449,14 @@ The "Order" field contains the original sequence of the CSS selector in the pare
 
 Click "Save" to update the child stylesheet and save your changes to the WordPress admin.
 
+== Adding New Styles ==
+
+If you wish to add additional rules to a given CSS selector, first load the selector using the Query/Selector tab. Then find the rule you wish to override by typing in the New Rule autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.
+
+If you wish to add completely new CSS selectors, or even new @media queries, you can enter free-form CSS in the "Raw CSS" textarea. Be aware that your syntax must be correct (i.e., balanced curly braces, etc.) for the parser to load the new styles. You will know it is invalid because a red "X" will appear next to the save button.
+
+If you prefer to use shorthand syntax for rules and values instead of the inputs provided by the Child Theme Configurator, you can enter them here as well. The parser will convert your input into normalized CSS code automatically.
+
 = Rule/Value Tab =
 
 The Rule/Value tab lets you find specific values for a given rule and then edit that value for individual CSS selectors that use that rule/value combination. First, find the rule you wish to override by typing in the Rule autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.
@@ -459,13 +467,7 @@ For each unique value, click the "Selectors" link to view a list of CSS selector
 
 Click "Save" to update the child stylesheet and save your changes to the WordPress admin.
 
-== Adding New Styles ==
-
-If you wish to add additional rules to a given CSS selector, first load the selector using the Query/Selector tab. Then find the rule you wish to override by typing in the New Rule autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.
-
-If you wish to add completely new CSS selectors, or even new @media queries, you can enter free-form CSS in the "Raw CSS" textarea. Be aware that your syntax must be correct (i.e., balanced curly braces, etc.) for the parser to load the new styles. You will know it is invalid because a red "X" will appear next to the save button.
-
-If you prefer to use shorthand syntax for rules and values instead of the inputs provided by the Child Theme Configurator, you can enter them here as well. The parser will convert your input into normalized CSS code automatically.
+If you want to edit all of the rules instead for the selector you can click the “Edit” link and the selector will automatically load in the Query/Selector Tab.
 
 == @import Tab and Web Fonts ==
 
@@ -515,7 +517,10 @@ You can also click the Preview CSS tab to see your new masterpiece as CSS code.
 * No legacy webkit-gradient. The Child Theme Configurator plugin does not support the legacy webkit gradient. If there is a demand, we will add it in a future release, but most Chrome and Safari users should have upgraded by now.
 * Only two-color gradients. The Child Theme Configurator plugin is powerful, but we have simplified the gradient interface. You can use any gradient you want as long as it has two colors and no intermediate stops.
 * No @font-face rules. The Child Theme Configurator plugin only supports @media and @import. If you need other @rules, put them in a separate stylesheet and import them into the Child Theme stylesheet.
-* The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. To add new rules, use the Raw CSS input option.
+* Not all CSS rules are supported. The Child Theme Configurator plugin works with the vast majority of CSS rules, however we’ve left out some of the more obscure options.
+* Multiple versions of the same rule in a single selector are not supported, with a few exceptions. The Child Theme Configurator plugin will automatically generate vendor-prefix variations for background-image, border-radius, transform, transition, and others.
+* The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. You can always add new rules using the “Raw CSS” text area.
+
 
 == Documentation ==
 
