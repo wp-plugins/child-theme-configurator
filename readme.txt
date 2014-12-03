@@ -1,7 +1,7 @@
 === Child Theme Configurator ===
 Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
-Tags: child, theme, custom, CSS, editor, style, stylesheet, responsive, design, generator
+Tags: child theme, custom theme, CSS, responsive design, CSS editor, theme generator, stylesheet
 Requires at least: 3.7
 Tested up to: 4.1
 Stable tag: 1.6.0
@@ -111,7 +111,7 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 = HELP! I changed a file and now I am unable to access my website or login to wp-admin to fix it! =
 
-To back out of a broken theme you have to manually rename the offending theme directory name (via FTP, SSH or your web host control panel file manager) so that WordPress can’t find it. WordPress will then throw an error and revert back to the default theme (currently twenty-fourteen).
+To back out of a broken child theme you have to manually rename the offending theme directory name (via FTP, SSH or your web host control panel file manager) so that WordPress can’t find it. WordPress will then throw an error and revert back to the default theme (currently twenty-fourteen).
 
 The child theme is in your themes folder, usually
 
@@ -158,7 +158,7 @@ Now you can edit your child theme from Tools > Child Themes. NOTE: Only users wi
 
 = Does it work with plugins? =
 
-We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
+We offer a premium extension that brings the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and creates custom CSS in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
 
 = Is there a tutorial? =
 
@@ -215,7 +215,7 @@ The Child Theme Configurator automatically adds a blank functions.php file to th
 
 = How do I change a specific color/font style/background? = 
 
-You can override a specific value globally using the Rule/Value tab. See Rule/Value, above.
+You can override a specific CSS value globally using the Rule/Value tab. See Rule/Value, above.
 
 = How do I add styles that aren't in the Parent Theme? = 
 
@@ -467,7 +467,7 @@ For each unique value, click the "Selectors" link to view a list of CSS selector
 
 Click "Save" to update the child stylesheet and save your changes to the WordPress admin.
 
-If you want to edit all of the rules instead for the selector you can click the “Edit” link and the selector will automatically load in the Query/Selector Tab.
+If you want to edit all of the rules for the CSS selector you can click the “Edit” link and the CSS selector will automatically load in the Query/Selector Tab.
 
 == @import Tab and Web Fonts ==
 
