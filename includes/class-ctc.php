@@ -89,16 +89,17 @@ class ChildThemeConfiguratorAdmin {
     }
     function enqueue_scripts() {
         wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css', array(), '1.6.0');
-        
-        // we need to use jQuery UI from CDN until 4.1 is released because jqeury-ui-selectmenu is not included
-        // this will be updated in a later release to use WP Core scripts
-        wp_deregister_script('jquery-ui-core');
-        wp_enqueue_script('jquery-ui-core', '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js', array('jquery'));
-        wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('jquery'), FALSE, TRUE);
+        // we need to use local jQuery UI Selectmenu because jqeury-ui-selectmenu is not included in 1.10.4
+        // this will be updated in a later release to use WP Core scripts when it is widely adopted
+        wp_deregister_script('jquery-ui-selectmenu');
+        wp_enqueue_script('jquery-ui-selectmenu', $this->pluginURL . 'js/selectmenu.min.js',
+            array('jquery-ui-menu'));
+        wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', 
+            array('jquery'), FALSE, TRUE);
         wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
             array(
-//                'jquery-ui-autocomplete', FIXME: restore after 4.1
-//                'jquery-ui-selectmenu',   FIXME: restore after 4.1
+                'jquery-ui-autocomplete', 
+                'jquery-ui-selectmenu',   
                 'iris',
             ), FALSE, TRUE );
         $localize_array = apply_filters('chld_thm_cfg_localize_script', array(
@@ -273,7 +274,7 @@ class ChildThemeConfiguratorAdmin {
                     add_action('admin_notices', array($this, 'enqueue_notice')); 	
             endif;
             // check if file ownership is messed up from old version or other plugin
-            if (fileowner($this->css->get_child_target('')) != fileowner(ABSPATH)):
+            if (fileowner($this->css->get_child_target('')) != fileowner(get_theme_root())):
 	            add_action('admin_notices', array($this, 'owner_notice')); 
             endif;
         endif;	
@@ -525,8 +526,21 @@ class ChildThemeConfiguratorAdmin {
             endif; 
             
             // copy parent theme mods
+            
             if (isset($_POST['ctc_parent_mods']) && ($parent_mods = get_option('theme_mods_' . $parnt))):
+/*                $child_mods = get_option('theme_mods_' . $child);
+                $sidebars = get_option('sidebars_widgets');
+                echo 'current theme: ' . get_stylesheet() . ' parent widgets: ' 
+                    . print_r($parent_mods['sidebars_widgets']['data'], TRUE) . LF
+                    . ' child mods: ' . $child . LF 
+                    . print_r($child_mods, TRUE) . LF 
+                    . ' parent mods: ' . $parnt . LF 
+                    . print_r($parent_mods, TRUE) . LF
+                    . ' widgets: ' . print_r($sidebars, TRUE) . LF; */
                 update_option('theme_mods_' . $child, $parent_mods);
+/*                if (get_stylesheet() == $child && isset($parent_mods['sidebars_widgets']) && isset($parent_mods['sidebars_widgets']['data'])):
+                    update_option('sidebars_widgets', $parent_mods['sidebars_widgets']['data']);
+                endif;*/
             endif;
             
             // save new object to WP options table

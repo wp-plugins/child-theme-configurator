@@ -97,7 +97,7 @@ if (!defined('ABSPATH')) exit;
           <?php _e( 'This will overwrite child theme options you may have already set.', 'chld_thm_cfg'); ?>
         </div>
       </div>
-        <?php if ('' == $hidechild): ?>
+<?php if ('' == $hidechild): ?>
       <div class="ctc-input-row clearfix">
         <div class="ctc-input-cell"> <strong>
           <?php _e('Backup current stylesheet', 'chld_thm_cfg'); ?>
@@ -112,7 +112,10 @@ if (!defined('ABSPATH')) exit;
           <?php _e( 'This creates a copy of the current stylesheet before applying changes. You can remove old backup files using the Files tab.', 'chld_thm_cfg'); ?>
         </div>
       </div>
-        <?php endif; ?>
+<?php 
+    endif; 
+    $parent_handling = (isset($css->enqueue) ? $css->enqueue : ($mustimport ? 'import' : 'link'));
+?>
       <div class="ctc-input-row clearfix">
         <div class="ctc-input-cell"> <strong>
           <?php _e('Parent stylesheet handling:', 'chld_thm_cfg'); ?>
@@ -120,26 +123,27 @@ if (!defined('ABSPATH')) exit;
         <div class="ctc-input-cell">
           <label>
             <input class="ctc_radio" id="ctc_parent_enqueue_enqueue" name="ctc_parent_enqueue" type="radio" 
-                value="enqueue" <?php echo ( empty($css->enqueue) || 'enqueue' == $css->enqueue ? 'checked' : '' ); ?>/>
+                value="enqueue" <?php checked('enqueue', $parent_handling); ?>/>
             <?php _e('&lt;link&gt; (default)', 'chld_thm_cfg'); ?>
           </label>
           <br/>
           <label>
             <input class="ctc_radio" id="ctc_parent_enqueue_import" name="ctc_parent_enqueue" type="radio" 
-                value="import" <?php echo ( isset($css->enqueue) && 'import' == $css->enqueue ? 'checked' : '' ); ?>/>
+                value="import" <?php checked('import', $parent_handling); ?>/>
             <?php _e('@import', 'chld_thm_cfg'); ?>
           </label>
           <br/>
           <label>
             <input class="ctc_radio" id="ctc_parent_enqueue_none" name="ctc_parent_enqueue" type="radio" 
-                value="none" <?php echo ( isset($css->enqueue) && 'none' == $css->enqueue ? 'checked' : '' ); ?>/>
+                value="none" <?php checked('none', $parent_handling); ?>/>
             <?php _e('none (handled by theme)', 'chld_thm_cfg'); ?>
           </label>
         </div>
         <div class="ctc-input-cell"> <strong>
           <?php _e('NOTE:', 'chld_thm_cfg'); ?>
+          <?php if ($mustimport) _e('This theme does not currently enqueue the stylesheet and must use the @import option to render correctly.', 'chld_thm_cfg'); ?>
           </strong>
-          <?php _e( "Only select @import for older themes that do not enqueue the stylesheet. Select 'none' if core styles are automatically loaded for child themes. Select '&lt;link&gt;' if unsure.", 'chld_thm_cfg'); ?>
+          <?php _e( "Select @import for older themes that do not enqueue the stylesheet. Select 'none' if core styles are automatically loaded for child themes. Select '&lt;link&gt;' if unsure.", 'chld_thm_cfg'); ?>
         </div>
       </div>
       <?php if ('' == $hidechild): ?>

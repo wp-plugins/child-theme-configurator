@@ -234,7 +234,7 @@ class ChildThemeConfiguratorCSS {
     function get_parent_source($file = 'style.css') {
         return trailingslashit(get_theme_root()) . trailingslashit($this->get_prop('parnt')) . $file;
     }
-   
+
     /*
      * update_arrays
      * accepts CSS properties as raw strings and normilizes into 
