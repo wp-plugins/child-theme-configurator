@@ -525,29 +525,29 @@ class ChildThemeConfiguratorAdmin {
                 return FALSE;
             endif; 
             
-            // copy parent theme mods
-            
+            // copy parent theme mods option set
             if (isset($_POST['ctc_parent_mods'])):
                 // we can copy settings from parent to child even if neither is currently active
                 // so we need cases for active parent, active child or neither
-                $parent_mods = get_option('theme_mods_' . $parnt);
+                
+                // get active theme
+                $active_theme = get_stylesheet();
                 // create temp array from parent settings
-                $child_mods = $parent_mods;
-                // wordpress removes widgets from theme_mods and replaces sidebars_widgets when a theme is activated
-                if (get_stylesheet() == $parnt):
-                    // if parent theme is active, get widgets from current sidebars_widgets array
-                    $child_widgets = get_option('sidebars_widgets');
+                $child_mods = get_option('theme_mods_' . $parnt);
+                if ($active_theme == $parnt):
+                    // if parent theme is active, get widgets from active sidebars_widgets array
+                    $child_widgets = retrieve_widgets();
                 else:
                     // otherwise get widgets from parent theme mods
-                    $child_widgets = $parent_mods['sidebars_widgets']['data'];
+                    $child_widgets = $child_mods['sidebars_widgets']['data'];
                 endif;
-                if (get_stylesheet() == $child):
-                    // if child theme is active, copy temp array to child theme mods
+                if ($active_theme == $child):
+                    // if child theme is active, remove widgets from temp array
+                    unset($child_mods['sidebars_widgets']);
+                    // copy temp array to child mods
                     update_option('theme_mods_' . $child, $child_mods);
-                    // remove widgets from child theme mods
-                    remove_theme_mod('sidebars_widgets');
-                    // copy widgets to sidebars_widgets array
-                    update_option('sidebars_widgets', $child_widgets);
+                    // copy widgets to active sidebars_widgets array
+                    wp_set_sidebars_widgets($child_widgets);
                 else:
                     // otherwise copy widgets to temp array with time stamp
                     $child_mods['sidebars_widgets']['data'] = $child_widgets;
@@ -560,7 +560,7 @@ class ChildThemeConfiguratorAdmin {
             // save new object to WP options table
             $this->css->save_config();
             
-            // hoock for add'l plugin options
+            // hook for add'l plugin options
             do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
             
             // return message id 1, which says new child theme created successfull;
