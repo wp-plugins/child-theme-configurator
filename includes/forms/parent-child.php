@@ -114,7 +114,7 @@ if (!defined('ABSPATH')) exit;
       </div>
 <?php 
     endif; 
-    $parent_handling = (isset($css->enqueue) ? $css->enqueue : ($mustimport ? 'import' : 'link'));
+    $parent_handling = (isset($css->enqueue) ? $css->enqueue : ($mustimport ? 'import' : 'enqueue'));
 ?>
       <div class="ctc-input-row clearfix">
         <div class="ctc-input-cell"> <strong>

@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.6.0
+    Version: 1.6.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -88,19 +88,19 @@ class ChildThemeConfiguratorAdmin {
         $this->ui->render();
     }
     function enqueue_scripts() {
-        wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css', array(), '1.6.0');
-        // we need to use local jQuery UI Selectmenu because jqeury-ui-selectmenu is not included in 1.10.4
+        wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css', array(), '1.6.1');
+        
+        // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
-        wp_deregister_script('jquery-ui-selectmenu');
-        wp_enqueue_script('jquery-ui-selectmenu', $this->pluginURL . 'js/selectmenu.min.js',
-            array('jquery-ui-menu'));
-        wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', 
-            array('jquery'), FALSE, TRUE);
+        if (!wp_script_is('jquery-ui-selectmenu', 'registered')): // selectmenu.min.js
+            wp_enqueue_script('jquery-ui-selectmenu', $this->pluginURL . 'js/selectmenu.min.js', array('jquery','jquery-ui-core','jquery-ui-position'), FALSE, TRUE);
+        endif;
+        wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('jquery'), FALSE, TRUE);
         wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
             array(
                 'jquery-ui-autocomplete', 
                 'jquery-ui-selectmenu',   
-                'iris',
+                'wp-color-picker',
             ), FALSE, TRUE );
         $localize_array = apply_filters('chld_thm_cfg_localize_script', array(
                 'ssl'               => is_ssl(),
@@ -183,7 +183,7 @@ class ChildThemeConfiguratorAdmin {
         include_once($this->pluginPath . 'includes/class-ctc-ui.php');
         $this->ui = new ChildThemeConfiguratorUI();
         $this->ui->render_help_content();
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'),999);
 //        $this->enqueue_scripts();
         $this->load_imports();
 	}
@@ -274,7 +274,7 @@ class ChildThemeConfiguratorAdmin {
                     add_action('admin_notices', array($this, 'enqueue_notice')); 	
             endif;
             // check if file ownership is messed up from old version or other plugin
-            if (fileowner($this->css->get_child_target('')) != fileowner(get_theme_root())):
+            if (fileowner($this->css->get_child_target('')) != fileowner(ABSPATH)):
 	            add_action('admin_notices', array($this, 'owner_notice')); 
             endif;
         endif;	
@@ -527,20 +527,34 @@ class ChildThemeConfiguratorAdmin {
             
             // copy parent theme mods
             
-            if (isset($_POST['ctc_parent_mods']) && ($parent_mods = get_option('theme_mods_' . $parnt))):
-/*                $child_mods = get_option('theme_mods_' . $child);
-                $sidebars = get_option('sidebars_widgets');
-                echo 'current theme: ' . get_stylesheet() . ' parent widgets: ' 
-                    . print_r($parent_mods['sidebars_widgets']['data'], TRUE) . LF
-                    . ' child mods: ' . $child . LF 
-                    . print_r($child_mods, TRUE) . LF 
-                    . ' parent mods: ' . $parnt . LF 
-                    . print_r($parent_mods, TRUE) . LF
-                    . ' widgets: ' . print_r($sidebars, TRUE) . LF; */
-                update_option('theme_mods_' . $child, $parent_mods);
-/*                if (get_stylesheet() == $child && isset($parent_mods['sidebars_widgets']) && isset($parent_mods['sidebars_widgets']['data'])):
-                    update_option('sidebars_widgets', $parent_mods['sidebars_widgets']['data']);
-                endif;*/
+            if (isset($_POST['ctc_parent_mods'])):
+                // we can copy settings from parent to child even if neither is currently active
+                // so we need cases for active parent, active child or neither
+                $parent_mods = get_option('theme_mods_' . $parnt);
+                // create temp array from parent settings
+                $child_mods = $parent_mods;
+                // wordpress removes widgets from theme_mods and replaces sidebars_widgets when a theme is activated
+                if (get_stylesheet() == $parnt):
+                    // if parent theme is active, get widgets from current sidebars_widgets array
+                    $child_widgets = get_option('sidebars_widgets');
+                else:
+                    // otherwise get widgets from parent theme mods
+                    $child_widgets = $parent_mods['sidebars_widgets']['data'];
+                endif;
+                if (get_stylesheet() == $child):
+                    // if child theme is active, copy temp array to child theme mods
+                    update_option('theme_mods_' . $child, $child_mods);
+                    // remove widgets from child theme mods
+                    remove_theme_mod('sidebars_widgets');
+                    // copy widgets to sidebars_widgets array
+                    update_option('sidebars_widgets', $child_widgets);
+                else:
+                    // otherwise copy widgets to temp array with time stamp
+                    $child_mods['sidebars_widgets']['data'] = $child_widgets;
+                    $child_mods['sidebars_widgets']['time'] = time();
+                    // copy temp array to child theme mods
+                    update_option('theme_mods_' . $child, $child_mods);
+                endif;
             endif;
             
             // save new object to WP options table

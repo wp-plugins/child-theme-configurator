@@ -260,6 +260,13 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 
+= 1.6.1 = 
+* Fix: add check if theme uses hard-wired stylesheet link and alert to use @import instead of link option
+* Fix: conflicts with using jQuery UI from CDN - using local version of 1.11.2 Widget/Menu/Selectmenu instead
+* Fix: using wp-color-picker handle instead of iris as dependency to make sure wpColorPicker() methods are loaded
+* Fix: copy parent theme widgets from parent mods if parent is inactive, sidebars_widgets if parent is active
+* Fix: copy parent theme widgets to child mods if child is inactive, sidebars_widgets if child is active
+
 = 1.6.0 = 
 * New Feature: option to load parent stylesheet using wp_enqueue_style (link), @import or none. Thanks to cmwwebfx and Shapeshifter3 for pushing me on this 
 * New Feature: automatically-generated child theme slug and name
@@ -432,7 +439,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-v.1.6.0 You can now choose to externally link the parent stylesheet instead of using @import, or skip the parent stylesheet entirely. Make sure you update your configuration after upgrading (there is a notice). We have also redesigned the theme menus to display a preview of each theme and fixed a few bugs.
+v.1.6.1 Fixes for bugs that arose due to jQuery conflicts with new features. Corrected copying of widgets to/from active theme.
 
 == Override Parent Styles ==
 
