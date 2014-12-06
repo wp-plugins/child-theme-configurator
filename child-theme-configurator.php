@@ -85,4 +85,3 @@ if ( !defined('ABSPATH')) exit;
         delete_option( CHLD_THM_CFG_OPTIONS . '_sel_ndx' );
         delete_option( CHLD_THM_CFG_OPTIONS . '_val_ndx' );
     }
-    

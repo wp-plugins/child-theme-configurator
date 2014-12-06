@@ -252,11 +252,13 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Screenshots ==
 
-1. Example of the Parent/Child Panel.
-2. Example of the Query/Selector Panel.
-3. Example of the Rule/Value Panel.
-4. Example of the @imports Panel.
-5. Example of the Preview CSS Panel.
+1. Parent/Child tab
+2. Parent/Child tab with parent theme menu open
+3. Query/Selector tab
+4. Rule/Value tab
+5. @import tab
+6. Parent CSS tab
+7. Files tab
 
 == Changelog ==
 
@@ -264,8 +266,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Fix: add check if theme uses hard-wired stylesheet link and alert to use @import instead of link option
 * Fix: conflicts with using jQuery UI from CDN - using local version of 1.11.2 Widget/Menu/Selectmenu instead
 * Fix: using wp-color-picker handle instead of iris as dependency to make sure wpColorPicker() methods are loaded
-* Fix: copy parent theme widgets from parent mods if parent is inactive, sidebars_widgets if parent is active
-* Fix: copy parent theme widgets to child mods if child is inactive, sidebars_widgets if child is active
+* Fix: copy parent theme widgets logic different if child or parent are active theme
 
 = 1.6.0 = 
 * New Feature: option to load parent stylesheet using wp_enqueue_style (link), @import or none. Thanks to cmwwebfx and Shapeshifter3 for pushing me on this 
