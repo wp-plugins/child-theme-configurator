@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.6.0
+    Version: 1.6.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -234,7 +234,7 @@ class ChildThemeConfiguratorCSS {
     function get_parent_source($file = 'style.css') {
         return trailingslashit(get_theme_root()) . trailingslashit($this->get_prop('parnt')) . $file;
     }
-   
+
     /*
      * update_arrays
      * accepts CSS properties as raw strings and normilizes into 
