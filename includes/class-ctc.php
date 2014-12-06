@@ -170,7 +170,6 @@ class ChildThemeConfiguratorAdmin {
                     $import = preg_replace($regex, '@import url(' . trailingslashit($url) . $matches[4] . ')', $import);
                 endif;
                 wp_enqueue_style('chld-thm-cfg-admin' . ++$count, preg_replace($regex, "$2", $import));
-                //echo preg_replace($regex, "<link rel='stylesheet' href=\"$2\" type='text/css' />", $import) . "\n";
             endforeach;
         endif;
     }
@@ -184,7 +183,6 @@ class ChildThemeConfiguratorAdmin {
         $this->ui = new ChildThemeConfiguratorUI();
         $this->ui->render_help_content();
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'),999);
-//        $this->enqueue_scripts();
         $this->load_imports();
 	}
     
@@ -274,7 +272,8 @@ class ChildThemeConfiguratorAdmin {
                     add_action('admin_notices', array($this, 'enqueue_notice')); 	
             endif;
             // check if file ownership is messed up from old version or other plugin
-            if (fileowner($this->css->get_child_target('')) != fileowner(ABSPATH)):
+            
+            if (fileowner($this->css->get_child_target('')) != fileowner(get_theme_root())):
 	            add_action('admin_notices', array($this, 'owner_notice')); 
             endif;
         endif;	
