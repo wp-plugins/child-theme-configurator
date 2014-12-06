@@ -29,7 +29,7 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Update themes without losing customizations
 * Save hours of development time
 * Make modifications above and beyond the theme Customizer
-* Load parent theme stylesheet with <link> instead of @import
+* Enqueue (link) parent theme stylesheet instead of using @import
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of theme fonts
 * Apply changes in a child theme without touching the parent theme
