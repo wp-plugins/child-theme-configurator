@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.6.1
+    Version: 1.6.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -559,18 +559,22 @@ class ChildThemeConfiguratorCSS {
         foreach ($ruleset as $query => $segment):
             // make sure there is semicolon before closing brace
             $segment = preg_replace('#(\})#', ";$1", $segment);
-            $regex = '#\s([\.\#\:\w][\w\-\s\(\)\[\]\'\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s';  //
+            $regex = '#([^\n\{]+?)\{(.*?)\}#s';  //
+            //$regex = '#\s([\.\#\:\w][\w\-\s\(\)\[\]\'\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s';  //
             preg_match_all($regex, $segment, $matches);
             foreach($matches[1] as $sel):
                 $stuff  = array_shift($matches[2]);
                 $this->update_arrays($template, $query, $sel);
+                // handle base64 data
+                $stuff = preg_replace( '#data:([^;]+?);([^\)]+?)\)#s', "data:$1%%semi%%$2)", $stuff );
                 foreach (explode(';', $stuff) as $ruleval):
                     if ($this->qskey > CHLD_THM_CFG_MAX_SELECTORS) break;
                     if (FALSE === strpos($ruleval, ':')) continue;
                     list($rule, $value) = explode(':', $ruleval, 2);
                     $rule   = trim($rule);
                     $rule   = preg_replace_callback("/[^\w\-]/", array($this, 'to_ascii'), $rule);
-                    $value  = trim($value);
+                    // handle base64 data
+                    $value  = trim(str_replace('%%semi%%', ';', $value));
                     
                     $rules = $values = array();
                     // save important flag
@@ -712,6 +716,7 @@ class ChildThemeConfiguratorCSS {
             $rules .= '    ' . $rule . ': ' . $value . $importantstr . ';' . LF;
         elseif ('background-image' == $rule):
             // gradient?
+            
             if ($gradient = $this->decode_gradient($value)):
                 // standard gradient
                 foreach(array('moz', 'webkit', 'o', 'ms') as $prefix):
@@ -966,7 +971,7 @@ class ChildThemeConfiguratorCSS {
      */
     function decode_gradient($value) {
         $parts = explode(':', $value, 5);
-        if (5 == count($parts)):        
+        if (!preg_match('#(url|none)#i', $value) && 5 == count($parts)):        
             return array(
                 'origin' => empty($parts[0]) ? '' : $parts[0],
                 'color1' => empty($parts[1]) ? '' : $parts[1],

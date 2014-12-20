@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.6.1
+    Version: 1.6.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -88,7 +88,7 @@ class ChildThemeConfiguratorAdmin {
         $this->ui->render();
     }
     function enqueue_scripts() {
-        wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css', array(), '1.6.1');
+        wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css', array(), '1.6.2');
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -127,7 +127,7 @@ class ChildThemeConfiguratorAdmin {
                     '_background_origin'    => __('Origin', 'chld_thm_cfg'),
                     '_background_color1'    => __('Color 1', 'chld_thm_cfg'),
                     '_background_color2'    => __('Color 2', 'chld_thm_cfg'),
-                    '_border_width'         => __('Width', 'chld_thm_cfg'),
+                    '_border_width'         => __('Width/None', 'chld_thm_cfg'),
                     '_border_style'         => __('Style', 'chld_thm_cfg'),
                     '_border_color'         => __('Color', 'chld_thm_cfg'),
                 ),
@@ -586,7 +586,7 @@ class ChildThemeConfiguratorAdmin {
         global $wp_filesystem;
         $themedir = $wp_filesystem->find_folder(get_theme_root());
         if (! $wp_filesystem->is_writable($themedir)) return FALSE;
-        $childparts = explode('/', wp_normalize_path($path));
+        $childparts = explode('/', $this->normalize_path($path));
         while (count($childparts)):
             $subdir = array_shift($childparts);
             if (empty($subdir)) continue;
@@ -762,14 +762,14 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
     }
     
     function uploads_basename($file) {
-        $file = wp_normalize_path($file);
+        $file = $this->normalize_path($file);
         $uplarr = wp_upload_dir();
         $upldir = trailingslashit($uplarr['basedir']);
         return preg_replace('%^' . preg_quote($upldir) . '%', '', $file);
     }
     
     function uploads_fullpath($file) {
-        $file = wp_normalize_path($file);
+        $file = $this->normalize_path($file);
         $uplarr = wp_upload_dir();
         $upldir = trailingslashit($uplarr['basedir']);
         return $upldir . $file;
@@ -822,7 +822,7 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
         $files = $this->css->recurse_directory($dir, NULL, TRUE);
         $errors = array();
         foreach ($files as $file):
-            $childfile  = $this->theme_basename($child, wp_normalize_path($file));
+            $childfile  = $this->theme_basename($child, $this->normalize_path($file));
             $newfile    = trailingslashit($newchild) . $childfile;
             $childpath  = $fsthemedir . trailingslashit($child) . $childfile;
             $newpath    = $fsthemedir . $newfile;
@@ -1025,7 +1025,7 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
             foreach ($def['addl'] as $path => $type):
             
                 // sanitize the crap out of the target data -- it will be used to create paths
-                $path = wp_normalize_path(preg_replace("%[^\w\\//\-]%", '', sanitize_text_field($child . $path)));
+                $path = $this->normalize_path(preg_replace("%[^\w\\//\-]%", '', sanitize_text_field($child . $path)));
                 if (('dir' == $type && FALSE === $chld_thm_cfg->verify_child_dir($path))
                     || ('dir' != $type && FALSE === $chld_thm_cfg->write_child_file($path, ''))):
                     $chld_thm_cfg->errors[] = 
@@ -1035,12 +1035,18 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
         endif;
         // write main def file
         if (isset($def['target'])):
-            $path = wp_normalize_path(preg_replace("%[^\w\\//\-\.]%", '', sanitize_text_field($def['target']))); //$child . 
+            $path = $this->normalize_path(preg_replace("%[^\w\\//\-\.]%", '', sanitize_text_field($def['target']))); //$child . 
             if (FALSE === $chld_thm_cfg->write_child_file($path, '')):
                 $chld_thm_cfg->errors[] = 
                     __('Your stylesheet is not writable.', 'chld_thm_cfg_plugins');
                 return FALSE;
             endif;
         endif;        
+    }
+    // backwards compatability < 3.9
+    function normalize_path( $path ) {
+	    $path = str_replace( '\\', '/', $path );
+	    $path = preg_replace( '|/+|','/', $path );
+	    return $path;
     }
 }

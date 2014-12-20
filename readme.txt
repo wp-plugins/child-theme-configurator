@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, customize, CSS, responsive, css editor, theme generator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,7 +105,7 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 9. Click "Generate/Rebuild Child Theme Files."
 
-10. IMPORTANT: Always test your child theme with Live Preview before activating!
+10. IMPORTANT: Always test your child theme with Live Preview (theme customizer) before activating!
 
 == Frequently Asked Questions ==
 
@@ -117,7 +117,7 @@ The child theme is in your themes folder, usually
 
 [wordpress]/wp-content/themes/[child-theme]
 
-To prevent this in the future, always test your child theme with Live Preview before activating.
+To prevent this in the future, always test your child theme with Live Preview (theme customizer) before activating.
 
 = Why are my menus displaying incorrectly when I activate the new child theme? =
 ...or...
@@ -131,7 +131,7 @@ These options are specific to each theme and are saved separately in the databas
 
 Many of these options can be copied over to the child theme by checking "Copy Parent Theme Menus, Widgets and other Options" when you generate the child theme files on the Parent/Child tab.
 
-If you want to set different options you can either apply them after you activate the child theme, or by using the "Live Preview" under Appearance > Themes.
+If you want to set different options you can either apply them after you activate the child theme using the theme customizer, or by using the "Live Preview" under Appearance > Themes.
 
 * Menus: Go to Appearance > Menus and click the "Locations" tab. By default, the primary menu will generate the links automatically from the existing pages. Select your customized Menu from the dropdown and click "Use New Menu." This will replace the default menu and you will see the correct links.
 * Header: Go to Appearance > Header. Some themes will show the "Title" and "Tagline" from your "General Settings" by default. Click "Choose Image" and find the header from the Media Library or upload a new image. This will replace default with your custom image.
@@ -261,6 +261,13 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+
+= 1.6.2 = 
+* Fix: replaced wp_normalize_path with class method to support legacy WP versions
+* Fix: support for multiple layered background images
+* Fix: background:none being parsed into gradient origin parameter
+* Fix: support for data URIs
+* Fix: support for *= and ^= notation in selectors 
 
 = 1.6.1 = 
 * Fix: add check if theme uses hard-wired stylesheet link and alert to use @import instead of link option
@@ -440,7 +447,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-v.1.6.1 Fixes for bugs that arose due to jQuery conflicts with new features. Corrected copying of widgets to/from active theme.
+v.1.6.2 Fixes for various bugs in parser. See changelog for details.
 
 == Override Parent Styles ==
 
@@ -514,7 +521,7 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 **In the worst cases they will break your website when you activate the child theme.**
 
 1. Navigate to Appearance > Themes in the WordPress Admin. You will now see the new Child Theme as one of the installed Themes.
-2. Click "Live Preview" below the new Child Theme to see it in action.
+2. Click "Live Preview" (theme customizer) below the new Child Theme to see it in action.
 3. When you are ready to take the Child Theme live, click "Activate."
 
 == Caveats ==
