@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Child Theme Configurator package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Child Theme Configurator 1.6.0\n"
+"Project-Id-Version: Child Theme Configurator 1.6.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/child-theme-configurator\n"
-"POT-Creation-Date: 2014-12-01 02:23:29+00:00\n"
+"POT-Creation-Date: 2014-12-06 03:55:35+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#. #-#-#-#-#  chld_thm_cfg.pot (Child Theme Configurator 1.6.0)  #-#-#-#-#
+#. #-#-#-#-#  chld_thm_cfg.pot (Child Theme Configurator 1.6.1)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: child-theme-configurator.php:54 includes/forms/main.php:23
 msgid "Child Theme Configurator"
@@ -22,197 +22,197 @@ msgstr ""
 msgid "Child Themes"
 msgstr ""
 
-#: includes/class-ctc-ui.php:126
+#: includes/class-ctc-ui.php:139
 msgid "Child Theme files modified successfully."
 msgstr ""
 
-#: includes/class-ctc-ui.php:128
+#: includes/class-ctc-ui.php:141
 msgid ""
 "Child Theme <strong>%s</strong> has been generated successfully.\n"
 "                "
 msgstr ""
 
-#: includes/class-ctc-ui.php:131
+#: includes/class-ctc-ui.php:144
 msgid "IMPORTANT:"
 msgstr ""
 
-#: includes/class-ctc-ui.php:131 includes/forms/themepreview.php:16
+#: includes/class-ctc-ui.php:144 includes/forms/themepreview.php:16
 #: includes/forms/themepreview.php:17
 msgid "Live Preview"
 msgstr ""
 
-#: includes/class-ctc-ui.php:131
+#: includes/class-ctc-ui.php:144
 msgid "Test your child theme"
 msgstr ""
 
-#: includes/class-ctc-ui.php:131
+#: includes/class-ctc-ui.php:144
 msgid "before activating."
 msgstr ""
 
-#: includes/class-ctc.php:122
+#: includes/class-ctc.php:126
 msgid "URL/None"
 msgstr ""
 
-#: includes/class-ctc.php:123
+#: includes/class-ctc.php:127
 msgid "Origin"
 msgstr ""
 
-#: includes/class-ctc.php:124
+#: includes/class-ctc.php:128
 msgid "Color 1"
 msgstr ""
 
-#: includes/class-ctc.php:125
+#: includes/class-ctc.php:129
 msgid "Color 2"
 msgstr ""
 
-#: includes/class-ctc.php:126
+#: includes/class-ctc.php:130
 msgid "Width"
 msgstr ""
 
-#: includes/class-ctc.php:127
+#: includes/class-ctc.php:131
 msgid "Style"
 msgstr ""
 
-#: includes/class-ctc.php:128
+#: includes/class-ctc.php:132
 msgid "Color"
 msgstr ""
 
-#: includes/class-ctc.php:130
+#: includes/class-ctc.php:134
 msgid "Are you sure? This will replace your current settings."
 msgstr ""
 
-#: includes/class-ctc.php:132 includes/forms/query-selector.php:35
+#: includes/class-ctc.php:136 includes/forms/query-selector.php:35
 #: includes/forms/rule-value.php:28
 msgid "Sample"
 msgstr ""
 
-#: includes/class-ctc.php:133
+#: includes/class-ctc.php:137
 msgid "<span style=\"font-size:10px\">!</span>"
 msgstr ""
 
-#: includes/class-ctc.php:134 includes/forms/rule-value.php:31
+#: includes/class-ctc.php:138 includes/forms/rule-value.php:31
 msgid "Selectors"
 msgstr ""
 
-#: includes/class-ctc.php:135
+#: includes/class-ctc.php:139
 msgid "Close"
 msgstr ""
 
-#: includes/class-ctc.php:136
+#: includes/class-ctc.php:140
 msgid "Edit"
 msgstr ""
 
-#: includes/class-ctc.php:137
+#: includes/class-ctc.php:141
 msgid "Cancel"
 msgstr ""
 
-#: includes/class-ctc.php:138
+#: includes/class-ctc.php:142
 msgid "Rename"
 msgstr ""
 
-#: includes/class-ctc.php:139
+#: includes/class-ctc.php:143
 msgid "The stylesheet cannot be displayed."
 msgstr ""
 
-#: includes/class-ctc.php:140
+#: includes/class-ctc.php:144
 msgid "(Child Only)"
 msgstr ""
 
-#: includes/class-ctc.php:141
+#: includes/class-ctc.php:145
 msgid "Please enter a valid Child Theme"
 msgstr ""
 
-#: includes/class-ctc.php:142
+#: includes/class-ctc.php:146
 msgid "Please enter a valid Child Theme name"
 msgstr ""
 
-#: includes/class-ctc.php:143
+#: includes/class-ctc.php:147
 msgid "<strong>%s</strong> exists. Please enter a different Child Theme"
 msgstr ""
 
-#: includes/class-ctc.php:298
+#: includes/class-ctc.php:307
 msgid "Zip file creation failed."
 msgstr ""
 
-#: includes/class-ctc.php:333
+#: includes/class-ctc.php:342
 msgid "The Functions file is required and cannot be deleted."
 msgstr ""
 
-#: includes/class-ctc.php:413
+#: includes/class-ctc.php:422
 msgid "You do not have permission to configure child themes."
 msgstr ""
 
-#: includes/class-ctc.php:437
+#: includes/class-ctc.php:446
 msgid "%s does not exist. Please select a valid Parent Theme"
 msgstr ""
 
-#: includes/class-ctc.php:440
+#: includes/class-ctc.php:449
 msgid "Please select a valid Parent Theme"
 msgstr ""
 
-#: includes/class-ctc.php:445
+#: includes/class-ctc.php:454
 msgid "Please enter a valid Child Theme template name"
 msgstr ""
 
-#: includes/class-ctc.php:450
+#: includes/class-ctc.php:459
 msgid ""
 "<strong>%s</strong> exists. Please enter a different Child Theme template "
 "name"
 msgstr ""
 
-#: includes/class-ctc.php:476
+#: includes/class-ctc.php:485
 msgid "Please enter a valid Child Theme directory"
 msgstr ""
 
-#: includes/class-ctc.php:480 includes/class-ctc.php:997
+#: includes/class-ctc.php:489 includes/class-ctc.php:1033
 msgid "Your theme directories are not writable."
 msgstr ""
 
-#: includes/class-ctc.php:514 includes/class-ctc.php:1006
+#: includes/class-ctc.php:523 includes/class-ctc.php:1042
 msgid "Your stylesheet is not writable."
 msgstr ""
 
-#: includes/class-ctc.php:687
+#: includes/class-ctc.php:723
 msgid "Could not copy file."
 msgstr ""
 
-#: includes/class-ctc.php:762
+#: includes/class-ctc.php:798
 msgid "Could not set write permissions."
 msgstr ""
 
-#: includes/class-ctc.php:833
+#: includes/class-ctc.php:869
 msgid "There were errors while resetting permissions."
 msgstr ""
 
-#: includes/class-ctc.php:870
+#: includes/class-ctc.php:906
 msgid "Could not upload file."
 msgstr ""
 
-#: includes/class-ctc.php:950
+#: includes/class-ctc.php:986
 msgid ""
 "Child Theme Configurator is unable to write to the stylesheet. This can be "
 "resolved using one of the following options:<ol>"
 msgstr ""
 
-#: includes/class-ctc.php:952
+#: includes/class-ctc.php:988
 msgid ""
 "<li>Temporarily make the stylesheet writable by clicking the button below. "
 "You should change this back when you are finished editing for security by "
 "clicking \"Make read-only\" under the \"Files\" tab.</li>"
 msgstr ""
 
-#: includes/class-ctc.php:954
+#: includes/class-ctc.php:990
 msgid "Temporarily make stylesheet writable"
 msgstr ""
 
-#: includes/class-ctc.php:955
+#: includes/class-ctc.php:991
 msgid ""
 "<li><a target=\"_blank\"  href=\"http://codex.wordpress.org/Editing_wp-"
 "config.php#WordPress_Upgrade_Constants\" title=\"Editin wp-config.php\">Add "
 "your FTP/SSH credentials to the WordPress config file</a>.</li>"
 msgstr ""
 
-#: includes/class-ctc.php:957
+#: includes/class-ctc.php:993
 msgid ""
 "<li><a target=\"_blank\" href=\"http://technet.microsoft.com/en-us/library/"
 "cc771170\" title=\"Setting Application Pool Identity\">Assign WordPress to "
@@ -220,7 +220,7 @@ msgid ""
 "li>"
 msgstr ""
 
-#: includes/class-ctc.php:958
+#: includes/class-ctc.php:994
 msgid ""
 "<li><a target=\"_blank\" href=\"http://codex.wordpress.org/"
 "Changing_File_Permissions\" title=\"Changing File Permissions\">Set the "
@@ -228,11 +228,11 @@ msgid ""
 "li>"
 msgstr ""
 
-#: includes/class-ctc.php:960
+#: includes/class-ctc.php:996
 msgid "<li>Run PHP under Apache with suEXEC (contact your web host).</li>"
 msgstr ""
 
-#: includes/class-ctc.php:968
+#: includes/class-ctc.php:1004
 msgid ""
 "This Child Theme is not owned by your website account. It may have been "
 "created by a prior version of this plugin or by another program. Moving "
@@ -241,11 +241,11 @@ msgid ""
 "below."
 msgstr ""
 
-#: includes/class-ctc.php:970
+#: includes/class-ctc.php:1006
 msgid "Correct Child Theme Permissions"
 msgstr ""
 
-#: includes/class-ctc.php:977
+#: includes/class-ctc.php:1013
 msgid ""
 "Child Theme Configurator has changed the way it handles the parent "
 "stylesheet. Please set your preferences below and click \"Generate Child "
@@ -422,7 +422,7 @@ msgid "Copy Parent Theme Menus, Widgets and other Options"
 msgstr ""
 
 #: includes/forms/parent-child.php:95 includes/forms/parent-child.php:110
-#: includes/forms/parent-child.php:140
+#: includes/forms/parent-child.php:143
 msgid "NOTE:"
 msgstr ""
 
@@ -440,50 +440,56 @@ msgid ""
 "can remove old backup files using the Files tab."
 msgstr ""
 
-#: includes/forms/parent-child.php:118
+#: includes/forms/parent-child.php:121
 msgid "Parent stylesheet handling:"
 msgstr ""
 
-#: includes/forms/parent-child.php:124
+#: includes/forms/parent-child.php:127
 msgid "&lt;link&gt; (default)"
 msgstr ""
 
-#: includes/forms/parent-child.php:130 includes/forms/tabs.php:22
+#: includes/forms/parent-child.php:133 includes/forms/tabs.php:22
 msgid "@import"
 msgstr ""
 
-#: includes/forms/parent-child.php:136
+#: includes/forms/parent-child.php:139
 msgid "none (handled by theme)"
 msgstr ""
 
-#: includes/forms/parent-child.php:142
+#: includes/forms/parent-child.php:144
 msgid ""
-"Only select @import for older themes that do not enqueue the stylesheet. "
-"Select 'none' if core styles are automatically loaded for child themes. "
-"Select '&lt;link&gt;' if unsure."
+"This theme does not currently enqueue the stylesheet and must use the "
+"@import option to render correctly."
 msgstr ""
 
-#: includes/forms/parent-child.php:148
+#: includes/forms/parent-child.php:146
+msgid ""
+"Select @import for older themes that do not enqueue the stylesheet. Select "
+"'none' if core styles are automatically loaded for child themes. Select '&lt;"
+"link&gt;' if unsure."
+msgstr ""
+
+#: includes/forms/parent-child.php:152
 msgid "Reset/Restore from backup:"
 msgstr ""
 
-#: includes/forms/parent-child.php:154
+#: includes/forms/parent-child.php:158
 msgid "Leave unchanged"
 msgstr ""
 
-#: includes/forms/parent-child.php:160
+#: includes/forms/parent-child.php:164
 msgid "Reset all"
 msgstr ""
 
-#: includes/forms/parent-child.php:168
+#: includes/forms/parent-child.php:172
 msgid "Restore backup from"
 msgstr ""
 
-#: includes/forms/parent-child.php:180
+#: includes/forms/parent-child.php:184
 msgid "Parse additional stylesheets:"
 msgstr ""
 
-#: includes/forms/parent-child.php:184
+#: includes/forms/parent-child.php:188
 msgid ""
 "Stylesheets that are currently being loaded by the parent theme are "
 "automatically selected below (except for Bootstrap stylesheets which add a "
@@ -491,7 +497,7 @@ msgid ""
 "only the additional stylesheets you wish to customize."
 msgstr ""
 
-#: includes/forms/parent-child.php:203
+#: includes/forms/parent-child.php:207
 msgid "Generate/Rebuild Child Theme Files"
 msgstr ""
 

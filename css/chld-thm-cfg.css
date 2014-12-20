@@ -101,8 +101,10 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 }
 
 .ctc-textarea-button-cell {
-    margin: 15px 0;
+    margin: 4px 0 15px;
     width: 85px;
+    text-align: right;
+    float:right;
 }
 
 .ctc-selector-link {

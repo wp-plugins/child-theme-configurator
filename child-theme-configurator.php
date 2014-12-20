@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Plugin Name: Child Theme Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Create a Child Theme from any installed Theme. Each CSS selector, rule and value can then be searched, previewed and modified.
-    Version: 1.6.0
+    Version: 1.6.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -17,16 +17,22 @@ if ( !defined('ABSPATH')) exit;
 
     defined( 'LF' ) or define( 'LF', "\n");
     defined( 'CHLD_THM_CFG_OPTIONS' ) or define( 'CHLD_THM_CFG_OPTIONS', 'chld_thm_cfg_options' );
-    defined( 'CHLD_THM_CFG_VERSION' ) or define( 'CHLD_THM_CFG_VERSION', '1.6.0' );
+    defined( 'CHLD_THM_CFG_VERSION' ) or define( 'CHLD_THM_CFG_VERSION', '1.6.2' );
+    defined( 'CHLD_THM_CFG_MIN_WP_VERSION' ) or define( 'CHLD_THM_CFG_MIN_WP_VERSION', '3.7' );
     defined( 'CHLD_THM_CFG_MAX_SELECTORS' ) or define( 'CHLD_THM_CFG_MAX_SELECTORS', '50000' );
     defined( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS' ) or define( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS', '1000' );
     defined( 'CHLD_THM_CFG_MENU' ) or define( 'CHLD_THM_CFG_MENU', 'chld_thm_cfg_menu' );
 
     class ChildThemeConfigurator {
         static function init() {
-            // setup admin hooks
             $lang_dir = dirname(__FILE__) . '/lang';
             load_plugin_textdomain('chld_thm_cfg', FALSE, $lang_dir, $lang_dir);
+            global $wp_version;
+            if (version_compare($wp_version, CHLD_THM_CFG_MIN_WP_VERSION) < 0):
+                add_action('admin_notices', 'ChildthemeConfigurator::version_notice');
+                return;
+            endif; 	
+            // setup admin hooks
             add_action( 'admin_menu',            'ChildThemeConfigurator::admin' );
             add_action( 'wp_ajax_ctc_update',    'ChildThemeConfigurator::save' );
             add_action( 'wp_ajax_ctc_query',     'ChildThemeConfigurator::query' );
@@ -67,13 +73,18 @@ if ( !defined('ABSPATH')) exit;
             // display admin page
             self::ctc()->render();
         }
+        static function version_notice() {
+            deactivate_plugins( plugin_basename( __FILE__ ) );
+            unset($_GET['activate']);
+            echo '<div class="update-nag"><p>' . sprintf(__('Child Theme Configurator requires WordPress version %s or later.', 'chld_thm_cfg'), CHLD_THM_CFG_MIN_WP_VERSION) . '</p></div>' . LF;
+        }
     }
     
     if ( is_admin() ) ChildThemeConfigurator::init();
     
-    register_uninstall_hook( __FILE__ , 'child_theme_configurator_delete_plugin' );
+    register_uninstall_hook( __FILE__ , 'chld_thm_cfg_delete_plugin' );
 
-    function child_theme_configurator_delete_plugin() {
+    function chld_thm_cfg_delete_plugin() {
         delete_option( CHLD_THM_CFG_OPTIONS );
         delete_option( CHLD_THM_CFG_OPTIONS . '_configvars' );
         delete_option( CHLD_THM_CFG_OPTIONS . '_dict_qs' );
@@ -85,4 +96,4 @@ if ( !defined('ABSPATH')) exit;
         delete_option( CHLD_THM_CFG_OPTIONS . '_sel_ndx' );
         delete_option( CHLD_THM_CFG_OPTIONS . '_val_ndx' );
     }
-    
+   
