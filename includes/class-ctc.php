@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.6.0
+    Version: 1.6.2.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -88,18 +88,19 @@ class ChildThemeConfiguratorAdmin {
         $this->ui->render();
     }
     function enqueue_scripts() {
-        wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css', array(), '1.6.0');
+        wp_enqueue_style('chld-thm-cfg-admin', $this->pluginURL . 'css/chld-thm-cfg.css', array(), '1.6.2.1');
         
-        // we need to use jQuery UI from CDN until 4.1 is released because jqeury-ui-selectmenu is not included
-        // this will be updated in a later release to use WP Core scripts
-        wp_deregister_script('jquery-ui-core');
-        wp_enqueue_script('jquery-ui-core', '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js', array('jquery'));
+        // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
+        // this will be updated in a later release to use WP Core scripts when it is widely adopted
+        if (!wp_script_is('jquery-ui-selectmenu', 'registered')): // selectmenu.min.js
+            wp_enqueue_script('jquery-ui-selectmenu', $this->pluginURL . 'js/selectmenu.min.js', array('jquery','jquery-ui-core','jquery-ui-position'), FALSE, TRUE);
+        endif;
         wp_enqueue_script('ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array('jquery'), FALSE, TRUE);
         wp_enqueue_script('chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
             array(
-//                'jquery-ui-autocomplete', FIXME: restore after 4.1
-//                'jquery-ui-selectmenu',   FIXME: restore after 4.1
-                'iris',
+                'jquery-ui-autocomplete', 
+                'jquery-ui-selectmenu',   
+                'wp-color-picker',
             ), FALSE, TRUE );
         $localize_array = apply_filters('chld_thm_cfg_localize_script', array(
                 'ssl'               => is_ssl(),
@@ -126,7 +127,7 @@ class ChildThemeConfiguratorAdmin {
                     '_background_origin'    => __('Origin', 'chld_thm_cfg'),
                     '_background_color1'    => __('Color 1', 'chld_thm_cfg'),
                     '_background_color2'    => __('Color 2', 'chld_thm_cfg'),
-                    '_border_width'         => __('Width', 'chld_thm_cfg'),
+                    '_border_width'         => __('Width/None', 'chld_thm_cfg'),
                     '_border_style'         => __('Style', 'chld_thm_cfg'),
                     '_border_color'         => __('Color', 'chld_thm_cfg'),
                 ),
@@ -169,7 +170,6 @@ class ChildThemeConfiguratorAdmin {
                     $import = preg_replace($regex, '@import url(' . trailingslashit($url) . $matches[4] . ')', $import);
                 endif;
                 wp_enqueue_style('chld-thm-cfg-admin' . ++$count, preg_replace($regex, "$2", $import));
-                //echo preg_replace($regex, "<link rel='stylesheet' href=\"$2\" type='text/css' />", $import) . "\n";
             endforeach;
         endif;
     }
@@ -182,8 +182,7 @@ class ChildThemeConfiguratorAdmin {
         include_once($this->pluginPath . 'includes/class-ctc-ui.php');
         $this->ui = new ChildThemeConfiguratorUI();
         $this->ui->render_help_content();
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-//        $this->enqueue_scripts();
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'),999);
         $this->load_imports();
 	}
     
@@ -273,7 +272,8 @@ class ChildThemeConfiguratorAdmin {
                     add_action('admin_notices', array($this, 'enqueue_notice')); 	
             endif;
             // check if file ownership is messed up from old version or other plugin
-            if (fileowner($this->css->get_child_target('')) != fileowner(ABSPATH)):
+            
+            if (fileowner($this->css->get_child_target('')) != fileowner(get_theme_root())):
 	            add_action('admin_notices', array($this, 'owner_notice')); 
             endif;
         endif;	
@@ -524,15 +524,42 @@ class ChildThemeConfiguratorAdmin {
                 return FALSE;
             endif; 
             
-            // copy parent theme mods
-            if (isset($_POST['ctc_parent_mods']) && ($parent_mods = get_option('theme_mods_' . $parnt))):
-                update_option('theme_mods_' . $child, $parent_mods);
+            // copy parent theme mods option set
+            if (isset($_POST['ctc_parent_mods'])):
+                // we can copy settings from parent to child even if neither is currently active
+                // so we need cases for active parent, active child or neither
+                
+                // get active theme
+                $active_theme = get_stylesheet();
+                // create temp array from parent settings
+                $child_mods = get_option('theme_mods_' . $parnt);
+                if ($active_theme == $parnt):
+                    // if parent theme is active, get widgets from active sidebars_widgets array
+                    $child_widgets = retrieve_widgets();
+                else:
+                    // otherwise get widgets from parent theme mods
+                    $child_widgets = $child_mods['sidebars_widgets']['data'];
+                endif;
+                if ($active_theme == $child):
+                    // if child theme is active, remove widgets from temp array
+                    unset($child_mods['sidebars_widgets']);
+                    // copy temp array to child mods
+                    update_option('theme_mods_' . $child, $child_mods);
+                    // copy widgets to active sidebars_widgets array
+                    wp_set_sidebars_widgets($child_widgets);
+                else:
+                    // otherwise copy widgets to temp array with time stamp
+                    $child_mods['sidebars_widgets']['data'] = $child_widgets;
+                    $child_mods['sidebars_widgets']['time'] = time();
+                    // copy temp array to child theme mods
+                    update_option('theme_mods_' . $child, $child_mods);
+                endif;
             endif;
             
             // save new object to WP options table
             $this->css->save_config();
             
-            // hoock for add'l plugin options
+            // hook for add'l plugin options
             do_action('chld_thm_cfg_addl_options', $this); // hook for add'l plugin options
             
             // return message id 1, which says new child theme created successfull;
@@ -559,7 +586,7 @@ class ChildThemeConfiguratorAdmin {
         global $wp_filesystem;
         $themedir = $wp_filesystem->find_folder(get_theme_root());
         if (! $wp_filesystem->is_writable($themedir)) return FALSE;
-        $childparts = explode('/', wp_normalize_path($path));
+        $childparts = explode('/', $this->normalize_path($path));
         while (count($childparts)):
             $subdir = array_shift($childparts);
             if (empty($subdir)) continue;
@@ -735,14 +762,14 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
     }
     
     function uploads_basename($file) {
-        $file = wp_normalize_path($file);
+        $file = $this->normalize_path($file);
         $uplarr = wp_upload_dir();
         $upldir = trailingslashit($uplarr['basedir']);
         return preg_replace('%^' . preg_quote($upldir) . '%', '', $file);
     }
     
     function uploads_fullpath($file) {
-        $file = wp_normalize_path($file);
+        $file = $this->normalize_path($file);
         $uplarr = wp_upload_dir();
         $upldir = trailingslashit($uplarr['basedir']);
         return $upldir . $file;
@@ -795,7 +822,7 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
         $files = $this->css->recurse_directory($dir, NULL, TRUE);
         $errors = array();
         foreach ($files as $file):
-            $childfile  = $this->theme_basename($child, wp_normalize_path($file));
+            $childfile  = $this->theme_basename($child, $this->normalize_path($file));
             $newfile    = trailingslashit($newchild) . $childfile;
             $childpath  = $fsthemedir . trailingslashit($child) . $childfile;
             $newpath    = $fsthemedir . $newfile;
@@ -998,7 +1025,7 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
             foreach ($def['addl'] as $path => $type):
             
                 // sanitize the crap out of the target data -- it will be used to create paths
-                $path = wp_normalize_path(preg_replace("%[^\w\\//\-]%", '', sanitize_text_field($child . $path)));
+                $path = $this->normalize_path(preg_replace("%[^\w\\//\-]%", '', sanitize_text_field($child . $path)));
                 if (('dir' == $type && FALSE === $chld_thm_cfg->verify_child_dir($path))
                     || ('dir' != $type && FALSE === $chld_thm_cfg->write_child_file($path, ''))):
                     $chld_thm_cfg->errors[] = 
@@ -1008,12 +1035,18 @@ add_action('wp_enqueue_scripts', 'chld_thm_cfg_parent_css');
         endif;
         // write main def file
         if (isset($def['target'])):
-            $path = wp_normalize_path(preg_replace("%[^\w\\//\-\.]%", '', sanitize_text_field($def['target']))); //$child . 
+            $path = $this->normalize_path(preg_replace("%[^\w\\//\-\.]%", '', sanitize_text_field($def['target']))); //$child . 
             if (FALSE === $chld_thm_cfg->write_child_file($path, '')):
                 $chld_thm_cfg->errors[] = 
                     __('Your stylesheet is not writable.', 'chld_thm_cfg_plugins');
                 return FALSE;
             endif;
         endif;        
+    }
+    // backwards compatability < 3.9
+    function normalize_path( $path ) {
+	    $path = str_replace( '\\', '/', $path );
+	    $path = preg_replace( '|/+|','/', $path );
+	    return $path;
     }
 }

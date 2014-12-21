@@ -5,7 +5,7 @@ if ( !defined('ABSPATH')) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.6.0
+    Version: 1.6.2.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -25,9 +25,11 @@ class ChildThemeConfiguratorUI {
         $themes     = $this->ctc()->themes;
         $parent     = isset($_GET['ctc_parent']) ? sanitize_text_field($_GET['ctc_parent']) : $css->get_prop('parnt');
         $child      = $css->get_prop('child');
-        if (!$configtype = $css->get_prop('configtype')) $configtype = 'theme';
+        $configtype = $css->get_prop('configtype');
+        if (empty($configtype)) $configtype = 'theme';
         $hidechild  = (count($themes['child']) ? '' : 'style="display:none"');
         $enqueueset = 'theme' != $configtype || isset($css->enqueue);
+        $mustimport = $this->parent_stylesheet_check($parent);
         $imports    = $css->get_prop('imports');
         $id         = 0;
         $this->ctc()->fs_method = get_filesystem_method();
@@ -36,7 +38,18 @@ class ChildThemeConfiguratorUI {
         include ($this->ctc()->pluginPath .'/includes/forms/main.php'); 
     } 
 
-    function render_theme_menu($template = 'child', $selected = NULL) {
+     function parent_stylesheet_check($parent) {
+        $file  = trailingslashit(get_theme_root()) . trailingslashit($parent) . 'header.php';
+        $regex = '/<link[^>]+?stylesheet_ur[li]/is';
+        if (file_exists($file)):
+            $contents = file_get_contents($file);
+            if (preg_match($regex, $contents)) return TRUE;
+        endif;
+        return FALSE;
+    }
+   
+    
+   function render_theme_menu($template = 'child', $selected = NULL) {
          ?>
         <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>" style="visibility:hidden"><?php
         foreach ($this->ctc()->themes[$template] as $slug => $theme)

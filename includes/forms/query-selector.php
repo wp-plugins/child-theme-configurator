@@ -75,13 +75,15 @@ if (!defined('ABSPATH')) exit;
       </div>
     </div>
     <div class="ctc-selector-row clearfix" id="ctc_new_selector_row">
-      <div class="ctc-input-cell"> <strong>
-        <?php _e('Raw CSS', 'chld_thm_cfg'); ?>
-        </strong>
+      <div class="ctc-input-cell">
         <div class="ctc-textarea-button-cell" id="ctc_save_query_selector_cell">
           <input type="button" class="button ctc-save-input" id="ctc_save_new_selectors" 
             name="ctc_save_new_selectors" value="<?php _e('Save', 'chld_thm_cfg'); ?>"  disabled />
         </div>
+        <strong>
+        <?php _e('Raw CSS', 'chld_thm_cfg'); ?>
+        </strong>
+        <p><?php _e('Use to enter shorthand CSS or new @media queries and selectors.', 'chld_thm_cfg');?></p><p><?php _e('Values entered here are merged into existing child styles or added to the child stylesheet if they do not exist in the parent.', 'chld_thm_cfg'); ?></p>
       </div>
       <div class="ctc-input-cell-wide">
         <textarea id="ctc_new_selectors" name="ctc_new_selectors" wrap="off"></textarea>

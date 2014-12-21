@@ -217,7 +217,7 @@ The plugin only loads the bulk of the code in the admin when you are using the t
 <!-- END tab -->
 <h3 id="ctc_help_sidebar">Links</h3>
 <!-- BEGIN sidebar -->
-<h4>We HATE when plugins nag and shame us into donations...</h4>
+<h4>Our plugins will not nag you for donations...</h4>
 <span style="font-size:smaller">...but we LOVE referrals.</span><br/><a href="http://wordpress.org/support/view/plugin-reviews/child-theme-configurator?rate=5#postform">Give Us 5 Stars</a>
 <h4>Not just for themes ... but plugins, too!</h4>
 <p style="font-size:smaller">Easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles" title="Child Theme Configurator Extension">Learn more</a></p>
