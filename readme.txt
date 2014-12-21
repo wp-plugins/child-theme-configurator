@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, customize, CSS, responsive, css editor, theme generator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 1.6.2
+Stable tag: 1.6.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -262,7 +262,10 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 
-= 1.6.2 = 
+= 1.6.2.1 = 
+* Fix: problem with parser introduced in 1.6.2
+
+= 1.6.2 =
 * Fix: replaced wp_normalize_path with class method to support legacy WP versions
 * Fix: support for multiple layered background images
 * Fix: background:none being parsed into gradient origin parameter
@@ -447,7 +450,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-v.1.6.2 Fixes for various bugs in parser. See changelog for details.
+v.1.6.2.1 Fixes for various bugs in parser. See changelog for details.
 
 == Override Parent Styles ==
 

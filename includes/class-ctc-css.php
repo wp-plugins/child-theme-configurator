@@ -6,7 +6,7 @@ if ( !defined('ABSPATH')) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.6.2
+    Version: 1.6.2.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -559,8 +559,7 @@ class ChildThemeConfiguratorCSS {
         foreach ($ruleset as $query => $segment):
             // make sure there is semicolon before closing brace
             $segment = preg_replace('#(\})#', ";$1", $segment);
-            $regex = '#([^\n\{]+?)\{(.*?)\}#s';  //
-            //$regex = '#\s([\.\#\:\w][\w\-\s\(\)\[\]\'\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s';  //
+            $regex = '#\s([\[\.\#\:\w][\w\-\s\(\)\[\]\'\^\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s';  //
             preg_match_all($regex, $segment, $matches);
             foreach($matches[1] as $sel):
                 $stuff  = array_shift($matches[2]);
