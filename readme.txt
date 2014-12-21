@@ -12,7 +12,7 @@ Create a Child Theme from any installed theme. Search, preview and customize any
 
 == Description ==
 
-Child Theme Configurator is a fast and easy to use CSS editor that allows you to create Child Themes and customize them well beyond the Theme Customizer. The Child Theme Configurator lets you identify and override only the Parent Theme CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
+Child Theme Configurator is a fast and easy to use CSS editor that allows you to create Child Themes and customize them beyond the options of the theme Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
 
 = Take Control of Your Child Themes =
 
