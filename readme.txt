@@ -263,7 +263,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 == Changelog ==
 
 = 1.6.2.1 = 
-* Fix: problem with parser introduced in 1.6.2
+* Fix: Regular expression introduced in version 1.6.2 parses selectors incorrectly.
 
 = 1.6.2 =
 * Fix: replaced wp_normalize_path with class method to support legacy WP versions
@@ -450,7 +450,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-v.1.6.2.1 Fixes for various bugs in parser. See changelog for details.
+v.1.6.2.1 Fixes a bug in the stylesheet parser that was an unintended consequence of a "fix" introduced in v.1.6.2.
 
 == Override Parent Styles ==
 
