@@ -94,10 +94,10 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 5. Save Backup (optional)
 
 6. Choose parent stylesheet handling
-    * Select <link> if the parent theme uses the main 'style.css' stylesheet and correctly enqueues it for child themes (default).
+    * Select 'link' if the parent theme uses the main 'style.css' stylesheet and correctly enqueues it for child themes (default).
     * Select @import for older themes that do not enqueue the stylesheet. If the parent styles do not appear when you activate the child theme, you probably need to use this option. NOTE: this was the only method used in previous versions of Child Theme Configurator.
     * Select "None" if the parent theme does not use the main 'style.css' for its core styles but enqueues it for child themes. This is a common practice with more recent themes. 
-    * If you do not know which option to use, select <link>.
+    * If you do not know which option to use, select 'link'.
 
 7. Restore from backup (optional).
 
