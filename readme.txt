@@ -27,12 +27,12 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 = Why create Child Themes using the Child Theme Configurator? =
 
 * Update themes without losing customizations
+* Easily copy Menus, Widgets and other options to a child theme
 * Save hours of development time
 * Make modifications above and beyond the theme Customizer
 * Enqueue (link) parent theme stylesheet instead of using @import
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of theme fonts
-* Apply changes in a child theme without touching the parent theme
 * Identify and override exact selectors from the parent theme
 * Change specific colors, backgrounds, font styles, etc., without changing other elements
 * Automatically create and preview CSS3 gradients
