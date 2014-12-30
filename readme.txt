@@ -8,11 +8,11 @@ Stable tag: 1.6.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Create a Child Theme from any installed theme. Search, preview and customize any selector, rule or value using this fast CSS editor.
+Create a Child Theme and customize the stylesheet as you wish. Search, preview and modify any selector, rule or value using this fast CSS editor.
 
 == Description ==
 
-Child Theme Configurator is a fast and easy to use CSS editor that allows you to create Child Themes and customize them well beyond the Theme Customizer. The Child Theme Configurator lets you identify and override only the Parent Theme CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
+Child Theme Configurator is a fast and easy to use CSS editor that allows you to create Child Themes and customize them beyond the options of the theme Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
 
 = Take Control of Your Child Themes =
 
@@ -27,12 +27,12 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 = Why create Child Themes using the Child Theme Configurator? =
 
 * Update themes without losing customizations
+* Easily copy Menus, Widgets and other options to a child theme
 * Save hours of development time
 * Make modifications above and beyond the theme Customizer
 * Enqueue (link) parent theme stylesheet instead of using @import
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of theme fonts
-* Apply changes in a child theme without touching the parent theme
 * Identify and override exact selectors from the parent theme
 * Change specific colors, backgrounds, font styles, etc., without changing other elements
 * Automatically create and preview CSS3 gradients
@@ -94,10 +94,10 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 5. Save Backup (optional)
 
 6. Choose parent stylesheet handling
-    * Select <link> if the parent theme uses the main 'style.css' stylesheet and correctly enqueues it for child themes (default).
+    * Select 'link' if the parent theme uses the main 'style.css' stylesheet and correctly enqueues it for child themes (default).
     * Select @import for older themes that do not enqueue the stylesheet. If the parent styles do not appear when you activate the child theme, you probably need to use this option. NOTE: this was the only method used in previous versions of Child Theme Configurator.
     * Select "None" if the parent theme does not use the main 'style.css' for its core styles but enqueues it for child themes. This is a common practice with more recent themes. 
-    * If you do not know which option to use, select <link>.
+    * If you do not know which option to use, select 'link'.
 
 7. Restore from backup (optional).
 
@@ -263,7 +263,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 == Changelog ==
 
 = 1.6.2.1 = 
-* Fix: problem with parser introduced in 1.6.2
+* Fix: Regular expression introduced in version 1.6.2 parses selectors incorrectly.
 
 = 1.6.2 =
 * Fix: replaced wp_normalize_path with class method to support legacy WP versions
@@ -450,7 +450,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-v.1.6.2.1 Fixes for various bugs in parser. See changelog for details.
+v.1.6.2.1 Fixes a bug in the stylesheet parser that was an unintended consequence of a "fix" introduced in v.1.6.2.
 
 == Override Parent Styles ==
 
