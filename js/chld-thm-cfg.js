@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.6.2.1
+ *  Version: 1.6.3
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -874,6 +874,7 @@ jQuery(document).ready(function($){
             additional;
         if (ctc_is_empty(template)) return;
         $.get(url, function(data){
+            //console.log(data);
             while (additional = regex.exec(data)){
                 if ('style.css' == additional[1]) break; // bail after main stylesheet
                 if (additional[1].match(/bootstrap/)) continue; // don't autoselect Bootstrap stylesheets
