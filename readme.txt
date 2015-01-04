@@ -29,16 +29,16 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Update themes without losing customizations
 * Easily copy widgets, menus and other options to a child theme
 * Save hours of development time
+* Multisite compatible - great for network sites
 * Make modifications above and beyond the theme Customizer
 * Enqueue (link) parent theme stylesheet instead of using @import
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of theme fonts
 * Identify and override exact selectors from the parent theme
 * Change specific colors, backgrounds, font styles, etc., without changing other elements
-* Automatically create and preview CSS3 gradients
-* Automatically generate cross-browser and vendor-prefixed rules
+* Automatically generate cross-browser and vendor-prefixed rules and CSS gradients
 * Preview style changes before committing to them
-* Add and modify individual @media queries
+* Customize @media queries for responsive design
 * Uses WP Filesystem API – will not create files you cannot remove
 * Nag-free, no-strings-attached user experience
 
@@ -111,7 +111,7 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 == Frequently Asked Questions ==
 
-= Where is it in the Admin? = 
+= Where is Child Theme Configurator in the Admin? = 
 
 For most users the Child Theme Configurator can be found under "Tools > Child Themes."
 
@@ -123,7 +123,7 @@ Click the "Help" tab at the top right for a quick reference.
 
 = Does it work with Multisite? =
 
-Yes. Go to Network Admin > Themes > Child Themes. Child themes must be "Network enabled" to preview and activate for Network sites.
+Yes. Go to "Network Admin > Themes > Child Themes." Child themes must be "Network enabled" to preview and activate for Network sites.
 
 = HELP! I changed a file and now I am unable to access my website or login to wp-admin to fix it! =
 
@@ -260,8 +260,8 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 = 1.6.3 = 
-* New Feature: Better handling for multisite. Moved interface to Themes menu and check for network enabled.
-* Fix: Restrict access to install_themes capability
+* New Feature: Better child theme handling for multisite. Moved interface to Themes menu and check for network enabled.
+* Fix: Restrict child theme configurator access to install_themes capability
 * Fix: Preview links to Themes admin if not network enabled to prevent 'Cheatin, uh?' error.
 
 = 1.6.2.1 = 
@@ -314,9 +314,8 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Added copy option to Parent/Child tab to assign menu locations, sidebars/widgets, custom header, background, and other options to the new Child Theme. 
 
 = 1.5.0 =
-* We have completely refactored CTC to use the WP_Filesystem API. 
-* If your web host is configured to use suExec (meaning it runs under the user of the web account being accessed), the changes will be completely transparent. 
-* Other configurations will now require user credentials to add, remove or update Child Theme files. 
+* Completely refactored CTC to use the WP_Filesystem API. 
+* Non suExec configurations will now require user credentials to add, remove or update Child Theme files. 
 * To make things easier we added the ability for you to make the files writable while editing and then make them read-only when you are done.
 * You can also set your credentials in wp-config.php: http://codex.wordpress.org/Editing_wp-config.php#WordPress_Upgrade_Constants
 * Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
@@ -444,9 +443,6 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Clean up Parent/Child form UI and validation
 * Streamlined UI overall
 
-= 1.0.1 =
-* Updates to Readme.txt
-
 = 1.0.0 =
 * Initial release.
 
@@ -528,6 +524,8 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 1. Navigate to Appearance > Themes in the WordPress Admin. You will now see the new Child Theme as one of the installed Themes.
 2. Click "Live Preview" (theme customizer) below the new Child Theme to see it in action.
 3. When you are ready to take the Child Theme live, click "Activate."
+
+**MULTISITE USERS:** You must Network Enable your child theme before you can use Live Preview. Go to "Themes" in the Network Admin.
 
 == Caveats ==
 
