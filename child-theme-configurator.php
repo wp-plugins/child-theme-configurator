@@ -1,12 +1,12 @@
 <?php
 // Exit if accessed directly
-if ( !defined('ABSPATH')) exit;
+if ( !defined( 'ABSPATH' ) ) exit;
 
 /*
     Plugin Name: Child Theme Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
-    Description: Create a Child Theme from any installed Theme. Each CSS selector, rule and value can then be searched, previewed and modified.
-    Version: 1.6.2.1
+    Description: Create a Child Theme and customize the stylesheet as you wish. Search, preview and modify any selector, rule or value using this fast CSS editor.
+    Version: 1.6.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -15,9 +15,9 @@ if ( !defined('ABSPATH')) exit;
     Copyright (C) 2014 Lilaea Media
 */
 
-    defined( 'LF' ) or define( 'LF', "\n");
+    defined( 'LF' ) or define( 'LF', "\n" );
     defined( 'CHLD_THM_CFG_OPTIONS' ) or define( 'CHLD_THM_CFG_OPTIONS', 'chld_thm_cfg_options' );
-    defined( 'CHLD_THM_CFG_VERSION' ) or define( 'CHLD_THM_CFG_VERSION', '1.6.2.1' );
+    defined( 'CHLD_THM_CFG_VERSION' ) or define( 'CHLD_THM_CFG_VERSION', '1.6.3' );
     defined( 'CHLD_THM_CFG_MIN_WP_VERSION' ) or define( 'CHLD_THM_CFG_MIN_WP_VERSION', '3.7' );
     defined( 'CHLD_THM_CFG_MAX_SELECTORS' ) or define( 'CHLD_THM_CFG_MAX_SELECTORS', '50000' );
     defined( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS' ) or define( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS', '1000' );
@@ -25,23 +25,26 @@ if ( !defined('ABSPATH')) exit;
 
     class ChildThemeConfigurator {
         static function init() {
-            $lang_dir = dirname(__FILE__) . '/lang';
-            load_plugin_textdomain('chld_thm_cfg', FALSE, $lang_dir, $lang_dir);
+            // initialize languages
+	    	load_plugin_textdomain( 'chld_thm_cfg', FALSE, basename( dirname( __FILE__ ) ) . '/lang' );
+            // verify WP version support
             global $wp_version;
-            if (version_compare($wp_version, CHLD_THM_CFG_MIN_WP_VERSION) < 0):
-                add_action('admin_notices', 'ChildthemeConfigurator::version_notice');
+            if ( version_compare( $wp_version, CHLD_THM_CFG_MIN_WP_VERSION ) < 0 ):
+                add_action( 'admin_notices',    'ChildthemeConfigurator::version_notice' );
                 return;
             endif; 	
             // setup admin hooks
-            add_action( 'admin_menu',            'ChildThemeConfigurator::admin' );
-            add_action( 'wp_ajax_ctc_update',    'ChildThemeConfigurator::save' );
-            add_action( 'wp_ajax_ctc_query',     'ChildThemeConfigurator::query' );
+            add_action( 'network_admin_menu',   'ChildThemeConfigurator::network_admin' );
+            add_action( 'admin_menu',           'ChildThemeConfigurator::admin' );
+            // setup ajax actions
+            add_action( 'wp_ajax_ctc_update',   'ChildThemeConfigurator::save' );
+            add_action( 'wp_ajax_ctc_query',    'ChildThemeConfigurator::query' );
         }
         static function ctc() {
             // create admin object
             global $chld_thm_cfg;
             if ( !isset( $chld_thm_cfg ) ):
-                include_once( dirname(__FILE__) . '/includes/class-ctc.php' );
+                include_once( dirname( __FILE__ ) . '/includes/class-ctc.php' );
                 $chld_thm_cfg = new ChildThemeConfiguratorAdmin( __FILE__ );
             endif;
             return $chld_thm_cfg;
@@ -54,16 +57,31 @@ if ( !defined('ABSPATH')) exit;
             // ajax read
             self::ctc()->ajax_query_css();
         }        
-        static function admin() {
-            // setup admin page
-            $hook = add_management_page(
-                __( 'Child Theme Configurator', 'chld_thm_cfg' ), 
-                __( 'Child Themes', 'chld_thm_cfg' ), 
-                'edit_theme_options', 
-                CHLD_THM_CFG_MENU, 
-                'ChildThemeConfigurator::render' 
+        static function network_admin() {
+            $hook = add_theme_page( 
+                    __( 'Child Theme Configurator', 'chld_thm_cfg' ), 
+                    __( 'Child Themes', 'chld_thm_cfg' ), 
+                    'install_themes', 
+                    CHLD_THM_CFG_MENU, 
+                    'ChildThemeConfigurator::render' 
             );
-            add_action('load-' . $hook, 'ChildThemeConfigurator::page_init');        
+            add_action( 'load-' . $hook, 'ChildThemeConfigurator::page_init' );        
+        }
+        static function admin() {
+            $hook = add_management_page(
+                    __( 'Child Theme Configurator', 'chld_thm_cfg' ), 
+                    __( 'Child Themes', 'chld_thm_cfg' ), 
+                    'install_themes', 
+                    CHLD_THM_CFG_MENU, 
+                    'ChildThemeConfigurator::render' 
+            );
+            add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'ChildThemeConfigurator::action_links' );
+            add_action( 'load-' . $hook, 'ChildThemeConfigurator::page_init' );        
+        }
+        static function action_links( $actions ) {
+            $actions[] = '<a href="' . admin_url( 'tools.php?page=' . CHLD_THM_CFG_MENU ). '">' 
+                . __( 'Child Themes', 'chld_thm_cfg' ) . '</a>' . LF;
+            return $actions;
         }
         static function page_init() {
             // start admin controller
@@ -75,14 +93,14 @@ if ( !defined('ABSPATH')) exit;
         }
         static function version_notice() {
             deactivate_plugins( plugin_basename( __FILE__ ) );
-            unset($_GET['activate']);
-            echo '<div class="update-nag"><p>' . sprintf(__('Child Theme Configurator requires WordPress version %s or later.', 'chld_thm_cfg'), CHLD_THM_CFG_MIN_WP_VERSION) . '</p></div>' . LF;
+            unset( $_GET['activate'] );
+            echo '<div class="update-nag"><p>' . sprintf( __( 'Child Theme Configurator requires WordPress version %s or later.', 'chld_thm_cfg' ), CHLD_THM_CFG_MIN_WP_VERSION ) . '</p></div>' . LF;
         }
     }
     
     if ( is_admin() ) ChildThemeConfigurator::init();
     
-    register_uninstall_hook( __FILE__ , 'chld_thm_cfg_delete_plugin' );
+    register_uninstall_hook( __FILE__, 'chld_thm_cfg_delete_plugin' );
 
     function chld_thm_cfg_delete_plugin() {
         delete_option( CHLD_THM_CFG_OPTIONS );

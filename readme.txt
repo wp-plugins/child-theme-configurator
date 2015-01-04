@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, customize, CSS, responsive, css editor, theme generator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 1.6.2.1
+Stable tag: 1.6.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,8 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
     * Browse for the zip file, select and click "Install."
 
 3. In the WordPress Admin, go to "Plugins > Installed Plugins." Locate "Child Theme Configurator" in the list and click "Activate."
+
+4. Navigate to Tools > Child Themes (multisite users go to Network Admin > Themes > Child Themes).
    
 = 10 Easy Steps to Create a Child Theme =
 
@@ -108,6 +110,20 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 10. IMPORTANT: Always test your child theme with Live Preview (theme customizer) before activating!
 
 == Frequently Asked Questions ==
+
+= Where is it in the Admin? = 
+
+For most users the Child Theme Configurator can be found under "Tools > Child Themes."
+
+WordPress Multisite (Network) users go to "Network Admin > Themes > Child Themes." 
+
+NOTE: Only users with "install_themes" capability will have access to the Child Theme Configurator.
+
+Click the "Help" tab at the top right for a quick reference.
+
+= Does it work with Multisite? =
+
+Yes. Go to Network Admin > Themes > Child Themes. Child themes must be "Network enabled" to preview and activate for Network sites.
 
 = HELP! I changed a file and now I am unable to access my website or login to wp-admin to fix it! =
 
@@ -144,18 +160,6 @@ The easiest method is to paste the @import code provided by Google, Font Squirre
 
 You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. 
 
-= Does it work with Multi site? =
-
-Using with WordPress Network sites requires additional steps:
-
-1. Install as Network Admin and Network Enable the Plugin.
-2. Go to the site you want to customize.
-3. Go to Tools > Child Themes and configure a child theme for the parent theme you want to use
-4. Go back to Network Admin and Network Enable the new Child theme.
-5. Go back the site and activate the child theme.
-
-Now you can edit your child theme from Tools > Child Themes. NOTE: Only users with "edit_theme_options" capability will have access to the Child Theme Configurator.
-
 = Does it work with plugins? =
 
 We offer a premium extension that brings the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and creates custom CSS in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
@@ -181,12 +185,6 @@ Once the child theme stylesheet is created, CTC adds very little overhead to the
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
 Check the appropriate additional stylesheets under "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again. CTC tries to identify these files by fetching a page from the parent theme, but you may need to set them manually.
-
-= Where is it in the Admin? = 
-
-The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started. NOTE: Only users with "edit_theme_options" capability will have access to the Child Theme Configurator.
-
-Click the "Help" tab at the top right for a quick reference.
 
 = Where are the styles? The configurator doesn't show anything! = 
 
@@ -261,6 +259,10 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.6.3 = 
+* New Feature: Better handling for multisite. Moved interface to Themes menu and check for network enabled.
+* Fix: Restrict access to install_themes capability
+* Fix: Preview links to Themes admin if not network enabled to prevent 'Cheatin, uh?' error.
 
 = 1.6.2.1 = 
 * Fix: Regular expression introduced in version 1.6.2 parses selectors incorrectly.
@@ -450,7 +452,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Upgrade Notice ==
 
-v.1.6.2.1 Fixes a bug in the stylesheet parser that was an unintended consequence of a "fix" introduced in v.1.6.2.
+v.1.6.3 **IMPORTANT:** As of v.1.6.3, only users with "install_themes" capability have access to the Child Theme Configurator. This resolves permission issues with both multisite and single site installs. **MULTISITE USERS:** The Admin HAS MOVED to Network Admin > Themes > Child Themes for better handling for multisite (network) installs. See changelog for details.
 
 == Override Parent Styles ==
 
