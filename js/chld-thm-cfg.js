@@ -6,7 +6,7 @@
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
- *  Copyright (C) 2014 Lilaea Media
+ *  Copyright (C) 2014-2015 Lilaea Media
  */
 jQuery(document).ready(function($){
 

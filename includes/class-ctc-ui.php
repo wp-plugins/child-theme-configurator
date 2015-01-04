@@ -11,7 +11,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Text Domain: chld_thm_cfg
     Domain Path: /lang
     License: GPLv2
-    Copyright (C) 2014 Lilaea Media
+    Copyright (C) 2014-2015 Lilaea Media
 */
 class ChildThemeConfiguratorUI {
     // helper function to globalize ctc object

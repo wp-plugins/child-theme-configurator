@@ -93,7 +93,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
   <li>Click "Live Preview" below the new Child Theme to see it in action.</li>
   <li>When you are ready to take the Child Theme live, click "Activate."</li>
 </ol>
-<p><strong>MULTISITE USERS:</strong> You must Network Enable your child theme before you can use Live Preview. Go to 'Themes' in the Network Admin.</p>
+<p><strong>MULTISITE USERS:</strong> You must Network Enable your child theme before you can use Live Preview. Go to "Themes" in the Network Admin.</p>
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_permissions">File Permissions</h3>
