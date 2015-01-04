@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.6.0
+ *  Version: 1.6.3
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -82,6 +82,7 @@ jQuery(document).ready(function($){
             if ('' != value) {
                 // handle specific inputs
                 if (false === ctc_is_empty(rulepart)) {
+                    //console.log('rulepart: ' + rulepart + ' value: ' + value);
                     switch(rulepart) {
                         case '_border_width':
                             cssrules[inputtheme][inputrule + '-width'] = value;
@@ -119,8 +120,8 @@ jQuery(document).ready(function($){
                         cssrules[inputtheme][inputrule + '-style'] = 'undefined' == typeof subparts[1] ? '' : subparts[1];
                         cssrules[inputtheme][inputrule + '-color'] = 'undefined' == typeof subparts[2] ? '' : subparts[2];
                     // handle background images
-                    } else if ( 'background-image' == inputrule ) {
-                        if (value.toString().match(/url\(/)) {
+                    } else if ( 'background-image' == inputrule && !value.match(/none/) ) {
+                        if (value.toString().match(/url\(/) ) {
                             cssrules[inputtheme]['background-image'] = ctc_image_url(inputtheme, value);
                         } else {
                             subparts = value.toString().split(/ +/);
@@ -143,11 +144,9 @@ jQuery(document).ready(function($){
         if ('undefined' != typeof $swatch && false === ctc_is_empty($swatch.attr('id'))) {
             $swatch.removeAttr('style');
             if (has_gradient.parent) { $swatch.ctcgrad(gradient.parent.origin, [gradient.parent.start, gradient.parent.end]); }
-            //console.log(cssrules.parent);
             $swatch.css(cssrules.parent);  
             if (!($swatch.attr('id').toString().match(/parent/))){
                 if (has_gradient.child) { $swatch.ctcgrad(gradient.child.origin, [gradient.child.start, gradient.child.end]); }
-            //console.log(cssrules.child);
                 $swatch.css(cssrules.child);
             }
             $swatch.css({'z-index':-1});
@@ -207,7 +206,7 @@ jQuery(document).ready(function($){
             image_url;
         if (!path) { 
             return false; 
-        } else if (path.toString().match(/^(https?:|\/)/)) { 
+        } else if (path.toString().match(/^(data:|https?:|\/)/)) { 
             image_url = value; 
         } else { 
             image_url = 'url(' + url + path + ')'; 
@@ -642,7 +641,7 @@ jQuery(document).ready(function($){
                 '_background_color2'
             ];
             obj['values'] = ['','','',''];
-            if (false === (ctc_is_empty(value)) && !(value.toString().match(/url/))) {
+            if (false === (ctc_is_empty(value)) && !(value.toString().match(/(url|none)/))) {
                 var params = value.toString().split(/:/);
                 obj['values'][1] = ('undefined' == typeof params[0] ? '' : params[0]);
                 obj['values'][2] = ('undefined' == typeof params[1] ? '' : params[1]);
@@ -875,6 +874,7 @@ jQuery(document).ready(function($){
             additional;
         if (ctc_is_empty(template)) return;
         $.get(url, function(data){
+            console.log(data);
             while (additional = regex.exec(data)){
                 if ('style.css' == additional[1]) break; // bail after main stylesheet
                 if (additional[1].match(/bootstrap/)) continue; // don't autoselect Bootstrap stylesheets

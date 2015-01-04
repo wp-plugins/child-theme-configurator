@@ -1,5 +1,5 @@
 <?php  
-if (!defined('ABSPATH')) exit;
+if ( !defined( 'ABSPATH' ) ) exit;
 // Help Content
 ?>
 <!-- BEGIN tab -->
@@ -93,7 +93,7 @@ if (!defined('ABSPATH')) exit;
   <li>Click "Live Preview" below the new Child Theme to see it in action.</li>
   <li>When you are ready to take the Child Theme live, click "Activate."</li>
 </ol>
-<p>You can also click the Child or Parent CSS tab to reference the stylesheet code.</p>
+<p><strong>MULTISITE USERS:</strong> You must Network Enable your child theme before you can use Live Preview. Go to 'Themes' in the Network Admin.</p>
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_permissions">File Permissions</h3>
@@ -142,15 +142,6 @@ if (!defined('ABSPATH')) exit;
 <h5 id="web_fonts">How do I add Web Fonts?</h5>
 <p>The easiest method is to paste the @import code provided by <a href="http://www.google.com/fonts" title="Google Fonts">Google</a>, <a href="http://www.fontsquirrel.com/" title="Font Squirrel">Font Squirrel</a> or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the <strong>font-family</strong> rule. Be sure you understand the license for any embedded fonts. </p>
 <p>You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. </p>
-<h5 id="multisite">Does it work with Multi site?</h5>
-<strong>NOTE: Only users with "edit_theme_options" capability will have access to the Child Theme Configurator.</strong> Using with WordPress Network sites requires additional steps:
-<ol class="instructions"><li>Install as Network Admin and Network Enable the Plugin.</li>
-<li>Go to the site you want to customize.</li>
-<li>Go to Tools > Child Themes and configure a child theme for the parent theme you want to use
-<li>Go back to Network Admin and Network Enable the new Child theme.</li>
-<li>Go back the site and activate the child theme.</li></ol>
-Now you can edit your child theme from Tools > Child Themes. </p> 
-
 <h5 id="plugin">Does it work with plugins?</h5>
 <p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles/" title="Take Control of your Plugin Styles with Child Theme Configurator Plugin Extension for WordPress">Learn more <i class="genericon genericon-next"></i></a> 
 <h5 id="doesnt_work">Why doesn't this work with my (insert theme vendor here) theme?</h5>
@@ -158,9 +149,6 @@ Now you can edit your child theme from Tools > Child Themes. </p>
 <p>Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org. </p>
 <h5 id="missing_parent">Why doesn't the Parent Theme have any styles when I "View Parent CSS"?</h5>
 <p>Your Parent theme is probably using a separate location for the stylesheets. Select individual stylesheets from the "Parse Additional Stylesheets" section of the Parent/Child tab and click "Generate Child Theme Files" again. </p>
-<h5 id="where_is_it">Where is it in the Admin?</h5>
-<p><strong>NOTE: Only users with "edit_theme_options" capability will have access to the Child Theme Configurator.</strong> The Child Theme Configurator can be found under the "Tools" menu in the WordPress Admin. Click "Child Themes" to get started.</p>
-<p>Click the "Help" tab at the top right for a quick reference. </p>
 <h5 id="performance">Will this slow down my site?</h5>
 Once the child theme stylesheet is created, CTC adds very little overhead to the front-end since all of the functionality is in the admin.
 
@@ -217,7 +205,7 @@ The plugin only loads the bulk of the code in the admin when you are using the t
 <!-- END tab -->
 <h3 id="ctc_help_sidebar">Links</h3>
 <!-- BEGIN sidebar -->
-<h4>We HATE when plugins nag and shame us into donations...</h4>
+<h4>Our plugins will not nag you for donations...</h4>
 <span style="font-size:smaller">...but we LOVE referrals.</span><br/><a href="http://wordpress.org/support/view/plugin-reviews/child-theme-configurator?rate=5#postform">Give Us 5 Stars</a>
 <h4>Not just for themes ... but plugins, too!</h4>
 <p style="font-size:smaller">Easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles" title="Child Theme Configurator Extension">Learn more</a></p>

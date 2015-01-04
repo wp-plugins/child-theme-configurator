@@ -1,5 +1,5 @@
 <?php 
-if (!defined('ABSPATH')) exit;
+if ( !defined( 'ABSPATH' ) ) exit;
 // Image Input Cell
 ?>
 <div class="ctc-input-cell" style="height:100px">
