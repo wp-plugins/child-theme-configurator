@@ -874,7 +874,7 @@ jQuery(document).ready(function($){
             additional;
         if (ctc_is_empty(template)) return;
         $.get(url, function(data){
-            console.log(data);
+            //console.log(data);
             while (additional = regex.exec(data)){
                 if ('style.css' == additional[1]) break; // bail after main stylesheet
                 if (additional[1].match(/bootstrap/)) continue; // don't autoselect Bootstrap stylesheets
