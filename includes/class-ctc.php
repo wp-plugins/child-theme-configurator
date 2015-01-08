@@ -96,7 +96,7 @@ class ChildThemeConfiguratorAdmin {
             wp_enqueue_script( 'jquery-ui-selectmenu', $this->pluginURL . 'js/selectmenu.min.js', array( 'jquery','jquery-ui-core','jquery-ui-position' ), FALSE, TRUE );
         endif;
         wp_enqueue_script( 'ctc-thm-cfg-ctcgrad', $this->pluginURL . 'js/ctcgrad.min.js', array( 'jquery' ), FALSE, TRUE );
-        wp_enqueue_script( 'chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.min.js',
+        wp_enqueue_script( 'chld-thm-cfg-admin', $this->pluginURL . 'js/chld-thm-cfg.js',
             array(
                 'jquery-ui-autocomplete', 
                 'jquery-ui-selectmenu',   

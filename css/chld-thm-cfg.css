@@ -12,10 +12,8 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 
 .ctc-option-panel-container {
     position: relative;
-    min-height: 600px;
-    max-height: 800px;
+    min-height:1100px;
     overflow: auto;
-    border-bottom: 1px solid #f9f9f9;
 }
 
 #view_child_options_panel, #view_parnt_options_panel {
@@ -282,6 +280,9 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     padding: 3px 1em 3px 0.4em;
     cursor: pointer;
     min-height: 0px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    max-width:450px;
 }
 
 /*** Added in 1.6.0 for new options ***/
@@ -384,7 +385,7 @@ h3.theme-name {
 }
 
 .ui-selectmenu-menu .ui-menu {
-    overflow: auto;
+    overflow: hidden;
     max-height: 372px;
     margin-top: 0;
     /* Support: IE7 */

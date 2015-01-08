@@ -85,7 +85,7 @@ jQuery(document).ready(function($){
                     //console.log('rulepart: ' + rulepart + ' value: ' + value);
                     switch(rulepart) {
                         case '_border_width':
-                            cssrules[inputtheme][inputrule + '-width'] = value;
+                            cssrules[inputtheme][inputrule + '-width'] = ('none' == value ? 0 : value);
                             break;
                         case '_border_style':
                             cssrules[inputtheme][inputrule + '-style'] = value;
@@ -162,16 +162,16 @@ jQuery(document).ready(function($){
                     break;
             
                 case 'rule_val':
-                    ctcAjax.rule_val[this.key] = this.data;
-                    currRuleId  = this.key;
+                        ctcAjax.rule_val[this.key] = this.data;
+                        currRuleId  = this.key;
                     break;
                 
                 case 'val_qry':
-                    ctcAjax.val_qry[this.key] = this.data;
+                        ctcAjax.val_qry[this.key] = this.data;
                     break;
                 
                 case 'rule':
-                    ctcAjax.rule = this.data;
+                        ctcAjax.rule = this.data;
                     break;
                 
                 case 'sel_ndx':
@@ -183,14 +183,14 @@ jQuery(document).ready(function($){
                         } 
                         ctcAjax.sel_ndx[this.data.query][this.data.selector] = this.data.qsid;
                     } else { 
-                        ctcAjax.sel_ndx[this.key] = this.data;
+                            ctcAjax.sel_ndx[this.key] = this.data;
                         currQuery = this.key;
                     }
                     break;
                                
                 case 'sel_val':
-                    ctcAjax.sel_val[this.key] = this.data;
-                    currSelId = this.key;
+                        ctcAjax.sel_val[this.key] = this.data;
+                        currSelId = this.key;
                     break; 
                 case 'rewrite':
                     rewrite_id  = this.key;
@@ -398,6 +398,11 @@ jQuery(document).ready(function($){
             ctc_query_css('preview', theme, ctc_render_css_preview);
             return false;
         }
+        if (2 == loading.preview && $('#ctc_load_child_css').data('loading')) {
+            $('#ctc_load_child_css').data('loading', null);
+            $('#ctc_new_selectors').val(ctcAjax.previewResponse); 
+            loading.preview = 0;       
+        }
         if (2 == loading.preview) {
             $('#view_'+theme+'_options_panel').text(ctcAjax.previewResponse); 
             loading.preview = 0;       
@@ -587,7 +592,7 @@ jQuery(document).ready(function($){
             postdata,
             //on success function  
             function(response){
-                //console.log(response);
+                console.log(response);
                 // release button
                 $(obj).prop('disabled', false);
                 // hide spinner
@@ -1000,6 +1005,11 @@ jQuery(document).ready(function($){
         ctc_focus_panel(id);
     });
     $('#view_child_options,#view_parnt_options').on('click', ctc_render_css_preview);
+    $('#ctc_load_child_css').on('click', function(e){
+        if ($(this).data('loading')) return false;
+        $(this).data('loading', true);
+        ctc_query_css('preview', 'child', ctc_render_css_preview);
+    });
     $('#ctc_load_form').on('submit', function() {
         return (ctc_validate() && confirm(ctcAjax.load_txt) ) ;
     });

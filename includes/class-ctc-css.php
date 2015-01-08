@@ -289,9 +289,9 @@ class ChildThemeConfiguratorCSS {
             if ( !isset( $this->dict_val[$value] ) ):
                 $this->dict_val[$value] = ++$this->valkey;
             endif;
-            $this->val_ndx[$qsid][$ruleid][$template] = $this->dict_val[$value];
-            // set the important flag for this value
-            $this->val_ndx[$qsid][$ruleid]['i_' . $template] = $important;
+                $this->val_ndx[$qsid][$ruleid][$template] = $this->dict_val[$value];
+                // set the important flag for this value
+                $this->val_ndx[$qsid][$ruleid]['i_' . $template] = $important;
             // tell the UI to add a single cached query/selector data array:
             if ( $this->ctc()->cache_updates ):
                 $updatearr = array(
@@ -1070,7 +1070,7 @@ class ChildThemeConfiguratorCSS {
                 // add load order
             endforeach;
         endif;
-        return $selarr;
+                return $selarr;
     }
 
     /*
