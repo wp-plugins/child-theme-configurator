@@ -22,7 +22,7 @@ background:#f9f9f9 url(<?php echo includes_url( 'images/xit-2x.gif' );
   <?php do_action( 'chld_thm_cfg_related_links' ); ?>
   <h2><?php echo __( 'Child Theme Configurator', 'chld_thm_cfg' ) . ' ' . __( 'version', 'chld_thm_cfg' ) . ' ' . CHLD_THM_CFG_VERSION; ?></h2>
   <?php 
-if ( 'POST' == $_SERVER['REQUEST_METHOD'] && !$this->ctc()->fs ):
+if ( 'POST' == $_SERVER[ 'REQUEST_METHOD' ] && !$this->ctc()->fs ):
         echo $this->ctc()->fs_prompt;
 else: ?>
   <div id="ctc_error_notice">
@@ -31,8 +31,6 @@ else: ?>
   <?php 
     include ( $this->ctc()->pluginPath . 'includes/forms/tabs.php' ); 
 ?>
-  <i id="ctc_status_preview"></i>
-  </h2>
   <div class="ctc-option-panel-container">
     <?php 
     include ( $this->ctc()->pluginPath . 'includes/forms/parent-child.php' ); 
@@ -50,7 +48,7 @@ else: ?>
         endif; 
         do_action( 'chld_thm_cfg_panels', $this->ctc(), $active_tab, $hidechild ); 
     endif; ?>
-  </div>
+  </div><div class="ctc-recent-container"><h3><?php _e('Recent Edits', 'chld_thm_cfg'); ?></h3><div id="ctc_recent_selectors"></div></div>
   <?php
 endif;
 ?>

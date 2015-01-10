@@ -23,11 +23,11 @@ class ChildThemeConfiguratorUI {
     function render() {
         $css        = $this->ctc()->css;
         $themes     = $this->ctc()->themes;
-        $parent     = isset( $_GET['ctc_parent'] ) ? sanitize_text_field( $_GET['ctc_parent'] ) : $css->get_prop( 'parnt' );
+        $parent     = isset( $_GET[ 'ctc_parent' ] ) ? sanitize_text_field( $_GET[ 'ctc_parent' ] ) : $css->get_prop( 'parnt' );
         $child      = $css->get_prop( 'child' );
         $configtype = $css->get_prop( 'configtype' );
         if ( empty( $configtype ) ) $configtype = 'theme';
-        $hidechild  = ( count( $themes['child'] ) ? '' : 'style="display:none"' );
+        $hidechild  = ( count( $themes[ 'child' ] ) ? '' : 'style="display:none"' );
         $enqueueset = 'theme' != $configtype || isset( $css->enqueue );
         $mustimport = $this->parent_stylesheet_check( $parent );
         $imports    = $css->get_prop( 'imports' );
@@ -35,7 +35,7 @@ class ChildThemeConfiguratorUI {
         $this->ctc()->fs_method = get_filesystem_method();
         add_thickbox();
         add_action( 'chld_thm_cfg_related_links', array( $this, 'lilaea_plug' ) );
-        include ( $this->ctc()->pluginPath .'/includes/forms/main.php' ); 
+        include ( $this->ctc()->pluginPath . '/includes/forms/main.php' ); 
     } 
 
      function parent_stylesheet_check( $parent ) {
@@ -52,13 +52,13 @@ class ChildThemeConfiguratorUI {
    function render_theme_menu( $template = 'child', $selected = NULL ) {
          ?>
         <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>" style="visibility:hidden"><?php
-        foreach ( $this->ctc()->themes[$template] as $slug => $theme )
+        foreach ( $this->ctc()->themes[ $template ] as $slug => $theme )
             echo '<option value="' . $slug . '"' . ( $slug == $selected ? ' selected' : '' ) . '>' 
-                . esc_attr( $theme['Name'] ) . '</option>' . LF; ?>
+                . esc_attr( $theme[ 'Name' ] ) . '</option>' . LF; ?>
         </select>
         <div style="display:none">
         <?php 
-        foreach ( $this->ctc()->themes[$template] as $slug => $theme )
+        foreach ( $this->ctc()->themes[ $template ] as $slug => $theme )
             include ( $this->ctc()->pluginPath . 'includes/forms/themepreview.php' ); ?>
         </div>
         <?php
@@ -133,9 +133,9 @@ class ChildThemeConfiguratorUI {
                 echo '<li>' . $err . '</li>' . LF;
             endforeach;
             echo '</ul></div>' . LF;
-        elseif ( isset( $_GET['updated'] ) ):
+        elseif ( isset( $_GET[ 'updated' ] ) ):
             echo '<div class="updated">' . LF;
-            if ( 8 == $_GET['updated'] ):
+            if ( 8 == $_GET[ 'updated' ] ):
                 echo '<p>' . __( 'Child Theme files modified successfully.', 'chld_thm_cfg' ) . '</p>' . LF;
             else:
                 $child_theme = wp_get_theme( $this->ctc()->css->get_prop( 'child' ) );
@@ -176,11 +176,11 @@ class ChildThemeConfiguratorUI {
             preg_match_all( $regex_tab, $help_raw, $tabs );
 
     		// Add help tabs
-            if ( isset( $tabs[1] ) ):
-                while( count( $tabs[1] ) ):
-                    $id         = array_shift( $tabs[1] );
-                    $title      = array_shift( $tabs[2] );
-                    $content    = array_shift( $tabs[3] );
+            if ( isset( $tabs[ 1 ] ) ):
+                while( count( $tabs[ 1 ] ) ):
+                    $id         = array_shift( $tabs[ 1 ] );
+                    $title      = array_shift( $tabs[ 2 ] );
+                    $content    = array_shift( $tabs[ 3 ] );
 	    	        $screen->add_help_tab( array(
 	    	    	    'id'        => $id,
     		    	    'title'     => $title,
@@ -188,8 +188,8 @@ class ChildThemeConfiguratorUI {
                     ) );
                 endwhile;
             endif;
-            if ( isset( $sidebar[1] ) )
-                $screen->set_help_sidebar( $sidebar[1] );
+            if ( isset( $sidebar[ 1 ] ) )
+                $screen->set_help_sidebar( $sidebar[ 1 ] );
 
         }
     }

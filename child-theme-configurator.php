@@ -93,7 +93,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
         }
         static function version_notice() {
             deactivate_plugins( plugin_basename( __FILE__ ) );
-            unset( $_GET['activate'] );
+            unset( $_GET[ 'activate' ] );
             echo '<div class="update-nag"><p>' . sprintf( __( 'Child Theme Configurator requires WordPress version %s or later.', 'chld_thm_cfg' ), CHLD_THM_CFG_MIN_WP_VERSION ) . '</p></div>' . LF;
         }
     }

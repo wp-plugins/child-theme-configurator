@@ -117,11 +117,13 @@ class ChildThemeConfiguratorAdmin {
                 'child'             => $this->css->get_prop( 'child' ),
                 'addl_css'          => $this->css->get_prop( 'parntss' ),
                 'imports'           => $this->css->get_prop( 'imports' ),
-                'rule'              => $this->css->get_prop( 'rule' ),
-                'sel_ndx'           => $this->css->get_prop( 'sel_ndx' ),
+                // caches will be loaded dynamically
+                'rule'              => array(),
+                'sel_ndx'           => array(),
                 'val_qry'           => array(),
                 'rule_val'          => array(),
                 'sel_val'           => array(),
+                'recent'            => array(),
                 'field_labels'      => array(
                     '_background_url'       => __( 'URL/None', 'chld_thm_cfg' ),
                     '_background_origin'    => __( 'Origin', 'chld_thm_cfg' ),
@@ -161,13 +163,13 @@ class ChildThemeConfiguratorAdmin {
             $count = 1;
             foreach ( $imports as $import ):
                 preg_match( $regex, $import, $matches );
-                if ( empty( $matches[3] ) && !empty( $matches[4] ) ): // relative filepath
+                if ( empty( $matches[ 3 ] ) && !empty( $matches[ 4 ] ) ): // relative filepath
                     $url = get_stylesheet_directory_uri();
-                    preg_replace( "#\.\./#", '', $matches[4], -1, $count );
+                    preg_replace( "#\.\./#", '', $matches[ 4 ], -1, $count );
                     for( $i = 0; $i < $count; $i++ ):
                         $url = dirname( $url );
                     endfor;
-                    $import = preg_replace( $regex, '@import url(' . trailingslashit( $url ) . $matches[4] . ')', $import );
+                    $import = preg_replace( $regex, '@import url(' . trailingslashit( $url ) . $matches[ 4 ] . ')', $import );
                 endif;
                 wp_enqueue_style( 'chld-thm-cfg-admin' . ++$count, preg_replace( $regex, "$2", $import ) );
             endforeach;
@@ -195,7 +197,7 @@ class ChildThemeConfiguratorAdmin {
             // get the theme slug
             $slug   = $theme->get_stylesheet();
             // add theme to themes array
-            $this->themes[$group][$slug] = array(
+            $this->themes[ $group ][ $slug ] = array(
                 'Name'          => $theme->get( 'Name' ),
                 'Author'        => $theme->get( 'Author' ),
                 'Version'       => $theme->get( 'Version' ),
@@ -207,7 +209,7 @@ class ChildThemeConfiguratorAdmin {
 
     function validate_post( $action = 'ctc_update', $noncefield = '_wpnonce' ) {
         // security: request must be post, user must have permission, referrer must be local and nonce must match
-        return ( 'POST' == $_SERVER['REQUEST_METHOD'] 
+        return ( 'POST' == $_SERVER[ 'REQUEST_METHOD' ] 
             && current_user_can( 'install_themes' ) // ( 'edit_theme_options' )
             && ( $this->is_ajax ? check_ajax_referer( $action, $noncefield, FALSE ) : check_admin_referer( $action, $noncefield, FALSE ) ) );
     }
@@ -235,14 +237,14 @@ class ChildThemeConfiguratorAdmin {
             $regex = "/^ctc_query_/";
             foreach( preg_grep( $regex, array_keys( $_POST ) ) as $key ):
                 $name = preg_replace( $regex, '', $key );
-                $param[$name] = sanitize_text_field( $_POST[$key] );
+                $param[ $name ] = sanitize_text_field( $_POST[ $key ] );
             endforeach;
-            if ( !empty( $param['obj'] ) ):
+            if ( !empty( $param[ 'obj' ] ) ):
                 $result = array(
                     array(
-                        'key'   => isset( $param['key'] ) ? $param['key'] : '',
-                        'obj'   => $param['obj'],
-                        'data'  => $this->css->get_prop( $param['obj'], $param ),
+                        'key'   => isset( $param[ 'key' ] ) ? $param[ 'key' ] : '',
+                        'obj'   => $param[ 'obj' ],
+                        'data'  => $this->css->get_prop( $param[ 'obj' ], $param ),
                     ),
                 );
                 die( json_encode( $result ) );
@@ -262,7 +264,7 @@ class ChildThemeConfiguratorAdmin {
             $parent = get_template();
             $this->css->set_prop( 'parnt', $parent );
         endif;
-        if ( 'GET' == strtoupper( $_SERVER['REQUEST_METHOD'] ) ):
+        if ( 'GET' == strtoupper( $_SERVER[ 'REQUEST_METHOD' ] ) ):
             if ( $this->css->get_prop( 'child' ) ):
                 // get filesystem credentials if available
                 $this->verify_creds();
@@ -290,7 +292,7 @@ class ChildThemeConfiguratorAdmin {
      */
     function write_config() {
         // make sure this is a post
-        if ( 'POST' == strtoupper( $_SERVER['REQUEST_METHOD'] ) ):
+        if ( 'POST' == strtoupper( $_SERVER[ 'REQUEST_METHOD' ] ) ):
             // see if a valid action was passed
             foreach ( $this->actionfields as $action ):
                 if ( in_array( 'ctc_' . $action, array_keys( $_POST ) ) ):
@@ -311,9 +313,9 @@ class ChildThemeConfiguratorAdmin {
                 // all other actions require filesystem access
                 else:
                     // handle uploaded file before checking filesystem
-                    if ( 'theme_image_submit' == $actionfield && isset( $_FILES['ctc_theme_image'] ) ):
+                    if ( 'theme_image_submit' == $actionfield && isset( $_FILES[ 'ctc_theme_image' ] ) ):
                         $this->handle_file_upload( 'ctc_theme_image', $this->imgmimes );          
-                    elseif ( 'theme_screenshot_submit' == $actionfield && isset( $_FILES['ctc_theme_screenshot'] ) ):
+                    elseif ( 'theme_screenshot_submit' == $actionfield && isset( $_FILES[ 'ctc_theme_screenshot' ] ) ):
                         $this->handle_file_upload( 'ctc_theme_screenshot', $this->imgmimes );
                     endif;
                     // now we need to check filesystem access 
@@ -330,8 +332,8 @@ class ChildThemeConfiguratorAdmin {
                             
                             case 'parnt_templates_submit':
                                 // copy parent templates to child
-                                if ( isset( $_POST['ctc_file_parnt'] ) ):
-                                    foreach ( $_POST['ctc_file_parnt'] as $file ):
+                                if ( isset( $_POST[ 'ctc_file_parnt' ] ) ):
+                                    foreach ( $_POST[ 'ctc_file_parnt' ] as $file ):
                                         $this->copy_parent_file( sanitize_text_field( $file ) );
                                     endforeach;
                                     $msg = '8&tab=file_options';
@@ -340,11 +342,11 @@ class ChildThemeConfiguratorAdmin {
                                 
                             case 'child_templates_submit':
                                 // delete child theme files
-                                if ( isset( $_POST['ctc_file_child'] ) ):
-                                    if ( in_array( 'functions', $_POST['ctc_file_child'] ) ):
+                                if ( isset( $_POST[ 'ctc_file_child' ] ) ):
+                                    if ( in_array( 'functions', $_POST[ 'ctc_file_child' ] ) ):
                                         $this->errors[] = __( 'The Functions file is required and cannot be deleted.', 'chld_thm_cfg' );
                                     else:
-                                        foreach ( $_POST['ctc_file_child'] as $file ):
+                                        foreach ( $_POST[ 'ctc_file_child' ] as $file ):
                                             $this->delete_child_file( sanitize_text_field( $file ), 
                                                 ( 0 === strpos( $file, 'style' ) ? 'css' : 'php' ) );
                                         endforeach;
@@ -355,8 +357,8 @@ class ChildThemeConfiguratorAdmin {
                                 
                             case 'image_submit':
                                 // delete child theme images
-                                if ( isset( $_POST['ctc_img'] ) ):
-                                    foreach ( $_POST['ctc_img'] as $file ):
+                                if ( isset( $_POST[ 'ctc_img' ] ) ):
+                                    foreach ( $_POST[ 'ctc_img' ] as $file ):
                                         $this->delete_child_file( 'images/' . sanitize_text_field( $file ), 'img' );
                                     endforeach;
                                     $msg = '8&tab=file_options';
@@ -365,8 +367,8 @@ class ChildThemeConfiguratorAdmin {
                                 
                             case 'templates_writable_submit':
                                 // make specific files writable ( systems not running suExec )
-                                if ( isset( $_POST['ctc_file_child'] ) ):
-                                    foreach ( $_POST['ctc_file_child'] as $file ):
+                                if ( isset( $_POST[ 'ctc_file_child' ] ) ):
+                                    foreach ( $_POST[ 'ctc_file_child' ] as $file ):
                                         $this->set_writable( sanitize_text_field( $file ), ( 0 === strpos( $file, 'style' ) ? 'css' : 'php' ) );
                                     endforeach;
                                     $msg = '8&tab=file_options';
@@ -387,7 +389,7 @@ class ChildThemeConfiguratorAdmin {
                             
                             case 'theme_image_submit':
                                 // move uploaded child theme images (now we have filesystem access)
-                                if ( isset( $_POST['movefile'] ) ):
+                                if ( isset( $_POST[ 'movefile' ] ) ):
                                     $this->move_file_upload( 'images' );
                                     $msg = '8&tab=file_options';
                                 endif;
@@ -395,7 +397,7 @@ class ChildThemeConfiguratorAdmin {
                             
                             case 'theme_screenshot_submit':
                                 // move uploaded child theme screenshot (now we have filesystem access)
-                                if ( isset( $_POST['movefile'] ) ):
+                                if ( isset( $_POST[ 'movefile' ] ) ):
                                     // remove old screenshot
                                     foreach( array_keys( $this->imgmimes ) as $extreg ): 
                                         foreach ( explode( '|', $extreg ) as $ext ):
@@ -440,7 +442,7 @@ class ChildThemeConfiguratorAdmin {
         foreach ( $this->configfields as $configfield ):
             $varparts = explode( '_', $configfield );
             $varname = end( $varparts );
-            ${$varname} = empty( $_POST['ctc_' . $configfield] ) ? '' : sanitize_text_field( $_POST['ctc_' . $configfield] );
+            ${$varname} = empty( $_POST[ 'ctc_' . $configfield ] ) ? '' : sanitize_text_field( $_POST[ 'ctc_' . $configfield ] );
         endforeach;
         
         // check that all requirements are met
@@ -513,23 +515,23 @@ class ChildThemeConfiguratorAdmin {
             $this->css->parse_css_file( 'child', $revert );
             
             // parse additional stylesheets
-            if ( isset( $_POST['ctc_additional_css'] ) && is_array( $_POST['ctc_additional_css'] ) ):
+            if ( isset( $_POST[ 'ctc_additional_css' ] ) && is_array( $_POST[ 'ctc_additional_css' ] ) ):
                 $this->css->parentss = array();
-                foreach ( $_POST['ctc_additional_css'] as $file ):
+                foreach ( $_POST[ 'ctc_additional_css' ] as $file ):
                     $this->css->parse_css_file( 'parnt', $file );
                     $this->css->parntss[] = $file;
                 endforeach;
             endif;
             
             // try to write new stylsheet. If it fails send alert.
-            if ( FALSE === $this->css->write_css( isset( $_POST['ctc_backup'] ) ) ):
+            if ( FALSE === $this->css->write_css( isset( $_POST[ 'ctc_backup' ] ) ) ):
                 $this->errors[] = __( 'Your stylesheet is not writable.', 'chld_thm_cfg' );
                 add_action( 'admin_notices', array( $this, 'writable_notice' ) ); 	
                 return FALSE;
             endif; 
             
             // copy parent theme mods option set
-            if ( isset( $_POST['ctc_parent_mods'] ) ):
+            if ( isset( $_POST[ 'ctc_parent_mods' ] ) ):
                 // we can copy settings from parent to child even if neither is currently active
                 // so we need cases for active parent, active child or neither
                 
@@ -542,19 +544,19 @@ class ChildThemeConfiguratorAdmin {
                     $child_widgets = retrieve_widgets();
                 else:
                     // otherwise get widgets from parent theme mods
-                    $child_widgets = $child_mods['sidebars_widgets']['data'];
+                    $child_widgets = $child_mods[ 'sidebars_widgets' ][ 'data' ];
                 endif;
                 if ( $active_theme == $child ):
                     // if child theme is active, remove widgets from temp array
-                    unset( $child_mods['sidebars_widgets'] );
+                    unset( $child_mods[ 'sidebars_widgets' ] );
                     // copy temp array to child mods
                     update_option( 'theme_mods_' . $child, $child_mods );
                     // copy widgets to active sidebars_widgets array
                     wp_set_sidebars_widgets( $child_widgets );
                 else:
                     // otherwise copy widgets to temp array with time stamp
-                    $child_mods['sidebars_widgets']['data'] = $child_widgets;
-                    $child_mods['sidebars_widgets']['time'] = time();
+                    $child_mods[ 'sidebars_widgets' ][ 'data' ] = $child_widgets;
+                    $child_mods[ 'sidebars_widgets' ][ 'time' ] = time();
                     // copy temp array to child theme mods
                     update_option( 'theme_mods_' . $child, $child_mods );
                 endif;
@@ -567,7 +569,7 @@ class ChildThemeConfiguratorAdmin {
             do_action( 'chld_thm_cfg_addl_options', $this ); // hook for add'l plugin options
             
             // return message id 1, which says new child theme created successfull;
-            return 1; //isset( $_POST['ctc_scan_subdirs'] ) ? '9&tab=import_options' : 1;
+            return 1; //isset( $_POST[ 'ctc_scan_subdirs' ] ) ? '9&tab=import_options' : 1;
         endif;
         return FALSE;
     }
@@ -633,8 +635,8 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     }
     
     function enqueue_parent_css( $obj ) {
-        if ( isset( $_POST['ctc_parent_enqueue'] ) )
-            $this->css->enqueue = sanitize_text_field( $_POST['ctc_parent_enqueue'] );
+        if ( isset( $_POST[ 'ctc_parent_enqueue' ] ) )
+            $this->css->enqueue = sanitize_text_field( $_POST[ 'ctc_parent_enqueue' ] );
         $marker     = 'ENQUEUE PARENT ACTION';
         $insertion  = 'enqueue' == $this->css->enqueue ? $this->enqueue_parent_code() : array();
         if ( $filename   = $this->css->is_file_ok( $this->css->get_child_target( 'functions.php' ), 'write' ) ):
@@ -743,25 +745,25 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     }
     
     function get_files( $theme, $type = 'template' ) {
-        if ( !isset( $this->files[$theme] ) ):
-            $this->files[$theme] = array();
+        if ( !isset( $this->files[ $theme ] ) ):
+            $this->files[ $theme ] = array();
             $imgext = '(' . implode( '|', array_keys( $this->imgmimes ) ) . ')';
             foreach ( $this->css->recurse_directory(
                 trailingslashit( get_theme_root() ) . $theme, '', TRUE ) as $file ):
                 $file = $this->theme_basename( $theme, $file );
                 if ( preg_match( "/^style\-(\d+)\.css$/", $file, $matches ) ):
-                    $date = date_i18n( 'D, j M Y g:i A', strtotime( $matches[1] ) );
-                    $this->files[$theme]['backup'][$file] = $date;
+                    $date = date_i18n( 'D, j M Y g:i A', strtotime( $matches[ 1 ] ) );
+                    $this->files[ $theme ][ 'backup' ][ $file ] = $date;
                 elseif ( preg_match( "/\.php$/", $file ) ):
-                    $this->files[$theme]['template'][] = $file;
+                    $this->files[ $theme ][ 'template' ][] = $file;
                 elseif ( preg_match( "/\.css$/", $file ) && 'style.css' != $file ):
-                    $this->files[$theme]['stylesheet'][] = $file;
+                    $this->files[ $theme ][ 'stylesheet' ][] = $file;
                 elseif ( preg_match( "/^images\/.+?\." . $imgext . "$/", $file ) ):
-                    $this->files[$theme]['img'][] = $file;
+                    $this->files[ $theme ][ 'img' ][] = $file;
                 endif;
             endforeach;
         endif;
-        return isset( $this->files[$theme][$type] ) ? $this->files[$theme][$type] : array();
+        return isset( $this->files[ $theme ][ $type ] ) ? $this->files[ $theme ][ $type ] : array();
     }
         
     function theme_basename( $theme, $file ) {
@@ -773,27 +775,27 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     function uploads_basename( $file ) {
         $file = $this->normalize_path( $file );
         $uplarr = wp_upload_dir();
-        $upldir = trailingslashit( $uplarr['basedir'] );
+        $upldir = trailingslashit( $uplarr[ 'basedir' ] );
         return preg_replace( '%^' . preg_quote( $upldir ) . '%', '', $file );
     }
     
     function uploads_fullpath( $file ) {
         $file = $this->normalize_path( $file );
         $uplarr = wp_upload_dir();
-        $upldir = trailingslashit( $uplarr['basedir'] );
+        $upldir = trailingslashit( $uplarr[ 'basedir' ] );
         return $upldir . $file;
     }
     
     function serialize_postarrays() {
         foreach ( $this->postarrays as $field )
-            if ( isset( $_POST[$field] ) && is_array( $_POST[$field] ) )
-                $_POST[$field] = implode( "%%", $_POST[$field] );
+            if ( isset( $_POST[ $field ] ) && is_array( $_POST[ $field ] ) )
+                $_POST[ $field ] = implode( "%%", $_POST[ $field ] );
     }
     
     function unserialize_postarrays() {
         foreach ( $this->postarrays as $field )
-            if ( isset( $_POST[$field] ) && !is_array( $_POST[$field] ) )
-                $_POST[$field] = explode( "%%", $_POST[$field] );
+            if ( isset( $_POST[ $field ] ) && !is_array( $_POST[ $field ] ) )
+                $_POST[ $field ] = explode( "%%", $_POST[ $field ] );
     }
     
     function set_writable( $file = NULL ) {
@@ -880,24 +882,24 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     }
     
     function handle_file_upload( $field, $childdir = NULL, $mimes = NULL ){
-        $uploadedfile = $_FILES[$field];
+        $uploadedfile = $_FILES[ $field ];
         $upload_overrides = array( 
             'test_form' => FALSE,
             'mimes' => ( is_array( $mimes ) ? $mimes : NULL )
         );
         if ( ! function_exists( 'wp_handle_upload' ) ) require_once( ABSPATH . 'wp-admin/includes/file.php' );
         $movefile = wp_handle_upload( $uploadedfile, $upload_overrides );
-        if ( isset( $movefile['error'] ) ):
-            $this->errors[] = $movefile['error'];
+        if ( isset( $movefile[ 'error' ] ) ):
+            $this->errors[] = $movefile[ 'error' ];
             return FALSE;
         endif;
-        $_POST['movefile'] = $this->uploads_basename( $movefile['file'] );        
+        $_POST[ 'movefile' ] = $this->uploads_basename( $movefile[ 'file' ] );        
     }
     
     function move_file_upload( $subdir = 'images' ) {
         if ( !$this->fs ) return FALSE; // return if no filesystem access
         global $wp_filesystem;
-        $source_file = sanitize_text_field( $_POST['movefile'] );
+        $source_file = sanitize_text_field( $_POST[ 'movefile' ] );
         $target_file = ( '' == $subdir ? 
             preg_replace( "%^.+(\.\w+)$%", "screenshot$1", basename( $source_file ) ) : 
                 trailingslashit( $subdir ) . basename( $source_file ) );
@@ -994,15 +996,15 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     function writable_notice() {
 ?>    <div class="update-nag">
         <p><?php _e( 'Child Theme Configurator is unable to write to the stylesheet. This can be resolved using one of the following options:<ol>', 'chld_thm_cfg' );
-        if ( isset( $_SERVER['SERVER_SOFTWARE'] ) && preg_match( '%unix%i',$_SERVER['SERVER_SOFTWARE'] ) ):
+        if ( isset( $_SERVER[ 'SERVER_SOFTWARE' ] ) && preg_match( '%unix%i',$_SERVER[ 'SERVER_SOFTWARE' ] ) ):
             _e( '<li>Temporarily make the stylesheet writable by clicking the button below. You should change this back when you are finished editing for security by clicking "Make read-only" under the "Files" tab.</li>', 'chld_thm_cfg' );
 ?><form action="?page=<?php echo CHLD_THM_CFG_MENU; ?>" method="post"><?php wp_nonce_field( 'ctc_update' ); ?>
 <input name="ctc_set_writable" class="button" type="submit" value="<?php _e( 'Temporarily make stylesheet writable', 'chld_thm_cfg' ); ?>"/></form><?php   endif;
         _e( '<li><a target="_blank"  href="http://codex.wordpress.org/Editing_wp-config.php#WordPress_Upgrade_Constants" title="Editin wp-config.php">Add your FTP/SSH credentials to the WordPress config file</a>.</li>', 'chld_thm_cfg' );
-        if ( isset( $_SERVER['SERVER_SOFTWARE'] ) && preg_match( '%iis%i',$_SERVER['SERVER_SOFTWARE'] ) )
+        if ( isset( $_SERVER[ 'SERVER_SOFTWARE' ] ) && preg_match( '%iis%i',$_SERVER[ 'SERVER_SOFTWARE' ] ) )
             _e( '<li><a target="_blank" href="http://technet.microsoft.com/en-us/library/cc771170" title="Setting Application Pool Identity">Assign WordPress to an application pool that has write permissions</a> (Windows IIS systems).</li>', 'chld_thm_cfg' );
         _e( '<li><a target="_blank" href="http://codex.wordpress.org/Changing_File_Permissions" title="Changing File Permissions">Set the stylesheet write permissions on the server manually</a> (not recommended).</li>', 'chld_thm_cfg' );
-        if ( isset( $_SERVER['SERVER_SOFTWARE'] ) && preg_match( '%unix%i',$_SERVER['SERVER_SOFTWARE'] ) )
+        if ( isset( $_SERVER[ 'SERVER_SOFTWARE' ] ) && preg_match( '%unix%i',$_SERVER[ 'SERVER_SOFTWARE' ] ) )
             _e( '<li>Run PHP under Apache with suEXEC (contact your web host).</li>', 'chld_thm_cfg' ) ?>
         </ol></p>
 </div>
@@ -1032,8 +1034,8 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
         $configtype = $chld_thm_cfg->css->get_prop( 'configtype' );
         if ( 'theme' == $configtype || !( $def = $chld_thm_cfg_plugins->defs->get_def( $configtype ) ) ) return FALSE;
         $child = trailingslashit( $chld_thm_cfg->css->get_prop( 'child' ) );
-        if ( isset( $def['addl'] ) && is_array( $def['addl'] ) && count( $def['addl'] ) ):
-            foreach ( $def['addl'] as $path => $type ):
+        if ( isset( $def[ 'addl' ] ) && is_array( $def[ 'addl' ] ) && count( $def[ 'addl' ] ) ):
+            foreach ( $def[ 'addl' ] as $path => $type ):
             
                 // sanitize the crap out of the target data -- it will be used to create paths
                 $path = $this->normalize_path( preg_replace( "%[^\w\\//\-]%", '', sanitize_text_field( $child . $path ) ) );
@@ -1045,8 +1047,8 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
             endforeach;
         endif;
         // write main def file
-        if ( isset( $def['target'] ) ):
-            $path = $this->normalize_path( preg_replace( "%[^\w\\//\-\.]%", '', sanitize_text_field( $def['target'] ) ) ); //$child . 
+        if ( isset( $def['target' ] ) ):
+            $path = $this->normalize_path( preg_replace( "%[^\w\\//\-\.]%", '', sanitize_text_field( $def[ 'target' ] ) ) ); //$child . 
             if ( FALSE === $chld_thm_cfg->write_child_file( $path, '' ) ):
                 $chld_thm_cfg->errors[] = 
                     __( 'Your stylesheet is not writable.', 'chld_thm_cfg_plugins' );

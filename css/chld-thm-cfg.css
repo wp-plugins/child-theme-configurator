@@ -14,6 +14,30 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     position: relative;
     min-height:1100px;
     overflow: auto;
+    float:left;
+    width:83%;
+}
+.ctc-recent-container {
+    float:right;
+    width:17%;
+    overflow: auto;
+}
+#ctc_recent_selectors ul li {
+    margin:0;
+}
+#ctc_recent_selectors ul li a {
+    text-decoration: none;
+    font-size: .8em;
+    line-height:1.2;
+    word-wrap:break-word;
+    display:block;
+    padding:.5em;
+}
+#ctc_recent_selectors ul li a:hover, #ctc_recent_selectors ul li a:focus {
+    background-color:#fff;
+    -webkit-box-shadow:none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
 
 #view_child_options_panel, #view_parnt_options_panel {
@@ -69,9 +93,8 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .ctc-input-cell {
     display: block;
     float: left;
-    width: 25%;
-    max-width: 250px;
-    margin-right: 2.13%;
+    width: 30%;
+    margin-right: 3%;
     word-wrap: break-word;
 }
 
@@ -385,7 +408,7 @@ h3.theme-name {
 }
 
 .ui-selectmenu-menu .ui-menu {
-    overflow: hidden;
+    overflow: auto;
     max-height: 372px;
     margin-top: 0;
     /* Support: IE7 */
