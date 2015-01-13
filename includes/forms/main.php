@@ -28,27 +28,27 @@ else: ?>
   <div id="ctc_error_notice">
     <?php $this->settings_errors(); ?>
   </div>
-  <?php 
+    <?php 
     include ( $this->ctc()->pluginPath . 'includes/forms/tabs.php' ); 
 ?>
-  <div class="ctc-option-panel-container">
-    <?php 
+    <div class="ctc-option-panel-container">
+      <?php 
     include ( $this->ctc()->pluginPath . 'includes/forms/parent-child.php' ); 
     if ( $enqueueset ):
         include ( $this->ctc()->pluginPath . 'includes/forms/rule-value.php' ); 
         include ( $this->ctc()->pluginPath . 'includes/forms/query-selector.php' ); 
         include ( $this->ctc()->pluginPath . 'includes/forms/at-import.php' ); ?>
-    <div id="view_child_options_panel" 
+      <div id="view_child_options_panel" 
         class="ctc-option-panel<?php echo 'view_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
-    <div id="view_parnt_options_panel" 
+      <div id="view_parnt_options_panel" 
         class="ctc-option-panel<?php echo 'view_parnt_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
-    <?php 
+      <?php 
         if ( '' == $hidechild ): 
             include ( $this->ctc()->pluginPath . 'includes/forms/files.php' );
         endif; 
         do_action( 'chld_thm_cfg_panels', $this->ctc(), $active_tab, $hidechild ); 
     endif; ?>
-  </div><div class="ctc-recent-container"><h3><?php _e('Recent Edits', 'chld_thm_cfg'); ?></h3><div id="ctc_recent_selectors"></div></div>
+    </div>
   <?php
 endif;
 ?>

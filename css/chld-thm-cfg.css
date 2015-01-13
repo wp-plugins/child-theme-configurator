@@ -12,30 +12,35 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 
 .ctc-option-panel-container {
     position: relative;
-    min-height:1100px;
+    min-height: 1100px;
     overflow: auto;
-    float:left;
-    width:83%;
+    float: left;
+    width: 83%;
 }
+
 .ctc-recent-container {
-    float:right;
-    width:17%;
+    position:relative;
+    float: right;
+    width: 17%;
     overflow: auto;
 }
+
 #ctc_recent_selectors ul li {
-    margin:0;
+    margin: 0;
 }
+
 #ctc_recent_selectors ul li a {
     text-decoration: none;
     font-size: .8em;
-    line-height:1.2;
-    word-wrap:break-word;
-    display:block;
-    padding:.5em;
+    line-height: 1.2;
+    word-wrap: break-word;
+    display: block;
+    padding: .5em;
 }
+
 #ctc_recent_selectors ul li a:hover, #ctc_recent_selectors ul li a:focus {
-    background-color:#fff;
-    -webkit-box-shadow:none;
+    background-color: #fff;
+    -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
 }
@@ -94,15 +99,15 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     display: block;
     float: left;
     width: 30%;
-    margin-right: 3%;
+    margin-right: 2%;
     word-wrap: break-word;
 }
 
 .ctc-input-cell-wide {
     display: block;
     float: left;
-    width: 70%;
-    margin-right: 2.13%;
+    width: 60%;
+    margin-right: 2%;
 }
 
 .ctc-input-cell-wide textarea {
@@ -125,7 +130,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     margin: 4px 0 15px;
     width: 85px;
     text-align: right;
-    float:right;
+    float: right;
 }
 
 .ctc-selector-link {
@@ -162,6 +167,10 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     position: relative;
     max-height: 500px;
     overflow: auto;
+}
+
+.ctc-status-icon {
+    max-width: 4%;
 }
 
 .ctc-status-icon.success {
@@ -232,7 +241,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .ctc-child-input-cell {
     display: block;
     float: left;
-    margin-right: 2.13%;
+    margin-right: 2%;
 }
 
 .ctc-child-input-cell-container {
@@ -250,6 +259,10 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 
 .ctc-child-input-cell input[type="text"] {
 /*width:60px;*/
+}
+
+.ctc-disabled {
+    opacity: 0.5;
 }
 
 .ctc-select {
@@ -304,8 +317,8 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     cursor: pointer;
     min-height: 0px;
     overflow: hidden;
-    text-overflow:ellipsis;
-    max-width:450px;
+    text-overflow: ellipsis;
+    max-width: 450px;
 }
 
 /*** Added in 1.6.0 for new options ***/
@@ -313,6 +326,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     /*margin:0;
     padding:0;*/
     position: relative;
+    cursor: pointer;
 }
 
 .ctc-section-toggle:after {

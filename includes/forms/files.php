@@ -83,5 +83,5 @@ if ( !defined( 'ABSPATH' ) ) exit;
       </div>
     </form>
   </div>
-  <?php endif; ?>
+  <?php endif; do_action( 'chld_thm_cfg_files_tab' ); ?>
 </div>

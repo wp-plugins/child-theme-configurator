@@ -15,6 +15,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 */
 class ChildThemeConfiguratorUI {
     // helper function to globalize ctc object
+    
     function ctc() {
         global $chld_thm_cfg; 
         return $chld_thm_cfg;
@@ -23,13 +24,10 @@ class ChildThemeConfiguratorUI {
     function render() {
         $css        = $this->ctc()->css;
         $themes     = $this->ctc()->themes;
-        $parent     = isset( $_GET[ 'ctc_parent' ] ) ? sanitize_text_field( $_GET[ 'ctc_parent' ] ) : $css->get_prop( 'parnt' );
         $child      = $css->get_prop( 'child' );
-        $configtype = $css->get_prop( 'configtype' );
-        if ( empty( $configtype ) ) $configtype = 'theme';
         $hidechild  = ( count( $themes[ 'child' ] ) ? '' : 'style="display:none"' );
-        $enqueueset = 'theme' != $configtype || isset( $css->enqueue );
-        $mustimport = $this->parent_stylesheet_check( $parent );
+        $enqueueset = isset( $css->enqueue );
+        $mustimport = $this->parent_stylesheet_check();
         $imports    = $css->get_prop( 'imports' );
         $id         = 0;
         $this->ctc()->fs_method = get_filesystem_method();
@@ -38,8 +36,8 @@ class ChildThemeConfiguratorUI {
         include ( $this->ctc()->pluginPath . '/includes/forms/main.php' ); 
     } 
 
-     function parent_stylesheet_check( $parent ) {
-        $file  = trailingslashit( get_theme_root() ) . trailingslashit( $parent ) . 'header.php';
+    function parent_stylesheet_check() {
+        $file  = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->get_current_parent() ) . 'header.php';
         $regex = '/<link[^>]+?stylesheet_ur[li]/is';
         if ( file_exists( $file ) ):
             $contents = file_get_contents( $file );
@@ -48,10 +46,9 @@ class ChildThemeConfiguratorUI {
         return FALSE;
     }
    
-    
-   function render_theme_menu( $template = 'child', $selected = NULL ) {
+    function render_theme_menu( $template = 'child', $selected = NULL ) {
          ?>
-        <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>" style="visibility:hidden"><?php
+        <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>" style="visibility:hidden" <?php echo $this->ctc()->is_theme() ? '' : ' disabled '; ?> ><?php
         foreach ( $this->ctc()->themes[ $template ] as $slug => $theme )
             echo '<option value="' . $slug . '"' . ( $slug == $selected ? ' selected' : '' ) . '>' 
                 . esc_attr( $theme[ 'Name' ] ) . '</option>' . LF; ?>
@@ -79,7 +76,7 @@ class ChildThemeConfiguratorUI {
                     || 'functions' == basename( $templatefile ) ) ) continue; 
                 include ( $this->ctc()->pluginPath . 'includes/forms/file.php' );            
             endforeach;
-            if ( 'child' == $template && ( $backups = $this->ctc()->get_files( $theme, 'backup' ) ) ):
+            if ( 'child' == $template && ( $backups = $this->ctc()->get_files( $theme, 'backup,pluginbackup' ) ) ):
                 foreach ( $backups as $backup => $label ):
                     $templatefile = preg_replace( '%\.css$%', '', $backup );
                     include ( $this->ctc()->pluginPath . 'includes/forms/backup.php' );            
@@ -141,7 +138,7 @@ class ChildThemeConfiguratorUI {
                 $child_theme = wp_get_theme( $this->ctc()->css->get_prop( 'child' ) );
                 echo '<p>' . apply_filters( 'chld_thm_cfg_update_msg', sprintf( __( 'Child Theme <strong>%s</strong> has been generated successfully.
                 ', 'chld_thm_cfg' ), $child_theme->Name ), $this->ctc() ) . LF;
-                if ( ! $this->ctc()->css->get_prop( 'configtype' ) || $this->ctc()->css->get_prop( 'configtype' ) == 'theme' ):
+                if ( $this->ctc()->is_theme() ):
                 echo '<strong>' . __( 'IMPORTANT:', 'chld_thm_cfg' ) . LF;
                 if ( is_multisite() && !$child_theme->is_allowed() ): 
                     echo 'You must <a href="' . network_admin_url( '/themes.php' ) . '" title="' . __( 'Go to Themes', 'chld_thm_cfg' ) . '" class="ctc-live-preview">' . __( 'Network enable', 'chld_thm_cfg' ) . '</a> ' . __( 'your child theme.', 'chld_thm_cfg' );
@@ -193,8 +190,10 @@ class ChildThemeConfiguratorUI {
 
         }
     }
+    
     function lilaea_plug() {
         include ( $this->ctc()->pluginPath . 'includes/forms/related.php' );
     }
+    
 }
 ?>
