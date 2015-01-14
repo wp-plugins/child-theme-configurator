@@ -244,11 +244,8 @@ class ChildThemeConfiguratorAdmin {
             // return recent edits and selected stylesheets as cache updates
             if ( $this->css->get_prop( 'child' ) ):
                 $this->css->write_css();
-                $this->updates[] = array(
-                    'obj'   => 'recent',
-                    'key'   => '',
-                    'data'  => $this->css->get_prop( 'recent' ),
-                );
+                // add any additional updates to pass back to browser
+                do_action( 'chld_thm_cfg_cache_updates' );
                 $this->updates[] = array(
                     'obj'   => 'addl_css',
                     'key'   => '',
@@ -280,11 +277,8 @@ class ChildThemeConfiguratorAdmin {
                 $param[ $name ] = sanitize_text_field( $_POST[ $key ] );
             endforeach;
             if ( !empty( $param[ 'obj' ] ) ):
-                $this->updates[] = array(
-                    'obj'   => 'recent',
-                    'key'   => '',
-                    'data'  => $this->css->get_prop( 'recent' ),
-                );
+                // add any additional updates to pass back to browser
+                do_action( 'chld_thm_cfg_cache_updates' );
                 $this->updates[] = array(
                     'key'   => isset( $param[ 'key' ] ) ? $param[ 'key' ] : '',
                     'obj'   => $param[ 'obj' ],

@@ -6,30 +6,25 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     box-shadow: none;
 }
 
-.nav-tab-active {
-/*background-color:#f9f9f9;*/
-}
-
 .ctc-option-panel-container {
     position: relative;
     min-height: 1100px;
+    width:100%;
     overflow: auto;
-    float: left;
-    width: 83%;
+ }
+#all_styles_panel {
+    -moz-columns:3;
+    -moz-column-gap:3em;
+    -webkit-columns:3;
+    -webkit-column-gap:3em;
+    columns:3;
+    column-gap:3em;
 }
-
-.ctc-recent-container {
-    position:relative;
-    float: right;
-    width: 17%;
-    overflow: auto;
-}
-
-#ctc_recent_selectors ul li {
+#ctc_recent_selectors ul li, #all_styles_panel ul li {
     margin: 0;
 }
 
-#ctc_recent_selectors ul li a {
+#ctc_recent_selectors ul li a, #all_styles_panel ul li a {
     text-decoration: none;
     font-size: .8em;
     line-height: 1.2;
@@ -38,7 +33,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     padding: .5em;
 }
 
-#ctc_recent_selectors ul li a:hover, #ctc_recent_selectors ul li a:focus {
+#ctc_recent_selectors ul li a:hover, #ctc_recent_selectors ul li a:focus, #all_styles_panel ul li a:hover, #all_styles_panel ul li a:focus {
     background-color: #fff;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
@@ -55,10 +50,48 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .ctc-option-panel {
     visibility: hidden;
     position: absolute;
-    width: 96%;
+    overflow:auto;
+    width: 95%;
     top: 0;
     left: 0;
     padding: 10px 2%;
+    transition: width 1s ease;
+    -moz-transition: width 1s ease;
+    -webkit-transition: width 1s ease;
+    -o-transition: width 1s ease;
+}
+.ctc-recent-container {
+    top:100px;
+    right:0;
+    position:absolute;
+    max-width: 200px;
+    width: 17%;
+    display: none;
+    overflow: auto;
+    visibility:visible;
+    left:inherit;
+}
+a.ctc-recent-tab {
+    float:right;
+    border:1px solid #ccc;
+    background-color: #E4E4E4;
+    color: #555;
+    display: inline-block;
+    text-decoration: none;
+    /*margin:0;*/
+    margin: -1px 0 0 0;
+    box-shadow: none;
+    -moz-box-shadow:none;
+    -webkit-box-shadow: none;
+    outline:none;
+}
+h2 .ctc-recent-tab {
+    padding: 6px 10px;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 24px;
+}
+.ctc-recent-tab h3 {
 }
 
 .ctc-option-panel-active {
@@ -123,12 +156,12 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 }
 
 .ctc-button-cell, .ctc-input-cell.ctc-button-cell {
-    width: 85px;
+    /*width: 85px;*/
 }
 
 .ctc-textarea-button-cell {
-    margin: 4px 0 15px;
-    width: 85px;
+    margin: 4px 10px 15px;
+    /*width: 85px;*/
     text-align: right;
     float: right;
 }
@@ -170,7 +203,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 }
 
 .ctc-status-icon {
-    max-width: 4%;
+    /*max-width: 4%;*/
 }
 
 .ctc-status-icon.success {

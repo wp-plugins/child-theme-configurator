@@ -42,8 +42,6 @@ class ChildThemeConfiguratorCSS {
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
     var $child_version; // stylesheet version
-    var $recent;        // recent selectors array
-    var $recent_count;  // number of selectors to show
     var $vendorrule       = array(
         'box-sizing',
         'font-smoothing',
@@ -72,7 +70,6 @@ class ChildThemeConfiguratorCSS {
         'qskey',
         'selkey',
         'querykey',
-        'recent_count',
     );
     var $dicts = array(
         'dict_qs',
@@ -83,7 +80,6 @@ class ChildThemeConfiguratorCSS {
         'dict_seq',
         'sel_ndx',
         'val_ndx',
-        'recent',
     );
     function __construct() {
         // scalars
@@ -98,7 +94,7 @@ class ChildThemeConfiguratorCSS {
         $this->child_name       = '';
         $this->child_author     = 'Child Theme Configurator';
         $this->child_version    = '1.0';
-        $this->recent_count     = 50;
+
         // multi-dim arrays
         $this->dict_qs          = array();
         $this->dict_sel         = array();
@@ -109,7 +105,6 @@ class ChildThemeConfiguratorCSS {
         $this->sel_ndx          = array();
         $this->val_ndx          = array();
         $this->addl_css         = array();
-        $this->recent           = array();
         $this->imports          = array( 'child' => array(), 'parnt' => array() );
     }
     // helper function to globalize ctc object
@@ -119,7 +114,7 @@ class ChildThemeConfiguratorCSS {
     }
     // loads current ctc config data into local memory
     function load_config() {
-        $option = $this->get_option_base();
+        $option = CHLD_THM_CFG_OPTIONS . apply_filters( 'chld_thm_cfg_option', '' );
         //echo 'loading option: ' . $option . LF;
         if ( $configarray = get_option( $option . '_configvars' ) ):
             foreach ( $this->configvars as $configkey )
@@ -135,7 +130,7 @@ class ChildThemeConfiguratorCSS {
     }
     // writes ctc config data to options api
     function save_config() {
-        $option = $this->get_option_base();
+        $option = CHLD_THM_CFG_OPTIONS . apply_filters( 'chld_thm_cfg_option', '' );
         //echo 'saving option: ' . $option . LF;
         $configarray = array();
         foreach ( $this->configvars as $configkey )
@@ -145,10 +140,6 @@ class ChildThemeConfiguratorCSS {
             update_option( $option . '_' . $configkey, $this->{$configkey} );
     }
     
-    function get_option_base() {
-        return CHLD_THM_CFG_OPTIONS . ( !$this->ctc()->is_legacy()  
-            && !$this->ctc()->is_theme() ? '_plugins' : '' );
-    }
     /*
      * get_prop
      * Getter interface (data sliced different ways depending on objname )
@@ -208,8 +199,8 @@ class ChildThemeConfiguratorCSS {
                 $this->normalize_css();
                 return $this->styles;
                 break;
-            case 'recent':
-                return $this->obj_to_utf8( $this->denorm_recent() );
+            default:
+                return $this->obj_to_utf8( apply_filters( 'chld_thm_get_prop', $objname, $params ) );
         endswitch;
         return FALSE;
     }
@@ -338,15 +329,11 @@ class ChildThemeConfiguratorCSS {
         if (! isset( $this->dict_val[ '' ] ) ) return FALSE;
         $empty = $this->dict_val[ '' ];
         foreach ( $this->val_ndx[ $qsid ] as $ruleid => $arr ):
-            // if any values exist add to recent updates and return
+            // if any values exist return
             if ( ( isset( $arr[ 'child' ] ) && $empty != $arr[ 'child' ] )
                 || ( isset( $arr[ 'parnt' ] ) && $empty != $arr[ 'parnt' ] ) ):
-                
-                // update recently modified selectors array
-                while ( FALSE !== ( $key = array_search( $qsid, $this->recent ) ) ) unset( $this->recent[ $key ] );
-                array_unshift( $this->recent, $qsid );
-                if ( count( $this->recent ) > $this->recent_count ) array_pop( $this->recent );
-                
+
+                do_action( 'chld_thm_cfg_update_qsid', $qsid );                
                 return FALSE;
             endif;
         endforeach;
@@ -1180,15 +1167,6 @@ class ChildThemeConfiguratorCSS {
         return empty( $query ) ? $sel_ndx_norm : $sel_ndx_norm[ $query ];
     }
     
-    function denorm_recent() {
-        $arr = array();
-        foreach ( $this->recent as $qsid ):
-            $selarr = $this->denorm_query_sel( $qsid );
-            if (! empty( $selarr ) )
-                $arr[] = array( $qsid => $selarr[ 'selector' ] );
-        endforeach;
-        return $arr;
-    }
     /*
      * is_important
      * Strip important flag from value ref and return boolean

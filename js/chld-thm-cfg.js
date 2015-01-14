@@ -542,7 +542,7 @@ jQuery( document ).ready( function( $ ) {
                 html = '';
                 $.each( ctcAjax.sel_val[qsid].value, function( rule, value ) {
                     html += render_child_rule_input( qsid, rule, 'ovrd' );
-                } );        
+                } );
                 $( '#ctc_sel_ovrd_rule_inputs' ).html( html ).find( '.color-picker' ).each( function() {
                     setup_iris( this );
                 } );
@@ -555,10 +555,7 @@ jQuery( document ).ready( function( $ ) {
             var selector = $( '#ctc_sel_ovrd_selector_selected' ).text();
             //delete ctcAjax.sel_ndx[current_query][selector];
             $( '#ctc_sel_ovrd_selector_selected' ).html( '&nbsp;' );
-            $( '#ctc_sel_ovrd_rule_inputs' ).slideUp( function(){ 
-                $( '#ctc_sel_ovrd_rule_inputs' ).html( '' ); 
-                $( '#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header, #ctc_sel_ovrd_rule_inputs_container, #ctc_sel_ovrd_rule_inputs, .ctc-rewrite-toggle' ).slideUp();
-            } );
+            $( '#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header, #ctc_sel_ovrd_rule_inputs_container, #ctc_sel_ovrd_rule_inputs, .ctc-rewrite-toggle' ).slideUp( function(){ $( '#ctc_sel_ovrd_rule_inputs' ).html( '' ); } );
             
         }
     }
@@ -577,11 +574,10 @@ jQuery( document ).ready( function( $ ) {
             query_css( 'preview', theme, render_css_preview );
             return false;
         }
-        if ( 2 == semaphore.preview ) {
-            $( '#view_'+theme+'_options_panel' ).text( ctcAjax.previewResponse );
-            ctcAjax.previewResponse = null; // send to trash
-            semaphore.preview = 0;       
-        }
+        console.log(ctcAjax.previewResponse);
+        $( '#view_'+theme+'_options_panel' ).text( ctcAjax.previewResponse );
+        ctcAjax.previewResponse = null; // send to trash
+        semaphore.preview = 0;       
     }
     
     function render_rule_value_inputs( ruleid ) {
@@ -925,13 +921,6 @@ jQuery( document ).ready( function( $ ) {
                     }
                 } else {
                     $( '.ctc-status-icon' ).addClass( 'success' );
-                    if ( 'preview' == obj ) {
-                        // refresh preview
-                        ctcAjax.previewResponse = response.shift().data;
-                    } else if ( 'recent' == obj ) {
-                        // update recent edits
-                        ctcAjax.recent = response.shift().data;
-                    } else {
                         if ( 1 == semaphore.refresh ) {
                             console.log( 'cache reset flag set. resetting caches...');
                             semaphore.refresh = 0;
@@ -941,7 +930,7 @@ jQuery( document ).ready( function( $ ) {
                         console.log( 'updating cache from ' + obj + ' query');
                         // update data objects   
                         update_cache( response );
-                    }
+                        render_recent();
                     if ( 'function' === typeof callback ) {
                         callback( key );
                     }
@@ -1127,6 +1116,10 @@ jQuery( document ).ready( function( $ ) {
                     //console.log('addl_css');
                     //console.log(this.data);
                     break;
+                
+                case 'preview':
+                    // refresh preview
+                    ctcAjax.previewResponse = this.data;
             }
         } );
         response = null; // send to garbage
@@ -1311,6 +1304,21 @@ jQuery( document ).ready( function( $ ) {
         $( '#ctc_child_name' ).val( testname );
         $( '#ctc_child_template' ).val( testslug );
     } );
+    $( '#recent_edits' ).on( 'click', function(e){
+        e.preventDefault();
+        $( '.wrap' ).css( { 'overflow':'hidden' } );
+        if ( $( '.ctc-recent-container' ).is( ':visible' ) ) {
+            $( this ).removeClass( 'open' );
+            $( '.ctc-recent-container' ).stop().animate( { 'right': -200 }, function() { $( this ).hide(); } );
+            $( '.ctc-option-panel' ).css( { 'width': '95%' } );
+        } else {
+            $( this ).addClass( 'open' );
+            $( '.ctc-recent-container' ).stop().css( { 'right': -200 } ).show().animate( { 'right': 0 } );
+            $( '.ctc-option-panel' ).css( { 'width': '80%' } );
+        }
+        $( '.wrap' ).css( { 'overflow':'inherit' } );
+        return false;
+    });
     // initialize autoselect menus
     load_menus();
     set_query( current_query );

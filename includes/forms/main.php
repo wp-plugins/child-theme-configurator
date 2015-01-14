@@ -49,7 +49,7 @@ else: ?>
         do_action( 'chld_thm_cfg_panels', $this->ctc(), $active_tab, $hidechild ); 
     endif; ?>
     </div>
-  <?php
+  <?php do_action( 'chld_thm_cfg_sidebar' );
 endif;
 ?>
 </div>
