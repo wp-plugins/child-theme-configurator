@@ -33,7 +33,7 @@ class ChildThemeConfiguratorUI {
         $this->ctc()->fs_method = get_filesystem_method();
         add_thickbox();
         add_action( 'chld_thm_cfg_related_links', array( $this, 'lilaea_plug' ) );
-        include ( $this->ctc()->pluginPath . '/includes/forms/main.php' ); 
+        include ( CHLD_THM_CFG_DIR . '/includes/forms/main.php' ); 
     } 
 
     function parent_stylesheet_check() {
@@ -56,7 +56,7 @@ class ChildThemeConfiguratorUI {
         <div style="display:none">
         <?php 
         foreach ( $this->ctc()->themes[ $template ] as $slug => $theme )
-            include ( $this->ctc()->pluginPath . 'includes/forms/themepreview.php' ); ?>
+            include ( CHLD_THM_CFG_DIR . '/includes/forms/themepreview.php' ); ?>
         </div>
         <?php
     }
@@ -74,18 +74,18 @@ class ChildThemeConfiguratorUI {
                 $excludes = implode( "|", ( array ) apply_filters( 'chld_thm_cfg_template_excludes', $this->ctc()->excludes ) );
                 if ( 'parnt' == $template && ( preg_match( '%^(' . $excludes . ' )\w*\/%',$templatefile ) 
                     || 'functions' == basename( $templatefile ) ) ) continue; 
-                include ( $this->ctc()->pluginPath . 'includes/forms/file.php' );            
+                include ( CHLD_THM_CFG_DIR . '/includes/forms/file.php' );            
             endforeach;
             if ( 'child' == $template && ( $backups = $this->ctc()->get_files( $theme, 'backup,pluginbackup' ) ) ):
                 foreach ( $backups as $backup => $label ):
                     $templatefile = preg_replace( '%\.css$%', '', $backup );
-                    include ( $this->ctc()->pluginPath . 'includes/forms/backup.php' );            
+                    include ( CHLD_THM_CFG_DIR . '/includes/forms/backup.php' );            
                 endforeach;
             endif;
             $inputs = ob_get_contents();
             ob_end_clean();
             if ( $counter ):
-                include ( $this->ctc()->pluginPath . 'includes/forms/fileform.php' );            
+                include ( CHLD_THM_CFG_DIR . '/includes/forms/fileform.php' );            
             endif;
         endif;
     }
@@ -101,11 +101,11 @@ class ChildThemeConfiguratorUI {
             ob_start();
             foreach ( $files as $file ): 
                 $templatefile = preg_replace( '/^images\//', '', $file );
-                include( $this->ctc()->pluginPath . 'includes/forms/image.php' );             
+                include( CHLD_THM_CFG_DIR . '/includes/forms/image.php' );             
             endforeach;
             $inputs = ob_get_contents();
             ob_end_clean();
-            if ( $counter ) include( $this->ctc()->pluginPath . 'includes/forms/images.php' );
+            if ( $counter ) include( CHLD_THM_CFG_DIR . '/includes/forms/images.php' );
         endif;
     }
     
@@ -165,7 +165,7 @@ class ChildThemeConfiguratorUI {
             $regex_tab = '/' . preg_quote( '<!-- BEGIN tab -->' ) . '\s*<h\d id="(.*?)">(.*?)<\/h\d>(.*?)' . preg_quote( '<!-- END tab -->' ) . '/s';
             ob_start();
             // stub for multiple languages future release
-            include( $this->ctc()->pluginPath . 'includes/help/help_en_US.php' );
+            include( CHLD_THM_CFG_DIR . '/includes/help/help_en_US.php' );
             $help_raw = ob_get_contents();
             ob_end_clean();
             // parse raw html for tokens
@@ -192,7 +192,7 @@ class ChildThemeConfiguratorUI {
     }
     
     function lilaea_plug() {
-        include ( $this->ctc()->pluginPath . 'includes/forms/related.php' );
+        include ( CHLD_THM_CFG_DIR . '/includes/forms/related.php' );
     }
     
 }

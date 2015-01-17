@@ -38,6 +38,7 @@ class ChildThemeConfiguratorCSS {
     var $parnt;         // parent theme slug
     var $configtype;    // legacy plugin slug
     var $addl_css;      // parent additional stylesheets
+    var $recent;        // history of edited styles
     var $enqueue;       // load parent css method (enqueue, import, none)
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
@@ -70,6 +71,7 @@ class ChildThemeConfiguratorCSS {
         'qskey',
         'selkey',
         'querykey',
+        'recent',
     );
     var $dicts = array(
         'dict_qs',
@@ -105,6 +107,7 @@ class ChildThemeConfiguratorCSS {
         $this->sel_ndx          = array();
         $this->val_ndx          = array();
         $this->addl_css         = array();
+        $this->recent           = array();
         $this->imports          = array( 'child' => array(), 'parnt' => array() );
     }
     // helper function to globalize ctc object
@@ -129,8 +132,10 @@ class ChildThemeConfiguratorCSS {
         endif;
     }
     // writes ctc config data to options api
-    function save_config() {
-        $option = CHLD_THM_CFG_OPTIONS . apply_filters( 'chld_thm_cfg_option', '' );
+    function save_config( $override = NULL ) {
+        if ( isset( $override ) ) $option = $override;
+        else $option = apply_filters( 'chld_thm_cfg_option', '' );
+        $option = CHLD_THM_CFG_OPTIONS . $option;
         //echo 'saving option: ' . $option . LF;
         $configarray = array();
         foreach ( $this->configvars as $configkey )
@@ -170,6 +175,8 @@ class ChildThemeConfiguratorCSS {
                 return $this->child;
             case 'parnt':
                 return $this->parnt;
+            case 'configtype': // legacy plugin extension support
+                return $this->configtype;
             case 'addl_css':
                 return isset( $this->addl_css ) ? $this->addl_css : array();
             case 'child_name':
@@ -190,7 +197,7 @@ class ChildThemeConfiguratorCSS {
                             $this->styles .= '/*** END ' . $template . ' ***/' . LF;
                         endforeach;
                     endif;
-                    if ( $this->ctc()->is_theme() ):
+                    if ( $this->ctc()->is_theme() || $this->ctc()->is_legacy() ):
                         $this->styles .= '/*** BEGIN style.css ***/' . LF;
                         $this->read_stylesheet( 'parnt' );
                         $this->styles .= '/*** END style.css ***/' . LF;
@@ -200,7 +207,7 @@ class ChildThemeConfiguratorCSS {
                 return $this->styles;
                 break;
             default:
-                return $this->obj_to_utf8( apply_filters( 'chld_thm_get_prop', $objname, $params ) );
+                return $this->obj_to_utf8( apply_filters( 'chld_thm_get_prop', NULL, $objname, $params ) );
         endswitch;
         return FALSE;
     }
@@ -210,8 +217,8 @@ class ChildThemeConfiguratorCSS {
      * Setter interface (scalar values only)
      */
     function set_prop( $prop, $value ) {
-        if ( is_scalar( $this->{$prop} ) )
-            $this->{$prop} = $value;
+        if ( is_null( $this->{ $prop } ) || is_scalar( $this->{ $prop } ) )
+            $this->{ $prop } = $value;
         else return FALSE;
     }
     // formats css string for accurate parsing

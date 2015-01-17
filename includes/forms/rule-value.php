@@ -1,12 +1,13 @@
 <?php  
 if ( !defined( 'ABSPATH' ) ) exit;
 // Rule/Value Panel
+        $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
 ?>
 
 <div id="rule_value_options_panel" 
         class="ctc-option-panel<?php echo 'rule_value_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>>
-  <form id="ctc_rule_value_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>">
-    <?php wp_nonce_field( 'ctc_update' ); ?>
+  <form id="ctc_rule_value_form" method="post" action="?page=<?php echo $ctcpage; ?>">
+    <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
     <div class="ctc-input-row clearfix" id="ctc_input_row_rule_menu">
       <div class="ctc-input-cell"> <strong>
         <?php _e( 'Rule', 'chld_thm_cfg' ); ?>

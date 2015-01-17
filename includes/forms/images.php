@@ -4,7 +4,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 ?>
 <div class="ctc-input-row clearfix" id="input_row_images">
   <form id="ctc_image_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>">
-    <?php wp_nonce_field( 'ctc_update' ); ?>
+    <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
     <div class="ctc-input-cell"> <strong>
       <?php _e( 'Child Theme Images', 'chld_thm_cfg' ); ?>
       </strong>

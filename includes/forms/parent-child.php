@@ -4,13 +4,13 @@ if ( !defined( 'ABSPATH' ) ) exit;
 ?>
 
 <div id="parent_child_options_panel" class="ctc-option-panel<?php echo 'parent_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>">
-  <form id="ctc_load_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>">
+  <form id="ctc_load_form" method="post" action=""><!-- ?page=<?php echo CHLD_THM_CFG_MENU; ?>"-->
     <?php 
     wp_nonce_field( 'ctc_update' ); 
     //if ( '' == $hidechild ) 
     do_action( 'chld_thm_cfg_controls', $this->ctc() );
-    $disabled = $this->ctc()->is_theme() ? '' : ' disabled ';
-    $disabledclass = $this->ctc()->is_theme() ? '' : ' ctc-disabled';
+    $disabled       = $this->ctc()->is_legacy() && !$this->ctc()->is_theme() ? ' disabled ' : '';
+    $disabledclass  = $this->ctc()->is_legacy() && !$this->ctc()->is_theme() ? ' ctc-disabled ' : '';
 ?>
     <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>" id="input_row_parnt">
       <div class="ctc-input-cell"> <strong>
@@ -154,16 +154,42 @@ if ( !defined( 'ABSPATH' ) ) exit;
                 value="all" />
           <?php _e( 'Reset all', 'chld_thm_cfg' );?>
         </label>
-        <div id="ctc_backup_files">
-          <?php do_action( 'chld_thm_cfg_get_backups' ); ?>
-        </div>
+        <div id="ctc_backup_files"><?php
+    foreach ( $this->ctc()->get_files( $css->get_prop( 'child' ), 'backup' ) as $backup => $label ): ?>
+          <label>
+            <input class="ctc_checkbox" id="ctc_revert_<?php echo $backup; ?>" name="ctc_revert" type="radio" 
+                value="<?php echo $backup; ?>" />
+            <?php echo __( 'Restore backup from', 'chld_thm_cfg' ) . ' ' . $label; ?></label>
+          <br/>
+          <?php endforeach; ?>
+          </div>
       </div>
     </div>
     <?php endif; ?>
     <div class="ctc-input-row clearfix" id="ctc_stylesheet_files">
       <?php
-            do_action( 'chld_thm_cfg_get_stylesheets' );
-      ?>
+// Additional stylesheets
+$stylesheets = $this->ctc()->get_files( $this->ctc()->get_current_parent(), 'stylesheet' );
+if ( count( $stylesheets ) ):?>
+<div class="ctc-input-cell ctc-section-toggle" id="ctc_additional_css_files"> <strong>
+  <?php _e( 'Parse additional stylesheets:', 'chld_thm_cfg' ); ?>
+  </strong> </div>
+<div class="ctc-input-cell-wide ctc-section-toggle-content" id="ctc_additional_css_files_content">
+  <p style="margin-top:0">
+    <?php _e( 'Stylesheets that are currently being loaded by the parent theme are automatically selected below (except for Bootstrap stylesheets which add a large amount data to the configuration). To further reduce overhead, select only the additional stylesheets you wish to customize.', 'chld_thm_cfg' ); ?>
+  </p>
+  <ul>
+<?php foreach ( $stylesheets as $stylesheet ): ?>
+    <li>
+      <label>
+        <input class="ctc_checkbox" name="ctc_additional_css[]" type="checkbox" 
+                value="<?php echo $stylesheet; ?>" />
+        <?php echo esc_attr( $stylesheet ); ?></label>
+    </li>
+<?php endforeach; ?>
+  </ul>
+</div><?php 
+endif; ?>
     </div>
     <div class="ctc-input-row clearfix">
       <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>

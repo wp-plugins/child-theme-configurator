@@ -16,17 +16,19 @@ if ( !defined( 'ABSPATH' ) ) exit;
 */
 
     defined( 'LF' ) or define( 'LF', "\n" );
-    defined( 'CHLD_THM_CFG_OPTIONS' ) or define( 'CHLD_THM_CFG_OPTIONS', 'chld_thm_cfg_options' );
-    defined( 'CHLD_THM_CFG_VERSION' ) or define( 'CHLD_THM_CFG_VERSION', '1.6.3' );
-    defined( 'CHLD_THM_CFG_MIN_WP_VERSION' ) or define( 'CHLD_THM_CFG_MIN_WP_VERSION', '3.7' );
-    defined( 'CHLD_THM_CFG_MAX_SELECTORS' ) or define( 'CHLD_THM_CFG_MAX_SELECTORS', '50000' );
-    defined( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS' ) or define( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS', '1000' );
-    defined( 'CHLD_THM_CFG_MENU' ) or define( 'CHLD_THM_CFG_MENU', 'chld_thm_cfg_menu' );
+    define( 'CHLD_THM_CFG_OPTIONS', 'chld_thm_cfg_options' );
+    define( 'CHLD_THM_CFG_VERSION', '1.6.3' );
+    define( 'CHLD_THM_CFG_MIN_WP_VERSION', '3.7' );
+    define( 'CHLD_THM_CFG_MAX_SELECTORS', '50000' );
+    define( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS', '1000' );
+    define( 'CHLD_THM_CFG_MENU', 'chld_thm_cfg_menu' );
+    define( 'CHLD_THM_CFG_DIR', dirname( __FILE__ ) );
+    define( 'CHLD_THM_CFG_URL', plugin_dir_url( __FILE__ ) );
 
     class ChildThemeConfigurator {
         static function init() {
             // initialize languages
-	    	load_plugin_textdomain( 'chld_thm_cfg', FALSE, basename( dirname( __FILE__ ) ) . '/lang' );
+	    	load_plugin_textdomain( 'chld_thm_cfg', FALSE, basename( CHLD_THM_CFG_DIR ) . '/lang' );
             // verify WP version support
             global $wp_version;
             if ( version_compare( $wp_version, CHLD_THM_CFG_MIN_WP_VERSION ) < 0 ):
@@ -98,11 +100,12 @@ if ( !defined( 'ABSPATH' ) ) exit;
         }
     }
     
-    if ( is_admin() ) ChildThemeConfigurator::init();
+    if ( is_admin() ) 
+        add_action( 'plugins_loaded', 'ChildThemeConfigurator::init' );
     
-    register_uninstall_hook( __FILE__, 'chld_thm_cfg_delete_plugin' );
+    register_uninstall_hook( __FILE__, 'chld_thm_cfg_uninstall' );
 
-    function chld_thm_cfg_delete_plugin() {
+    function chld_thm_cfg_uninstall() {
         delete_option( CHLD_THM_CFG_OPTIONS );
         delete_option( CHLD_THM_CFG_OPTIONS . '_configvars' );
         delete_option( CHLD_THM_CFG_OPTIONS . '_dict_qs' );

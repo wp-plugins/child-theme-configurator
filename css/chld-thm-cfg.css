@@ -50,7 +50,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .ctc-option-panel {
     visibility: hidden;
     position: absolute;
-    overflow:auto;
+    /* overflow:auto; */
     width: 95%;
     top: 0;
     left: 0;
@@ -61,7 +61,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     -o-transition: width 1s ease;
 }
 .ctc-recent-container {
-    top:100px;
+    top:0;
     right:0;
     position:absolute;
     max-width: 200px;
@@ -70,6 +70,10 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     overflow: auto;
     visibility:visible;
     left:inherit;
+    background-color: #E4E4E4;
+}
+#ctc_recent_selectors {
+    padding: 0 8px;
 }
 a.ctc-recent-tab {
     float:right;
@@ -199,7 +203,7 @@ h2 .ctc-recent-tab {
 .ctc-selector-inner-container {
     position: relative;
     max-height: 500px;
-    overflow: auto;
+    /*overflow: auto;*/
 }
 
 .ctc-status-icon {
@@ -502,4 +506,34 @@ h3.theme-name {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+/* get pro tab styles */
+#get_pro_panel h1 {
+    font-size:1.75em;
+    color: rgb(198, 66, 0);
+}
+#get_pro_panel h3 {
+    font-size:1.4em;
+}
+    
+#get_pro_panel p {
+    font-size:1.25em;
+}
+#get_pro_panel ul {
+    list-style: square;
+}
+#get_pro_panel li {
+    margin-left:2em;
+}
+#get_pro_panel h3 a {
+    display: inline-block;
+    padding:5px 10px;
+    background-color: rgb(198, 66, 0);
+    color: #fff;
+    text-decoration: none;
+}
+
+#get_pro_panel h3 a:hover {
+    background-color: #FF902E;
+    color: #fff;
 }
