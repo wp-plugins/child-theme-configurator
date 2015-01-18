@@ -4,6 +4,12 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     box-shadow: none;
+    /*max-width: 9%;
+    margin:0 .25%;
+    display:block;
+    float:left;
+    line-height:1;
+    height:2em;*/
 }
 
 .ctc-option-panel-container {

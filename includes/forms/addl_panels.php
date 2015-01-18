@@ -25,5 +25,5 @@ $link = '<a href="' . ( is_multisite() ?
 <li><h3><?php _e( 'Tutorial Videos', 'chld_thm_cfg' ); ?></h3></li>
 </ul>
 <p><?php _e( 'For a limited time we are offering Child Theme Configurator Pro for a special introductory price.', 'chld_thm_cfg' ); ?></p>
-<h3><a href="http://www.lilaeamedia.com/plugins/child-theme-configurator-pro/" title="<?php _e( 'Buy CTC Pro', 'chld_thm_cfg' ); ?>"><?php _e( 'Buy Now - Only $12.95 USD', 'chld_thm_cfg' ); ?></a></h3></div><?php
+<h3><a href="http://www.lilaeamedia.com/cart/?add-to-cart=1710" title="<?php _e( 'Buy CTC Pro', 'chld_thm_cfg' ); ?>"><?php _e( 'Buy Now - Only $12.95 USD', 'chld_thm_cfg' ); ?></a></h3></div><?php
 endif;

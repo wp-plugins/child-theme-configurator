@@ -36,8 +36,10 @@ if ( !defined( 'ABSPATH' ) ) exit;
                 return;
             endif; 	
             // setup admin hooks
-            add_action( 'network_admin_menu',   'ChildThemeConfigurator::network_admin' );
-            add_action( 'admin_menu',           'ChildThemeConfigurator::admin' );
+            if ( is_multisite() )
+                add_action( 'network_admin_menu',   'ChildThemeConfigurator::network_admin' );
+            else
+                add_action( 'admin_menu',           'ChildThemeConfigurator::admin' );
             // setup ajax actions
             add_action( 'wp_ajax_ctc_update',   'ChildThemeConfigurator::save' );
             add_action( 'wp_ajax_ctc_query',    'ChildThemeConfigurator::query' );
