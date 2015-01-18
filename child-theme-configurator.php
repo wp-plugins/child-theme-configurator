@@ -6,27 +6,29 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Plugin Name: Child Theme Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Create a Child Theme and customize the stylesheet as you wish. Search, preview and modify any selector, rule or value using this fast CSS editor.
-    Version: 1.6.3
+    Version: 1.6.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
     Domain Path: /lang
     License: GPLv2
-    Copyright (C) 2014 Lilaea Media
+    Copyright (C) 2014-2015 Lilaea Media
 */
 
     defined( 'LF' ) or define( 'LF', "\n" );
-    defined( 'CHLD_THM_CFG_OPTIONS' ) or define( 'CHLD_THM_CFG_OPTIONS', 'chld_thm_cfg_options' );
-    defined( 'CHLD_THM_CFG_VERSION' ) or define( 'CHLD_THM_CFG_VERSION', '1.6.3' );
-    defined( 'CHLD_THM_CFG_MIN_WP_VERSION' ) or define( 'CHLD_THM_CFG_MIN_WP_VERSION', '3.7' );
-    defined( 'CHLD_THM_CFG_MAX_SELECTORS' ) or define( 'CHLD_THM_CFG_MAX_SELECTORS', '50000' );
-    defined( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS' ) or define( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS', '1000' );
-    defined( 'CHLD_THM_CFG_MENU' ) or define( 'CHLD_THM_CFG_MENU', 'chld_thm_cfg_menu' );
+    define( 'CHLD_THM_CFG_OPTIONS', 'chld_thm_cfg_options' );
+    define( 'CHLD_THM_CFG_VERSION', '1.6.4' );
+    define( 'CHLD_THM_CFG_MIN_WP_VERSION', '3.7' );
+    define( 'CHLD_THM_CFG_MAX_SELECTORS', '50000' );
+    define( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS', '1000' );
+    define( 'CHLD_THM_CFG_MENU', 'chld_thm_cfg_menu' );
+    define( 'CHLD_THM_CFG_DIR', dirname( __FILE__ ) );
+    define( 'CHLD_THM_CFG_URL', plugin_dir_url( __FILE__ ) );
 
     class ChildThemeConfigurator {
         static function init() {
             // initialize languages
-	    	load_plugin_textdomain( 'chld_thm_cfg', FALSE, basename( dirname( __FILE__ ) ) . '/lang' );
+	    	load_plugin_textdomain( 'chld_thm_cfg', FALSE, basename( CHLD_THM_CFG_DIR ) . '/lang' );
             // verify WP version support
             global $wp_version;
             if ( version_compare( $wp_version, CHLD_THM_CFG_MIN_WP_VERSION ) < 0 ):
@@ -93,16 +95,17 @@ if ( !defined( 'ABSPATH' ) ) exit;
         }
         static function version_notice() {
             deactivate_plugins( plugin_basename( __FILE__ ) );
-            unset( $_GET['activate'] );
+            unset( $_GET[ 'activate' ] );
             echo '<div class="update-nag"><p>' . sprintf( __( 'Child Theme Configurator requires WordPress version %s or later.', 'chld_thm_cfg' ), CHLD_THM_CFG_MIN_WP_VERSION ) . '</p></div>' . LF;
         }
     }
     
-    if ( is_admin() ) ChildThemeConfigurator::init();
+    if ( is_admin() ) 
+        add_action( 'plugins_loaded', 'ChildThemeConfigurator::init' );
     
-    register_uninstall_hook( __FILE__, 'chld_thm_cfg_delete_plugin' );
+    register_uninstall_hook( __FILE__, 'chld_thm_cfg_uninstall' );
 
-    function chld_thm_cfg_delete_plugin() {
+    function chld_thm_cfg_uninstall() {
         delete_option( CHLD_THM_CFG_OPTIONS );
         delete_option( CHLD_THM_CFG_OPTIONS . '_configvars' );
         delete_option( CHLD_THM_CFG_OPTIONS . '_dict_qs' );

@@ -10,7 +10,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
   <?php $this->render_image_form(); ?>
   <div class="ctc-input-row clearfix" id="input_row_theme_image">
     <form id="ctc_theme_image_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>" enctype="multipart/form-data">
-      <?php wp_nonce_field( 'ctc_update' ); ?>
+      <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
       <div class="ctc-input-cell"> <strong>
         <?php _e( 'Upload New Child Theme Image', 'chld_thm_cfg' ); ?>
         </strong>
@@ -36,7 +36,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
   <?php endif; ?>
   <div class="ctc-input-row clearfix" id="input_row_screenshot">
     <form id="ctc_screenshot_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>" enctype="multipart/form-data">
-      <?php wp_nonce_field( 'ctc_update' ); ?>
+    <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
       <div class="ctc-input-cell"> <strong>
         <?php _e( 'Upload New Screenshot', 'chld_thm_cfg' ); ?>
         </strong>
@@ -54,7 +54,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
   </div>
   <div class="ctc-input-row clearfix" id="input_row_screenshot">
     <form id="ctc_export_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>">
-      <?php wp_nonce_field( 'ctc_update' ); ?>
+    <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
       <div class="ctc-input-cell"> <strong>
         <?php _e( 'Export Child Theme as Zip Archive', 'chld_thm_cfg' ); ?>
         </strong> </div>
@@ -68,7 +68,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
   <?php if ( 'direct' != $this->ctc()->fs_method ): ?>
   <div class="ctc-input-row clearfix" id="input_row_permissions">
     <form id="ctc_permission_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>">
-      <?php wp_nonce_field( 'ctc_update' ); ?>
+    <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
       <div class="ctc-input-cell"> <strong>
         <?php _e( 'Secure Child Theme', 'chld_thm_cfg' ); ?>
         </strong>
@@ -83,5 +83,5 @@ if ( !defined( 'ABSPATH' ) ) exit;
       </div>
     </form>
   </div>
-  <?php endif; ?>
+  <?php endif; do_action( 'chld_thm_cfg_files_tab' ); ?>
 </div>

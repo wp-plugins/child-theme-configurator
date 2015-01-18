@@ -36,5 +36,7 @@ $active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'parent_child_options';
 </a>
 <?php 
     endif; 
-endif;
-do_action( 'chld_thm_cfg_tabs', $this->ctc(), $active_tab, $hidechild ); ?>
+do_action( 'chld_thm_cfg_tabs', $this->ctc(), $active_tab, $hidechild );
+endif; ?>
+  <i id="ctc_status_preview"></i>
+</h2>

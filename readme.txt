@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, customize, CSS, responsive, css editor, theme generator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 1.6.3
+Stable tag: 1.6.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,26 +29,26 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Update themes without losing customizations
 * Easily copy widgets, menus and other options to a child theme
 * Save hours of development time
+* Multisite compatible - great for network sites
 * Make modifications above and beyond the theme Customizer
 * Enqueue (link) parent theme stylesheet instead of using @import
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of theme fonts
 * Identify and override exact selectors from the parent theme
 * Change specific colors, backgrounds, font styles, etc., without changing other elements
-* Automatically create and preview CSS3 gradients
-* Automatically generate cross-browser and vendor-prefixed rules
+* Automatically generate cross-browser and vendor-prefixed rules and CSS gradients
 * Preview style changes before committing to them
-* Add and modify individual @media queries
+* Customize @media queries for responsive design
 * Uses WP Filesystem API – will not create files you cannot remove
 * Nag-free, no-strings-attached user experience
 
-= Not just for themes but plugins too! =
+= Introducing Child Theme Configurator PRO =
 
-We offer a premium extension that brings the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and creates custom CSS in your Child Theme. 
+Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets in your Child Theme. We’ve added more features to make design work quicker and easier with Child Theme Configurator PRO. 
 
-https://www.youtube.com/watch?v=mJ3i6gsuL1E
+https://www.youtube.com/watch?v=Yj8lxF1knTo
 
-Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
+Learn more at http://www.lilaeamedia.com/child-theme-plugin-pro
 
 = Build your WordPress website exactly the way you want it. =
 
@@ -111,7 +111,7 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 == Frequently Asked Questions ==
 
-= Where is it in the Admin? = 
+= Where is Child Theme Configurator in the Admin? = 
 
 For most users the Child Theme Configurator can be found under "Tools > Child Themes."
 
@@ -123,7 +123,7 @@ Click the "Help" tab at the top right for a quick reference.
 
 = Does it work with Multisite? =
 
-Yes. Go to Network Admin > Themes > Child Themes. Child themes must be "Network enabled" to preview and activate for Network sites.
+Yes. Go to "Network Admin > Themes > Child Themes." Child themes must be "Network enabled" to preview and activate for Network sites.
 
 = HELP! I changed a file and now I am unable to access my website or login to wp-admin to fix it! =
 
@@ -149,10 +149,7 @@ Many of these options can be copied over to the child theme by checking "Copy Pa
 
 If you want to set different options you can either apply them after you activate the child theme using the theme customizer, or by using the "Live Preview" under Appearance > Themes.
 
-* Menus: Go to Appearance > Menus and click the "Locations" tab. By default, the primary menu will generate the links automatically from the existing pages. Select your customized Menu from the dropdown and click "Use New Menu." This will replace the default menu and you will see the correct links.
-* Header: Go to Appearance > Header. Some themes will show the "Title" and "Tagline" from your "General Settings" by default. Click "Choose Image" and find the header from the Media Library or upload a new image. This will replace default with your custom image.
-* Background: Go to Appearance > Background and choose a new background color or image.
-* Options: Every theme handles options in its own way. Most often, they will create a set of options and store them in the WordPress database. Some options are specific to the active theme (or child theme), and some are specific to the parent theme only (meaning the child theme CANNOT override them). You will have to find out from the theme author which are which.
+Every theme handles options in its own way. Most often, they will create a set of options and store them in the WordPress database. Some options are specific to the active theme (or child theme), and some are specific to the parent theme only (meaning the child theme CANNOT override them). You will have to find out from the theme author which are which.
 
 = How do I add Web Fonts? =
 
@@ -205,7 +202,7 @@ You can make any manual changes you wish to the stylesheet. Just make sure you i
 
 No. This is the point of using child themes. Changes to the parent theme are automatically inherited by the child theme.
 
-A child theme is not a "copy" of the parent theme. It is a special feature of WordPress that let's you override specific styles and functions leaving the rest of the theme intact. The only time you need to make changes after an upgrade is if the parent removes or changes style or function names. Quality themes should identify any deprecated functions or styles in the upgrade notes so that child theme users can make adjustments accordingly.
+A child theme is not a "copy" of the parent theme. It is a special feature of WordPress that let's you override specific styles and functions leaving the rest of the theme intact. Quality themes should identify any deprecated functions or styles in the upgrade notes so that child theme users can make adjustments accordingly.
 
 = Where are the .php files? = 
 
@@ -259,10 +256,17 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.6.4 = 
+* New Feature: Copy selector button for Raw CSS textarea on Query/Selector tab.
+* Fix: Menus rendering incorrectly for RTL locales
+* Fix: Border-top etc. not being written correctly to child theme stylesheet
+* Fix: Refactored ajax semaphore logic and flow
+
 = 1.6.3 = 
-* New Feature: Better handling for multisite. Moved interface to Themes menu and check for network enabled.
-* Fix: Restrict access to install_themes capability
+* New Feature: Better child theme handling for multisite. Moved interface to Themes menu and check for network enabled.
+* Fix: Restrict child theme configurator access to install_themes capability
 * Fix: Preview links to Themes admin if not network enabled to prevent 'Cheatin, uh?' error.
+* Fix: only users with "install_themes" capability have access to the Child Theme Configurator. This resolves permission issues with both multisite and single site installs. **MULTISITE USERS:** The Admin HAS MOVED to Network Admin > Themes > Child Themes for better handling for multisite (network) installs.
 
 = 1.6.2.1 = 
 * Fix: Regular expression introduced in version 1.6.2 parses selectors incorrectly.
@@ -302,7 +306,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Added regex filter for non-printable (e.g., null) characters in input strings
 
 = 1.5.2.2 =
-* Fixed a bug introduced in v1.5.2(.1) that copied all of the parent styles to the child stylesheet. This should only be an issue for 'background-image' styles that reference images in the parent theme and do not have child theme overrides. If you need to remove all styles generated by this bug, install the development version, otherwise delete the redundant child values or just wait for the v1.5.3 release.
+* Fixed a bug introduced in v1.5.2(.1) that copied all of the parent styles to the child stylesheet. This should only be an issue for 'background-image' styles that reference images in the parent theme and do not have child theme overrides.
 * Rolled back changes to the javascript controller that introduced a number of type errors.
 * Tweaked preview ajax call to handle ssl.
 
@@ -314,12 +318,10 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Added copy option to Parent/Child tab to assign menu locations, sidebars/widgets, custom header, background, and other options to the new Child Theme. 
 
 = 1.5.0 =
-* We have completely refactored CTC to use the WP_Filesystem API. 
-* If your web host is configured to use suExec (meaning it runs under the user of the web account being accessed), the changes will be completely transparent. 
-* Other configurations will now require user credentials to add, remove or update Child Theme files. 
-* To make things easier we added the ability for you to make the files writable while editing and then make them read-only when you are done.
+* Refactored CTC to use the WP_Filesystem API. 
+* Non suExec configurations will now require user credentials to add, remove or update Child Theme files. 
+* Added the ability for you to make the files writable while editing and then make them read-only when you are done.
 * You can also set your credentials in wp-config.php: http://codex.wordpress.org/Editing_wp-config.php#WordPress_Upgrade_Constants
-* Contact us at http://www.lilaeamedia.com/about/contact if you have any questions.
 
 = 1.4.8 =
 * Removed backreference in main CSS parser regex due to high memory usage.
@@ -444,15 +446,10 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Clean up Parent/Child form UI and validation
 * Streamlined UI overall
 
-= 1.0.1 =
-* Updates to Readme.txt
-
 = 1.0.0 =
 * Initial release.
 
 == Upgrade Notice ==
-
-v.1.6.3 **IMPORTANT:** As of v.1.6.3, only users with "install_themes" capability have access to the Child Theme Configurator. This resolves permission issues with both multisite and single site installs. **MULTISITE USERS:** The Admin HAS MOVED to Network Admin > Themes > Child Themes for better handling for multisite (network) installs. See changelog for details.
 
 == Override Parent Styles ==
 
@@ -529,9 +526,11 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 2. Click "Live Preview" (theme customizer) below the new Child Theme to see it in action.
 3. When you are ready to take the Child Theme live, click "Activate."
 
+**MULTISITE USERS:** You must Network Enable your child theme before you can use Live Preview. Go to "Themes" in the Network Admin.
+
 == Caveats ==
 
-* No legacy webkit-gradient. The Child Theme Configurator plugin does not support the legacy webkit gradient. If there is a demand, we will add it in a future release, but most Chrome and Safari users should have upgraded by now.
+* The Child Theme Configurator plugin does not support the legacy webkit gradient.
 * Only two-color gradients. The Child Theme Configurator plugin is powerful, but we have simplified the gradient interface. You can use any gradient you want as long as it has two colors and no intermediate stops.
 * No @font-face rules. The Child Theme Configurator plugin only supports @media and @import. If you need other @rules, put them in a separate stylesheet and import them into the Child Theme stylesheet.
 * Not all CSS rules are supported. The Child Theme Configurator plugin works with the vast majority of CSS rules, however we’ve left out some of the more obscure options.
@@ -541,4 +540,4 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 
 Go to http://www.lilaeamedia.com/plugins/child-theme-configurator
 
-Copyright: (C) 2014 Lilaea Media
+Copyright: (C) 2014-2015 Lilaea Media

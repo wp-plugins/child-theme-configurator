@@ -5,16 +5,17 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.6.3
+    Version: 1.6.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
     Domain Path: /lang
     License: GPLv2
-    Copyright (C) 2014 Lilaea Media
+    Copyright (C) 2014-2015 Lilaea Media
 */
 class ChildThemeConfiguratorUI {
     // helper function to globalize ctc object
+    
     function ctc() {
         global $chld_thm_cfg; 
         return $chld_thm_cfg;
@@ -23,23 +24,20 @@ class ChildThemeConfiguratorUI {
     function render() {
         $css        = $this->ctc()->css;
         $themes     = $this->ctc()->themes;
-        $parent     = isset( $_GET['ctc_parent'] ) ? sanitize_text_field( $_GET['ctc_parent'] ) : $css->get_prop( 'parnt' );
         $child      = $css->get_prop( 'child' );
-        $configtype = $css->get_prop( 'configtype' );
-        if ( empty( $configtype ) ) $configtype = 'theme';
-        $hidechild  = ( count( $themes['child'] ) ? '' : 'style="display:none"' );
-        $enqueueset = 'theme' != $configtype || isset( $css->enqueue );
-        $mustimport = $this->parent_stylesheet_check( $parent );
+        $hidechild  = ( count( $themes[ 'child' ] ) ? '' : 'style="display:none"' );
+        $enqueueset = isset( $css->enqueue );
+        $mustimport = $this->parent_stylesheet_check();
         $imports    = $css->get_prop( 'imports' );
         $id         = 0;
         $this->ctc()->fs_method = get_filesystem_method();
         add_thickbox();
         add_action( 'chld_thm_cfg_related_links', array( $this, 'lilaea_plug' ) );
-        include ( $this->ctc()->pluginPath .'/includes/forms/main.php' ); 
+        include ( CHLD_THM_CFG_DIR . '/includes/forms/main.php' ); 
     } 
 
-     function parent_stylesheet_check( $parent ) {
-        $file  = trailingslashit( get_theme_root() ) . trailingslashit( $parent ) . 'header.php';
+    function parent_stylesheet_check() {
+        $file  = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->get_current_parent() ) . 'header.php';
         $regex = '/<link[^>]+?stylesheet_ur[li]/is';
         if ( file_exists( $file ) ):
             $contents = file_get_contents( $file );
@@ -48,18 +46,17 @@ class ChildThemeConfiguratorUI {
         return FALSE;
     }
    
-    
-   function render_theme_menu( $template = 'child', $selected = NULL ) {
+    function render_theme_menu( $template = 'child', $selected = NULL ) {
          ?>
-        <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>" style="visibility:hidden"><?php
-        foreach ( $this->ctc()->themes[$template] as $slug => $theme )
+        <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>" style="visibility:hidden" <?php echo $this->ctc()->is_theme() ? '' : ' disabled '; ?> ><?php
+        foreach ( $this->ctc()->themes[ $template ] as $slug => $theme )
             echo '<option value="' . $slug . '"' . ( $slug == $selected ? ' selected' : '' ) . '>' 
-                . esc_attr( $theme['Name'] ) . '</option>' . LF; ?>
+                . esc_attr( $theme[ 'Name' ] ) . '</option>' . LF; ?>
         </select>
         <div style="display:none">
         <?php 
-        foreach ( $this->ctc()->themes[$template] as $slug => $theme )
-            include ( $this->ctc()->pluginPath . 'includes/forms/themepreview.php' ); ?>
+        foreach ( $this->ctc()->themes[ $template ] as $slug => $theme )
+            include ( CHLD_THM_CFG_DIR . '/includes/forms/themepreview.php' ); ?>
         </div>
         <?php
     }
@@ -77,18 +74,18 @@ class ChildThemeConfiguratorUI {
                 $excludes = implode( "|", ( array ) apply_filters( 'chld_thm_cfg_template_excludes', $this->ctc()->excludes ) );
                 if ( 'parnt' == $template && ( preg_match( '%^(' . $excludes . ' )\w*\/%',$templatefile ) 
                     || 'functions' == basename( $templatefile ) ) ) continue; 
-                include ( $this->ctc()->pluginPath . 'includes/forms/file.php' );            
+                include ( CHLD_THM_CFG_DIR . '/includes/forms/file.php' );            
             endforeach;
-            if ( 'child' == $template && ( $backups = $this->ctc()->get_files( $theme, 'backup' ) ) ):
+            if ( 'child' == $template && ( $backups = $this->ctc()->get_files( $theme, 'backup,pluginbackup' ) ) ):
                 foreach ( $backups as $backup => $label ):
                     $templatefile = preg_replace( '%\.css$%', '', $backup );
-                    include ( $this->ctc()->pluginPath . 'includes/forms/backup.php' );            
+                    include ( CHLD_THM_CFG_DIR . '/includes/forms/backup.php' );            
                 endforeach;
             endif;
             $inputs = ob_get_contents();
             ob_end_clean();
             if ( $counter ):
-                include ( $this->ctc()->pluginPath . 'includes/forms/fileform.php' );            
+                include ( CHLD_THM_CFG_DIR . '/includes/forms/fileform.php' );            
             endif;
         endif;
     }
@@ -104,11 +101,11 @@ class ChildThemeConfiguratorUI {
             ob_start();
             foreach ( $files as $file ): 
                 $templatefile = preg_replace( '/^images\//', '', $file );
-                include( $this->ctc()->pluginPath . 'includes/forms/image.php' );             
+                include( CHLD_THM_CFG_DIR . '/includes/forms/image.php' );             
             endforeach;
             $inputs = ob_get_contents();
             ob_end_clean();
-            if ( $counter ) include( $this->ctc()->pluginPath . 'includes/forms/images.php' );
+            if ( $counter ) include( CHLD_THM_CFG_DIR . '/includes/forms/images.php' );
         endif;
     }
     
@@ -133,15 +130,15 @@ class ChildThemeConfiguratorUI {
                 echo '<li>' . $err . '</li>' . LF;
             endforeach;
             echo '</ul></div>' . LF;
-        elseif ( isset( $_GET['updated'] ) ):
+        elseif ( isset( $_GET[ 'updated' ] ) ):
             echo '<div class="updated">' . LF;
-            if ( 8 == $_GET['updated'] ):
+            if ( 8 == $_GET[ 'updated' ] ):
                 echo '<p>' . __( 'Child Theme files modified successfully.', 'chld_thm_cfg' ) . '</p>' . LF;
             else:
                 $child_theme = wp_get_theme( $this->ctc()->css->get_prop( 'child' ) );
                 echo '<p>' . apply_filters( 'chld_thm_cfg_update_msg', sprintf( __( 'Child Theme <strong>%s</strong> has been generated successfully.
                 ', 'chld_thm_cfg' ), $child_theme->Name ), $this->ctc() ) . LF;
-                if ( ! $this->ctc()->css->get_prop( 'configtype' ) || $this->ctc()->css->get_prop( 'configtype' ) == 'theme' ):
+                if ( $this->ctc()->is_theme() ):
                 echo '<strong>' . __( 'IMPORTANT:', 'chld_thm_cfg' ) . LF;
                 if ( is_multisite() && !$child_theme->is_allowed() ): 
                     echo 'You must <a href="' . network_admin_url( '/themes.php' ) . '" title="' . __( 'Go to Themes', 'chld_thm_cfg' ) . '" class="ctc-live-preview">' . __( 'Network enable', 'chld_thm_cfg' ) . '</a> ' . __( 'your child theme.', 'chld_thm_cfg' );
@@ -168,7 +165,7 @@ class ChildThemeConfiguratorUI {
             $regex_tab = '/' . preg_quote( '<!-- BEGIN tab -->' ) . '\s*<h\d id="(.*?)">(.*?)<\/h\d>(.*?)' . preg_quote( '<!-- END tab -->' ) . '/s';
             ob_start();
             // stub for multiple languages future release
-            include( $this->ctc()->pluginPath . 'includes/help/help_en_US.php' );
+            include( CHLD_THM_CFG_DIR . '/includes/help/help_en_US.php' );
             $help_raw = ob_get_contents();
             ob_end_clean();
             // parse raw html for tokens
@@ -176,11 +173,11 @@ class ChildThemeConfiguratorUI {
             preg_match_all( $regex_tab, $help_raw, $tabs );
 
     		// Add help tabs
-            if ( isset( $tabs[1] ) ):
-                while( count( $tabs[1] ) ):
-                    $id         = array_shift( $tabs[1] );
-                    $title      = array_shift( $tabs[2] );
-                    $content    = array_shift( $tabs[3] );
+            if ( isset( $tabs[ 1 ] ) ):
+                while( count( $tabs[ 1 ] ) ):
+                    $id         = array_shift( $tabs[ 1 ] );
+                    $title      = array_shift( $tabs[ 2 ] );
+                    $content    = array_shift( $tabs[ 3 ] );
 	    	        $screen->add_help_tab( array(
 	    	    	    'id'        => $id,
     		    	    'title'     => $title,
@@ -188,13 +185,15 @@ class ChildThemeConfiguratorUI {
                     ) );
                 endwhile;
             endif;
-            if ( isset( $sidebar[1] ) )
-                $screen->set_help_sidebar( $sidebar[1] );
+            if ( isset( $sidebar[ 1 ] ) )
+                $screen->set_help_sidebar( $sidebar[ 1 ] );
 
         }
     }
+    
     function lilaea_plug() {
-        include ( $this->ctc()->pluginPath . 'includes/forms/related.php' );
+        include ( CHLD_THM_CFG_DIR . '/includes/forms/related.php' );
     }
+    
 }
 ?>

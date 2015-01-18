@@ -18,40 +18,43 @@ background:#f9f9f9 url(<?php echo includes_url( 'images/xit-2x.gif' );
 ?>) left top no-repeat;
 }
 </style>
-<div class="wrap">
+<div class="wrap" id="ctc_main">
   <?php do_action( 'chld_thm_cfg_related_links' ); ?>
-  <h2><?php echo __( 'Child Theme Configurator', 'chld_thm_cfg' ) . ' ' . __( 'version', 'chld_thm_cfg' ) . ' ' . CHLD_THM_CFG_VERSION; ?></h2>
+  <h2><?php echo apply_filters( 'chld_thm_cfg_header', __( 'Child Theme Configurator', 'chld_thm_cfg' ) . ' ' . __( 'version', 'chld_thm_cfg' ) . ' ' . CHLD_THM_CFG_VERSION ); ?></h2>
   <?php 
-if ( 'POST' == $_SERVER['REQUEST_METHOD'] && !$this->ctc()->fs ):
-        echo $this->ctc()->fs_prompt;
+if ( $this->ctc()->is_post && !$this->ctc()->fs ):
+    echo $this->ctc()->fs_prompt;
 else: ?>
   <div id="ctc_error_notice">
     <?php $this->settings_errors(); ?>
   </div>
-  <?php 
-    include ( $this->ctc()->pluginPath . 'includes/forms/tabs.php' ); 
-?>
-  <i id="ctc_status_preview"></i>
-  </h2>
-  <div class="ctc-option-panel-container">
     <?php 
-    include ( $this->ctc()->pluginPath . 'includes/forms/parent-child.php' ); 
+    // if flag has been set because an action is required, do not render interface
+    if ( !$this->ctc()->skip_form ):
+    include ( CHLD_THM_CFG_DIR . '/includes/forms/tabs.php' ); 
+?><div style="position:relative">
+    <div class="ctc-option-panel-container">
+      <?php 
+    $parent_child_panel = apply_filters( 'chld_thm_cfg_pc_panel', 
+        CHLD_THM_CFG_DIR . '/includes/forms/parent-child.php' );
+    include ( $parent_child_panel ); 
     if ( $enqueueset ):
-        include ( $this->ctc()->pluginPath . 'includes/forms/rule-value.php' ); 
-        include ( $this->ctc()->pluginPath . 'includes/forms/query-selector.php' ); 
-        include ( $this->ctc()->pluginPath . 'includes/forms/at-import.php' ); ?>
-    <div id="view_child_options_panel" 
+        include ( CHLD_THM_CFG_DIR . '/includes/forms/rule-value.php' ); 
+        include ( CHLD_THM_CFG_DIR . '/includes/forms/query-selector.php' ); 
+        include ( CHLD_THM_CFG_DIR . '/includes/forms/at-import.php' ); ?>
+      <div id="view_child_options_panel" 
         class="ctc-option-panel<?php echo 'view_child_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
-    <div id="view_parnt_options_panel" 
+      <div id="view_parnt_options_panel" 
         class="ctc-option-panel<?php echo 'view_parnt_options' == $active_tab ? ' ctc-option-panel-active' : ''; ?>" <?php echo $hidechild; ?>> </div>
-    <?php 
+      <?php 
         if ( '' == $hidechild ): 
-            include ( $this->ctc()->pluginPath . 'includes/forms/files.php' );
+            include ( CHLD_THM_CFG_DIR . '/includes/forms/files.php' );
         endif; 
         do_action( 'chld_thm_cfg_panels', $this->ctc(), $active_tab, $hidechild ); 
     endif; ?>
-  </div>
-  <?php
+    </div>
+  <?php do_action( 'chld_thm_cfg_sidebar' ); ?></div><?php
+  endif;
 endif;
 ?>
 </div>

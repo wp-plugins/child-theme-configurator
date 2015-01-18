@@ -207,12 +207,12 @@ The plugin only loads the bulk of the code in the admin when you are using the t
 <!-- BEGIN sidebar -->
 <h4>Our plugins will not nag you for donations...</h4>
 <span style="font-size:smaller">...but we LOVE referrals.</span><br/><a href="http://wordpress.org/support/view/plugin-reviews/child-theme-configurator?rate=5#postform">Give Us 5 Stars</a>
-<h4>Not just for themes ... but plugins, too!</h4>
-<p style="font-size:smaller">Easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles" title="Child Theme Configurator Extension">Learn more</a></p>
+<h4>Introducing CTC Pro</h4>
+<a href="http://www.lilaeamedia.com/child-theme-configurator-pro/" title="<?php _e( 'Learn more about CTC Pro', 'chld_thm_cfg' ); ?>"><img src="<?php echo CHLD_THM_CFG_URL . 'css/pro-banner.jpg'; ?>" width="150" height="48" /></a>
+<p style="font-size:smaller">Designed by WordPress developers who use it every day, CTC Pro adds plugin stylesheets and other features to make design work quicker and easier. This is a free upgrade for users that purchased the Plugins Extension. <a href="http://www.lilaeamedia.com/plugins/child-theme-configurator-pro" title="Child Theme Configurator Pro">Learn more</a></p>
 <ul>
   <li><a href="http://www.lilaeamedia.com/about/contact/">Contact us</a></li>
   <li><a href="http://www.lilaeamedia.com/plugins/child-theme-configurator">Plugin Website</a></li>
-  <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ">Donate</a></li>
   <li><a href="http://codex.wordpress.org/Child_Themes">WordPress Codex</a></li>
   <li><a href="http://wordpress.stackexchange.com/">WordPress Answers</a></li>
 </ul>

@@ -6,16 +6,38 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     box-shadow: none;
 }
 
-.nav-tab-active {
-/*background-color:#f9f9f9;*/
-}
-
 .ctc-option-panel-container {
     position: relative;
-    min-height: 600px;
-    max-height: 800px;
+    min-height: 1100px;
+    width:100%;
     overflow: auto;
-    border-bottom: 1px solid #f9f9f9;
+ }
+#all_styles_panel {
+    -moz-columns:3;
+    -moz-column-gap:3em;
+    -webkit-columns:3;
+    -webkit-column-gap:3em;
+    columns:3;
+    column-gap:3em;
+}
+#ctc_recent_selectors ul li, #all_styles_panel ul li {
+    margin: 0;
+}
+
+#ctc_recent_selectors ul li a, #all_styles_panel ul li a {
+    text-decoration: none;
+    font-size: .8em;
+    line-height: 1.2;
+    word-wrap: break-word;
+    display: block;
+    padding: .5em;
+}
+
+#ctc_recent_selectors ul li a:hover, #ctc_recent_selectors ul li a:focus, #all_styles_panel ul li a:hover, #all_styles_panel ul li a:focus {
+    background-color: #fff;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
 
 #view_child_options_panel, #view_parnt_options_panel {
@@ -28,10 +50,52 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .ctc-option-panel {
     visibility: hidden;
     position: absolute;
-    width: 96%;
+    /* overflow:auto; */
+    width: 95%;
     top: 0;
     left: 0;
     padding: 10px 2%;
+    transition: width 1s ease;
+    -moz-transition: width 1s ease;
+    -webkit-transition: width 1s ease;
+    -o-transition: width 1s ease;
+}
+.ctc-recent-container {
+    top:0;
+    right:0;
+    position:absolute;
+    max-width: 200px;
+    width: 17%;
+    display: none;
+    overflow: auto;
+    visibility:visible;
+    left:inherit;
+    background-color: #E4E4E4;
+}
+#ctc_recent_selectors {
+    padding: 0 8px;
+}
+a.ctc-recent-tab {
+    float:right;
+    border:1px solid #ccc;
+    background-color: #E4E4E4;
+    color: #555;
+    display: inline-block;
+    text-decoration: none;
+    /*margin:0;*/
+    margin: -1px 0 0 0;
+    box-shadow: none;
+    -moz-box-shadow:none;
+    -webkit-box-shadow: none;
+    outline:none;
+}
+h2 .ctc-recent-tab {
+    padding: 6px 10px;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 24px;
+}
+.ctc-recent-tab h3 {
 }
 
 .ctc-option-panel-active {
@@ -71,17 +135,16 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .ctc-input-cell {
     display: block;
     float: left;
-    width: 25%;
-    max-width: 250px;
-    margin-right: 2.13%;
+    width: 30%;
+    margin-right: 2%;
     word-wrap: break-word;
 }
 
 .ctc-input-cell-wide {
     display: block;
     float: left;
-    width: 70%;
-    margin-right: 2.13%;
+    width: 60%;
+    margin-right: 2%;
 }
 
 .ctc-input-cell-wide textarea {
@@ -97,14 +160,14 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 }
 
 .ctc-button-cell, .ctc-input-cell.ctc-button-cell {
-    width: 85px;
+    /*width: 85px;*/
 }
 
 .ctc-textarea-button-cell {
-    margin: 4px 0 15px;
-    width: 85px;
+    margin: 4px 10px 15px;
+    /*width: 85px;*/
     text-align: right;
-    float:right;
+    float: right;
 }
 
 .ctc-selector-link {
@@ -140,7 +203,11 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .ctc-selector-inner-container {
     position: relative;
     max-height: 500px;
-    overflow: auto;
+    /*overflow: auto;*/
+}
+
+.ctc-status-icon {
+    /*max-width: 4%;*/
 }
 
 .ctc-status-icon.success {
@@ -211,7 +278,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 .ctc-child-input-cell {
     display: block;
     float: left;
-    margin-right: 2.13%;
+    margin-right: 2%;
 }
 
 .ctc-child-input-cell-container {
@@ -229,6 +296,10 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
 
 .ctc-child-input-cell input[type="text"] {
 /*width:60px;*/
+}
+
+.ctc-disabled {
+    opacity: 0.5;
 }
 
 .ctc-select {
@@ -282,6 +353,9 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     padding: 3px 1em 3px 0.4em;
     cursor: pointer;
     min-height: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 450px;
 }
 
 /*** Added in 1.6.0 for new options ***/
@@ -289,6 +363,7 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     /*margin:0;
     padding:0;*/
     position: relative;
+    cursor: pointer;
 }
 
 .ctc-section-toggle:after {
@@ -431,4 +506,36 @@ h3.theme-name {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+/* get pro tab styles */
+#get_pro_panel h1 {
+    font-size:1.75em;
+    color: rgb(198, 66, 0);
+}
+#get_pro_panel h3 {
+    font-size:1.4em;
+    margin-bottom:0;
+}
+    
+#get_pro_panel p {
+    font-size:1.15em;
+    margin: .5em 0;
+}
+#get_pro_panel ul {
+    list-style: square;
+}
+#get_pro_panel li {
+    margin-left:2em;
+}
+#get_pro_panel h3 a {
+    display: inline-block;
+    padding:5px 10px;
+    background-color: rgb(198, 66, 0);
+    color: #fff;
+    text-decoration: none;
+}
+
+#get_pro_panel h3 a:hover {
+    background-color: #FF902E;
+    color: #fff;
 }
