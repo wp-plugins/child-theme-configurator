@@ -48,7 +48,7 @@ Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin 
 
 https://www.youtube.com/watch?v=Yj8lxF1knTo
 
-Learn more at http://www.lilaeamedia.com/child-theme-plugin-pro
+Learn more at http://www.lilaeamedia.com/child-theme-configurator-pro
 
 = Build your WordPress website exactly the way you want it. =
 
