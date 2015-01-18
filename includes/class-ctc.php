@@ -28,6 +28,7 @@ class ChildThemeConfiguratorAdmin {
     var $uploadsubdir;
     var $menuName; // backward compatibility with plugin extension
     var $cache_updates  = TRUE;
+    var $debug          = '';
     var $swatch_text    = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
     // state arrays
     var $themes         = array();
@@ -760,7 +761,10 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     }
     
     function write_child_file( $file, $contents ) {
-        if ( !$this->fs ) return FALSE; // return if no filesystem access
+        if ( !$this->fs ): 
+            $this->debug( 'no filesystem access' );
+            return FALSE; // return if no filesystem access
+        endif;
         global $wp_filesystem;
         $file = $this->fspath( $this->css->is_file_ok( $this->css->get_child_target( $file ), 'write' ) );
         //echo 'writing to filesystem: ' . $file . LF;
@@ -1217,6 +1221,10 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
         foreach ( $bt as $ndx => $step )
             if ( isset( $step[ 'class' ] ) && isset( $step[ 'function' ] ) && isset( $step[ 'line' ] ) )
                 echo $ndx . ': ' . $step[ 'class' ] . ' ' . $step[ 'function' ] . ' ' . $step[ 'line' ] . LF;
+    }
+    
+    function debug( $msg = NULL ) {
+        $this->debug .= isset( $msg ) ? $msg . LF : '';
     }
 
 }

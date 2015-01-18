@@ -5,7 +5,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 $active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'parent_child_options'; 
 ?>
 
-<h2 class="nav-tab-wrapper">
+<h2 class="nav-tab-wrapper clearfix">
 <a id="parent_child_options" href="" 
                     class="nav-tab<?php echo 'parent_child_options' == $active_tab ? ' nav-tab-active' : ''; ?>">
 <?php _e( 'Parent/Child', 'chld_thm_cfg' ); ?>
