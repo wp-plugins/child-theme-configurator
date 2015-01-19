@@ -44,7 +44,7 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 = Introducing Child Theme Configurator PRO =
 
-Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets in your Child Theme. We’ve added more features to make design work quicker and easier with PRO. 
+Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets. We’ve added more features to make design work quicker and easier with PRO. 
 
 https://www.youtube.com/watch?v=Yj8lxF1knTo
 
