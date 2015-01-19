@@ -44,7 +44,7 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 = Introducing Child Theme Configurator PRO =
 
-Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets in your Child Theme. We’ve added more features to make design work quicker and easier with Child Theme Configurator PRO. 
+Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets in your Child Theme. We’ve added more features to make design work quicker and easier with PRO. 
 
 https://www.youtube.com/watch?v=Yj8lxF1knTo
 
@@ -259,7 +259,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 = 1.6.4 = 
 * New Feature: Copy selector button for Raw CSS textarea on Query/Selector tab.
 * Fix: Menus rendering incorrectly for RTL locales
-* Fix: Border-top etc. not being written correctly to child theme stylesheet
+* Fix: Border-top etc. not being written correctly to stylesheet
 * Fix: Refactored ajax semaphore logic and flow
 
 = 1.6.3 = 
@@ -286,7 +286,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 = 1.6.0 = 
 * New Feature: option to load parent stylesheet using wp_enqueue_style (link), @import or none. Thanks to cmwwebfx and Shapeshifter3 for pushing me on this 
-* New Feature: automatically-generated child theme slug and name
+* New Feature: automatically-generated slug and name
 * New Feature: restore from backup and reset options
 * New Feature: backup files to "Child Theme Files" on Files Tab so they can be deleted
 * New Feature: Added new theme chooser select menu with screenshot, theme info and link to live preview.
