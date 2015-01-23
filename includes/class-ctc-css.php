@@ -1253,7 +1253,7 @@ class ChildThemeConfiguratorCSS {
         //$this->ctc()->backtrace_summary();
         // remove any ../ manipulations
         $this->ctc()->debug( 'Raw stylesheet: ' . $stylesheet, __FUNCTION__ );
-        $stylesheet = preg_replace( "%\.\./%", '/', $stylesheet );
+        $stylesheet = $this->normalize_path( preg_replace( "%\.\./%", '/', $stylesheet ) );
         if ( 'read' == $permission && !is_file( $stylesheet ) ):
             $this->ctc()->debug( 'read: no file!', __FUNCTION__ );
             return FALSE;
@@ -1264,11 +1264,11 @@ class ChildThemeConfiguratorCSS {
         // sanity check for php files
         //if ( !preg_match( '%' . preg_quote( $ext ) . '$%', $stylesheet ) ) return FALSE;
         // check if in themes dir;
-        $regex = '%^' . preg_quote( get_theme_root() ) . '%';
+        $regex = '%^' . preg_quote( $this->normalize_path( get_theme_root() ) ) . '%';
         $this->ctc()->debug( 'theme regex: ' . $regex, __FUNCTION__ );
         if ( preg_match( $regex, $stylesheet ) ) return $stylesheet;
         // check if in plugins dir
-        $regex = '%^' . preg_quote( WP_PLUGIN_DIR ) . '%';
+        $regex = '%^' . preg_quote( $this->normalize_path( WP_PLUGIN_DIR ) ) . '%';
         $this->ctc()->debug( 'plugin regex: ' . $regex, __FUNCTION__ );
         if ( preg_match( $regex, $stylesheet ) ):
             $this->ctc()->debug( $stylesheet . ' ok!', __FUNCTION__ );
