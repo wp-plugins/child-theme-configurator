@@ -1252,21 +1252,29 @@ class ChildThemeConfiguratorCSS {
         //echo 'current qs key: ' . $this->qskey . LF;
         //$this->ctc()->backtrace_summary();
         // remove any ../ manipulations
+        $this->ctc()->debug( 'Raw stylesheet: ' . $stylesheet, __FUNCTION__ );
         $stylesheet = preg_replace( "%\.\./%", '/', $stylesheet );
         if ( 'read' == $permission && !is_file( $stylesheet ) ):
-            //echo ' no file!' . LF;
+            $this->ctc()->debug( 'read: no file!', __FUNCTION__ );
             return FALSE;
         elseif ( 'search' == $permission && !is_dir( $stylesheet ) ):
-            //echo ' no dir!' . LF;
+            $this->ctc()->debug( 'read: no dir!', __FUNCTION__ );
             return FALSE;
         endif;
         // sanity check for php files
         //if ( !preg_match( '%' . preg_quote( $ext ) . '$%', $stylesheet ) ) return FALSE;
         // check if in themes dir;
-        if ( preg_match( '%^' . preg_quote( get_theme_root() ) . '%', $stylesheet ) ) return $stylesheet;
+        $regex = '%^' . preg_quote( get_theme_root() ) . '%';
+        $this->ctc()->debug( 'theme regex: ' . $regex, __FUNCTION__ );
+        if ( preg_match( $regex, $stylesheet ) ) return $stylesheet;
         // check if in plugins dir
-        if ( preg_match( '%^' . preg_quote( WP_PLUGIN_DIR ) . '%', $stylesheet ) ) return $stylesheet;
-        //echo 'not in wp namespace! ' . LF;
+        $regex = '%^' . preg_quote( WP_PLUGIN_DIR ) . '%';
+        $this->ctc()->debug( 'plugin regex: ' . $regex, __FUNCTION__ );
+        if ( preg_match( $regex, $stylesheet ) ):
+            $this->ctc()->debug( $stylesheet . ' ok!', __FUNCTION__ );
+            return $stylesheet;
+        endif;
+        $this->ctc()->debug( $stylesheet . ' is not in wp namespace!', __FUNCTION__ );
         return FALSE;
     }
     /* normalize_color
