@@ -26,6 +26,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     define( 'CHLD_THM_CFG_URL', plugin_dir_url( __FILE__ ) );
 
     class ChildThemeConfigurator {
+        static $instance;
         static function init() {
             // initialize languages
 	    	load_plugin_textdomain( 'chld_thm_cfg', FALSE, basename( CHLD_THM_CFG_DIR ) . '/lang' );
@@ -46,12 +47,13 @@ if ( !defined( 'ABSPATH' ) ) exit;
         }
         static function ctc() {
             // create admin object
-            global $chld_thm_cfg;
-            if ( !isset( $chld_thm_cfg ) ):
-                include_once( dirname( __FILE__ ) . '/includes/class-ctc.php' );
-                $chld_thm_cfg = new ChildThemeConfiguratorAdmin( __FILE__ );
+            global $chld_thm_cfg; /// backward compat
+            if ( !isset( self::$instance ) ):
+                include_once( CHLD_THM_CFG_DIR . '/includes/class-ctc.php' );
+                self::$instance = new ChildThemeConfiguratorAdmin( __FILE__ );
             endif;
-            return $chld_thm_cfg;
+            $chld_thm_cfg = self::$instance; /// backward compat
+            return self::$instance;
         }
         static function save() {
             // ajax write

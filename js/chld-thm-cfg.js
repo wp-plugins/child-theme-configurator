@@ -41,11 +41,11 @@ jQuery( document ).ready( function( $ ) {
     }
     
     function validate() {
-        var regex = /[^\w\-]/,
-            newslug = $( '#ctc_child_template' ).val().toString().replace( regex ).toLowerCase(),
-            slug = $( '#ctc_theme_child' ).val().toString().replace( regex ).toLowerCase(),
-            type = $( 'input[name=ctc_child_type]:checked' ).val(),
-            errors = [];
+        var regex   = /[^\w\-]/,
+            newslug = $( '#ctc_child_template' ).length ? $( '#ctc_child_template' ).val().toString().replace( regex ).toLowerCase() : '',
+            slug    = $( '#ctc_theme_child' ).length ? $( '#ctc_theme_child' ).val().toString().replace( regex ).toLowerCase() : newslug,
+            type    = $( 'input[name=ctc_child_type]:checked' ).val(),
+            errors  = [];
         if ( 'new' == type ) slug = newslug;
         if ( theme_exists( slug, type ) ) {
             errors.push( ctcAjax.theme_exists_txt.toString().replace( /%s/, slug ) );
@@ -57,7 +57,7 @@ jQuery( document ).ready( function( $ ) {
             errors.push( ctcAjax.inval_name_txt );
         }
         if ( errors.length ) {
-            set_notice( {'error': errors} );
+            set_notice( { 'error': errors } );
             return false;
         }
         return true;
@@ -549,9 +549,13 @@ jQuery( document ).ready( function( $ ) {
                     setup_iris( this );
                 } );
                 coalesce_inputs( '#ctc_child_all_0_swatch' );
-                $( '#ctc_sel_ovrd_selector_selected' ).text( ctcAjax.sel_val[qsid].selector );
-                $( '.ctc-rewrite-toggle' ).text( ctcAjax.rename_txt );
-                $( '#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header, #ctc_sel_ovrd_rule_inputs_container, #ctc_sel_ovrd_rule_inputs, .ctc-rewrite-toggle' ).slideDown();
+                if ( jquery_err.length ) {
+                    jquery_notice();
+                } else {
+                    $( '#ctc_sel_ovrd_selector_selected' ).text( ctcAjax.sel_val[qsid].selector );
+                    $( '.ctc-rewrite-toggle' ).text( ctcAjax.rename_txt );
+                    $( '#ctc_sel_ovrd_new_rule, #ctc_sel_ovrd_rule_header, #ctc_sel_ovrd_rule_inputs_container, #ctc_sel_ovrd_rule_inputs, .ctc-rewrite-toggle' ).slideDown();
+                }
             }
         } else {
             //selector = $( '#ctc_sel_ovrd_selector_selected' ).text();
@@ -573,7 +577,7 @@ jQuery( document ).ready( function( $ ) {
             if ( !( theme = theme.match( /(child|parnt)/ )[1] ) ) {
                 theme = 'child';
             }
-            set_notice( '' )
+            //set_notice( '' )
             query_css( 'preview', theme, render_css_preview );
             return false;
         }
@@ -621,6 +625,7 @@ jQuery( document ).ready( function( $ ) {
     }
     
     function render_recent() {
+        if ( is_empty( ctcAjax.recent_txt ) ) return;
         var html = '';
         if ( is_empty( ctcAjax.recent ) ) {
             html += ctcAjax.recent_txt;
@@ -673,6 +678,7 @@ jQuery( document ).ready( function( $ ) {
         $( selector ).find( '.ctc-swatch' ).each( function() {
             coalesce_inputs( this );
         } );
+        if ( jquery_err.length ) jquery_notice();
 
     }
     /**
@@ -680,53 +686,66 @@ jQuery( document ).ready( function( $ ) {
      */
     function setup_iris( obj ) {
         //console.log( 'setting up iris ' + ( 'undefined' != typeof $( obj ).attr( 'id' ) ? $( obj ).attr( 'id' ) : '' ) );
-        $( obj ).iris( {
-            change: function( e, ui ) {
-                //console.log( 'change event ' 
-                //+ ( 'undefined' != typeof $( this ).attr( 'id' ) ? $( this ).attr( 'id' ) : '' ) 
-                //+ ' ' + ui.color.toString() );
-                $( obj ).data( 'color', ui.color.toString() );
-                coalesce_inputs( obj );
-            }
-        } );
+        try {
+            $( obj ).iris( {
+                change: function( e, ui ) {
+                    //console.log( 'change event ' 
+                    //+ ( 'undefined' != typeof $( this ).attr( 'id' ) ? $( this ).attr( 'id' ) : '' ) 
+                    //+ ' ' + ui.color.toString() );
+                    $( obj ).data( 'color', ui.color.toString() );
+                    coalesce_inputs( obj );
+                }
+            } );
+        } catch ( exn ) {
+            jquery_exception( exn, 'Iris Color Picker' );
+        }
     }
     
     function setup_query_menu() {
         //console.log( 'setup query menu' );
         //console.log( semaphore );
-        $( '#ctc_sel_ovrd_query' ).autocomplete( {
-            source: cache_queries,
-            minLength: 0,
-            selectFirst: true,
-            autoFocus: true,
-            select: function( e, ui ) {
-                set_query( ui.item.value );
-                return false;
-            },
-            focus: function( e ) { 
-                e.preventDefault(); 
-            }
-        } );
+        try {
+            $( '#ctc_sel_ovrd_query' ).autocomplete( {
+                source: cache_queries,
+                minLength: 0,
+                selectFirst: true,
+                autoFocus: true,
+                select: function( e, ui ) {
+                    set_query( ui.item.value );
+                    return false;
+                },
+                focus: function( e ) { 
+                    e.preventDefault(); 
+                }
+            } );
+        } catch ( exn ) {
+            jquery_exception( exn, 'Query Menu' );
+        }
     }
     
     function setup_selector_menu() {
         //console.log( 'setup selector menu' );
         //console.log( semaphore );
-        $( '#ctc_sel_ovrd_selector' ).autocomplete( {
-            source: cache_selectors,
-            selectFirst: true,
-            autoFocus: true,
-            select: function( e, ui ) {
-                set_selector( ui.item.value, ui.item.label );
-                return false;
-            },
-            focus: function( e ) { e.preventDefault(); }
-        } );
+        try {
+            $( '#ctc_sel_ovrd_selector' ).autocomplete( {
+                source: cache_selectors,
+                selectFirst: true,
+                autoFocus: true,
+                select: function( e, ui ) {
+                    set_selector( ui.item.value, ui.item.label );
+                    return false;
+                },
+                focus: function( e ) { e.preventDefault(); }
+            } );
+        } catch ( exn ) {
+            jquery_exception( exn, 'Selector Menu' );
+        }
     }
     
     function setup_rule_menu() {
         //console.log( 'setup rule menu' );
         //console.log( semaphore );
+        try {
         $( '#ctc_rule_menu' ).autocomplete( {
             source: cache_rules,
             //minLength: 0,
@@ -738,9 +757,13 @@ jQuery( document ).ready( function( $ ) {
             },
             focus: function( e ) { e.preventDefault(); }
         } );
+        } catch ( exn ) {
+            jquery_exception( exn, 'Rule Menu' );
+        }
     }
     
     function setup_new_rule_menu() {
+        try {
         $( '#ctc_new_rule_menu' ).autocomplete( {
             source: load_filtered_rules,
             //minLength: 0,
@@ -760,16 +783,20 @@ jQuery( document ).ready( function( $ ) {
                         setup_iris( el );
                     $( el ).focus();
                 } );
+                if ( jquery_err.length ) jquery_notice();
                 return false;
             },
             focus: function( e ) { e.preventDefault(); }
         } );
+        } catch ( exn ) {
+            jquery_exception( exn, 'New Rule Menu' );
+        }
     }
     /**
      * The "set" functions apply values to inputs
      */
     function set_existing() {
-        if ( $( '#ctc_theme_child' ).length && $( '#ctc_child_type_existing' ).is(':checked') ) {
+        if ( $( '#ctc_theme_child' ).length && $( '#ctc_child_type_existing' ).is( ':checked' ) ) {
             var child   = $( '#ctc_theme_child' ).val();
             if ( false === is_empty( child ) ) {
                 $( '#ctc_child_name' ).val( ctcAjax.themes['child'][child].Name );
@@ -791,6 +818,7 @@ jQuery( document ).ready( function( $ ) {
             } );
         }
         $( '#ctc_error_notice' ).html( errorHtml );
+        $('html, body').animate({ scrollTop: 0 }, 'slow');        
     }
     
     function set_parent_menu( obj ) {
@@ -880,7 +908,7 @@ jQuery( document ).ready( function( $ ) {
                     if ( $( this ).val() == el ) $( this ).prop( 'checked', true );
                     //console.log($( this ).val() + ' <> ' + el);
                 } );
-            });
+            } );
         }
     }
     
@@ -976,7 +1004,7 @@ jQuery( document ).ready( function( $ ) {
         $( '.save-icon' ).remove();
         // show spinner
         $( obj ).parent( '.ctc-textarea-button-cell, .ctc-button-cell' ).append( '<span class="ctc-status-icon spinner save-icon"></span>' );
-        if ( id.match(/ctc_configtype/) ) {
+        if ( id.match( /ctc_configtype/ ) ) {
             $( obj ).parents( '.ctc-input-row' ).first().append( '<span class="ctc-status-icon spinner save-icon"></span>' );
             postdata[ 'ctc_configtype' ] = $( obj ).val();
         } else if ( ( $selector = $( '#ctc_new_selectors' ) ) && 'ctc_save_new_selectors' == $( obj ).attr( 'id' ) ) {
@@ -1117,17 +1145,17 @@ jQuery( document ).ready( function( $ ) {
                     break;
                     
                 case 'stylesheets':
-                    $( '#ctc_stylesheet_files').html( this.data );
+                    $( '#ctc_stylesheet_files' ).html( this.data );
                     break;
                     
                 case 'backups':
-                    $( '#ctc_backup_files').html( this.data );
+                    $( '#ctc_backup_files' ).html( this.data );
                     break;
 
                 case 'addl_css':
                     ctcAjax.addl_css  = this.data;
-                    //console.log('addl_css');
-                    //console.log(this.data);
+                    //console.log( 'addl_css' );
+                    //console.log( this.data );
                     break;
                 
                 case 'preview':
@@ -1140,7 +1168,7 @@ jQuery( document ).ready( function( $ ) {
     }
     
     function reset_caches() {
-        //console.log('resetting caches...');
+        //console.log( 'resetting caches...');
         current_query           = 'base';
         current_qsid            = null;
         cache_selectors         = [];
@@ -1158,8 +1186,35 @@ jQuery( document ).ready( function( $ ) {
         ctcAjax.val_qry         = {};
         ctcAjax.rule_val        = {};
         ctcAjax.sel_val         = {};
-        //console.log('caches reset. loading menus...');
+        //console.log( 'caches reset. loading menus...');
         load_menus();
+    }
+    function jquery_exception( exn, type ) {
+        var ln = is_empty( exn.lineNumber ) ? '' : ' line: ' + exn.lineNumber,
+            fn = is_empty( exn.fileName ) ? '' : ' ' + exn.fileName.split( /\?/ )[0];
+        jquery_err.push( '<code><small>' + type + ': ' + exn.message + fn + ln + '</small></code>' );
+    }
+    function jquery_notice() {
+        
+        var culprits    = [],
+            errors      = [];
+        // disable form submits
+        $( 'input[type=submit], input[type=button]' ).prop( 'disabled', true );
+        $( 'script' ).each( function( ndx,el ){
+            var url = $( this ).prop( 'src' );
+            if ( false === is_empty( url ) && url.match( /jquery(\.|\-?ui)/i ) && ! url.match( /load\-scripts.php/ ) ) {
+                culprits.push( '<code><small>' + url.split( /\?/ )[0] + '</small></code>' );
+            }
+        } );
+        errors.push( '<strong>' + ctcAjax.js_txt + '</strong>' );
+        if ( false === is_empty( ctcAjax.is_debug ) ) {
+            errors.push( jquery_err.join( '<br/>' ) );
+        }
+        if ( culprits.length ) {
+            errors.push( ctcAjax.jquery_txt + '<br/>' + culprits.join( '<br/>' ) );
+        }
+        errors.push( ctcAjax.plugin_txt + ' ' + ctcAjax.contact_txt );
+        set_notice( { 'error': errors } );
     }
     // initialize vars
     var lf = "\n", 
@@ -1188,9 +1243,10 @@ jQuery( document ).ready( function( $ ) {
             'refresh':  0   // reset caches on load
         },
         // these caches are used as the source for autocomplete menus
-        cache_selectors       = [],
-        cache_queries         = [],
-        cache_rules           = [];
+        cache_selectors = [],
+        cache_queries   = [],
+        cache_rules     = [],
+        jquery_err      = [];
     // -- end var definitions
     
     // auto populate parent/child tab values
@@ -1198,144 +1254,178 @@ jQuery( document ).ready( function( $ ) {
     set_existing();
     // initialize theme menus
     if ( !$( '#ctc_theme_parnt' ).is( 'input' ) ) {
-    $.widget( 'ctc.themeMenu', $.ui.selectmenu, {
-        _renderItem: function( ul, item ) {
-            var li = $( "<li>" );
-            $( '#ctc_theme_option_' + item.value ).detach().appendTo( li );
-            return li.appendTo( ul );
-        }    
-    } );
-    $( '#ctc_theme_parnt' ).themeMenu( {
-        select: function( event, ui ) {
-            set_parent_menu( ui.item );
+        try {
+            $.widget( 'ctc.themeMenu', $.ui.selectmenu, {
+                _renderItem: function( ul, item ) {
+                    var li = $( "<li>" );
+                    $( '#ctc_theme_option_' + item.value ).detach().appendTo( li );
+                    return li.appendTo( ul );
+                }    
+            } );
+        } catch( exn ) {
+            jquery_exception( exn, 'Theme Menu' );
         }
-    } );
-    if ( is_empty( ctcAjax.themes.child ) ) {
-        if ( $( '#ctc_child_name' ).length ) {
-            $( '#ctc_child_name' ).val( testname );
-            $( '#ctc_child_template' ).val( testslug );
+        try {
+            $( '#ctc_theme_parnt' ).themeMenu( {
+                select: function( event, ui ) {
+                    set_parent_menu( ui.item );
+                }
+            } );
+        } catch( exn ) {
+            if ( 'function' == typeof themeMenu )
+                $( '#ctc_theme_parnt' ).themeMenu( 'destroy' );
+            else $( '#ctc_theme_parnt-button' ).remove();
+            jquery_exception( exn, 'Parent Theme Menu' );
         }
-    } else {
-        $( '#ctc_theme_child' ).themeMenu( {
-            select: function( event, ui ) {
-                set_child_menu( ui.item );
+        if ( is_empty( ctcAjax.themes.child ) ) {
+            if ( $( '#ctc_child_name' ).length ) {
+                $( '#ctc_child_name' ).val( testname );
+                $( '#ctc_child_template' ).val( testslug );
             }
-        } );
-    }
-    }
-    // bind event handlers
-    // these elements get replaced so use delegated events
-    $( '#ctc_main' ).on( 'focus', '.color-picker', function() { //'.ctc-option-panel-container'
-        set_notice( '' )
-        $( '.color-picker' ).not( this ).iris( 'hide' );
-        $( this ).iris( 'toggle' );
-        $( '.iris-picker' ).css( {'position':'absolute', 'z-index':10} );
-    } );
-    
-    $( '#ctc_main' ).on( 'change', '.ctc-child-value, input[type=checkbox]', function() { //'.ctc-option-panel-container', 
-        coalesce_inputs( this );
-    } );
-    
-    $( '#ctc_main' ).on( 'click', '.ctc-selector-handle', function( e ) { //'.ctc-option-panel-container'
-        e.preventDefault();
-        set_notice( '' )
-        var id = $( this ).attr( 'id' ).toString().replace( '_close', '' ),
-            valid = id.toString().match( /_(\d+)$/ )[1];
-        if ( $( '#' + id + '_container' ).is( ':hidden' ) ) {
-            if ( 1 != semaphore.val_qry ) semaphore.val_qry = 0;
-            render_selector_value_inputs( valid );
+        } else {
+            try {
+                $( '#ctc_theme_child' ).themeMenu( {
+                    select: function( event, ui ) {
+                        set_child_menu( ui.item );
+                    }
+                } );
+            } catch( exn ) {
+                if ( 'function' == typeof themeMenu )
+                    $( '#ctc_theme_child' ).themeMenu( 'destroy' );
+                else $( '#ctc_theme_child-button' ).remove();
+                jquery_exception( exn, 'Child Theme Menu' );
+            }
         }
-        $( '#' + id + '_container' ).fadeToggle( 'fast' );
-        $( '.ctc-selector-container' ).not( '#' + id + '_container' ).fadeOut( 'fast' );
-    } );
-    $( '#ctc_main' ).on( 'click', '.nav-tab', function( e ) {
+    }
+    $( '.nav-tab' ).on( 'click', function( e ) {
         e.preventDefault();
         // clear the notice box
-        set_notice( '' );
+        //set_notice( '' );
         $( '.ctc-status-icon' ).remove();
         var id = '#' + $( this ).attr( 'id' );
         focus_panel( id );
     } );
-    $( '#ctc_main' ).on( 'click', '.ctc-save-input', function( e ) {
-        save( this , load_menus); // refresh menus after updating data
-    } );
-    $( '#ctc_main' ).on( 'click', '.ctc-selector-edit', function( e ) {
-        set_qsid( this );
-    } );
-    $( '#ctc_main' ).on( 'click', '.ctc-rewrite-toggle', function( e ) {
-        e.preventDefault();
-        selector_input_toggle( this );
-    } );
-    $( '#ctc_main' ).on( 'click', '.ctc-section-toggle', function( e ) {
-        $( this ).toggleClass( 'open' );
-        var id = $( this ).attr( 'id' ) + '_content';
-        $( '#' + id ).slideToggle( 'fast' );
-    } );
-    $( '#ctc_main' ).on( 'click', '#ctc_copy_selector', function( e ) {
-        var txt = $( '#ctc_sel_ovrd_selector_selected' ).text().trim();
-        if ( false === is_empty( txt ) )
-            $( '#ctc_new_selectors' ).val( $( '#ctc_new_selectors' ).val() + "\n" + txt + " {\n\n}" );
-    } );
-    $( '#ctc_configtype' ).on( 'change', function( e ) {
-        var val = $( this ).val();
-        if ( is_empty( val ) || 'theme' == val ) {
-            $( '.ctc-theme-only, .ctc-themeonly-container' ).removeClass( 'ctc-disabled' );
-            $( '.ctc-theme-only, .ctc-themeonly-container input' ).prop( 'disabled', false );
-            $( '#ctc_theme_parnt, #ctc_theme_child' ).themeMenu( 'enable' );
-        } else {
-            $( '.ctc-theme-only, .ctc-themeonly-container' ).addClass( 'ctc-disabled' );
-            $( '.ctc-theme-only, .ctc-themeonly-container input' ).prop( 'disabled', true );
-            $( '#ctc_theme_parnt, #ctc_theme_child' ).themeMenu( 'disable' );
-        }
-    });    // these elements are not replaced so use direct selector events
-    $( '#view_child_options, #view_parnt_options' ).on( 'click', function(e){ render_css_preview( $( this ).attr( 'id' ) ); } );
-    $( '#ctc_load_form' ).on( 'submit', function() {
-        return ( validate() && confirm( ctcAjax.load_txt ) ) ;
-    } );
-    $( '#ctc_theme_child, #ctc_theme_child-button, #ctc_child_type_existing' ).on( 'focus click', function() {
-        // change the inputs to use existing child theme
-        $( '#ctc_child_type_existing' ).prop( 'checked', true );
-        $( '#ctc_child_type_new' ).prop( 'checked', false );
-        $( '#ctc_child_template' ).val( '' );
-        set_existing();
-    } );
-    $( '#ctc_child_type_new, #ctc_child_template' ).on( 'focus click', function() {
-        // change the inputs to use new child theme
-        $( '#ctc_child_type_existing' ).prop( 'checked', false );
-        $( '#ctc_child_type_new' ).prop( 'checked', true );
-        $( '#ctc_child_name' ).val( testname );
-        $( '#ctc_child_template' ).val( testslug );
-    } );
-    $( '#recent_edits' ).on( 'click', function(e){
-        e.preventDefault();
-        $( '.wrap' ).css( { 'overflow':'hidden' } );
-        if ( $( '.ctc-recent-container' ).is( ':visible' ) ) {
-            $( this ).removeClass( 'open' );
-            $( '.ctc-recent-container' ).stop().animate( { 'right': -200 }, function() { $( this ).hide(); } );
-            $( '.ctc-option-panel' ).css( { 'width': '95%' } );
-        } else {
-            $( this ).addClass( 'open' );
-            $( '.ctc-recent-container' ).stop().css( { 'right': -200 } ).show().animate( { 'right': 0 } );
-            $( '.ctc-option-panel' ).css( { 'width': '80%' } );
-        }
-        $( '.wrap' ).css( { 'overflow':'inherit' } );
-        return false;
-    });
-    $( '.ctc-live-preview' ).on( 'click', function( e ) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        document.location = $( this ).prop( 'href' );
-        return false;
-    } );
-    // initialize autoselect menus
-    load_menus();
-    set_query( current_query );
-    // mark additional linked stylesheets for parsing
-    set_addl_css();
-    // show last 25 selectors edited
-    render_recent();
-    // turn on submit buttons (disabled until everything is loaded to prevent errors)
-    $( 'input[type=submit], input[type=button]' ).prop( 'disabled', false );
-    // disappear any notices after 6 seconds
-    setTimeout( fade_update_notice, 15000 );
+    if ( is_empty( jquery_err ) ){
+        // bind event handlers
+        // these elements get replaced so use delegated events
+        $( '#ctc_main' ).on( 'focus', '.color-picker', function() { //'.ctc-option-panel-container'
+            //set_notice( '' )
+            try {
+                $( '.color-picker' ).not( this ).iris( 'hide' );
+                $( this ).iris( 'toggle' );
+                $( '.iris-picker' ).css( {'position':'absolute', 'z-index':10} );
+            } catch ( exn ) {
+                jquery_exception( exn, 'Iris Color Picker' );
+            }
+        } );
+        
+        $( '#ctc_main' ).on( 'change', '.ctc-child-value, input[type=checkbox]', function() { //'.ctc-option-panel-container', 
+            coalesce_inputs( this );
+        } );
+        
+        $( '#ctc_main' ).on( 'click', '.ctc-selector-handle', function( e ) { //'.ctc-option-panel-container'
+            e.preventDefault();
+            //set_notice( '' );
+            var id = $( this ).attr( 'id' ).toString().replace( '_close', '' ),
+                valid = id.toString().match( /_(\d+)$/ )[1];
+            if ( $( '#' + id + '_container' ).is( ':hidden' ) ) {
+                if ( 1 != semaphore.val_qry ) semaphore.val_qry = 0;
+                render_selector_value_inputs( valid );
+            }
+            $( '#' + id + '_container' ).fadeToggle( 'fast' );
+            $( '.ctc-selector-container' ).not( '#' + id + '_container' ).fadeOut( 'fast' );
+        } );
+        $( '#ctc_main' ).on( 'click', '.ctc-save-input', function( e ) {
+            save( this , load_menus ); // refresh menus after updating data
+        } );
+        $( '#ctc_main' ).on( 'click', '.ctc-selector-edit', function( e ) {
+            set_qsid( this );
+        } );
+        $( '#ctc_main' ).on( 'click', '.ctc-rewrite-toggle', function( e ) {
+            e.preventDefault();
+            selector_input_toggle( this );
+        } );
+        $( '#ctc_main' ).on( 'click', '.ctc-section-toggle', function( e ) {
+            $( this ).toggleClass( 'open' );
+            var id = $( this ).attr( 'id' ) + '_content';
+            $( '#' + id ).slideToggle( 'fast' );
+        } );
+        $( '#ctc_main' ).on( 'click', '#ctc_copy_selector', function( e ) {
+            var txt = $( '#ctc_sel_ovrd_selector_selected' ).text().trim();
+            if ( false === is_empty( txt ) )
+                $( '#ctc_new_selectors' ).val( $( '#ctc_new_selectors' ).val() + "\n" + txt + " {\n\n}" );
+        } );
+        $( '#ctc_configtype' ).on( 'change', function( e ) {
+            var val = $( this ).val();
+            if ( is_empty( val ) || 'theme' == val ) {
+                $( '.ctc-theme-only, .ctc-themeonly-container' ).removeClass( 'ctc-disabled' );
+                $( '.ctc-theme-only, .ctc-themeonly-container input' ).prop( 'disabled', false );
+                try {
+                    $( '#ctc_theme_parnt, #ctc_theme_child' ).themeMenu( 'enable' );
+                } catch ( exn ) {
+                    jquery_exception( exn, 'Theme Menu' );
+                }
+            } else {
+                $( '.ctc-theme-only, .ctc-themeonly-container' ).addClass( 'ctc-disabled' );
+                $( '.ctc-theme-only, .ctc-themeonly-container input' ).prop( 'disabled', true );
+                try {
+                    $( '#ctc_theme_parnt, #ctc_theme_child' ).themeMenu( 'disable' );
+                } catch ( exn ) {
+                    jquery_exception( exn, 'Theme Menu' );
+                }
+            }
+        } );    
+        // these elements are not replaced so use direct selector events
+        $( '#view_child_options, #view_parnt_options' ).on( 'click', function( e ){ render_css_preview( $( this ).attr( 'id' ) ); } );
+        $( '#ctc_load_form' ).on( 'submit', function() {
+            return ( validate() ); //&& confirm( ctcAjax.load_txt ) ) ;
+        } );
+        $( '#ctc_theme_child, #ctc_theme_child-button, #ctc_child_type_existing' ).on( 'focus click', function() {
+            // change the inputs to use existing child theme
+            $( '#ctc_child_type_existing' ).prop( 'checked', true );
+            $( '#ctc_child_type_new' ).prop( 'checked', false );
+            $( '#ctc_child_template' ).val( '' );
+            set_existing();
+        } );
+        $( '#ctc_child_type_new, #ctc_child_template' ).on( 'focus click', function() {
+            // change the inputs to use new child theme
+            $( '#ctc_child_type_existing' ).prop( 'checked', false );
+            $( '#ctc_child_type_new' ).prop( 'checked', true );
+            $( '#ctc_child_name' ).val( testname );
+            $( '#ctc_child_template' ).val( testslug );
+        } );
+        $( '#recent_edits' ).on( 'click', function( e ){
+            e.preventDefault();
+            if ( $( '.ctc-recent-container' ).is( ':visible' ) ) {
+                $( this ).removeClass( 'open' );
+                $( '.ctc-recent-container' ).stop().slideUp();
+                $( '.ctc-option-panel' ).css( { 'width': '95%' } );
+            } else {
+                $( this ).addClass( 'open' );
+                $( '.ctc-recent-container' ).stop().slideDown();
+                $( '.ctc-option-panel' ).css( { 'width': '80%' } );
+            }
+            return false;
+        } );
+        $( '.ctc-live-preview' ).on( 'click', function( e ) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            document.location = $( this ).prop( 'href' );
+            return false;
+        } );
+        // initialize autoselect menus
+        load_menus();
+        set_query( current_query );
+        // mark additional linked stylesheets for parsing
+        set_addl_css();
+        // show last 25 selectors edited
+        render_recent();
+        // turn on submit buttons (disabled until everything is loaded to prevent errors)
+        $( 'input[type=submit], input[type=button]' ).prop( 'disabled', false );
+        // disappear any notices after 15 seconds
+        setTimeout( fade_update_notice, 15000 );
+    } else {
+        //$( '.ctc-select' ).css( { 'visibility': 'visible' } ).show();
+        jquery_notice();
+    }
 } );

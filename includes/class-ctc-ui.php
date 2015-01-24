@@ -17,8 +17,7 @@ class ChildThemeConfiguratorUI {
     // helper function to globalize ctc object
     
     function ctc() {
-        global $chld_thm_cfg; 
-        return $chld_thm_cfg;
+        return ChildThemeConfigurator::ctc();
     }
 
     function render() {
@@ -49,9 +48,10 @@ class ChildThemeConfiguratorUI {
     function render_theme_menu( $template = 'child', $selected = NULL ) {
          ?>
         <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>" style="visibility:hidden" <?php echo $this->ctc()->is_theme() ? '' : ' disabled '; ?> ><?php
-        foreach ( $this->ctc()->themes[ $template ] as $slug => $theme )
-            echo '<option value="' . $slug . '"' . ( $slug == $selected ? ' selected' : '' ) . '>' 
-                . esc_attr( $theme[ 'Name' ] ) . '</option>' . LF; ?>
+            foreach ( $this->ctc()->themes[ $template ] as $slug => $theme )
+                echo '<option value="' . $slug . '"' . ( $slug == $selected ? ' selected' : '' ) . '>' 
+                    . esc_attr( $theme[ 'Name' ] ) . '</option>' . LF; 
+        ?>
         </select>
         <div style="display:none">
         <?php 

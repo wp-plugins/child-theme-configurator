@@ -30,8 +30,7 @@ $active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'parent_child_options';
 <?php 
     if ( '' == $hidechild ):  
     ?>
-<a id="file_options" href="" 
-                    class="nav-tab<?php echo 'file_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
+<a id="file_options" href="" class="nav-tab<?php echo 'file_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
 <?php _e( 'Files', 'chld_thm_cfg' ); ?>
 </a>
 <?php 
