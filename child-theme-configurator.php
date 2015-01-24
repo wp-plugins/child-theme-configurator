@@ -26,6 +26,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     define( 'CHLD_THM_CFG_URL', plugin_dir_url( __FILE__ ) );
 
     class ChildThemeConfigurator {
+        static $instance;
         static function init() {
             // initialize languages
 	    	load_plugin_textdomain( 'chld_thm_cfg', FALSE, basename( CHLD_THM_CFG_DIR ) . '/lang' );
@@ -36,20 +37,23 @@ if ( !defined( 'ABSPATH' ) ) exit;
                 return;
             endif; 	
             // setup admin hooks
-            add_action( 'network_admin_menu',   'ChildThemeConfigurator::network_admin' );
-            add_action( 'admin_menu',           'ChildThemeConfigurator::admin' );
+            if ( is_multisite() )
+                add_action( 'network_admin_menu',   'ChildThemeConfigurator::network_admin' );
+            else
+                add_action( 'admin_menu',           'ChildThemeConfigurator::admin' );
             // setup ajax actions
             add_action( 'wp_ajax_ctc_update',   'ChildThemeConfigurator::save' );
             add_action( 'wp_ajax_ctc_query',    'ChildThemeConfigurator::query' );
         }
         static function ctc() {
             // create admin object
-            global $chld_thm_cfg;
-            if ( !isset( $chld_thm_cfg ) ):
-                include_once( dirname( __FILE__ ) . '/includes/class-ctc.php' );
-                $chld_thm_cfg = new ChildThemeConfiguratorAdmin( __FILE__ );
+            global $chld_thm_cfg; /// backward compat
+            if ( !isset( self::$instance ) ):
+                include_once( CHLD_THM_CFG_DIR . '/includes/class-ctc.php' );
+                self::$instance = new ChildThemeConfiguratorAdmin( __FILE__ );
             endif;
-            return $chld_thm_cfg;
+            $chld_thm_cfg = self::$instance; /// backward compat
+            return self::$instance;
         }
         static function save() {
             // ajax write

@@ -28,6 +28,7 @@ class ChildThemeConfiguratorAdmin {
     var $uploadsubdir;
     var $menuName; // backward compatibility with plugin extension
     var $cache_updates  = TRUE;
+    var $debug          = '';
     var $swatch_text    = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
     // state arrays
     var $themes         = array();
@@ -104,7 +105,7 @@ class ChildThemeConfiguratorAdmin {
                 array( 'jquery','jquery-ui-core','jquery-ui-position' ), FALSE, TRUE );
         endif;
         wp_enqueue_script( 'ctc-thm-cfg-ctcgrad', CHLD_THM_CFG_URL . 'js/ctcgrad.min.js', array( 'jquery' ), FALSE, TRUE );
-        wp_enqueue_script( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'js/chld-thm-cfg.min.js',
+        wp_enqueue_script( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'js/chld-thm-cfg.js',
             array(
                 'jquery-ui-autocomplete', 
                 'jquery-ui-selectmenu',   
@@ -155,12 +156,19 @@ class ChildThemeConfiguratorAdmin {
             'inval_theme_txt'   => __( 'Please enter a valid Child Theme.',                                 'chld_thm_cfg' ),
             'inval_name_txt'    => __( 'Please enter a valid Child Theme name.',                            'chld_thm_cfg' ),
             'theme_exists_txt'  => __( '<strong>%s</strong> exists. Please enter a different Child Theme',  'chld_thm_cfg' ),
-            'recent_txt'        => __( 'No recent edits.',                                                  'chld_thm_cfg' ),
+            'plugin_txt'        => __( 'Deactivating other plugins may resolve this issue.',                'chld_thm_cfg' ),
+            'jquery_txt'        => __( 'Conflicting jQuery libraries were loaded by another plugin:',       'chld_thm_cfg' ),
+            'js_txt'            => __( 'The page could not be loaded correctly so some controls have been disabled.',
+                                                                                                            'chld_thm_cfg' ),
+            'contact_txt'       => sprintf( __( '%sPlease contact Lilaea Media for additional assistance.%s',
+                                                                                                            'chld_thm_cfg' ),
+                '<a target="_blank" href="' . LILAEAMEDIA_URL . '/about/contact">',
+                '</a>' ),
         ) );
         wp_localize_script(
             'chld-thm-cfg-admin', 
             'ctcAjax', 
-            $localize_array 
+            apply_filters( 'chld_thm_cfg_localize_array', $localize_array )
         );
     }
     
@@ -196,15 +204,16 @@ class ChildThemeConfiguratorAdmin {
             // organize into parent and child themes
             $group  = $theme->parent() ? 'child' : 'parnt';
             // get the theme slug
-            $slug   = $theme->get_stylesheet();
-            // add theme to themes array
-            $this->themes[ $group ][ $slug ] = array(
-                'Name'          => $theme->get( 'Name' ),
-                'Author'        => $theme->get( 'Author' ),
-                'Version'       => $theme->get( 'Version' ),
-                'screenshot'    => $theme->get_screenshot(),
-                'allowed'       => $theme->is_allowed(),
-            ); 
+            //if ( 
+            $slug = $theme->get_stylesheet(); // )
+                // add theme to themes array
+                $this->themes[ $group ][ $slug ] = array(
+                    'Name'          => $theme->get( 'Name' ),
+                    'Author'        => $theme->get( 'Author' ),
+                    'Version'       => $theme->get( 'Version' ),
+                    'screenshot'    => $theme->get_screenshot(),
+                    'allowed'       => $theme->is_allowed(),
+                ); 
         endforeach;
     }
 
@@ -653,8 +662,8 @@ class ChildThemeConfiguratorAdmin {
             $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
             wp_safe_redirect(
                 ( is_multisite() ? 
-                    network_admin_url( 'themes.php?page=' . $ctcpage . '&updated=' . $msg ) :
-                    admin_url( 'tools.php?page=' . $ctcpage . '&updated=' . $msg ) )
+                    network_admin_url( 'themes.php' ) :
+                    admin_url( 'tools.php' ) ) . '?page=' . $ctcpage . ( $msg ? '&updated=' . $msg : '' )
                 );
             die();
         endif;
@@ -760,7 +769,10 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     }
     
     function write_child_file( $file, $contents ) {
-        if ( !$this->fs ) return FALSE; // return if no filesystem access
+        if ( !$this->fs ): 
+            $this->debug( 'no filesystem access' );
+            return FALSE; // return if no filesystem access
+        endif;
         global $wp_filesystem;
         $file = $this->fspath( $this->css->is_file_ok( $this->css->get_child_target( $file ), 'write' ) );
         //echo 'writing to filesystem: ' . $file . LF;
@@ -1218,5 +1230,8 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
             if ( isset( $step[ 'class' ] ) && isset( $step[ 'function' ] ) && isset( $step[ 'line' ] ) )
                 echo $ndx . ': ' . $step[ 'class' ] . ' ' . $step[ 'function' ] . ' ' . $step[ 'line' ] . LF;
     }
-
+    
+    function debug( $msg = NULL ) {
+        $this->debug .= isset( $msg ) ? $msg . LF : '';
+    }
 }

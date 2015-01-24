@@ -112,8 +112,7 @@ class ChildThemeConfiguratorCSS {
     }
     // helper function to globalize ctc object
     function ctc() {
-        global $chld_thm_cfg;
-        return $chld_thm_cfg;
+        return ChildThemeConfigurator::ctc();
     }
     // loads current ctc config data into local memory
     function load_config() {
@@ -926,7 +925,6 @@ class ChildThemeConfiguratorCSS {
      * normalize_margin_padding
      * parses margin or padding shorthand value and returns
      * normalized rule/value pairs for each property
-     * TODO: reassemble into shorthand when writing CSS file
      */
     function normalize_margin_padding( $rule, $value, &$rules, &$values ) {
         $parts = preg_split( "/ +/", trim( $value ) );
@@ -1247,26 +1245,31 @@ class ChildThemeConfiguratorCSS {
      * verify file exists and is in valid location
      */
     function is_file_ok( $stylesheet, $permission = 'read' ) {
-        //echo 'verifying stylesheet (' . $permission . ') : ' . $stylesheet . LF;
-        //echo 'current styles string: ' . strlen( $this->styles ) . LF;
-        //echo 'current qs key: ' . $this->qskey . LF;
-        //$this->ctc()->backtrace_summary();
+        $this->ctc()->debug( 'Raw stylesheet: ' . $stylesheet, __FUNCTION__ );
         // remove any ../ manipulations
-        $stylesheet = preg_replace( "%\.\./%", '/', $stylesheet );
+        $stylesheet = $this->ctc()->normalize_path( preg_replace( "%\.\./%", '/', $stylesheet ) );
         if ( 'read' == $permission && !is_file( $stylesheet ) ):
-            //echo ' no file!' . LF;
+            $this->ctc()->debug( 'read: no file!', __FUNCTION__ );
             return FALSE;
         elseif ( 'search' == $permission && !is_dir( $stylesheet ) ):
-            //echo ' no dir!' . LF;
+            $this->ctc()->debug( 'read: no dir!', __FUNCTION__ );
             return FALSE;
         endif;
-        // sanity check for php files
-        //if ( !preg_match( '%' . preg_quote( $ext ) . '$%', $stylesheet ) ) return FALSE;
         // check if in themes dir;
-        if ( preg_match( '%^' . preg_quote( get_theme_root() ) . '%', $stylesheet ) ) return $stylesheet;
+        $regex = '%^' . preg_quote( $this->ctc()->normalize_path( get_theme_root() ) ) . '%';
+        $this->ctc()->debug( 'theme regex: ' . $regex, __FUNCTION__ );
+        if ( preg_match( $regex, $stylesheet ) ): 
+            $this->ctc()->debug( $stylesheet . ' ok!', __FUNCTION__ );
+            return $stylesheet;
+        endif;
         // check if in plugins dir
-        if ( preg_match( '%^' . preg_quote( WP_PLUGIN_DIR ) . '%', $stylesheet ) ) return $stylesheet;
-        //echo 'not in wp namespace! ' . LF;
+        $regex = '%^' . preg_quote( $this->ctc()->normalize_path( WP_PLUGIN_DIR ) ) . '%';
+        $this->ctc()->debug( 'plugin regex: ' . $regex, __FUNCTION__ );
+        if ( preg_match( $regex, $stylesheet ) ):
+            $this->ctc()->debug( $stylesheet . ' ok!', __FUNCTION__ );
+            return $stylesheet;
+        endif;
+        $this->ctc()->debug( $stylesheet . ' is not in wp folders!', __FUNCTION__ );
         return FALSE;
     }
     /* normalize_color
