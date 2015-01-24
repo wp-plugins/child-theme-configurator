@@ -1211,8 +1211,10 @@ jQuery( document ).ready( function( $ ) {
         }
     } );
     if ( is_empty( ctcAjax.themes.child ) ) {
-        $( '#ctc_child_name' ).val( testname );
-        $( '#ctc_child_template' ).val( testslug );
+        if ( $( '#ctc_child_name' ).length ) {
+            $( '#ctc_child_name' ).val( testname );
+            $( '#ctc_child_template' ).val( testslug );
+        }
     } else {
         $( '#ctc_theme_child' ).themeMenu( {
             select: function( event, ui ) {
