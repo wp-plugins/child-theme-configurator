@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.6.4
+ *  Version: 1.6.5
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -625,10 +625,11 @@ jQuery( document ).ready( function( $ ) {
     }
     
     function render_recent() {
-        if ( is_empty( ctcAjax.recent_txt ) ) return;
         var html = '';
-        if ( is_empty( ctcAjax.recent ) ) {
+        if ( is_empty( ctcAjax.recent ) && false === is_empty( ctcAjax.recent_txt ) ) {
             html += ctcAjax.recent_txt;
+        } else if ( is_empty( ctcAjax.recent ) ) {
+            return;
         } else {
             //console.log(ctcAjax.recent);
             html += '<ul>' + "\n";
@@ -1014,6 +1015,8 @@ jQuery( document ).ready( function( $ ) {
             }
         } else if ( ( $imports = $( '#ctc_child_imports' ) ) && 'ctc_save_imports' == $( obj ).attr( 'id' ) ) {
             postdata['ctc_child_imports'] = $imports.val();
+        } else if ( 'ctc_is_debug' == $( obj ).attr( 'id' ) ) {
+            postdata['ctc_is_debug'] = $( '#ctc_is_debug' ).is( ':checked' ) ? 1 : 0;
         } else {
             // coalesce inputs
             postdata = coalesce_inputs( obj );
@@ -1037,7 +1040,7 @@ jQuery( document ).ready( function( $ ) {
             && 'plugin' == $( '#ctc_action' ).val() ) ? 
                 'ctc_plugin' : 'ctc_update';
         postdata['_wpnonce'] = $( '#_wpnonce' ).val();
-        //console.log( postdata );
+        // console.log( postdata );
         // ajax post input data
         $.post(  
             // get ajax url from localized object
@@ -1046,7 +1049,7 @@ jQuery( document ).ready( function( $ ) {
             postdata,
             //on success function  
             function( response ) {
-                //console.log( response );
+                // console.log( response );
                 // release button
                 $( obj ).prop( 'disabled', false );
                 // hide spinner
@@ -1157,7 +1160,9 @@ jQuery( document ).ready( function( $ ) {
                     //console.log( 'addl_css' );
                     //console.log( this.data );
                     break;
-                
+                case 'debug':
+                    $( '#ctc_debug_container' ).html( this.data );
+                    break;
                 case 'preview':
                 case 'all_styles':
                     // refresh preview
@@ -1202,12 +1207,12 @@ jQuery( document ).ready( function( $ ) {
         $( 'input[type=submit], input[type=button]' ).prop( 'disabled', true );
         $( 'script' ).each( function( ndx,el ){
             var url = $( this ).prop( 'src' );
-            if ( false === is_empty( url ) && url.match( /jquery(\.|\-?ui)/i ) && ! url.match( /load\-scripts.php/ ) ) {
+            if ( false === is_empty( url ) && url.match( /jquery(\.min|\.js|\-?ui)/i ) && ! url.match( /load\-scripts.php/ ) ) {
                 culprits.push( '<code><small>' + url.split( /\?/ )[0] + '</small></code>' );
             }
         } );
         errors.push( '<strong>' + ctcAjax.js_txt + '</strong>' );
-        if ( false === is_empty( ctcAjax.is_debug ) ) {
+        if ( 1 == ctcAjax.is_debug ) {
             errors.push( jquery_err.join( '<br/>' ) );
         }
         if ( culprits.length ) {
@@ -1397,15 +1402,20 @@ jQuery( document ).ready( function( $ ) {
         $( '#recent_edits' ).on( 'click', function( e ){
             e.preventDefault();
             if ( $( '.ctc-recent-container' ).is( ':visible' ) ) {
-                $( this ).removeClass( 'open' );
                 $( '.ctc-recent-container' ).stop().slideUp();
                 $( '.ctc-option-panel' ).css( { 'width': '95%' } );
             } else {
-                $( this ).addClass( 'open' );
+                // move recent edits to outer wrapper
+                if ( !$('.ctc-recent-container').hasClass( 'moved' ) ) {
+                    $( '.ctc-recent-container' ).addClass( 'moved' ).detach().appendTo('#ctc_option_panel_wrapper');
+                }
                 $( '.ctc-recent-container' ).stop().slideDown();
                 $( '.ctc-option-panel' ).css( { 'width': '80%' } );
             }
             return false;
+        } );
+        $( '#ctc_is_debug' ).on( 'change', function( e ) {
+            save( this );
         } );
         $( '.ctc-live-preview' ).on( 'click', function( e ) {
             e.stopImmediatePropagation();
