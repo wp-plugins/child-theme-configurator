@@ -50,13 +50,13 @@ https://www.youtube.com/watch?v=Yj8lxF1knTo
 
 Learn more at http://www.lilaeamedia.com/child-theme-configurator-pro
 
-= Build your WordPress website exactly the way you want it. =
+= Unlimited Widget Content With a Single Plugin =
 
-PageCells is a WordPress theme framework aimed at web developers and website designers who use WordPress to build multiple websites. Everything about the site is configurable through an innovative drag-and-drop interface, from the number and position of sidebar widget areas to the sequence and behavior of post meta data.
+IntelliWidget is a versatile widget manager that does the work of multiple plugins by combining custom page menus, featured posts, sliders and other dynamic content features that can display on a per-page or site-wide basis.
 
-https://www.youtube.com/watch?v=q6g2Jm7bf3U
+https://www.youtube.com/watch?v=Ttw1xIZ2b-g
 
-Learn more at http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework
+Learn more at http://www.lilaeamedia.com/plugins/intelliwidget
 
 = IntelliWidget Responsive Menu =
 
