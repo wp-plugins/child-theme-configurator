@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, customize, CSS, responsive, css editor, theme generator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 1.6.5
+Stable tag: 1.6.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -256,6 +256,10 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.6.5.1 =
+* Fix: undefined constant LILAEAMEDIA_URL
+* Fix: logic to determine whether to display config notice
+
 = 1.6.5 =
 * Fix: incorrect path generation and validation on Windows servers
 * Added error handling and notification to prevent jQuery conflicts and out of memory conditions
@@ -456,7 +460,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
-1.6.5 improves error handling and reporting of potential issues.
+1.6.5.1 Fixes an undefined constant.
 
 == Override Parent Styles ==
 

@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.6.5
+    Version: 1.6.5.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -104,7 +104,7 @@ class ChildThemeConfiguratorAdmin {
         $this->ui->render();
     }
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.6.5' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.6.5.1' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -237,11 +237,17 @@ class ChildThemeConfiguratorAdmin {
     function load_config() {
         include_once( CHLD_THM_CFG_DIR . '/includes/class-ctc-css.php' );
         $this->css = new ChildThemeConfiguratorCSS();
-        // if not new format or themes do not exist reinitialize
-        if ( FALSE === $this->css->load_config()
-            || ! $this->check_theme_exists( $this->css->get_prop( 'child' ) )
-            || ! $this->check_theme_exists( $this->css->get_prop( 'parnt' ) ) ):          
-            $this->css = new ChildThemeConfiguratorCSS();
+        $is_rebuild = $this->css->load_config();
+        if ( FALSE !== $is_rebuild ):
+            // if themes do not exist reinitialize
+            if ( ! $this->check_theme_exists( $this->css->get_prop( 'child' ) )
+            || ! $this->check_theme_exists( $this->css->get_prop( 'parnt' ) ) ):
+                add_action( 'admin_notices', array( $this, 'config_notice' ) ); 	
+                $this->css = new ChildThemeConfiguratorCSS();
+                $this->css->enqueue = 'enqueue';
+            endif;
+        else:
+            $this->css->enqueue = 'enqueue';
         endif;
         if ( $this->is_get ):
             if ( $this->css->get_prop( 'child' ) ):
@@ -256,9 +262,6 @@ class ChildThemeConfiguratorAdmin {
                 if ( !isset( $this->css->enqueue ) ):
                     add_action( 'admin_notices', array( $this, 'enqueue_notice' ) ); 	
                 endif;
-            // check for first run
-            elseif ( !isset( $this->css->enqueue ) ):
-                add_action( 'admin_notices', array( $this, 'config_notice' ) ); 	
             endif;
                 // check if max selectors reached
             if ( isset( $this->css->max_sel ) && $this->css->max_sel ):
@@ -1179,7 +1182,7 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     function config_notice() {
     ?>
     <div class="update-nag">
-        <p><?php _e( 'Child Theme Configurator did not detect any configuration data, either because this is the first time it has been used, or because a previously configured Child Theme has been removed. Please set your preferences below and click "Generate Child Theme Files".', 'chld_thm_cfg' ) ?></p>
+        <p><?php _e( 'Child Theme Configurator did not detect any configuration data because a previously configured Child Theme has been removed. Please set your preferences below and click "Generate Child Theme Files".', 'chld_thm_cfg' ) ?></p>
     </div>
     <?php
     }

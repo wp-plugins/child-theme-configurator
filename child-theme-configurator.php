@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Plugin Name: Child Theme Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Create a Child Theme and customize the stylesheet and templates. Fast CSS editor lets you search, preview and modify by selector, rule or value.
-    Version: 1.6.5
+    Version: 1.6.5.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -15,15 +15,23 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Copyright (C) 2014-2015 Lilaea Media
 */
 
-    defined( 'LF' ) or define( 'LF',            "\n"                        );
-    define( 'CHLD_THM_CFG_OPTIONS',             'chld_thm_cfg_options'      );
-    define( 'CHLD_THM_CFG_VERSION',             '1.6.5'                     );
-    define( 'CHLD_THM_CFG_MIN_WP_VERSION',      '3.7'                       );
-    define( 'CHLD_THM_CFG_BPSEL',               '2500'                      );
-    define( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS',   '1000'                      );
-    define( 'CHLD_THM_CFG_MENU',                'chld_thm_cfg_menu'         );
-    define( 'CHLD_THM_CFG_DIR',                 dirname( __FILE__ )         );
-    define( 'CHLD_THM_CFG_URL',                 plugin_dir_url( __FILE__ )  );
+    defined( 'LF' ) or define( 'LF',            "\n"                            );
+    defined( 'LILAEAMEDIA_URL' ) or 
+    define( 'LILAEAMEDIA_URL',                  "http://www.lilaeamedia.com"    );
+    defined( 'CHLD_THM_CFG_OPTIONS' ) or 
+    define( 'CHLD_THM_CFG_OPTIONS',             'chld_thm_cfg_options'          );
+    define( 'CHLD_THM_CFG_VERSION',             '1.6.5.1'                         );
+    define( 'CHLD_THM_CFG_MIN_WP_VERSION',      '3.7'                           );
+    defined( 'CHLD_THM_CFG_BPSEL' ) or 
+    define( 'CHLD_THM_CFG_BPSEL',               '2500'                          );
+    defined( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS' ) or 
+    define( 'CHLD_THM_CFG_MAX_RECURSE_LOOPS',   '1000'                          );
+    defined( 'CHLD_THM_CFG_MENU' ) or 
+    define( 'CHLD_THM_CFG_MENU',                'chld_thm_cfg_menu'             );
+    defined( 'CHLD_THM_CFG_DIR' ) or 
+    define( 'CHLD_THM_CFG_DIR',                 dirname( __FILE__ )             );
+    defined( 'CHLD_THM_CFG_URL' ) or 
+    define( 'CHLD_THM_CFG_URL',                 plugin_dir_url( __FILE__ )      );
 
     class ChildThemeConfigurator {
         static $instance;
@@ -100,7 +108,9 @@ if ( !defined( 'ABSPATH' ) ) exit;
         static function version_notice() {
             deactivate_plugins( plugin_basename( __FILE__ ) );
             unset( $_GET[ 'activate' ] );
-            echo '<div class="update-nag"><p>' . sprintf( __( 'Child Theme Configurator requires WordPress version %s or later.', 'chld_thm_cfg' ), CHLD_THM_CFG_MIN_WP_VERSION ) . '</p></div>' . LF;
+            echo '<div class="update-nag"><p>' . 
+                sprintf( __( 'Child Theme Configurator requires WordPress version %s or later.', 'chld_thm_cfg' ), 
+                CHLD_THM_CFG_MIN_WP_VERSION ) . '</p></div>' . LF;
         }
     }
     
