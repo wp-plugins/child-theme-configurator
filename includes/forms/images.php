@@ -1,9 +1,10 @@
 <?php  
 if ( !defined( 'ABSPATH' ) ) exit;
 // Images Section
+$ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
 ?>
 <div class="ctc-input-row clearfix" id="input_row_images">
-  <form id="ctc_image_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>">
+  <form id="ctc_image_form" method="post" action="?page=<?php echo $ctcpage; ?>&amp;tab=file_options">
     <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
     <div class="ctc-input-cell"> <strong>
       <?php _e( 'Child Theme Images', 'chld_thm_cfg' ); ?>
