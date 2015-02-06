@@ -1,7 +1,7 @@
 <?php  
 if ( !defined( 'ABSPATH' ) ) exit;
 // @imports Panel
-        $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
+$ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
 ?>
 
 <div id="import_options_panel" 
@@ -12,7 +12,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
       <div class="ctc-input-cell">
         <div class="ctc-textarea-button-cell" id="ctc_save_imports_cell">
           <input type="button" class="button ctc-save-input" id="ctc_save_imports" 
-            name="ctc_save_imports" value="<?php _e( 'Save', 'chld_thm_cfg' ); ?>"  disabled />
+            name="ctc_save_imports" value="<?php _e( 'Save', 'chld_thm_cfg' ); ?>"  disabled /><span class="ctc-status-icon save-icon"></span>
         </div>
         <strong>
         <?php _e( '@import Statements', 'chld_thm_cfg' ); ?>

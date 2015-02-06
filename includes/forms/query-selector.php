@@ -27,7 +27,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
       <div class="ctc-input-cell">
         <div class="ui-widget">
           <input id="ctc_sel_ovrd_selector" />
-          <div id="ctc_status_sel_ndx"></div>
+          <div id="ctc_status_sel_ndx" style="float:right"><span class="ctc-status-icon query-icon"></span></div>
         </div>
       </div>
     </div>
@@ -39,12 +39,12 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <div class="ctc-input-cell clearfix" style="max-height:150px;overflow:hidden">
           <div class="ctc-swatch" id="ctc_child_all_0_swatch"><?php echo $this->ctc()->swatch_text; ?></div>
         </div>
-        <div id="ctc_status_sel_val"></div>
+        <div id="ctc_status_sel_val" style="float:right"><span class="ctc-status-icon query-icon"></span></div>
         <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
           <input type="button" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
             name="ctc_save_query_selector" value="<?php _e( 'Save Child Values', 'chld_thm_cfg' ); ?>" disabled />
           <input type="hidden" id="ctc_sel_ovrd_qsid" 
-            name="ctc_sel_ovrd_qsid" value="" />
+            name="ctc_sel_ovrd_qsid" value="" /><span class="ctc-status-icon save-icon"></span>
         </div>
       </div>
       <div class="ctc-input-row clearfix" id="ctc_sel_ovrd_rule_header" style="display:none">
@@ -82,7 +82,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
           <input type="button" class="button" id="ctc_copy_selector" 
             name="ctc_copy_selector" value="<?php _e( 'Copy Selector', 'chld_thm_cfg' ); ?>"  /> &nbsp;
           <input type="button" class="button button-primary ctc-save-input" id="ctc_save_new_selectors" 
-            name="ctc_save_new_selectors" value="<?php _e( 'Save', 'chld_thm_cfg' ); ?>"  disabled />
+            name="ctc_save_new_selectors" value="<?php _e( 'Save', 'chld_thm_cfg' ); ?>"  disabled /><span class="ctc-status-icon save-icon"></span>
         </div>
         <strong>
         <?php _e( 'Raw CSS', 'chld_thm_cfg' ); ?>

@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.6.4
+    Version: 1.6.5
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -43,6 +43,7 @@ class ChildThemeConfiguratorCSS {
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
     var $child_version; // stylesheet version
+    var $max_sel;
     var $vendorrule       = array(
         'box-sizing',
         'font-smoothing',
@@ -59,6 +60,7 @@ class ChildThemeConfiguratorCSS {
         // removing the @import for the parent stylesheet will cause
         // the parent core styles to be missing.
         'enqueue', 
+        'max_sel',
         'imports',
         'child_version',
         'child_author',
@@ -83,6 +85,7 @@ class ChildThemeConfiguratorCSS {
         'sel_ndx',
         'val_ndx',
     );
+    
     function __construct() {
         // scalars
         $this->querykey         = 0;
@@ -96,6 +99,7 @@ class ChildThemeConfiguratorCSS {
         $this->child_name       = '';
         $this->child_author     = 'Child Theme Configurator';
         $this->child_version    = '1.0';
+        $this->max_sel          = 0;
 
         // multi-dim arrays
         $this->dict_qs          = array();
@@ -258,7 +262,7 @@ class ChildThemeConfiguratorCSS {
      * Update cache is returned to UI via AJAX to refresh page.
      */
     function update_arrays( $template, $query, $sel, $rule = NULL, $value = NULL, $important = 0, $seq = NULL ) {
-        
+        if ( $this->max_sel ) return;
         // normalize selector styling
         $sel = implode( ', ', preg_split( '#\s*,\s*#s', trim( $sel ) ) );
                         //echo "$template    $query    $sel    $rule    $value    $important" . LF;
@@ -266,23 +270,17 @@ class ChildThemeConfiguratorCSS {
         if ( !isset( $this->dict_query[ $query ] ) ) $this->dict_query[ $query ] = ++$this->querykey;
         if ( !isset( $this->dict_sel[ $sel ] ) ) $this->dict_sel[ $sel ] = ++$this->selkey;
         if ( !isset( $this->sel_ndx[ $this->dict_query[ $query ] ][ $this->dict_sel[ $sel ] ] ) ):
+            // stop parsing if limit is reached to prevent out of memory on serialize
+            if ( $this->qskey >= $this->ctc()->sel_limit ):
+                $this->max_sel = 1;
+                $this->ctc()->debug( 'Maximum num selectors reached ( limit: ' . $this->ctc()->sel_limit . ' )', __FUNCTION__ );
+                return;
+            endif;
             // increment key number
             $this->sel_ndx[ $this->dict_query[ $query ] ][ $this->dict_sel[ $sel ] ] = ++$this->qskey;
             
             $this->dict_qs[ $this->qskey ][ 's' ] = $this->dict_sel[ $sel ];
             $this->dict_qs[ $this->qskey ][ 'q' ] = $this->dict_query[ $query ];
-            // tell the UI to update a single cached query/selector lookup by passing 'qsid' as the key
-            // (normally the entire array is replaced):
-            if ( $this->ctc()->cache_updates )
-                $this->ctc()->updates[] = array(
-                    'obj'   => 'sel_ndx',
-                    'key'   => 'qsid',
-                    'data'  => array(
-                        'query'     => $query,
-                        'selector'  => $sel,
-                        'qsid'      => $this->qskey,
-                    ),
-                );
         endif;
         // update sequence for this selector if this is a later instance to keep cascade priority
         if ( !isset( $this->dict_seq[ $this->qskey ] ) )
@@ -292,13 +290,6 @@ class ChildThemeConfiguratorCSS {
             if ( !isset( $this->dict_rule[ $rule ] ) ):
                 $this->dict_rule[ $rule ] = ++$this->rulekey;
                 // tell the UI to update a single cached rule:
-                if ( $this->ctc()->cache_updates ):
-                    $this->ctc()->updates[] = array(
-                        'obj'   => 'rule',
-                        'key'   => $this->rulekey,
-                        'data'  => $rule,
-                    );
-                endif;
             endif;
             $qsid = $this->sel_ndx[ $this->dict_query[ $query ] ][ $this->dict_sel[ $sel ] ];
             $ruleid = $this->dict_rule[ $rule ];
@@ -310,24 +301,10 @@ class ChildThemeConfiguratorCSS {
                 // set the important flag for this value
                 $this->val_ndx[ $qsid ][ $ruleid ][ 'i_' . $template ] = $important;
             // tell the UI to add a single cached query/selector data array:
-            if ( $this->ctc()->cache_updates ):
-                $updatearr = array(
-                    'obj'   => 'sel_val',
-                    'key'   => $qsid,
-                    'data'  => $this->denorm_sel_val( $qsid ),
-                );
-                $this->ctc()->updates[] = $updatearr;
-            endif;
             if ( isset( $seq ) ): // this is a renamed selector
                 $this->dict_seq[ $qsid ] = $seq;
-                if ( $this->ctc()->cache_updates ):
-                    $this->ctc()->updates[] = array(
-                        'obj'   => 'rewrite',
-                        'key'   => $qsid,
-                        'data'  => $sel,
-                    );
-                endif;
             endif;
+            $this->prune_if_empty( $qsid );
         endif;
     }
     
@@ -405,7 +382,6 @@ class ChildThemeConfiguratorCSS {
      * Parse user form input into separate properties and pass to update_arrays
      */
     function parse_post_data() {
-        $this->cache_updates = TRUE;
         if ( isset( $_POST[ 'ctc_new_selectors' ] ) ):
             $this->styles = $this->parse_css_input( LF . $_POST[ 'ctc_new_selectors' ] );
             $this->parse_css( 'child', 
@@ -414,24 +390,6 @@ class ChildThemeConfiguratorCSS {
             $this->imports[ 'child' ] = array();
             $this->styles = $this->parse_css_input( $_POST[ 'ctc_child_imports' ] );
             $this->parse_css( 'child' );
-        elseif ( isset( $_POST[ 'ctc_configtype' ] ) ):
-            ob_start();
-            do_action( 'chld_thm_cfg_get_stylesheets' );
-            $this->ctc()->updates[] = array(
-                'obj'   => 'stylesheets',
-                'key'   => '',
-                'data'  => ob_get_contents(),
-            );
-            ob_end_clean();
-            ob_start();
-            do_action( 'chld_thm_cfg_get_backups' );
-            $this->ctc()->updates[] = array(
-                'obj'   => 'backups',
-                'key'   => '',
-                'data'  => ob_get_contents(),
-            );
-            ob_end_clean();
-            return;
         else:
             $newselector = isset( $_POST[ 'ctc_rewrite_selector' ] ) ? 
                 $this->sanitize( $this->parse_css_input( $_POST[ 'ctc_rewrite_selector' ] ) ) : NULL;
@@ -516,7 +474,6 @@ class ChildThemeConfiguratorCSS {
                     endif;
                 endforeach;
             endforeach; 
-            $this->prune_if_empty( $qsid );
         endif;
     }
     
@@ -540,13 +497,18 @@ class ChildThemeConfiguratorCSS {
     function repl_octal( $styles ) {
         return str_replace( "##bs##", "\\", $styles );
     }
+    
     /*
      * parse_css_file
      * reads stylesheet to get WordPress meta data and passes rest to parse_css 
      */
     function parse_css_file( $template, $file = 'style.css' ) {
-        // turn off caching when parsing files to reduce memory usage
-        $this->ctc()->cache_updates = FALSE;
+        if ( '' == $file ) $file = 'style.css';
+        // have we run out of memory?
+        if ( $this->max_sel ):
+            $this->ctc()->debug( 'Insufficient memory to parse file.', __FUNCTION__ );
+            return FALSE;
+        endif;
         $this->styles = ''; // reset styles
         $this->read_stylesheet( $template, $file );
         // get theme name
@@ -571,11 +533,15 @@ class ChildThemeConfiguratorCSS {
         $stylesheet = apply_filters( 'chld_thm_cfg_' . $template, trailingslashit( $themedir ) 
             . $file , ( $this->ctc()->is_legacy() ? $this : $file ) ); // support for plugins extension < 2.0
 
-        //echo 'reading stylesheet: ' . $stylesheet . LF;
-
         // read stylesheet
         
         if ( $stylesheet_verified = $this->is_file_ok( $stylesheet, 'read' ) ):
+            // make sure we have space to parse
+            if ( filesize( $stylesheet_verified ) * 3 > $this->ctc()->get_free_memory() ):
+                $this->max_sel = 1;
+                $this->ctc()->debug( 'Insufficient memory to read file', __FUNCTION__ );
+                return;
+            endif;
             $this->styles .= @file_get_contents( $stylesheet_verified ) . "\n";
             //echo 'count after get contents: ' . strlen( $this->styles ) . LF;
         else:
@@ -594,8 +560,8 @@ class ChildThemeConfiguratorCSS {
         $ruleset = array();
         // ignore commented code
         $this->styles = preg_replace( '#\/\*.*?\*\/#s', '', $this->styles );
-        // space brace to ensure correct matching
-        $this->styles = preg_replace( '#(\{\s*)#', "$1\n", $this->styles );
+        // space braces to ensure correct matching
+        $this->styles = preg_replace( '#([\{\}])\s*#', "$1\n", $this->styles );
         // get all imports
         if ( $parse_imports ):
             
@@ -603,16 +569,10 @@ class ChildThemeConfiguratorCSS {
             preg_match_all( $regex, $this->styles, $matches );
             foreach ( preg_grep( '#' . $this->get_prop( 'parnt' ) . '\/style\.css#', $matches[ 1 ], PREG_GREP_INVERT ) as $import )
                 $this->imports[ $template ][ $import ] = 1;
-            if ( $this->ctc()->cache_updates ):
-                $this->ctc()->updates[] = array(
-                    'obj'  => 'imports',
-                    'data' => array_keys( $this->imports[ $template ] ),
-                );
-            endif;
         endif;
         // break into @ segments
         foreach ( array(
-            '#(\@media[^\{]+?)\{(\s*?)\}#', // get an placehoder (empty) media queries
+            '#(\@media[^\{]+?)\{(\s*?)\}#', // get any placehoder (empty) media queries
             '#(\@media[^\{]+?)\{(.*?\})?\s*?\}#s', // get all other media queries
         ) as $regex ): // (((?!\@media).) backreference too memory intensive - rolled back in v 1.4.8.1
             preg_match_all( $regex, $this->styles, $matches );
@@ -624,10 +584,12 @@ class ChildThemeConfiguratorCSS {
         endforeach;
         $ruleset[ $basequery ] = $this->styles;
         foreach ( $ruleset as $query => $segment ):
+            // make sure there is a newline before the first selector
+            $segment = LF . $segment;
             // make sure there is semicolon before closing brace
             $segment = preg_replace( '#(\})#', ";$1", $segment );
             // parses selectors and corresponding rules
-            $regex = '#\s([\[\.\#\:\w][\w\-\s\(\)\[\]\'\^\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s';  //
+            $regex = '#\n\s*([\[\.\#\:\w][\w\-\s\(\)\[\]\'\^\*\.\#\+:,"=>]+?)\s*\{(.*?)\}#s';  //
             preg_match_all( $regex, $segment, $matches );
             foreach( $matches[ 1 ] as $sel ):
                 $stuff  = array_shift( $matches[ 2 ] );
@@ -1245,9 +1207,9 @@ class ChildThemeConfiguratorCSS {
      * verify file exists and is in valid location
      */
     function is_file_ok( $stylesheet, $permission = 'read' ) {
-        $this->ctc()->debug( 'Raw stylesheet: ' . $stylesheet, __FUNCTION__ );
         // remove any ../ manipulations
         $stylesheet = $this->ctc()->normalize_path( preg_replace( "%\.\./%", '/', $stylesheet ) );
+        $this->ctc()->debug( 'checking file: ' . $stylesheet, __FUNCTION__ );
         if ( 'read' == $permission && !is_file( $stylesheet ) ):
             $this->ctc()->debug( 'read: no file!', __FUNCTION__ );
             return FALSE;

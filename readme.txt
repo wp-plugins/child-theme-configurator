@@ -4,11 +4,11 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, customize, CSS, responsive, css editor, theme generator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 1.6.4
+Stable tag: 1.6.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Create a Child Theme and customize the stylesheet as you wish. Search, preview and modify any selector, rule or value using this fast CSS editor.
+Create a Child Theme and customize the stylesheet and templates. Fast CSS editor lets you search, preview and modify by selector, rule or value.
 
 == Description ==
 
@@ -44,19 +44,19 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 = Introducing Child Theme Configurator PRO =
 
-Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets in your Child Theme. We’ve added more features to make design work quicker and easier with PRO. 
+Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets. We’ve added more features to make design work quicker and easier with PRO. 
 
 https://www.youtube.com/watch?v=Yj8lxF1knTo
 
 Learn more at http://www.lilaeamedia.com/child-theme-configurator-pro
 
-= Build your WordPress website exactly the way you want it. =
+= Unlimited Widget Content With a Single Plugin =
 
-PageCells is a WordPress theme framework aimed at web developers and website designers who use WordPress to build multiple websites. Everything about the site is configurable through an innovative drag-and-drop interface, from the number and position of sidebar widget areas to the sequence and behavior of post meta data.
+IntelliWidget is a versatile widget manager that does the work of multiple plugins by combining custom page menus, featured posts, sliders and other dynamic content features that can display on a per-page or site-wide basis.
 
-https://www.youtube.com/watch?v=q6g2Jm7bf3U
+https://www.youtube.com/watch?v=Ttw1xIZ2b-g
 
-Learn more at http://www.lilaeamedia.com/total-wordpress-customization-pagecells-responsive-theme-framework
+Learn more at http://www.lilaeamedia.com/plugins/intelliwidget
 
 = IntelliWidget Responsive Menu =
 
@@ -256,6 +256,12 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.6.5 =
+* Fix: incorrect path generation and validation on Windows servers
+* Added error handling and notification to prevent jQuery conflicts and out of memory conditions
+* Fix: removed max-height on rule/value overlay
+* Added debug option
+
 = 1.6.4 = 
 * New Feature: Copy selector button for Raw CSS textarea on Query/Selector tab.
 * Fix: Menus rendering incorrectly for RTL locales
@@ -450,6 +456,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
+1.6.5 improves error handling and reporting of potential issues.
 
 == Override Parent Styles ==
 
@@ -538,6 +545,6 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 
 == Documentation ==
 
-Go to http://www.lilaeamedia.com/plugins/child-theme-configurator
+Go to http://www.lilaeamedia.com/child-theme-configurator
 
 Copyright: (C) 2014-2015 Lilaea Media
