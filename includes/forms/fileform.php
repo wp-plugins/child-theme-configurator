@@ -2,6 +2,7 @@
 if ( !defined( 'ABSPATH' ) ) exit;
 // Files Section
 // This include is used for both parent template section and the child files section
+$ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
 
 if ( defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT ):
     $linktext = __( 'The Theme editor has been disabled. Template files must be edited offline.', 'chld_thm_cfg' );
@@ -16,7 +17,7 @@ else:
 endif;
 ?>
 <div class="ctc-input-row clearfix" id="input_row_<?php echo $template; ?>_templates">
-  <form id="ctc_<?php echo $template; ?>_templates_form" method="post" action="?page=<?php echo CHLD_THM_CFG_MENU; ?>&amp;tab=file_options">
+  <form id="ctc_<?php echo $template; ?>_templates_form" method="post" action="?page=<?php echo $ctcpage; ?>&amp;tab=file_options">
     <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
     <div class="ctc-input-cell"> <strong>
       <?php echo 'parnt' == $template ? __( 'Parent Templates', 'chld_thm_cfg' ) : __( 'Child Theme Files', 'chld_thm_cfg' ); ?>

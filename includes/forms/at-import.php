@@ -1,7 +1,7 @@
 <?php  
 if ( !defined( 'ABSPATH' ) ) exit;
 // @imports Panel
-        $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
+$ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
 ?>
 
 <div id="import_options_panel" 
