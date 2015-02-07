@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Plugin Name: Child Theme Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Create a Child Theme and customize the stylesheet and templates. Fast CSS editor lets you search, preview and modify by selector, rule or value.
-    Version: 1.6.5.1
+    Version: 1.6.5.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     define( 'LILAEAMEDIA_URL',                  "http://www.lilaeamedia.com"    );
     defined( 'CHLD_THM_CFG_OPTIONS' ) or 
     define( 'CHLD_THM_CFG_OPTIONS',             'chld_thm_cfg_options'          );
-    define( 'CHLD_THM_CFG_VERSION',             '1.6.5.1'                         );
+    define( 'CHLD_THM_CFG_VERSION',             '1.6.5.2'                         );
     define( 'CHLD_THM_CFG_MIN_WP_VERSION',      '3.7'                           );
     defined( 'CHLD_THM_CFG_BPSEL' ) or 
     define( 'CHLD_THM_CFG_BPSEL',               '2500'                          );

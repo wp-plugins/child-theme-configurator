@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Main Controller Class
-    Version: 1.6.5.1
+    Version: 1.6.5.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -104,7 +104,7 @@ class ChildThemeConfiguratorAdmin {
         $this->ui->render();
     }
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.6.5.1' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.6.5.2' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -519,7 +519,7 @@ class ChildThemeConfiguratorAdmin {
             $varname = end( $varparts );
             ${$varname} = empty( $_POST[ 'ctc_' . $configfield ] ) ? '' : 
                 sanitize_text_field( $_POST[ 'ctc_' . $configfield ] );
-                
+            $this->debug( 'Extracting var ' . $varname . ' from ctc_' . $configfield . ' value: ' . ${$varname} , __FUNCTION__ );
         endforeach;
         
         // legacy plugin extension needs parent/child values but this version disables the inputs
@@ -546,11 +546,6 @@ class ChildThemeConfiguratorAdmin {
         if ( empty( $name ) ):
             $name = ucfirst( $child );
         endif;
-        if ( FALSE === $this->verify_child_dir( $child ) ):
-            $this->errors[] = __( 'Your theme directories are not writable.', 'chld_thm_cfg' );
-            add_action( 'admin_notices', array( $this, 'writable_notice' ) ); 	
-        endif;
-        
         // if this is a shiny brand new child theme certain rules apply
         if ( 'new' == $type ):
             if ( empty( $template ) && empty( $name ) ):
@@ -564,6 +559,11 @@ class ChildThemeConfiguratorAdmin {
                 endif;
             endif;
         endif;
+        if ( FALSE === $this->verify_child_dir( $child ) ):
+            $this->errors[] = __( 'Your theme directories are not writable.', 'chld_thm_cfg' );
+            add_action( 'admin_notices', array( $this, 'writable_notice' ) ); 	
+        endif;
+        
         // if no errors so far, we are good to create child theme
         if ( empty( $this->errors ) ):
             $this->css = new ChildThemeConfiguratorCSS();
@@ -694,7 +694,7 @@ class ChildThemeConfiguratorAdmin {
     }
     
     function update_redirect( $msg = 1 ) {
-        if ( empty( $this->is_ajax ) ):
+        if ( empty( $this->is_ajax ) && !$this->is_debug ):
             $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
             wp_safe_redirect(
                 ( is_multisite() ? 
@@ -706,10 +706,17 @@ class ChildThemeConfiguratorAdmin {
     }
     
     function verify_child_dir( $path ) {
-        if ( !$this->fs ) return FALSE; // return if no filesystem access
+        $this->debug( 'Verifying child dir: ' . $path, __FUNCTION__ );
+        if ( !$this->fs ): 
+            $this->debug( 'No filesystem access.', __FUNCTION__ );
+            return FALSE; // return if no filesystem access
+        endif;
         global $wp_filesystem;
         $themedir = $wp_filesystem->find_folder( get_theme_root() );
-        if ( ! $wp_filesystem->is_writable( $themedir ) ) return FALSE;
+        if ( ! $wp_filesystem->is_writable( $themedir ) ):
+            $this->debug( 'Directory not writable: ' . $themedir, __FUNCTION__ );
+            return FALSE;
+        endif;
         $childparts = explode( '/', $this->normalize_path( $path ) );
         while ( count( $childparts ) ):
             $subdir = array_shift( $childparts );
@@ -717,12 +724,15 @@ class ChildThemeConfiguratorAdmin {
             $themedir = trailingslashit( $themedir ) . $subdir;
             if ( ! $wp_filesystem->is_dir( $themedir ) ):
                 if ( ! $wp_filesystem->mkdir( $themedir, FS_CHMOD_DIR ) ):
+                $this->debug( 'Could not make directory: ' . $themedir, __FUNCTION__ );
                     return FALSE;
                 endif;
             elseif ( ! $wp_filesystem->is_writable( $themedir ) ):
+                $this->debug( 'Directory not writable: ' . $themedir, __FUNCTION__ );
                 return FALSE;
             endif;
         endwhile;
+        $this->debug( 'Child dir verified: ' . $themedir, __FUNCTION__ );
         return TRUE;
     }
     
@@ -732,8 +742,8 @@ class ChildThemeConfiguratorAdmin {
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 ";
-        if ( FALSE === $this->write_child_file( 'functions.php', $contents ) 
-            || FALSE === $this->write_child_file( 'style.css', $this->css->get_css_header() ) ) return FALSE;
+        $this->write_child_file( 'functions.php', $contents );
+        $this->write_child_file( 'style.css', $this->css->get_css_header() );
     }
     
     function enqueue_parent_code(){
@@ -761,21 +771,50 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
      * but it does not use wp_filesystem API!!!???
      */
     function insert_with_markers( $filename, $marker, $insertion ) {
-        if ( !$this->fs ) return FALSE; // return if no filesystem access
-        // make sure file exists with php header
-        $this->add_base_files( $this );
+        if ( count( $this->errors ) ):
+            $this->debug( 'Errors detected, returning', __FUNCTION__ );
+            return FALSE;
+        endif;
+        if ( !$this->fs ): 
+            $this->debug( 'No filesystem access.', __FUNCTION__ );
+            return FALSE; // return if no filesystem access
+        endif;
         global $wp_filesystem;
         if( !$wp_filesystem->exists( $this->fspath( $filename ) ) ):
-			$markerdata = FALSE;
-		else:
+            // make sure file exists with php header
+            $this->debug( 'No functions file, creating...', __FUNCTION__ );
+            $this->add_base_files( $this );
+		endif;
             // get_contents_array returns extra linefeeds so just split it ourself
 			$markerdata = explode( "\n", $wp_filesystem->get_contents( $this->fspath( $filename ) ) );
-		endif;
         $newfile = '';
+        $phpopen    = 0;
+        $in_comment = 0;
 		$foundit = false;
-		if ( $markerdata ) {
+        $lasttoken  = '';
+		if ( $markerdata ):
 			$state = true;
 			foreach ( $markerdata as $n => $markerline ) {
+                // update open state
+                $openstars = 0;
+                $closestars = 0;
+                // remove double slash comment to end of line
+                $str = preg_replace( "/\/\/.*$/",     '', $markerline );
+                preg_match_all("/(<\?|\?>|\*\/|\/\*)/", $str, $matches );
+                if ( $matches ):
+                    foreach ( $matches[1] as $token ): 
+                        $lasttoken = $token;
+                        if ( '/*' == $token ):
+                            $in_comment = 1;
+                        elseif ( '*/' == $token ):
+                            $in_comment = 0;
+                        elseif ( '<?' == $token && !$in_comment ):
+                            $phpopen = 1;
+                        elseif ( '?>' == $token && !$in_comment ):
+                            $phpopen = 0;
+                        endif;
+                    endforeach;
+                endif;
 				if ( strpos( $markerline, '// BEGIN ' . $marker ) !== false )
 					$state = false;
 				if ( $state ):
@@ -794,13 +833,26 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
 					$foundit = true;
 				endif;
 			}
-		}
-		if ( !$foundit ) {
+        else:
+            $this->debug( 'Could not parse functions file', __FUNCTION__ );
+            return FALSE;
+        endif;
+		if ( $foundit ):
+            $this->debug( 'Found marker, replaced inline', __FUNCTION__ );
+        else:
+            // verify there is no PHP close tag at end of file
+            if ( ! $phpopen ):
+                $this->debug( 'PHP not open', __FUNCTION__ );
+                $this->errors[] = 'A closing PHP tag was detected in Child theme functions file so "Parent Stylesheet Handling" option was not configured. Closing PHP at the end of the file is discouraged as it can cause premature HTTP headers. Please edit <code>functions.php</code> and remove the final <code>?&gt;</code> tag.';
+                return FALSE;
+                //$newfile .= '<?php' . LF;
+            endif;
 			$newfile .= "\n// BEGIN {$marker}\n";
 			foreach ( $insertion as $insertline )
 				$newfile .= "{$insertline}\n";
 			$newfile .= "// END {$marker}\n";
-		}
+        endif;
+        $this->debug( 'Writing new functions file...', __FUNCTION__ );
         if ( FALSE === $wp_filesystem->put_contents( $this->fspath( $filename ), $newfile ) ) return FALSE; 
     }
     
@@ -810,15 +862,19 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
             return FALSE; // return if no filesystem access
         endif;
         global $wp_filesystem;
-        $file = $this->fspath( $this->css->is_file_ok( $this->css->get_child_target( $file ), 'write' ) );
+        if ( $file = $this->css->is_file_ok( $this->css->get_child_target( $file ), 'write' ) ):
+        if ( !$wp_filesystem->exists( $this->fspath( $file ) ) ):
         $this->debug( 'Writing to filesystem: ' . $file, __FUNCTION__ );
-        if ( $file && !$wp_filesystem->exists( $file ) ):
-            if ( FALSE === $wp_filesystem->put_contents( $file, $contents ) ):
+            if ( FALSE === $wp_filesystem->put_contents( $this->fspath( $file ), $contents ) ):
                 $this->debug( 'Filesystem write failed.', __FUNCTION__ );
                 return FALSE; 
             endif;
         else:
             $this->debug( 'File exists.', __FUNCTION__ );
+            return FALSE;
+        endif;
+        else:
+            $this->debug( 'No directory.', __FUNCTION__ );
             return FALSE;
         endif;
         $this->debug( 'Filesystem write successful.', __FUNCTION__ );
@@ -830,7 +886,10 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     }
     
     function copy_parent_file( $file, $ext = 'php' ) {
-        if ( !$this->fs ) return FALSE; // return if no filesystem access
+        if ( !$this->fs ): 
+            $this->debug( 'No filesystem access.', __FUNCTION__ );
+            return FALSE; // return if no filesystem access
+        endif;
         global $wp_filesystem;
         $parent_file = NULL;
         if ( 'screenshot' == $file ):
@@ -851,6 +910,7 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
         // return true if file already exists
         if ( $wp_filesystem->exists( $this->fspath( $child_file ) ) ) return TRUE;
         $child_dir = dirname( $this->theme_basename( '', $child_file ) );
+        $this->debug( 'Verifying child dir... ', __FUNCTION__ );
         if ( $parent_file // sanity check
             && $child_file // sanity check
                 && $this->verify_child_dir( $child_dir ) //create child subdir if necessary
@@ -859,14 +919,19 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
     }
     
     function delete_child_file( $file, $ext = 'php' ) {
-        if ( !$this->fs ) return FALSE; // return if no filesystem access
+        if ( !$this->fs ): 
+            $this->debug( 'No filesystem access.', __FUNCTION__ );
+            return FALSE; // return if no filesystem access
+        endif;
         global $wp_filesystem;
         // verify file is in child theme and exists before removing.
         $file = ( 'img' == $ext ? $file : $file . '.' . $ext );
-        $child_file  = $this->fspath( $this->css->is_file_ok( $this->css->get_child_target( $file ), 'write' ) );
-        if ( $wp_filesystem->exists( $child_file ) ):
-            if ( !$wp_filesystem->delete( $child_file ) ) return FALSE;
+        if ( $child_file  = $this->css->is_file_ok( $this->css->get_child_target( $file ), 'write' ) ):
+            if ( $wp_filesystem->exists( $this->fspath( $child_file ) ) )
+                if ( $wp_filesystem->delete( $this->fspath( $child_file ) ) ) return TRUE;
         endif;
+        $this->errors[] = __( 'Could not delete file.', 'chld_thm_cfg' );
+        $this->debug( 'Could not delete file', __FUNCTION__ );
     }
     
     function get_files( $theme, $type = 'template' ) {
@@ -974,6 +1039,7 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
             $childpath  = $fsthemedir . trailingslashit( $child ) . $childfile;
             $newpath    = $fsthemedir . $newfile;
             if ( $copy ):
+                $this->debug( 'Verifying child dir... ', __FUNCTION__ );
                 if ( $this->verify_child_dir( is_dir( $file ) ? $newfile : dirname( $newfile ) ) ):
                     if ( is_file( $file ) && !$wp_filesystem->copy( $childpath, $newpath ) ):
                         $errors[] = 'could not copy ' . $newpath;
@@ -1043,6 +1109,7 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
         $target_file = ( '' == $subdir ? 
             preg_replace( "%^.+(\.\w+)$%", "screenshot$1", basename( $source_file ) ) : 
                 trailingslashit( $subdir ) . basename( $source_file ) );
+        $this->debug( 'Verifying child dir... ', __FUNCTION__ );
         if ( FALSE !== $this->verify_child_dir( trailingslashit( $this->css->get_prop( 'child' ) ) . $subdir ) ):
             $source_path = $this->fspath( $this->uploads_fullpath( $source_file ) );
             if ( $target_path = $this->css->is_file_ok( $this->css->get_child_target( $target_file ), 'write' ) ):
@@ -1200,6 +1267,7 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
             
                 // sanitize the crap out of the target data -- it will be used to create paths
                 $path = $this->normalize_path( preg_replace( "%[^\w\\//\-]%", '', sanitize_text_field( $child . $path ) ) );
+                $this->debug( 'Verifying child dir... ', __FUNCTION__ );
                 if ( ( 'dir' == $type && FALSE === $this->verify_child_dir( $path ) )
                     || ( 'dir' != $type && FALSE === $this->write_child_file( $path, '' ) ) ):
                     //$this->errors[] = __( 'Your theme directories are not writable.', 'chld_thm_cfg_plugins' );

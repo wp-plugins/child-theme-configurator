@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, customize, CSS, responsive, css editor, theme generator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 1.6.5.1
+Stable tag: 1.6.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -256,6 +256,10 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.6.5.2 =
+* Fix: Empty functions file created causing inserted markers to be output to browser.
+* Fix: check for closed PHP tag in functions file prior to inserting markers
+
 = 1.6.5.1 =
 * Fix: undefined constant LILAEAMEDIA_URL
 * Fix: logic to determine whether to display config notice
@@ -460,7 +464,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
-1.6.5.1 Fixes an undefined constant.
+1.6.5.2 Fixes a major bug in the creation of the child theme functions.php file. See changelog for details.
 
 == Override Parent Styles ==
 

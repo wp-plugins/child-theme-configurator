@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.6.5.1
+    Version: 1.6.5.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -1274,8 +1274,11 @@ class ChildThemeConfiguratorCSS {
         if ( 'read' == $permission && !is_file( $stylesheet ) ):
             $this->ctc()->debug( 'read: no file!', __FUNCTION__ );
             return FALSE;
+        elseif ( 'write' == $permission && !is_dir( dirname( $stylesheet ) ) ):
+            $this->ctc()->debug( 'write: no dir!', __FUNCTION__ );
+            return FALSE;
         elseif ( 'search' == $permission && !is_dir( $stylesheet ) ):
-            $this->ctc()->debug( 'read: no dir!', __FUNCTION__ );
+            $this->ctc()->debug( 'search: no dir!', __FUNCTION__ );
             return FALSE;
         endif;
         // check if in themes dir;
