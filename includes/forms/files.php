@@ -83,5 +83,29 @@ if ( !defined( 'ABSPATH' ) ) exit;
       </div>
     </form>
   </div>
-  <?php endif; do_action( 'chld_thm_cfg_files_tab' ); ?>
+  <?php endif; ?>
+  <div class="ctc-input-row clearfix" id="input_update_key">
+<?php  // uses output buffer to modify and extend files tab actions
+  ob_start();
+  do_action( 'chld_thm_cfg_files_tab' ); 
+  $files_tab_options = apply_filters( 'chld_thm_cfg_files_tab_filter', ob_get_contents() );
+  ob_end_clean();
+  echo $files_tab_options;
+  ?>
+  </div>
+  <div class="ctc-input-row clearfix" id="input_row_debug">
+      <div class="ctc-input-cell clear">
+        <strong>
+          <?php _e( 'Debug', 'chld_thm_cfg_plugins' ); ?>
+        </strong>
+        <p class="howto">
+          <?php _e( 'Check the box to enable debugging output.', 'chld_thm_cfg_plugins' ); ?>
+        </p>
+      </div>
+      <div class="ctc-input-cell">
+        <input class="ctc_checkbox" id="ctc_is_debug" name="ctc_is_debug"  type="checkbox" 
+            value="1" <?php echo checked( $this->ctc()->is_debug, 1 ); ?> autocomplete="off" />
+      </div>
+      <div id="ctc_debug_container"><?php do_action( 'chld_thm_cfg_print_debug' ); ?></div>
+  </div>
 </div>

@@ -32,7 +32,7 @@ else: ?>
     // if flag has been set because an action is required, do not render interface
     if ( !$this->ctc()->skip_form ):
     include ( CHLD_THM_CFG_DIR . '/includes/forms/tabs.php' ); 
-?><div style="position:relative">
+?><div id="ctc_option_panel_wrapper" style="position:relative">
     <div class="ctc-option-panel-container">
       <?php 
     $parent_child_panel = apply_filters( 'chld_thm_cfg_pc_panel', 
@@ -51,7 +51,8 @@ else: ?>
             include ( CHLD_THM_CFG_DIR . '/includes/forms/files.php' );
         endif; 
         do_action( 'chld_thm_cfg_panels', $this->ctc(), $active_tab, $hidechild ); 
-    endif; ?>
+    endif; 
+    ?>
     </div>
   <?php do_action( 'chld_thm_cfg_sidebar' ); ?></div><?php
   endif;
