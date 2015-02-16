@@ -176,7 +176,8 @@ class ChildThemeConfiguratorCSS {
                 return empty( $params[ 'key' ] ) ? 
                     array() : $this->obj_to_utf8( $this->denorm_sel_val( $params[ 'key' ] ) );
             case 'rules':
-                return $this->obj_to_utf8( array_flip( $this->dict_rule ) );
+                ksort( $this->dict_rule );
+                return $this->obj_to_utf8( $this->dict_rule );;
             case 'child':
                 return $this->child;
             case 'parnt':

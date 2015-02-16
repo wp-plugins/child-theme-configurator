@@ -118,6 +118,7 @@ class ChildThemeConfiguratorAdmin {
                 'jquery-ui-autocomplete', 
                 'jquery-ui-selectmenu',   
                 'wp-color-picker',
+                'ctc-thm-cfg-ctcgrad'
             ), FALSE, TRUE );
         $localize_array = apply_filters( 'chld_thm_cfg_localize_script', array(
             'ssl'               => is_ssl(),
