@@ -41,7 +41,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
         </div>
         <div id="ctc_status_sel_val"></div>
         <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
-          <input type="button" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
+          <input type="submit" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
             name="ctc_save_query_selector" value="<?php _e( 'Save Child Values', 'chld_thm_cfg' ); ?>" disabled />
           <input type="hidden" id="ctc_sel_ovrd_qsid" 
             name="ctc_sel_ovrd_qsid" value="" />

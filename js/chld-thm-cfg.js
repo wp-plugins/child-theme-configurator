@@ -1211,7 +1211,7 @@
                     $( '#' + id + '_container' ).fadeToggle( 'fast' );
                     $( '.ctc-selector-container' ).not( '#' + id + '_container' ).fadeOut( 'fast' );
                 } );
-                $( '#ctc_main' ).on( 'click', '.ctc-save-input', function( e ) {
+                $( '#ctc_main' ).on( 'click', '.ctc-save-input[type=button]', function( e ) {
                     if ( $( this ).hasClass( 'ajax-pending' ) ) return false;
                     $( this ).addClass( 'ajax-pending' );
                     self.save( this ); // refresh menus after updating data
@@ -1272,6 +1272,14 @@
                 } );
                 $( '#ctc_load_form' ).on( 'submit', function() {
                     return ( self.validate() ); //&& confirm( self.getxt( 'load' ) ) ) ;
+                } );
+                $( '#ctc_query_selector_form').on( 'submit', function( e ) {
+                    e.preventDefault();
+                    $this = $( '#ctc_save_query_selector' );
+                    if ( $this.hasClass( 'ajax-pending' ) ) return false;
+                    $this.addClass( 'ajax-pending' );
+                    self.save( $this ); // refresh menus after updating data
+                    return false;
                 } );
                 $( '#ctc_theme_child, #ctc_theme_child-button, #ctc_child_type_existing' )
                     .on( 'focus click', function() {

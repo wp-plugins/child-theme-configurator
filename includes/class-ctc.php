@@ -748,7 +748,11 @@ if ( !defined( 'ABSPATH' ) ) exit;
     }
     
     function enqueue_parent_code(){
-        return explode( "\n", "// AUTO GENERATED - Do not modify or remove comment markers above or below:
+        if ( 'none' == $this->css->enqueue || 'import' == $this->css->enqueue ) return array();
+        $code = "// AUTO GENERATED - Do not modify or remove comment markers above or below:
+";
+        if ( 'enqueue' == $this->css->enqueue ): 
+            $code .= "
         
 if ( !function_exists( 'chld_thm_cfg_parent_css' ) ):
     function chld_thm_cfg_parent_css() {
@@ -756,12 +760,23 @@ if ( !function_exists( 'chld_thm_cfg_parent_css' ) ):
     }
 endif;
 add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
-" );
+";
+        elseif ( 'child' == $this->css->enqueue ): 
+            $code .= "
+if ( !function_exists( 'chld_thm_cfg_child_css' ) ):
+    function chld_thm_cfg_child_css() {
+        wp_enqueue_style( 'chld_thm_cfg_child', get_stylesheet_uri() ); 
+    }
+endif;
+add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
+";
+        endif;
+        return explode( "\n", $code );
     }
     
     function enqueue_parent_css( $obj ) {
         $marker     = 'ENQUEUE PARENT ACTION';
-        $insertion  = 'enqueue' == $this->css->enqueue ? $this->enqueue_parent_code() : array();
+        $insertion  =  $this->enqueue_parent_code();
         if ( $filename   = $this->css->is_file_ok( $this->css->get_child_target( 'functions.php' ), 'write' ) ):
             $this->insert_with_markers( $filename, $marker, $insertion );
         endif;

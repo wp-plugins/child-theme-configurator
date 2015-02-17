@@ -95,32 +95,54 @@ if ( !defined( 'ABSPATH' ) ) exit;
     <?php $parent_handling = ( isset( $css->enqueue ) ? $css->enqueue : ( $mustimport ? 'import' : 'enqueue' ) ); ?>
     <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>">
       <div class="ctc-input-cell"> <strong>
-        <?php _e( 'Parent stylesheet handling:', 'chld_thm_cfg' ); ?>
+        <?php _e( 'Stylesheet handling:', 'chld_thm_cfg' ); 
+        ?>
         </strong> </div>
       <div class="ctc-input-cell">
         <label>
           <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_enqueue" name="ctc_parent_enqueue" type="radio" 
                 value="enqueue" <?php checked( 'enqueue', $parent_handling ); ?> <?php echo $disabled; ?> />
-          <?php _e( '&lt;link&gt; (default)', 'chld_thm_cfg' ); ?>
+          <?php _e( 'Enqueue parent stylesheet (default)', 'chld_thm_cfg' ); ?>
         </label>
-        <br/>
+        </strong> </div>
+      <div class="ctc-input-cell howto sep"><?php _e( "Select this option for themes that enqueue the active theme's stylesheet but have no special handling for child themes. Start with this option if unsure.", 'chld_thm_cfg' ); ?>
+
+</div>
+      <div class="ctc-input-cell clear"><?php if ( $mustimport )
+         _e( '<strong>NOTE: This theme links the stylesheet in the header template and should use the @import option to render correctly.</strong>', 'chld_thm_cfg' ); ?> &nbsp;
+</div>
+      <div class="ctc-input-cell">
         <label>
           <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_import" name="ctc_parent_enqueue" type="radio" 
                 value="import" <?php checked( 'import', $parent_handling ); ?> <?php echo $disabled; ?> />
-          <?php _e( '@import', 'chld_thm_cfg' ); ?>
+          <?php _e( '@import parent stylesheet', 'chld_thm_cfg' ); ?>
         </label>
-        <br/>
+        </strong> </div>
+      <div class="ctc-input-cell howto sep"><?php _e( "Select this option for themes that link the stylesheet in the header template. Using @import is discouraged but still necessary with some themes.", 'chld_thm_cfg' ); ?>
+
+</div>
+      <div class="ctc-input-cell clear">&nbsp;
+</div>
+      <div class="ctc-input-cell">
+        <label>
+          <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_both" name="ctc_parent_enqueue" type="radio" 
+                value="both" <?php checked( 'child', $parent_handling ); ?> <?php echo $disabled; ?> />
+          <?php _e( 'Enqueue child stylesheet', 'chld_thm_cfg' ); ?>
+        </label>
+        </strong> </div>
+      <div class="ctc-input-cell howto sep"><?php _e( "Select this option if the active theme's stylesheet is not loaded by the theme at all. This is unusual but true for some themes.", 'chld_thm_cfg' ); ?>
+</div>
+      <div class="ctc-input-cell clear">&nbsp;
+</div>
+      <div class="ctc-input-cell">
         <label>
           <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_none" name="ctc_parent_enqueue" type="radio" 
                 value="none" <?php checked( 'none', $parent_handling ); ?> <?php echo $disabled; ?> />
-          <?php _e( 'none (handled by theme)', 'chld_thm_cfg' ); ?>
+          <?php _e( 'None (handled by theme)', 'chld_thm_cfg' ); ?>
         </label>
       </div>
-      <div class="ctc-input-cell"> <strong>
-        <?php _e( 'NOTE:', 'chld_thm_cfg' ); ?>
-        <?php if ( $mustimport ) _e( 'This theme does not currently enqueue the stylesheet and must use the @import option to render correctly.', 'chld_thm_cfg' ); ?>
-        </strong>
-        <?php _e( "Select @import for older themes that do not enqueue the stylesheet. Select 'none' if core styles are automatically loaded for child themes. Select '&lt;link&gt;' if unsure.", 'chld_thm_cfg' ); ?>
+      <div class="ctc-input-cell howto">
+        <?php _e( "Select this option if all stylesheets are automatically loaded for child themes (e.g., Responsive). ", 'chld_thm_cfg' ); ?>
       </div>
     </div>
     <?php if ( '' == $hidechild ): ?>

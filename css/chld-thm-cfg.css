@@ -277,7 +277,11 @@ h2 .ctc-recent-tab {
 
 .ctc-selector-value {
 }
-
+.howto.sep {
+    border-bottom: 1px solid #fff;
+    margin-bottom: .5em;
+    padding-bottom: .5em;
+}
 .ctc-selector-cell {
     float: left;
     width: 30%;
