@@ -459,10 +459,10 @@
         },
         
         /**
-         * The "render" functions inject html into the DOM based on the JSON result of Ajax actions
+         * render individual row of inputs for a given selector/rule combination
          */
-        render_child_rule_input: function( qsid, rule, seq, data ) {
-            console.log( 'render_child_rule_input: ' + qsid + ' rule: ' + rule + ' seq: ' + seq );
+        input_row: function( qsid, rule, seq, data ) {
+            console.log( 'input_row: ' + qsid + ' rule: ' + rule + ' seq: ' + seq );
             var self = this,
                 html = '', 
                 value = ( self.is_empty( data ) || self.is_empty( data.value ) || self.is_empty( data.value[ rule ] ) ?
@@ -500,7 +500,7 @@
                             newval = '';
                         }
                             
-                        html += ( self.is_empty( newname ) ? '' : ctcAjax.field_labels[ newname ] + ':<br/>' ) 
+                        html += ( self.is_empty( newname ) ? '' : self.getxt( newname ) + ':<br/>' ) 
                             + '<input type="text" id="' + id + '" name="' + id + '" class="ctc-child-value' 
                             + ( ( newname + rule ).toString().match( /color/ ) ? ' color-picker' : '' ) 
                             + ( ( newname ).toString().match( /url/ ) ? ' ctc-input-wide' : '' )
@@ -529,69 +529,14 @@
             return html;
         },
         
-        render_selector_inputs: function() {
-            console.log( 'render_selector_inputs: ' + qsid );
-            var self = this,
-                qsid = self.current_qsid,
-                data = self.current_qsdata,
-                id, html, val, selector;
-                $( '#ctc_sel_ovrd_qsid' ).val( qsid );
-                self.current_qsid = qsid;
-                if ( self.is_empty( data.seq ) ) {
-                    $( '#ctc_child_load_order_container' ).empty();
-                } else {
-                    id = 'ctc_ovrd_child_seq_' + qsid;
-                    val = parseInt( data.seq );
-                    html = '<input type="text" id="' + id + '" name="' + id + '"'
-                        + ' class="ctc-child-value" value="' + val + '" />';
-                    $( '#ctc_child_load_order_container' ).html( html );
-                }
-                if ( self.is_empty( data.value ) ) {
-                    $( '#ctc_sel_ovrd_selector_selected' ).empty();
-                    $( '.ctc-rewrite-toggle' ).empty();
-                    $( '#ctc_sel_ovrd_new_rule,'
-                        + '#ctc_sel_ovrd_rule_header,'
-                        + '#ctc_sel_ovrd_rule_inputs_container,'
-                        + '#ctc_sel_ovrd_rule_inputs,'
-                        + '.ctc-rewrite-toggle' ).hide();
-                    $( '#ctc_sel_ovrd_rule_inputs' ).empty(); 
-                } else {
-                    html = '';
-                    $.each( data.value, function( rule, value ) {
-                        html += self.render_child_rule_input( qsid, rule, 'ovrd', data );
-                    } );
-                    $( '#ctc_sel_ovrd_rule_inputs' ).html( html ).find( '.color-picker' ).each( function() {
-                        self.setup_iris( this );
-                    } );
-                    self.coalesce_inputs( '#ctc_child_all_0_swatch' );
-                    if ( self.jquery_err.length ) {
-                        self.jquery_notice();
-                    } else {
-                        console.log( 'reload menus: ' + ( self.reload_menus ? 'true' : 'false' ) );
-                        if ( self.reload_menus ) {
-                            self.set_query( data.query );
-                            self.load_rules();
-                        }
-                        $( '#ctc_sel_ovrd_selector_selected' ).text( data.selector );
-                        $( '.ctc-rewrite-toggle' ).text( self.getxt( 'rename' ) );
-                        $( '#ctc_sel_ovrd_new_rule,'
-                            + '#ctc_sel_ovrd_rule_header,'
-                            + '#ctc_sel_ovrd_rule_inputs_container,'
-                            + '#ctc_sel_ovrd_rule_inputs,'
-                            + '.ctc-rewrite-toggle' ).show();
-                        self.scrolltop();
-                    }
-                }
-        },
-        
         scrolltop: function() {
-            $('.ctc-option-panel-container').animate( { scrollTop: 0 } );        
+            $('html, body, .ctc-option-panel-container').animate( { scrollTop: 0 } );        
         },
         
-        render_css_preview: function( theme ) {
-            var self = this;
-            console.log( 'render_css_preview: ' + theme );
-            var theme;
+        css_preview: function( theme ) {
+            var self = this,
+                theme;
+            console.log( 'css_preview: ' + theme );
             if ( !( theme = theme.match( /(child|parnt)/ )[ 1 ] ) ) {
                 theme = 'child';
             }
@@ -599,74 +544,6 @@
             self.query_css( 'preview', theme );
         },
         
-        render_rule_value_inputs: function( ruleid, data ) {
-            var self = this;
-            console.log( 'render_rule_value_inputs: ' + ruleid );
-            console.log( data );
-            var rule = $( '#ctc_rule_menu_selected' ).text(), 
-                html = '<div class="ctc-input-row clearfix" id="ctc_rule_row_' + rule + '">' + "\n";
-            console.log( 'rule: ' + rule );
-            if ( !self.is_empty( data ) ) {
-                $.each( data, function( valid, value ) {
-                    var parentObj = self.decode_value( rule, value );
-                    html += '<div class="ctc-parent-row clearfix"'
-                        + ' id="ctc_rule_row_' + rule + '_' + valid + '">' + "\n"
-                        + '<div class="ctc-input-cell ctc-parent-value"'
-                        + ' id="ctc_' + valid + '_parent_' + rule + '_' + valid + '">' 
-                        + parentObj.orig + '</div>' + "\n"
-                        + '<div class="ctc-input-cell">' + "\n"
-                        + '<div class="ctc-swatch ctc-specific"'
-                        + ' id="ctc_' + valid + '_parent_' + rule + '_' + valid + '_swatch">' 
-                        + self.getxt( 'swatch' ) + '</div></div>' + "\n"
-                        + '<div class="ctc-input-cell">'
-                        + '<a href="#" class="ctc-selector-handle"'
-                        + ' id="ctc_selector_' + rule + '_' + valid + '">'
-                        + self.getxt( 'selector' ) + '</a></div>' + "\n"
-                        + '<div id="ctc_selector_' + rule + '_' + valid + '_container"'
-                        + ' class="ctc-selector-container">' + "\n"
-                        + '<a href="#" id="ctc_selector_' + rule + '_' + valid + '_close"'
-                        + ' class="ctc-selector-handle ctc-exit" title="' 
-                        + self.getxt( 'close' ) + '"></a>'
-                        + '<div id="ctc_selector_' + rule + '_' + valid + '_inner_container"'
-                        + ' class="ctc-selector-inner-container clearfix">' + "\n"
-                        + '<div id="ctc_status_val_qry_' + valid + '"></div>' + "\n"
-                        + '<div id="ctc_selector_' + rule + '_' + valid + '_rows"></div>' + "\n"
-                        + '</div></div></div>' + "\n";
-                } );
-                html += '</div>' + "\n";
-            }
-            $( '#ctc_rule_value_inputs' ).html( html ).find( '.ctc-swatch' ).each( function() {
-                self.coalesce_inputs( this );
-            } );
-        },
-        
-        render_selector_value_inputs: function( valid, data ) {
-            var self = this;
-            console.log( 'render_selector_value_inputs: ' + valid );
-            var html = '';
-            if ( !self.is_empty( data ) ) {
-                $.each( data, function( rule, queries ) {
-                    page_rule = rule;
-                    $.each( queries, function( query, selectors ) {
-                        html += '<h4 class="ctc-query-heading">' + query + '</h4>' + "\n";
-                        if ( !self.is_empty( selectors ) ) {
-                            $.each( selectors, function( qsid, qsdata ) {
-                                html += self.render_child_rule_input( qsid, rule, valid, qsdata );
-                            } );
-                        }
-                    } );
-                } );
-            }
-            selector = '#ctc_selector_' + rule + '_' + valid + '_rows';
-            $( selector ).html( html ).find( '.color-picker' ).each( function() {
-                self.setup_iris( this );
-            } );
-            $( selector ).find( '.ctc-swatch' ).each( function() {
-                self.coalesce_inputs( this );
-            } );
-            if ( self.jquery_err.length ) self.jquery_notice();
-    
-        },
         /**
          * The "setup" functions initialize jQuery UI widgets
          */
@@ -701,7 +578,7 @@
                     focus: function( e ) { 
                         e.preventDefault(); 
                     }
-                } );
+                } ).data( 'menu' , {} );
             } catch ( exn ) {
                 self.jquery_exception( exn, 'Query Menu' );
             }
@@ -722,7 +599,7 @@
                     focus: function( e ) { 
                         e.preventDefault(); 
                     }
-                } );
+                } ).data( 'menu' , {} );
             } catch ( exn ) {
                 self.jquery_exception( exn, 'Selector Menu' );
             }
@@ -744,7 +621,7 @@
                 focus: function( e ) { 
                     e.preventDefault(); 
                 }
-            } );
+            } ).data( 'menu' , {} );
             } catch ( exn ) {
                 self.jquery_exception( exn, 'Rule Menu' );
             }
@@ -765,7 +642,7 @@
                     }
                     self.current_qsdata.value[ ui.item.label ] = { 'child': '' };
                     var newrule = ui.item.label.replace( /[^\w\-]/g, self.to_ascii ),
-                        n = $( self.render_child_rule_input( self.current_qsid, newrule, 'ovrd', self.current_qsdata ) );
+                        n = $( self.input_row( self.current_qsid, newrule, 'ovrd', self.current_qsdata ) );
                     $( '#ctc_sel_ovrd_rule_inputs' ).append( n );
                     $( '#ctc_new_rule_menu' ).val( '' );
                     
@@ -780,15 +657,12 @@
                 focus: function( e ) { 
                     e.preventDefault(); 
                 }
-            } );
+            } ).data( 'menu' , {} );
             } catch ( exn ) {
                 self.jquery_exception( exn, 'New Rule Menu' );
             }
         },
         
-        /**
-         * The "set" functions apply values to inputs
-         */
         set_existing: function() {
             var self = this;
             if ( $( '#ctc_theme_child' ).length && $( '#ctc_child_type_existing' ).is( ':checked' ) ) {
@@ -915,7 +789,6 @@
         
         /**
          * Retrieve data from server and execute callback on completion
-         * Previously set semaphores control the callback behavior
          */
         query_css: function( obj, key, params ) {
             console.log( 'query_css: ' + obj + ' key: ' + key );
@@ -944,7 +817,6 @@
         },
         /**
          * Post data to server for saving and execute callback on completion
-         * Previously set semaphores control the callback behavior
          */
         save: function( obj ) {
             console.log( 'save: ' + $( obj ).attr( 'id' ) );
@@ -1104,34 +976,153 @@
         },
     
         update: {
+            // render individual selector inputs on Query/Selector tab
             qsid: function( res ) {
-                this.current_qsid  = res.key;
-                this.current_qsdata = res.data;
-                this.render_selector_inputs();
+                var self = this,
+                    id, html, val, selector;
+                self.current_qsid  = res.key;
+                self.current_qsdata = res.data;
+                console.log( 'update.qsid: ' + self.current_qsid );
+                $( '#ctc_sel_ovrd_qsid' ).val( self.current_qsid );
+                if ( self.is_empty( self.current_qsdata.seq ) ) {
+                    $( '#ctc_child_load_order_container' ).empty();
+                } else {
+                    id = 'ctc_ovrd_child_seq_' + self.current_qsid;
+                    val = parseInt( self.current_qsdata.seq );
+                    html = '<input type="text" id="' + id + '" name="' + id + '"'
+                        + ' class="ctc-child-value" value="' + val + '" />';
+                    $( '#ctc_child_load_order_container' ).html( html );
+                }
+                if ( self.is_empty( self.current_qsdata.value ) ) {
+                    $( '#ctc_sel_ovrd_selector_selected' ).empty();
+                    $( '.ctc-rewrite-toggle' ).empty();
+                    $( '#ctc_sel_ovrd_new_rule,'
+                        + '#ctc_sel_ovrd_rule_header,'
+                        + '#ctc_sel_ovrd_rule_inputs_container,'
+                        + '#ctc_sel_ovrd_rule_inputs,'
+                        + '.ctc-rewrite-toggle' ).hide();
+                    $( '#ctc_sel_ovrd_rule_inputs' ).empty(); 
+                } else {
+                    html = '';
+                    $.each( self.current_qsdata.value, function( rule, value ) {
+                        html += self.input_row( self.current_qsid, rule, 'ovrd', self.current_qsdata );
+                    } );
+                    $( '#ctc_sel_ovrd_rule_inputs' ).html( html ).find( '.color-picker' ).each( function() {
+                        self.setup_iris( this );
+                    } );
+                    self.coalesce_inputs( '#ctc_child_all_0_swatch' );
+                    if ( self.jquery_err.length ) {
+                        self.jquery_notice();
+                    } else {
+                        console.log( 'reload menus: ' + ( self.reload_menus ? 'true' : 'false' ) );
+                        if ( self.reload_menus ) {
+                            self.set_query( self.current_qsdata.query );
+                            self.load_rules();
+                        }
+                        $( '#ctc_sel_ovrd_selector_selected' ).text( self.current_qsdata.selector );
+                        $( '.ctc-rewrite-toggle' ).text( self.getxt( 'rename' ) );
+                        $( '#ctc_sel_ovrd_new_rule,'
+                            + '#ctc_sel_ovrd_rule_header,'
+                            + '#ctc_sel_ovrd_rule_inputs_container,'
+                            + '#ctc_sel_ovrd_rule_inputs,'
+                            + '.ctc-rewrite-toggle' ).show();
+                        self.scrolltop();
+                    }
+                }
             }, 
+            // render list of unique values for given rule on Rule/Value tab
             rule_val: function( res ) {
-                this.render_rule_value_inputs( res.key, res.data );
+                console.log( 'update.rule_val: ' + res.key );
+                console.log( res.data );
+                var self = this,
+                    rule = $( '#ctc_rule_menu_selected' ).text(), 
+                    html = '<div class="ctc-input-row clearfix" id="ctc_rule_row_' + rule + '">' + "\n";
+                console.log( 'rule: ' + rule );
+                if ( !self.is_empty( res.data ) ) {
+                    $.each( res.data, function( valid, value ) {
+                        var parentObj = self.decode_value( rule, value );
+                        html += '<div class="ctc-parent-row clearfix"'
+                            + ' id="ctc_rule_row_' + rule + '_' + valid + '">' + "\n"
+                            + '<div class="ctc-input-cell ctc-parent-value"'
+                            + ' id="ctc_' + valid + '_parent_' + rule + '_' + valid + '">' 
+                            + parentObj.orig + '</div>' + "\n"
+                            + '<div class="ctc-input-cell">' + "\n"
+                            + '<div class="ctc-swatch ctc-specific"'
+                            + ' id="ctc_' + valid + '_parent_' + rule + '_' + valid + '_swatch">' 
+                            + self.getxt( 'swatch' ) + '</div></div>' + "\n"
+                            + '<div class="ctc-input-cell">'
+                            + '<a href="#" class="ctc-selector-handle"'
+                            + ' id="ctc_selector_' + rule + '_' + valid + '">'
+                            + self.getxt( 'selector' ) + '</a></div>' + "\n"
+                            + '<div id="ctc_selector_' + rule + '_' + valid + '_container"'
+                            + ' class="ctc-selector-container">' + "\n"
+                            + '<a href="#" id="ctc_selector_' + rule + '_' + valid + '_close"'
+                            + ' class="ctc-selector-handle ctc-exit" title="' 
+                            + self.getxt( 'close' ) + '"></a>'
+                            + '<div id="ctc_selector_' + rule + '_' + valid + '_inner_container"'
+                            + ' class="ctc-selector-inner-container clearfix">' + "\n"
+                            + '<div id="ctc_status_val_qry_' + valid + '"></div>' + "\n"
+                            + '<div id="ctc_selector_' + rule + '_' + valid + '_rows"></div>' + "\n"
+                            + '</div></div></div>' + "\n";
+                    } );
+                    html += '</div>' + "\n";
+                }
+                $( '#ctc_rule_value_inputs' ).html( html ).find( '.ctc-swatch' ).each( function() {
+                    self.coalesce_inputs( this );
+                } );
             },
+            // render list of selectors grouped by query for given value on Rule/Value Tab
             val_qry: function( res ) {
-                this.render_selector_value_inputs( res.key, res.data );
+                var self = this,
+                    html = '';
+                if ( !self.is_empty( res.data ) ) {
+                    $.each( res.data, function( rule, queries ) {
+                        page_rule = rule;
+                        $.each( queries, function( query, selectors ) {
+                            html += '<h4 class="ctc-query-heading">' + query + '</h4>' + "\n";
+                            if ( !self.is_empty( selectors ) ) {
+                                $.each( selectors, function( qsid, qsdata ) {
+                                    html += self.input_row( qsid, rule, res.key, qsdata );
+                                } );
+                            }
+                        } );
+                    } );
+                }
+                selector = '#ctc_selector_' + rule + '_' + res.key + '_rows';
+                $( selector ).html( html ).find( '.color-picker' ).each( function() {
+                    self.setup_iris( this );
+                } );
+                $( selector ).find( '.ctc-swatch' ).each( function() {
+                    self.coalesce_inputs( this );
+                } );
+                if ( self.jquery_err.length ) self.jquery_notice();
             },
+            // populate list of queries and attach to query input element
             queries: function( res ) {
                 $( '#ctc_sel_ovrd_query' ).data( 'menu', res.data );
             },
+            // populate list of selectors and attach to selector input element
             selectors: function( res ) {
                 $( '#ctc_sel_ovrd_selector' ).data( 'menu', res.data );
             },
+            // populate list of rules and attach to rule input element
             rules: function( res ) {
                 $( '#ctc_rule_menu' ).data( 'menu', res.data );
             },
+            // render debug output
             debug: function( res ) {
                 $( '#ctc_debug_container' ).html( res.data );
+                console.log( 'debug:' );
+                console.log( res.data );
             },
+            // render stylesheet preview on child or parent css tab
             preview: function( res ) {
                 $( '#view_' + res.key + '_options_panel' ).text( res.data );
             }
+            
         },
-
+        
+        // initialize object vars, bind event listeners to elements, load menus and start plugin
         init: function() {
             var self = this;
             // auto populate parent/child tab values
@@ -1198,7 +1189,7 @@
                 } );
                 
                 $( '#ctc_main' ).on( 'change', '.ctc-child-value, input[type=checkbox]', function() {
-                    coalesce_inputs( this );
+                    self.coalesce_inputs( this );
                 } );
                 
                 $( '#ctc_main' ).on( 'click', '.ctc-selector-handle', function( e ) {
@@ -1277,7 +1268,7 @@
                 $( '#view_child_options, #view_parnt_options' ).on( 'click', function( e ){ 
                     if ( $( this ).hasClass( 'ajax-pending' ) ) return false;
                     $( this ).addClass( 'ajax-pending' );
-                    self.render_css_preview( $( this ).attr( 'id' ) ); 
+                    self.css_preview( $( this ).attr( 'id' ) ); 
                 } );
                 $( '#ctc_load_form' ).on( 'submit', function() {
                     return ( self.validate() ); //&& confirm( self.getxt( 'load' ) ) ) ;
@@ -1296,22 +1287,6 @@
                     $( '#ctc_child_type_new' ).prop( 'checked', true );
                     $( '#ctc_child_name' ).val( self.testname );
                     $( '#ctc_child_template' ).val( self.testslug );
-                } );
-                $( '#recent_edits' ).on( 'click', function( e ){
-                    e.preventDefault();
-                    if ( $( '.ctc-recent-container' ).is( ':visible' ) ) {
-                        $( '.ctc-recent-container' ).stop().slideUp();
-                        $( '.ctc-option-panel' ).css( { 'width': '95%' } );
-                    } else {
-                        // move recent edits to outer wrapper
-                        if ( !$('.ctc-recent-container').hasClass( 'moved' ) ) {
-                            $( '.ctc-recent-container' ).addClass( 'moved' ).detach()
-                                .appendTo('#ctc_option_panel_wrapper');
-                        }
-                        $( '.ctc-recent-container' ).stop().slideDown();
-                        $( '.ctc-option-panel' ).css( { 'width': '80%' } );
-                    }
-                    return false;
                 } );
                 $( '#ctc_is_debug' ).on( 'change', function( e ) {
                     self.save( this );

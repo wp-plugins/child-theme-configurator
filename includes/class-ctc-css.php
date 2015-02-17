@@ -1099,7 +1099,8 @@ class ChildThemeConfiguratorCSS {
         foreach ( $this->val_ndx as $selid => $rules ):
             if ( !isset( $rules[ $ruleid ] ) ) continue;
             foreach ( $rules[ $ruleid ] as $theme => $val ):
-                if ( !isset( $val_arr[ $val ] ) || '' === $val_arr[ $val ] ) continue;
+                // skip important flag and invalid values
+                if ( strstr( $theme, 'i_' ) || !isset( $val_arr[ $val ] ) || '' === $val_arr[ $val ] ) continue;
                 $rule_sel_arr[ $val ] = $val_arr[ $val ];
             endforeach;
         endforeach;

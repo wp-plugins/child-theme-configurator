@@ -98,7 +98,7 @@ class ChildThemeConfiguratorAdmin {
         $bytes_free         = $this->get_free_memory();
         $this->sel_limit    = ( int ) ( $bytes_free / CHLD_THM_CFG_BPSEL );
         $this->debug( 'Free memory: ' . $bytes_free . ' max selectors: ' . $this->sel_limit, __FUNCTION__ );
-        $this->set_benchmark( 'before', 'execute', 'program' );
+        //$this->set_benchmark( 'before', 'execute', 'program' );
     }
     function render() {
         $this->ui->render();
@@ -136,15 +136,13 @@ class ChildThemeConfiguratorAdmin {
             'addl_css'          => $this->css->get_prop( 'addl_css' ),
             'imports'           => $this->css->get_prop( 'imports' ),
             'is_debug'          => $this->is_debug,
-            'field_labels'      => array(
-                '_background_url'       => __( 'URL/None',                                                  'chld_thm_cfg' ),
-                '_background_origin'    => __( 'Origin',                                                    'chld_thm_cfg' ),
-                '_background_color1'    => __( 'Color 1',                                                   'chld_thm_cfg' ),
-                '_background_color2'    => __( 'Color 2',                                                   'chld_thm_cfg' ),
-                '_border_width'         => __( 'Width/None',                                                'chld_thm_cfg' ),
-                '_border_style'         => __( 'Style',                                                     'chld_thm_cfg' ),
-                '_border_color'         => __( 'Color',                                                     'chld_thm_cfg' ),
-            ),
+            '_background_url_txt'       => __( 'URL/None',                                                  'chld_thm_cfg' ),
+            '_background_origin_txt'    => __( 'Origin',                                                    'chld_thm_cfg' ),
+            '_background_color1_txt'    => __( 'Color 1',                                                   'chld_thm_cfg' ),
+            '_background_color2_txt'    => __( 'Color 2',                                                   'chld_thm_cfg' ),
+            '_border_width_txt'         => __( 'Width/None',                                                'chld_thm_cfg' ),
+            '_border_style_txt'         => __( 'Style',                                                     'chld_thm_cfg' ),
+            '_border_color_txt'         => __( 'Color',                                                     'chld_thm_cfg' ),
             'swatch_txt'        => $this->swatch_text,
             'load_txt'          => __( 'Are you sure? This will replace your current settings.',            'chld_thm_cfg' ),
             'important_txt'     => __( '<span style="font-size:10px">!</span>',                             'chld_thm_cfg' ),
@@ -268,8 +266,17 @@ class ChildThemeConfiguratorAdmin {
 	            add_action( 'admin_notices', array( $this, 'owner_notice' ) ); 
             endif;
         endif;	
+        if ( $this->is_debug ) add_action( 'chld_thm_cfg_cache_updates', array( $this, 'cache_debug' ) );
+        return $is_rebuild;
     }
     
+    function cache_debug() {
+        $this->updates[] = array(
+            'obj'   => 'debug',
+            'key'   => '',
+            'data'  => $this->print_debug( TRUE ),
+        );
+    }
     /**
      * ajax callback for saving form data 
      */
@@ -279,30 +286,31 @@ class ChildThemeConfiguratorAdmin {
         if ( $this->validate_post( $action ) ):
             if ( 'ctc_plugin' == $action ) do_action( 'chld_thm_cfg_pluginmode' );
             $this->verify_creds(); // initialize filesystem access
-
-            $this->load_config(); // get configuration data from options API
-            if ( isset( $_POST[ 'ctc_is_debug' ] ) ):
-                // toggle debug
-                $this->toggle_debug();
-            else:
-                $this->css->parse_post_data(); // parse any passed values
-                // if child theme config has been set up, save new data
-                // return recent edits and selected stylesheets as cache updates
-                if ( $this->css->get_prop( 'child' ) ):
-                    $this->css->write_css();
-                    // add any additional updates to pass back to browser
-                    do_action( 'chld_thm_cfg_cache_updates' );
-                    /*
-                    $this->updates[] = array(
-                        'obj'   => 'addl_css',
-                        'key'   => '',
-                        'data'  => $this->css->get_prop( 'addl_css' ),
-                    );
-                    */
+            // get configuration data from options API
+            if ( FALSE !== $this->load_config() ): // sanity check: only update if config data exists
+                if ( isset( $_POST[ 'ctc_is_debug' ] ) ):
+                    // toggle debug
+                    $this->toggle_debug();
+                else:
+                    $this->css->parse_post_data(); // parse any passed values
+                    // if child theme config has been set up, save new data
+                    // return recent edits and selected stylesheets as cache updates
+                    if ( $this->css->get_prop( 'child' ) ):
+                        $this->css->write_css();
+                        // add any additional updates to pass back to browser
+                        do_action( 'chld_thm_cfg_cache_updates' );
+                        /*
+                        $this->updates[] = array(
+                            'obj'   => 'addl_css',
+                            'key'   => '',
+                            'data'  => $this->css->get_prop( 'addl_css' ),
+                        );
+                        */
+                    endif;
+                    
+                    // update config data in options API
+                    $this->css->save_config();
                 endif;
-                
-                // update config data in options API
-                $this->css->save_config();
             endif;
             $result = $this->css->obj_to_utf8( $this->updates );
             // send all updates back to browser to update cache
@@ -327,12 +335,12 @@ class ChildThemeConfiguratorAdmin {
             endforeach;
             if ( !empty( $param[ 'obj' ] ) ):
                 // add any additional updates to pass back to browser
-                do_action( 'chld_thm_cfg_cache_updates' );
                 $this->updates[] = array(
                     'key'   => isset( $param[ 'key' ] ) ? $param[ 'key' ] : '',
                     'obj'   => $param[ 'obj' ],
                     'data'  => $this->css->get_prop( $param[ 'obj' ], $param ),
                 );
+                do_action( 'chld_thm_cfg_cache_updates' );
                 die( json_encode( $this->updates ) );
             endif;
         endif;
@@ -489,10 +497,7 @@ class ChildThemeConfiguratorAdmin {
         $debug = '';
         if ( $_POST[ 'ctc_is_debug' ] ):
             $this->is_debug = 1;
-            ob_start();
-            $this->print_debug();
-            $debug = ob_get_contents();
-            ob_end_clean();
+            $debug = $this->print_debug( TRUE );
         else:
             $this->is_debug = 0;
         endif;
@@ -1373,8 +1378,10 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
         return $limit - $used;
     }
     
-    function print_debug() {
-        echo '<textarea style="width:100%;height:200px">' . LF . $this->debug . LF . '</textarea>' . LF;
+    function print_debug( $noecho = FALSE ) {
+        $debug = '<textarea style="width:100%;height:200px">' . LF . $this->debug . LF . '</textarea>' . LF;
+        if ( $noecho ) return $debug;
+        echo $debug;
     }
     
 }
