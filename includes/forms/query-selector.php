@@ -27,7 +27,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
       <div class="ctc-input-cell">
         <div class="ui-widget">
           <input id="ctc_sel_ovrd_selector" />
-          <div id="ctc_status_sel_ndx"></div>
+          <div id="ctc_status_qsid" style="float:right"></div>
         </div>
       </div>
     </div>
@@ -41,7 +41,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
         </div>
         <div id="ctc_status_sel_val"></div>
         <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
-          <input type="button" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
+          <input type="submit" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
             name="ctc_save_query_selector" value="<?php _e( 'Save Child Values', 'chld_thm_cfg' ); ?>" disabled />
           <input type="hidden" id="ctc_sel_ovrd_qsid" 
             name="ctc_sel_ovrd_qsid" value="" />
@@ -87,7 +87,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <strong>
         <?php _e( 'Raw CSS', 'chld_thm_cfg' ); ?>
         </strong>
-        <p><?php _e( 'Use to enter shorthand CSS or new @media queries and selectors.', 'chld_thm_cfg' );?></p><p><?php _e( 'Values entered here are merged into existing child styles or added to the child stylesheet if they do not exist in the parent.', 'chld_thm_cfg' ); ?></p>
+        <p class="howto"><?php _e( 'Use to enter shorthand CSS or new @media queries and selectors.', 'chld_thm_cfg' );?></p><p class="howto"><?php _e( 'Values entered here are merged into existing child styles or added to the child stylesheet if they do not exist in the parent.', 'chld_thm_cfg' ); ?></p>
       </div>
       <div class="ctc-input-cell-wide">
         <textarea id="ctc_new_selectors" name="ctc_new_selectors" wrap="off"></textarea>

@@ -18,7 +18,7 @@ Child Theme Configurator is a fast and easy to use CSS editor that allows you to
 
 https://www.youtube.com/watch?v=53M7RVxDYEY
 
-The Child Theme Configurator parses and indexes a Theme's stylesheets so that every CSS media query, selector, rule and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the Child Theme. Finally, it saves your work so that you can fine-tune your Child Theme without the risk of losing your edits. 
+The Child Theme Configurator parses and indexes your stylesheets so that every CSS media query, selector, rule and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the Child Theme. Finally, it saves your work so that you can fine-tune your Child Theme without the risk of losing your edits. 
 
 You can create any number of Child Themes from any existing Parent Theme. The Child Theme Configurator lets you choose from your installed themes (even existing Child Themes) and save the results in your Themes directory.
 
@@ -31,7 +31,7 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Save hours of development time
 * Multisite compatible - great for network sites
 * Make modifications above and beyond the theme Customizer
-* Enqueue (link) parent theme stylesheet instead of using @import
+* Link (enqueue) parent theme stylesheet instead of using @import
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of theme fonts
 * Identify and override exact selectors from the parent theme
@@ -74,7 +74,7 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
     * Locate "Child Theme Configurator" in the list and click "Install Now."
 
 2. To install manually:
-    * Download the IntelliWidget plugin from http://wordpress.org/plugins/child-theme-configurator
+    * Download the Child Theme Configurator plugin from http://wordpress.org/plugins/child-theme-configurator
     * In the WordPress Admin, go to "Plugins > Add New."
     * Click the "Upload" link at the top of the page.
     * Browse for the zip file, select and click "Install."
@@ -89,21 +89,25 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 2. Select "new" or "existing".
 
-3. Enter a Name, Author and Version for the child theme. 
+3. Optional: Enter a Name, Theme Website, Author, Author Website, Description, Tags and Version for the child theme.
 
-4. Copy Parent Theme Menus, Widgets and other Options (optional)
+4. Optional: Copy Parent Theme Menus, Widgets and other Options. NOTE: This will overwrite any child theme options you may have already set.
 
-5. Save Backup (optional)
+5. Choose stylesheet handling:
+   * **Enqueue parent stylesheet (default):**
+     Select this option if the parent theme enqueues the stylesheet but has no special handling for child themes. Start with this option if unsure.
+   * **@import parent stylesheet:**
+     Select this option if the parent theme links the stylesheet in the header template. Using @import is discouraged but necessary in this case unless you modify the header template.
+   * **Enqueue child stylesheet:**
+     Select this option if the parent theme incorrectly loads the "template" stylesheet or does not load the "style.css" file at all. This is unusual but occurs in some themes.
+   * **None (handled by theme):**
+     Select this option if all stylesheets are automatically loaded for child themes (e.g., "Responsive" by CyberChimps). 
 
-6. Choose parent stylesheet handling
-    * Select 'link' if the parent theme uses the main 'style.css' stylesheet and correctly enqueues it for child themes (default).
-    * Select @import for older themes that do not enqueue the stylesheet. If the parent styles do not appear when you activate the child theme, you probably need to use this option. NOTE: this was the only method used in previous versions of Child Theme Configurator.
-    * Select "None" if the parent theme does not use the main 'style.css' for its core styles but enqueues it for child themes. This is a common practice with more recent themes. 
-    * If you do not know which option to use, select 'link'.
+6. Optional: Save Backup
 
-7. Restore from backup (optional).
+7. Optional: Reset/Restore from backup.
 
-8. Choose additional stylesheets (optional).
+8. Optional: Choose additional stylesheets. Stylesheets that are currently used by the parent theme are automatically selected.
 
 9. Click "Generate/Rebuild Child Theme Files."
 
@@ -111,23 +115,48 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 == Frequently Asked Questions ==
 
-= Where is Child Theme Configurator in the Admin? = 
+= Is there a tutorial? =
 
-For most users the Child Theme Configurator can be found under "Tools > Child Themes."
+https://www.youtube.com/watch?v=53M7RVxDYEY
 
-WordPress Multisite (Network) users go to "Network Admin > Themes > Child Themes." 
+= If the parent theme changes (e.g., upgrade), do I have to update the child theme? = 
 
-NOTE: Only users with "install_themes" capability will have access to the Child Theme Configurator.
+No. This is the point of using child themes. Changes to the parent theme are automatically inherited by the child theme.
 
-Click the "Help" tab at the top right for a quick reference.
+A child theme is not a "copy" of the parent theme. It is a special feature of WordPress that let's you override specific styles and functions leaving the rest of the theme intact. Quality themes should identify any deprecated functions or styles in the upgrade notes so that child theme users can make adjustments accordingly.
+
+= If I uninstall Child Theme Configurator are child themes affected? =
+
+No. Child Theme Configurator is designed to work independently of themes and plugins. Just remember that if you re-install, you must rebuild the configuration data using the Parent/Child tab.
 
 = Does it work with Multisite? =
 
 Yes. Go to "Network Admin > Themes > Child Themes." Child themes must be "Network enabled" to preview and activate for Network sites.
 
+= Does it work with plugins? =
+
+Child Theme Configurator PRO brings the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website by scanning your plugins and creating custom CSS in your Child Theme. Learn more at http://www.lilaeamedia.com/child-theme-configurator-pro
+
+= Why doesn't this work with my [insert vendor here] theme? = 
+
+Some themes (particularly commercial themes) do not correctly load parent template files or automatically load child theme stylesheets or php files.
+
+This is unfortunate, because in the best case they effectively prohibit the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. **In the worst case they will break your website when you activate the child theme.** 
+
+Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org and ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING (See "Preview and Activate").
+
+= Will this slow down my site? =
+
+Child theme Configurator is designed to add the minimum amount of additional overhead possible and can actually improve performance. **For example:**
+
+    * Child Theme Configurator creates or updates files that are already being read by the system. On the front-end, there are no database calls so WordPress can run independent of the plugin. In fact, you can remove Child Theme Configurator when you are finished setting up your theme.
+    * Customizations are applied to a stylesheet file that can be cached by the browser and/or cached and minimized by a performance caching plugin. Because the editor creates mostly "overrides" to existing styles, the file is typically smaller than other stylesheets.
+    * The code that drives the editor interface only loads when the tool is being used from the WordPress Admin, including Javascript and CSS. This means that it will not get in the way of other admin pages.
+    * The biggest performance hit occurs when you generate the Child Theme files from the Parent/Child tab, but this is a one-time event and only occurs from the WordPress Admin.
+
 = HELP! I changed a file and now I am unable to access my website or login to wp-admin to fix it! =
 
-To back out of a broken child theme you have to manually rename the offending theme directory name (via FTP, SSH or your web host control panel file manager) so that WordPress can’t find it. WordPress will then throw an error and revert back to the default theme (currently twenty-fourteen).
+To back out of a broken child theme you have to manually rename the offending theme directory name (via FTP, SSH or your web host control panel file manager) so that WordPress can’t find it. WordPress will then throw an error and revert back to the default theme (currently twenty-fifteen).
 
 The child theme is in your themes folder, usually
 
@@ -149,7 +178,17 @@ Many of these options can be copied over to the child theme by checking "Copy Pa
 
 If you want to set different options you can either apply them after you activate the child theme using the theme customizer, or by using the "Live Preview" under Appearance > Themes.
 
-Every theme handles options in its own way. Most often, they will create a set of options and store them in the WordPress database. Some options are specific to the active theme (or child theme), and some are specific to the parent theme only (meaning the child theme CANNOT override them). You will have to find out from the theme author which are which.
+Every theme handles options in its own way. Most often, they will create a set of options and store them in the WordPress database. Some options are specific to the active theme (or child theme), and some are specific to the parent theme only (meaning the child theme CANNOT customize them). You will have to find out from the theme author which are which.
+
+= Where is Child Theme Configurator in the Admin? = 
+
+For most users the Child Theme Configurator can be found under "Tools > Child Themes."
+
+WordPress Multisite (Network) users go to "Network Admin > Themes > Child Themes." 
+
+NOTE: Only users with "install_themes" capability will have access to the Child Theme Configurator.
+
+Click the "Help" tab at the top right for a quick reference.
 
 = How do I add Web Fonts? =
 
@@ -157,31 +196,9 @@ The easiest method is to paste the @import code provided by Google, Font Squirre
 
 You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. 
 
-= Does it work with plugins? =
-
-We offer a premium extension that brings the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and creates custom CSS in your Child Theme. Learn more at http://www.lilaeamedia.com/plugins/child-theme-plugin-styles
-
-= Is there a tutorial? =
-
-https://www.youtube.com/watch?v=53M7RVxDYEY
-
-= Why doesn't this work with my (insert theme vendor here) theme? = 
-
-Some themes (particularly commercial themes) do not correctly load parent template files or automatically load child theme stylesheets or php files.
-
-This is unfortunate, because in the best case they effectively prohibit the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. **In the worst case they will break your website when you activate the child theme.** 
-
-Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org and ALWAYS TEST YOUR CHILD THEME BEFORE ACTIVATING (See "Preview and Activate").
-
-= Will this slow down my site? =
-
-The plugin only loads the bulk of the code in the admin when you are using the tool. The biggest performance hit occurs when you generate the Child Theme files from the Parent/Child tab.
-
-Once the child theme stylesheet is created, CTC adds very little overhead to the front-end since all of the functionality is in the admin.
-
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
-Check the appropriate additional stylesheets under "Scan Parent Theme for additional stylesheets" on the Parent/Child tab and load the Child Theme again. CTC tries to identify these files by fetching a page from the parent theme, but you may need to set them manually.
+Check the appropriate additional stylesheets under "Parse additional stylesheets" on the Parent/Child tab and load the Child Theme again. CTC tries to identify these files by fetching a page from the parent theme, but you may need to set them manually.
 
 = Where are the styles? The configurator doesn't show anything! = 
 
@@ -197,12 +214,6 @@ You have to load a child theme from the Parent/Child tab for the preview to disp
 = Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator? = 
 
 You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
-
-= If the parent theme changes (e.g., upgrade), do I have to update the child theme? = 
-
-No. This is the point of using child themes. Changes to the parent theme are automatically inherited by the child theme.
-
-A child theme is not a "copy" of the parent theme. It is a special feature of WordPress that let's you override specific styles and functions leaving the rest of the theme intact. Quality themes should identify any deprecated functions or styles in the upgrade notes so that child theme users can make adjustments accordingly.
 
 = Where are the .php files? = 
 
@@ -256,6 +267,12 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.7.0 =
+* New Feature: Enqueue child theme stylesheet option for themes that do load it.
+* New Feature: Child Theme and Author website, description and tag fields.
+* Fix: Redesigned UI Javascript using jQuery objects for better browser memory management.
+* Fix: Child Theme Stylesheet version is timestamped to force browser reload after changes.
+
 = 1.6.5.2 =
 * Fix: Empty functions file created causing inserted markers to be output to browser.
 * Fix: check for closed PHP tag in functions file prior to inserting markers
@@ -464,7 +481,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
-1.6.5.2 Fixes a major bug in the creation of the child theme functions.php file. See changelog for details.
+Version 1.7.0: New features including redesigned UI Javascript for better browser memory handling. See changelog for details.
 
 == Override Parent Styles ==
 
@@ -549,6 +566,7 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 * Only two-color gradients. The Child Theme Configurator plugin is powerful, but we have simplified the gradient interface. You can use any gradient you want as long as it has two colors and no intermediate stops.
 * No @font-face rules. The Child Theme Configurator plugin only supports @media and @import. If you need other @rules, put them in a separate stylesheet and import them into the Child Theme stylesheet.
 * Not all CSS rules are supported. The Child Theme Configurator plugin works with the vast majority of CSS rules, however we’ve left out some of the more obscure options.
+* CSS Rules are auto-discovered. The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. You can always add new rules using the "Raw CSS" text area.
 * Multiple versions of the same rule in a single selector are not supported, with a few exceptions. The Child Theme Configurator plugin will automatically generate vendor-prefix variations for background-image, border-radius, transform, transition, and others.
 
 == Documentation ==

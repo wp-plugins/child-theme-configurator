@@ -17,7 +17,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
       <div class="ctc-input-cell">
         <div class="ui-widget">
           <input id="ctc_rule_menu"/>
-          <div id="ctc_status_rule"></div>
+          <div id="ctc_status_rules" style="float:right"></div>
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.6.5.2
+    Version: 1.7.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -42,6 +42,10 @@ class ChildThemeConfiguratorCSS {
     var $enqueue;       // load parent css method (enqueue, import, none)
     var $child_name;    // child theme name
     var $child_author;  // stylesheet author
+    var $child_authoruri;  // stylesheet author
+    var $child_themeuri;  // stylesheet author
+    var $child_descr;  // stylesheet author
+    var $child_tags;  // stylesheet author
     var $child_version; // stylesheet version
     var $max_sel;
     var $vendorrule       = array(
@@ -65,6 +69,10 @@ class ChildThemeConfiguratorCSS {
         'child_version',
         'child_author',
         'child_name',
+        'child_themeuri',
+        'child_authoruri',
+        'child_descr',
+        'child_tags',
         'parnt',
         'child',
         'configtype', // legacy support
@@ -98,6 +106,10 @@ class ChildThemeConfiguratorCSS {
         $this->configtype       = 'theme'; // legacy support
         $this->child_name       = '';
         $this->child_author     = 'Child Theme Configurator';
+        $this->child_themeuri   = '';
+        $this->child_authoruri  = '';
+        $this->child_descr      = '';
+        $this->child_tags       = '';
         $this->child_version    = '1.0';
         $this->max_sel          = 0;
 
@@ -126,6 +138,7 @@ class ChildThemeConfiguratorCSS {
             foreach ( $this->configvars as $configkey )
                 if ( isset( $configarray[ $configkey ] ) )
                     $this->{$configkey} = $configarray[ $configkey ];
+            $this->ctc()->debug( 'configvars: ' . print_r( $configarray, TRUE ), __FUNCTION__ );
             foreach ( $this->dicts as $configkey ):
                 if ( $configarray = get_option( $option . '_' . $configkey ) )
                     $this->{$configkey} = $configarray;
@@ -144,11 +157,12 @@ class ChildThemeConfiguratorCSS {
         foreach ( $this->configvars as $configkey )
             $configarray[ $configkey ] = $this->{$configkey};
         update_option( $option . '_configvars', $configarray );
+        $this->ctc()->debug( 'configvars: ' . print_r( $configarray, TRUE ), __FUNCTION__ );
         foreach ( $this->dicts as $configkey )
             update_option( $option . '_' . $configkey, $this->{$configkey} );
     }
     
-    /*
+    /**
      * get_prop
      * Getter interface (data sliced different ways depending on objname )
      */
@@ -160,8 +174,11 @@ class ChildThemeConfiguratorCSS {
                         array_keys( $this->imports[ 'child' ] ) : 
                             array_keys( array_flip( $this->imports[ 'child' ] ) ) ) : 
                                 array() );
-            case 'sel_ndx':
-                return $this->obj_to_utf8( $this->denorm_sel_ndx( empty( $params[ 'key' ] ) ? NULL : $params[ 'key' ] ) );
+            case 'queries':
+                return $this->obj_to_utf8( $this->denorm_sel_ndx() );
+            case 'selectors':
+                return empty( $params[ 'key' ] ) ? 
+                    array() : $this->obj_to_utf8( $this->denorm_sel_ndx( $params[ 'key' ] ) );
             case 'rule_val':
                 return empty( $params[ 'key' ] ) ? array() : $this->denorm_rule_val( $params[ 'key' ] );
             case 'val_qry':
@@ -169,11 +186,12 @@ class ChildThemeConfiguratorCSS {
                     return empty( $params[ 'key' ] ) ? 
                         array() : $this->denorm_val_query( $params[ 'key' ], $params[ 'rule' ] );
                 endif;
-            case 'sel_val':
+            case 'qsid':
                 return empty( $params[ 'key' ] ) ? 
-                    array() : $this->denorm_sel_val( $params[ 'key' ] );
-            case 'rule':
-                return $this->obj_to_utf8( array_flip( $this->dict_rule ) );
+                    array() : $this->obj_to_utf8( $this->denorm_sel_val( $params[ 'key' ] ) );
+            case 'rules':
+                ksort( $this->dict_rule );
+                return $this->obj_to_utf8( $this->dict_rule );;
             case 'child':
                 return $this->child;
             case 'parnt':
@@ -186,6 +204,14 @@ class ChildThemeConfiguratorCSS {
                 return $this->child_name;
             case 'author':
                 return $this->child_author;
+            case 'themeuri':
+                return isset( $this->child_themeuri ) ? $this->child_themeuri : FALSE;
+            case 'authoruri':
+                return isset( $this->child_authoruri ) ? $this->child_authoruri : FALSE;
+            case 'descr':
+                return isset( $this->child_descr ) ? $this->child_descr : FALSE;
+            case 'tags':
+                return isset( $this->child_tags ) ? $this->child_tags : FALSE;
             case 'version':
                 return $this->child_version;
             case 'preview':
@@ -215,7 +241,7 @@ class ChildThemeConfiguratorCSS {
         return FALSE;
     }
 
-    /*
+    /**
      * set_prop
      * Setter interface (scalar values only)
      */
@@ -238,12 +264,15 @@ class ChildThemeConfiguratorCSS {
         $parnt = $this->get_prop( 'parnt' );
         return '/*' . LF
             . 'Theme Name: ' . $this->get_prop( 'child_name' ) . LF
+            . ( ( $attr = $this->get_prop( 'themeuri' ) ) ? 'Theme URI: ' . $attr . LF : '' )
             . 'Template: ' . $parnt . LF
-            . 'Author: ' . $this->get_prop( 'author' ). LF
-            . 'Version: ' . $this->get_prop( 'version' ) . LF
+            . 'Author: ' . $this->get_prop( 'author' ) . LF
+            . ( ( $attr = $this->get_prop( 'authoruri' ) ) ? 'Author URI: ' . $attr . LF : '' )
+            . ( ( $attr = $this->get_prop( 'descr' ) ) ? 'Description: ' . $attr . LF : '' )
+            . ( ( $attr = $this->get_prop( 'tags' ) ) ? 'Tags: ' . $attr . LF : '' )
+            . 'Version: ' . $this->get_prop( 'version' ) . '.' . time() . LF
             . 'Updated: ' . current_time( 'mysql' ) . LF
-            . '*/' . LF . LF
-            . '@charset "UTF-8";' . LF . LF
+            . '*/' . LF . LF . '@charset "UTF-8";' . LF . LF
             . ( 'import' == $this->enqueue ? '@import url(\'../' . $parnt . '/style.css\');' . LF : '' );
     }
     // formats file path for child theme file
@@ -255,17 +284,16 @@ class ChildThemeConfiguratorCSS {
         return trailingslashit( get_theme_root() ) . trailingslashit( $this->get_prop( 'parnt' ) ) . $file;
     }
 
-    /*
+    /**
      * update_arrays
      * accepts CSS properties as raw strings and normilizes into 
      * CTC object arrays, creating update cache in the process.
      * Update cache is returned to UI via AJAX to refresh page.
      */
-    function update_arrays( $template, $query, $sel, $rule = NULL, $value = NULL, $important = 0, $seq = NULL ) {
+    function update_arrays( $template, $query, $sel, $rule = NULL, $value = NULL, $important = 0 ) {
         if ( $this->max_sel ) return;
         // normalize selector styling
         $sel = implode( ', ', preg_split( '#\s*,\s*#s', trim( $sel ) ) );
-                        //echo "$template    $query    $sel    $rule    $value    $important" . LF;
         // add selector and query to index
         if ( !isset( $this->dict_query[ $query ] ) ) $this->dict_query[ $query ] = ++$this->querykey;
         if ( !isset( $this->dict_sel[ $sel ] ) ) $this->dict_sel[ $sel ] = ++$this->selkey;
@@ -281,19 +309,8 @@ class ChildThemeConfiguratorCSS {
             
             $this->dict_qs[ $this->qskey ][ 's' ] = $this->dict_sel[ $sel ];
             $this->dict_qs[ $this->qskey ][ 'q' ] = $this->dict_query[ $query ];
-            // tell the UI to update a single cached query/selector lookup by passing 'qsid' as the key
-            // (normally the entire array is replaced):
-            if ( $this->ctc()->cache_updates )
-                $this->ctc()->updates[] = array(
-                    'obj'   => 'sel_ndx',
-                    'key'   => 'qsid',
-                    'data'  => array(
-                        'query'     => $query,
-                        'selector'  => $sel,
-                        'qsid'      => $this->qskey,
-                    ),
-                );
         endif;
+        
         // update sequence for this selector if this is a later instance to keep cascade priority
         if ( !isset( $this->dict_seq[ $this->qskey ] ) )
             $this->dict_seq[ $this->qskey ] = $this->qskey;
@@ -301,14 +318,6 @@ class ChildThemeConfiguratorCSS {
         if ( $rule ):
             if ( !isset( $this->dict_rule[ $rule ] ) ):
                 $this->dict_rule[ $rule ] = ++$this->rulekey;
-                // tell the UI to update a single cached rule:
-                if ( $this->ctc()->cache_updates ):
-                    $this->ctc()->updates[] = array(
-                        'obj'   => 'rule',
-                        'key'   => $this->rulekey,
-                        'data'  => $rule,
-                    );
-                endif;
             endif;
             $qsid = $this->sel_ndx[ $this->dict_query[ $query ] ][ $this->dict_sel[ $sel ] ];
             $ruleid = $this->dict_rule[ $rule ];
@@ -316,29 +325,12 @@ class ChildThemeConfiguratorCSS {
                 $this->dict_val[ $value ] = ++$this->valkey;
             endif;
             
-                $this->val_ndx[ $qsid ][ $ruleid ][ $template ] = $this->dict_val[ $value ];
-                // set the important flag for this value
-                $this->val_ndx[ $qsid ][ $ruleid ][ 'i_' . $template ] = $important;
-            // tell the UI to add a single cached query/selector data array:
-            if ( $this->ctc()->cache_updates ):
-                $updatearr = array(
-                    'obj'   => 'sel_val',
-                    'key'   => $qsid,
-                    'data'  => $this->denorm_sel_val( $qsid ),
-                );
-                $this->ctc()->updates[] = $updatearr;
-            endif;
-            if ( isset( $seq ) ): // this is a renamed selector
-                $this->dict_seq[ $qsid ] = $seq;
-                if ( $this->ctc()->cache_updates ):
-                    $this->ctc()->updates[] = array(
-                        'obj'   => 'rewrite',
-                        'key'   => $qsid,
-                        'data'  => $sel,
-                    );
-                endif;
-            endif;
+            $this->val_ndx[ $qsid ][ $ruleid ][ $template ] = $this->dict_val[ $value ];
+            // set the important flag for this value
+            $this->val_ndx[ $qsid ][ $ruleid ][ 'i_' . $template ] = $important;
+            // remove if all child values have been cleared
             $this->prune_if_empty( $qsid );
+            return $qsid;
         endif;
     }
     
@@ -394,23 +386,6 @@ class ChildThemeConfiguratorCSS {
         endwhile;
         return $files;
     }
-    // allows images to be used between parent and child themes
-    function convert_parent_rel_url_to_abs_url( $url ) {
-        $source = $this->get_prop( 'parnt' );
-        $spliton = '%[/\\\\]%';
-        $dirname = dirname( $url );
-        $dirs = preg_split( $spliton, $dirname );
-        $dds  = '';
-        $themeuri = get_theme_root_uri();
-        while ( count( $dirs ) ):
-            $thisdir = array_pop( $dirs );
-            $upone = implode( '/', $dirs );           
-            $dds .= '\.\.\/';
-            $regex = '%url\([\'" ]*' . $dds . '(.+?)[\'" ]*\)%';
-            $fullurl = $themeuri . '/' . $source . '/' . $upone . ( '' == $upone ? '' : '/' );
-            $this->styles = preg_replace( $regex, "url(" . $fullurl . "$1)", $this->styles );
-        endwhile;
-    }
     /*
      * parse_post_data
      * Parse user form input into separate properties and pass to update_arrays
@@ -446,6 +421,7 @@ class ChildThemeConfiguratorCSS {
         else:
             $newselector = isset( $_POST[ 'ctc_rewrite_selector' ] ) ? 
                 $this->sanitize( $this->parse_css_input( $_POST[ 'ctc_rewrite_selector' ] ) ) : NULL;
+            $newqsid = NULL;
             // set the custom sequence value
             foreach ( preg_grep( '#^ctc_ovrd_child_seq_#', array_keys( $_POST ) ) as $post_key ):
                 if ( preg_match( '#^ctc_ovrd_child_seq_(\d+)$#', $post_key, $matches ) ):
@@ -474,16 +450,12 @@ class ChildThemeConfiguratorCSS {
                     else:
                         if ( $newselector && $newselector != $selarr[ 'selector' ] ):
                             // If this is a renamed selector, add new selector to array 
-                            // and clear original child selector values.
-                            // Passing the sequence in the last argument serves two purposes:
-                            // 1. sets sequence for new renamed selector.
-                            // 2. tells the update_arrays function to flag this as a 
-                            //    renamed selector to pass back in result array.
-                            $this->update_arrays( 'child', $selarr[ 'query' ], $newselector, 
-                                $rule, trim( $value ), $important, $this->dict_seq[ $qsid ] );
+                            $newqsid = $this->update_arrays( 'child', $selarr[ 'query' ], $newselector, 
+                                $rule, trim( $value ), $important );
+                            // clear the original selector's child value:
                             $this->update_arrays( 'child', $selarr[ 'query' ], $selarr[ 'selector' ], $rule, '' );
                         else:
-                            // Otherwise, just update with the new values:
+                            // otherwise, just update with the new values:
                             $this->update_arrays( 'child', $selarr[ 'query' ], $selarr[ 'selector' ], 
                                 $rule, trim( $value ), $important );
                         endif;
@@ -518,15 +490,33 @@ class ChildThemeConfiguratorCSS {
                         $value = '';
                     endif;
                     if ( $newselector && $newselector != $rule_part[ 'selector' ] ):
-                        $this->update_arrays( 'child', $rule_part[ 'query' ], $newselector, 
-                            $rule, trim( $value ), $rule_part[ 'important' ], $this->dict_seq[ $qsid ] );  
+                        // If this is a renamed selector, add new selector to array 
+                        $newqsid = $this->update_arrays( 'child', $rule_part[ 'query' ], $newselector, 
+                            $rule, trim( $value ), $rule_part[ 'important' ] );  
+                        // clear the original selector's child value:
                         $this->update_arrays( 'child', $rule_part[ 'query' ], $rule_part[ 'selector' ], $rule, '' );
                     else:
+                        // otherwise, just update with the new values:
                         $this->update_arrays( 'child', $rule_part[ 'query' ], $rule_part[ 'selector' ], 
                             $rule, trim( $value ), $rule_part[ 'important' ] );
                     endif;
                 endforeach;
             endforeach; 
+            // if this is a renamed selector, update sequence dict
+            if ( $newqsid ):
+                if ( !isset( $this->dict_seq[ $newqsid ] ) )
+                    $this->dict_seq[ $newqsid ] = $this->dict_seq[ $qsid ];
+                // pass this back to browser
+                $qsid = $newqsid;
+            endif;
+            // return updated qsid to browser to update form
+            if ( $this->ctc()->cache_updates ):
+                $this->ctc()->updates[] = array(
+                    'obj'   => 'qsid',
+                    'key'   => $qsid,
+                    'data'  => $this->obj_to_utf8( $this->denorm_sel_val( $qsid ) ),
+                );
+            endif;
         endif;
     }
     
@@ -571,7 +561,7 @@ class ChildThemeConfiguratorCSS {
         preg_match( $regex, $this->styles, $matches );
         $child_name = $this->get_prop( 'child_name' );
         if ( !empty( $matches[ 1 ] ) && 'child' == $template && empty( $child_name ) ) $this->set_prop( 'child_name', $matches[ 1 ] );
-        $this->parse_css( $template );
+        $this->parse_css( $template, NULL, NULL, $this->ctc()->normalize_path( dirname( $file ) ) );
     }
 
     // loads raw css file into local memory
@@ -608,7 +598,7 @@ class ChildThemeConfiguratorCSS {
      * parse_css
      * Accepts raw CSS as text and parses into individual properties.
      */
-    function parse_css( $template, $basequery = NULL, $parse_imports = TRUE ) {
+    function parse_css( $template, $basequery = NULL, $parse_imports = TRUE, $relpath = '' ) {
         if ( FALSE === strpos( $basequery, '@' ) ):
             $basequery = 'base';
         endif;
@@ -644,6 +634,7 @@ class ChildThemeConfiguratorCSS {
             $this->styles = preg_replace( $regex, '', $this->styles );
         endforeach;
         $ruleset[ $basequery ] = $this->styles;
+        $qsid = NULL;
         foreach ( $ruleset as $query => $segment ):
             // make sure there is a newline before the first selector
             $segment = LF . $segment;
@@ -702,11 +693,40 @@ class ChildThemeConfiguratorCSS {
                         endif;
                         // normalize common vendor prefixes
                         $rule = preg_replace( '#(\-(o|ms|moz|webkit)\-)?(' . implode( '|', $this->vendorrule ) . ')#', "$3", $rule );
-                        $this->update_arrays( $template, $query, $sel, $rule, $value, $important );
+                        if ( 'parnt' == $template && 'background-image' == $rule && strstr( $value, 'url(' ) )
+                            $value = $this->convert_rel_url( $value, $relpath );
+                        $qsid = $this->update_arrays( $template, $query, $sel, $rule, $value, $important );
                     endforeach;
                 endforeach;
             endforeach;
         endforeach;
+        // if this is a raw css update pass the last selector back to the browser to update the form
+        if ( $this->ctc()->cache_updates && $qsid ):
+            $this->ctc()->updates[] = array(
+                'obj'   => 'qsid',
+                'key'   => $qsid,
+                'data'  => $this->obj_to_utf8( $this->denorm_sel_val( $qsid ) ),
+            );
+        endif;
+    }
+    // converts relative path to absolute path for preview
+    function convert_rel_url( $value, $relpath ) {
+        $source     = $this->get_prop( 'parnt' );
+        $path       = preg_replace( '%url\([\'" ]*(.+?)[\'" ]*\)%', "$1", $value );
+        if ( preg_match( '%https?://%', $path ) ) return $value;
+        $pathparts  = explode( '/', $path );
+        $fileparts  = explode( '/', $relpath );
+        $newparts   = array();
+        $themeuri   = get_theme_root_uri();
+        while ( $pathpart = array_shift( $pathparts ) ):
+            if ( '..' == $pathpart )
+                array_pop( $fileparts );
+            else array_push( $newparts, $pathpart );
+        endwhile;
+        $newvalue = 'url(' . //trailingslashit( $themeuri ) . trailingslashit( $source ) .
+            ( $fileparts ? trailingslashit( implode( '/', $fileparts ) ) : '' ) . implode( '/', $newparts ) . ')';
+        $this->ctc()->debug( 'converted ' . $value . ' to ' . $newvalue . ' with ' . $relpath, __FUNCTION__ );
+        return $newvalue;
     }
     
     /*
@@ -1108,7 +1128,8 @@ class ChildThemeConfiguratorCSS {
         foreach ( $this->val_ndx as $selid => $rules ):
             if ( !isset( $rules[ $ruleid ] ) ) continue;
             foreach ( $rules[ $ruleid ] as $theme => $val ):
-                if ( !isset( $val_arr[ $val ] ) || '' === $val_arr[ $val ] ) continue;
+                // skip important flag and invalid values
+                if ( strstr( $theme, 'i_' ) || !isset( $val_arr[ $val ] ) || '' === $val_arr[ $val ] ) continue;
                 $rule_sel_arr[ $val ] = $val_arr[ $val ];
             endforeach;
         endforeach;
@@ -1192,7 +1213,7 @@ class ChildThemeConfiguratorCSS {
                 $sel_ndx_norm[ $queryarr[ $queryid ] ][ $selarr[ $selid ] ] = $qsid;
             endforeach;
         endforeach;
-        return empty( $query ) ? $sel_ndx_norm : $sel_ndx_norm[ $query ];
+        return empty( $query ) ? array_keys( $sel_ndx_norm ) : $sel_ndx_norm[ $query ];
     }
     
     /*

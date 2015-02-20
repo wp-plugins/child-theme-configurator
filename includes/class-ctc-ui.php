@@ -5,7 +5,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
     Description: Handles the plugin User Interface
-    Version: 1.6.5.2
+    Version: 1.7.0
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -25,7 +25,7 @@ class ChildThemeConfiguratorUI {
         $themes     = $this->ctc()->themes;
         $child      = $css->get_prop( 'child' );
         $hidechild  = ( count( $themes[ 'child' ] ) ? '' : 'style="display:none"' );
-        $enqueueset = isset( $css->enqueue );
+        $enqueueset = ( isset( $css->enqueue ) && $child );
         $mustimport = $this->parent_stylesheet_check();
         $imports    = $css->get_prop( 'imports' );
         $id         = 0;

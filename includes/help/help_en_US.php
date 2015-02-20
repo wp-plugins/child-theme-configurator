@@ -13,16 +13,17 @@ if ( !defined( 'ABSPATH' ) ) exit;
       <li>If there are existing child themes available, there will be an additional menu labeled &quot;Use Existing Child Theme&quot; from which you can select, or enter a new value in the input box to create a new one.</li>
     </ul>
   </li>
-  <li><strong>Enter a Name, Author and Version</strong> for the child theme. They each must contain a value, but what you enter is up to you.  If using an existing child theme, they will be entered automatically  based on the child theme selected.</li>
-  <li><strong>Use Parent Options (optional)</strong> If you want to maintain the same theme options as the parent theme, check "Copy Parent Theme Menus, Widgets and other Options". Depending on the theme, some options may need to be applied using separate theme option controls. <strong>NOTE: This will overwrite any child theme options you may have already set.</strong></li>
-  <li><strong>Save Backup (optional)</strong> If using an existing child theme, you can check "Backup Stylesheet", to create a backup of the child theme stylesheet in the child theme directory.</li>
+  <li><strong>Optional: Enter a Theme Name, Theme Website, Author, Author Website, Descriptiont, Tags and Version</strong> for the child theme. If using an existing child theme, they will be entered automatically  based on the child theme selected.</li>
   <li><strong>Choose how WordPress should handle the parent theme stylesheet (new in version 1.6.0):</strong> 
     <ul>
-      <li>Select &lt;link&gt; if the parent theme uses the main 'style.css' stylesheet and correctly enqueues it for child themes (default).</li>
-      <li>Select &#64;import  for older themes that do not enqueue the stylesheet. If the parent styles do not appear when you activate the child theme, you probably need to use this option. <strong>NOTE:</strong> this was the only method used in previous versions of Child Theme Configurator.</li>
-      <li>Select &quot;None&quot; if the parent theme does not use the main 'style.css' for its core styles but enqueues it for child themes. This is a common practice with more recent themes.
+      <li><strong>Enqueue parent stylesheet (default):</strong> Select this option if the parent theme enqueues the stylesheet but has no special handling for child themes. Start with this option if unsure.</li>
+      <li><strong>@import parent stylesheet:</strong> Select this option if the parent theme links the stylesheet in the header template. Using @import is discouraged but necessary in this case unless you modify the header template.</li>
+      <li><strong>Enqueue child stylesheet:</strong> Select this option if the parent theme incorrectly loads the "template" stylesheet or does not load the "style.css" file at all. This is unusual but occurs in some themes.</li>
+      <li><strong>None (handled by theme):</strong> Select this option if all stylesheets are automatically loaded for child themes (e.g., "Responsive" by CyberChimps).</li>
     </ul>
     <strong>If you do not know which option to use, select &lt;link&gt;.</strong></li>
+  <li><strong>Use Parent Options (optional)</strong> If you want to maintain the same theme options as the parent theme, check "Copy Parent Theme Menus, Widgets and other Options". Depending on the theme, some options may need to be applied using separate theme option controls. <strong>NOTE: This will overwrite any child theme options you may have already set.</strong></li>
+  <li><strong>Save Backup (optional)</strong> If using an existing child theme, you can check "Backup Stylesheet", to create a backup of the child theme stylesheet in the child theme directory.</li>
   <li><strong>Restore from backup (optional - new in version 1.6.0):</strong> If using an existing child theme, you can choose whether to reload the current child theme stylesheet (leave unchanged), reset all values, or restore it from a backup. If there are backup files available, they will appear as radio button options.</li>
   <li><strong>Choose additional stylesheets</strong> If your theme uses additional stylesheets, you can open the &quot;Parse Additional Stylesheets&quot; toggle and they will appear as checkbox options. Stylesheets that are being used by the parent theme should be automatically selected for you. Only select additional stylesheets you wish to customize to reduce overhead. <strong>NOTE: If the parent theme uses Bootstrap stylesheets, they will not be automatically selected.</strong> You can select Bootstrap stylesheets manually if you need to customize them, but in most cases they add unecessary overhead to the configuration data.</li>
   <li><strong>Click "Generate/Rebuild Child Theme Files."</strong></li>
@@ -31,8 +32,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_tutorial">Tutorial Video</h3>
-<iframe width="480" height="270" src="//www.youtube.com/embed/53M7RVxDYEY?rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe>
-<!-- END tab --> 
+<iframe src="//fast.wistia.net/embed/iframe/c0fbu8jhtj" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width="640" height="360"></iframe><script src="//fast.wistia.net/assets/external/E-v1.js" async></script><!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_query_selector">Query/Selector Tab</h3>
 <p>There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by <strong>selector</strong> and by <strong>rule</strong>. If you wish to change a specific selector (e.g., h1), use the "Query/Selector" tab. If you have a specific value you wish to change site-wide (e.g., the color of the type), use the "Rule/Value" tab.</p>

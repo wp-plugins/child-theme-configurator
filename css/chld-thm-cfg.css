@@ -1,3 +1,6 @@
+p {
+    line-height:1.4;
+}
 a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     outline: none;
     -moz-box-shadow: none;
@@ -10,17 +13,19 @@ a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     line-height:1;
     height:2em;*/
 }
-h2 .nav-tab {
+h2 .nav-tab, h2 .ctc-recent-tab {
     font-size: 13px;
     padding: 6px 8px;
+    font-weight: 700;
+    line-height: 24px;
 }
 .ctc-option-panel-container {
     position: relative;
     min-height: 1100px;
     width:100%;
     overflow: auto;
- }
-#all_styles_panel {
+}
+.ctc-three-col {
     -moz-columns:3;
     -moz-column-gap:3em;
     -webkit-columns:3;
@@ -59,10 +64,10 @@ h2 .nav-tab {
     visibility: hidden;
     position: absolute;
     /* overflow:auto; */
-    width: 95%;
+    width: 100%;
     top: 0;
     left: 0;
-    padding: 10px 2%;
+    padding: 10px 0 0; 
 /*    transition: width 1s ease;
     -moz-transition: width 1s ease;
     -webkit-transition: width 1s ease;
@@ -83,25 +88,24 @@ h2 .nav-tab {
 #ctc_recent_selectors {
     padding: 0 8px;
 }
+#live_preview_panel iframe {
+    width: 100%;
+    min-height: 1100px;
+}
 a.ctc-recent-tab {
     float:right;
     border:1px solid #ccc;
+    border-bottom: none;
     background-color: #E4E4E4;
     color: #555;
     display: inline-block;
     text-decoration: none;
-    /*margin:0;*/
     margin: -1px 0 0 0;
+/*   margin: 1px 0 -1px;  */
     box-shadow: none;
     -moz-box-shadow:none;
     -webkit-box-shadow: none;
     outline:none;
-}
-h2 .ctc-recent-tab {
-    padding: 6px 8px;
-    font-weight: 700;
-    font-size: 13px;
-    line-height: 24px;
 }
 .ctc-recent-tab h3 {
 }
@@ -148,7 +152,6 @@ h2 .ctc-recent-tab {
     margin-right: 2%;
     word-wrap: break-word;
 }
-
 .ctc-input-cell-wide {
     display: block;
     float: left;
@@ -156,12 +159,16 @@ h2 .ctc-recent-tab {
     margin-right: 2%;
 }
 
+.ctc-input-cell-wide input[type="text"] {
+    width: 100%;
+}
+
 .ctc-input-cell-wide textarea {
     width: 100%;
     height: 200px;
     white-space: pre;
     overflow: auto;
-    font-family: monospace;
+    font-family: inherit;
     word-wrap: normal;
 }
 
@@ -277,7 +284,11 @@ h2 .ctc-recent-tab {
 
 .ctc-selector-value {
 }
-
+.howto.sep {
+    border-bottom: 1px solid #fff;
+    margin-bottom: .5em;
+    padding-bottom: .5em;
+}
 .ctc-selector-cell {
     float: left;
     width: 30%;
@@ -389,6 +400,8 @@ h2 .ctc-recent-tab {
 .ctc-section-toggle-content {
     display: none;
     position: relative;
+    margin:0;
+    padding:1px 0;
 }
 
 /*** Added in 1.6.0 for new Theme chooser ***/
