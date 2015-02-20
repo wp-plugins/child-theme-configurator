@@ -268,7 +268,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 = 1.7.0 =
-* New Feature: Enqueue child theme stylesheet option for themes that do load it.
+* New Feature: Enqueue child theme stylesheet option for themes that do not load it.
 * New Feature: Child Theme and Author website, description and tag fields.
 * Fix: Redesigned UI Javascript using jQuery objects for better browser memory management.
 * Fix: Child Theme Stylesheet version is timestamped to force browser reload after changes.
