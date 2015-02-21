@@ -14,14 +14,13 @@ if ( !defined( 'ABSPATH' ) ) exit;
     </ul>
   </li>
   <li><strong>Optional: Enter a Theme Name, Theme Website, Author, Author Website, Descriptiont, Tags and Version</strong> for the child theme. If using an existing child theme, they will be entered automatically  based on the child theme selected.</li>
-  <li><strong>Choose how WordPress should handle the parent theme stylesheet (new in version 1.6.0):</strong> 
+  <li><strong>Choose how WordPress should handle the parent theme stylesheet:</strong> 
     <ul>
       <li><strong>Enqueue parent stylesheet (default):</strong> Select this option if the parent theme enqueues the stylesheet but has no special handling for child themes. Start with this option if unsure.</li>
       <li><strong>@import parent stylesheet:</strong> Select this option if the parent theme links the stylesheet in the header template. Using @import is discouraged but necessary in this case unless you modify the header template.</li>
       <li><strong>Enqueue child stylesheet:</strong> Select this option if the parent theme incorrectly loads the "template" stylesheet or does not load the "style.css" file at all. This is unusual but occurs in some themes.</li>
       <li><strong>None (handled by theme):</strong> Select this option if all stylesheets are automatically loaded for child themes (e.g., "Responsive" by CyberChimps).</li>
-    </ul>
-    <strong>If you do not know which option to use, select &lt;link&gt;.</strong></li>
+    </ul></li>
   <li><strong>Use Parent Options (optional)</strong> If you want to maintain the same theme options as the parent theme, check "Copy Parent Theme Menus, Widgets and other Options". Depending on the theme, some options may need to be applied using separate theme option controls. <strong>NOTE: This will overwrite any child theme options you may have already set.</strong></li>
   <li><strong>Save Backup (optional)</strong> If using an existing child theme, you can check "Backup Stylesheet", to create a backup of the child theme stylesheet in the child theme directory.</li>
   <li><strong>Restore from backup (optional - new in version 1.6.0):</strong> If using an existing child theme, you can choose whether to reload the current child theme stylesheet (leave unchanged), reset all values, or restore it from a backup. If there are backup files available, they will appear as radio button options.</li>
