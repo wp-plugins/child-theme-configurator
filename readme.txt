@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, customize, CSS, responsive, css editor, theme generator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 1.6.5.2
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,11 +27,11 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 = Why create Child Themes using the Child Theme Configurator? =
 
 * Update themes without losing customizations
-* Easily copy widgets, menus and other options to a child theme
+* Copy existing widgets, menus and other options to child theme
 * Save hours of development time
 * Multisite compatible - great for network sites
 * Make modifications above and beyond the theme Customizer
-* Link (enqueue) parent theme stylesheet instead of using @import
+* Enqueue (link) parent theme stylesheet instead of using @import
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of theme fonts
 * Identify and override exact selectors from the parent theme
@@ -46,7 +46,7 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets. We’ve added more features to make design work quicker and easier with PRO. 
 
-https://www.youtube.com/watch?v=Yj8lxF1knTo
+https://www.youtube.com/watch?v=fktwCk43a8c
 
 Learn more at http://www.lilaeamedia.com/child-theme-configurator-pro
 
@@ -149,10 +149,10 @@ Contact the vendor directly to ask for this core functionality. It is our opinio
 
 Child theme Configurator is designed to add the minimum amount of additional overhead possible and can actually improve performance. **For example:**
 
-    * Child Theme Configurator creates or updates files that are already being read by the system. On the front-end, there are no database calls so WordPress can run independent of the plugin. In fact, you can remove Child Theme Configurator when you are finished setting up your theme.
-    * Customizations are applied to a stylesheet file that can be cached by the browser and/or cached and minimized by a performance caching plugin. Because the editor creates mostly "overrides" to existing styles, the file is typically smaller than other stylesheets.
-    * The code that drives the editor interface only loads when the tool is being used from the WordPress Admin, including Javascript and CSS. This means that it will not get in the way of other admin pages.
-    * The biggest performance hit occurs when you generate the Child Theme files from the Parent/Child tab, but this is a one-time event and only occurs from the WordPress Admin.
+   * Child Theme Configurator creates or updates files that are already being read by the system. On the front-end, there are no database calls so WordPress can run independent of the plugin. In fact, you can remove Child Theme Configurator when you are finished setting up your theme.
+   * Customizations are applied to a stylesheet file that can be cached by the browser and/or cached and minimized by a performance caching plugin. Because the editor creates mostly "overrides" to existing styles, the file is typically smaller than other stylesheets.
+   * The code that drives the editor interface only loads when the tool is being used from the WordPress Admin, including Javascript and CSS. This means that it will not get in the way of other admin pages.
+   * The biggest performance hit occurs when you generate the Child Theme files from the Parent/Child tab, but this is a one-time event and only occurs from the WordPress Admin.
 
 = HELP! I changed a file and now I am unable to access my website or login to wp-admin to fix it! =
 
@@ -267,8 +267,10 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.7.1 = Removed conflicting wistia javascript link
+
 = 1.7.0 =
-* New Feature: Enqueue child theme stylesheet option for themes that do load it.
+* New Feature: Enqueue child theme stylesheet option for themes that do not load it.
 * New Feature: Child Theme and Author website, description and tag fields.
 * Fix: Redesigned UI Javascript using jQuery objects for better browser memory management.
 * Fix: Child Theme Stylesheet version is timestamped to force browser reload after changes.
