@@ -27,11 +27,11 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 = Why create Child Themes using the Child Theme Configurator? =
 
 * Update themes without losing customizations
-* Easily copy widgets, menus and other options to a child theme
+* Copy existing widgets, menus and other options to child theme
 * Save hours of development time
 * Multisite compatible - great for network sites
 * Make modifications above and beyond the theme Customizer
-* Link (enqueue) parent theme stylesheet instead of using @import
+* Enqueue (link) parent theme stylesheet instead of using @import
 * Export Child Theme as Zip Archive
 * Import web fonts and use them in place of theme fonts
 * Identify and override exact selectors from the parent theme
@@ -46,7 +46,7 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets. We’ve added more features to make design work quicker and easier with PRO. 
 
-https://www.youtube.com/watch?v=Yj8lxF1knTo
+https://www.youtube.com/watch?v=fktwCk43a8c
 
 Learn more at http://www.lilaeamedia.com/child-theme-configurator-pro
 
@@ -267,6 +267,8 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.7.1 = Removed conflicting wistia javascript link
+
 = 1.7.0 =
 * New Feature: Enqueue child theme stylesheet option for themes that do not load it.
 * New Feature: Child Theme and Author website, description and tag fields.
