@@ -76,7 +76,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <input class="ctc_text" id="ctc_child_author" name="ctc_child_author" type="text" 
                 value="<?php echo esc_attr( $css->get_prop( 'author' ) ); ?>" placeholder="<?php _e( 'Author', 'chld_thm_cfg' ); ?>" autocomplete="off" />
       </div></div>
-    <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>" id="input_row_child_authorurl">
+    <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>" id="input_row_child_authoruri">
       <div class="ctc-input-cell"> <strong>
         <?php _e( 'Author Website', 'chld_thm_cfg' ); ?>
         </strong> </div>
