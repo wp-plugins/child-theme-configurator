@@ -4,7 +4,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 /*
     Class: ChildThemeConfiguratorCSS
-    Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
+    Plugin URI: http://www.lilaeamedia.com/child-theme-configurator/
     Description: Handles all CSS output, parsing, normalization
     Version: 1.7.1
     Author: Lilaea Media
@@ -16,37 +16,37 @@ if ( !defined( 'ABSPATH' ) ) exit;
 */
 class ChildThemeConfiguratorCSS {
     // data dictionaries
-    var $dict_query;    // @media queries and 'base'
-    var $dict_sel;      // selectors  
-    var $dict_qs;       // query/selector lookup
-    var $dict_rule;     // css rules
-    var $dict_val;      // css values
-    var $dict_seq;      // child load order (priority)
+    var $dict_query;        // @media queries and 'base'
+    var $dict_sel;          // selectors  
+    var $dict_qs;           // query/selector lookup
+    var $dict_rule;         // css rules
+    var $dict_val;          // css values
+    var $dict_seq;          // child load order (priority)
     // hierarchies
-    var $sel_ndx;       // query => selector hierarchy
-    var $val_ndx;       // selector => rule => value hierarchy
+    var $sel_ndx;           // query => selector hierarchy
+    var $val_ndx;           // selector => rule => value hierarchy
     // key counters
-    var $qskey;         // counter for dict_qs
-    var $querykey;      // counter for dict_query
-    var $selkey;        // counter for dict_sel
-    var $rulekey;       // counter for dict_rule
-    var $valkey;        // counter for dict_val
+    var $qskey;             // counter for dict_qs
+    var $querykey;          // counter for dict_query
+    var $selkey;            // counter for dict_sel
+    var $rulekey;           // counter for dict_rule
+    var $valkey;            // counter for dict_val
     // miscellaneous properties
-    var $imports;       // @import rules
-    var $styles;        // temporary update cache
-    var $child;         // child theme slug
-    var $parnt;         // parent theme slug
-    var $configtype;    // legacy plugin slug
-    var $addl_css;      // parent additional stylesheets
-    var $recent;        // history of edited styles
-    var $enqueue;       // load parent css method (enqueue, import, none)
-    var $child_name;    // child theme name
-    var $child_author;  // stylesheet author
-    var $child_authoruri;  // stylesheet author
-    var $child_themeuri;  // stylesheet author
-    var $child_descr;  // stylesheet author
-    var $child_tags;  // stylesheet author
-    var $child_version; // stylesheet version
+    var $imports;           // @import rules
+    var $styles;            // temporary update cache
+    var $child;             // child theme slug
+    var $parnt;             // parent theme slug
+    var $configtype;        // legacy plugin slug
+    var $addl_css;          // parent additional stylesheets
+    var $recent;            // history of edited styles
+    var $enqueue;           // load parent css method (enqueue, import, none)
+    var $child_name;        // child theme name
+    var $child_author;      // child theme author
+    var $child_authoruri;   // child theme author website
+    var $child_themeuri;    // child theme website
+    var $child_descr;       // child theme description
+    var $child_tags;        // child theme tags
+    var $child_version;     // stylesheet version
     var $max_sel;
     var $vendorrule       = array(
         'box-sizing',
