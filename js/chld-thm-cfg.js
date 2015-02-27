@@ -932,7 +932,7 @@
             var self = this,
                 ln = self.is_empty( exn.lineNumber ) ? '' : ' line: ' + exn.lineNumber,
                 fn = self.is_empty( exn.fileName ) ? '' : ' ' + exn.fileName.split( /\?/ )[ 0 ];
-            jquery_err.push( '<code><small>' + type + ': ' + exn.message + fn + ln + '</small></code>' );
+            self.jquery_err.push( '<code><small>' + type + ': ' + exn.message + fn + ln + '</small></code>' );
         },
         
         jquery_notice: function() {
@@ -951,7 +951,7 @@
             } );
             errors.push( '<strong>' + self.getxt( 'js' ) + '</strong>' );
             if ( 1 == ctcAjax.is_debug ) {
-                errors.push( jquery_err.join( '<br/>' ) );
+                errors.push( self.jquery_err.join( '<br/>' ) );
             }
             if ( culprits.length ) {
                 errors.push( self.getxt( 'jquery' ) + '<br/>' + culprits.join( '<br/>' ) );
