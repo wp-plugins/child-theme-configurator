@@ -4,9 +4,9 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 /*
     Class: ChildThemeConfiguratorCSS
-    Plugin URI: http://www.lilaeamedia.com/child-theme-configurator/
+    Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.7.1
+    Version: 1.7.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -292,6 +292,9 @@ class ChildThemeConfiguratorCSS {
      */
     function update_arrays( $template, $query, $sel, $rule = NULL, $value = NULL, $important = 0 ) {
         if ( $this->max_sel ) return;
+        if ( FALSE === strpos( $query, '@' ) ):
+            $query = 'base';
+        endif;
         // normalize selector styling
         $sel = implode( ', ', preg_split( '#\s*,\s*#s', trim( $sel ) ) );
         // add selector and query to index
@@ -328,8 +331,6 @@ class ChildThemeConfiguratorCSS {
             $this->val_ndx[ $qsid ][ $ruleid ][ $template ] = $this->dict_val[ $value ];
             // set the important flag for this value
             $this->val_ndx[ $qsid ][ $ruleid ][ 'i_' . $template ] = $important;
-            // remove if all child values have been cleared
-            $this->prune_if_empty( $qsid );
             return $qsid;
         endif;
     }
@@ -338,15 +339,13 @@ class ChildThemeConfiguratorCSS {
         if (! isset( $this->dict_val[ '' ] ) ) return FALSE;
         $empty = $this->dict_val[ '' ];
         foreach ( $this->val_ndx[ $qsid ] as $ruleid => $arr ):
-            // if any values exist return
-            if ( ( isset( $arr[ 'child' ] ) && $empty != $arr[ 'child' ] )
-                || ( isset( $arr[ 'parnt' ] ) && $empty != $arr[ 'parnt' ] ) ):
-
-                do_action( 'chld_thm_cfg_update_qsid', $qsid );                
+            if ( ( isset( $arr[ 'child' ] ) && $empty != $arr[ 'child' ] ) 
+                || ( isset( $arr[ 'parnt' ] ) && $empty != $arr[ 'parnt' ] )
+                ):
                 return FALSE;
             endif;
         endforeach;
-        // no values, prune from data ( keep dictionary entries )
+        // no values, prune from sel index, val index and qs dict data ( keep other dictionary records )
         unset( $this->sel_ndx[ $this->dict_qs[ $qsid ][ 'q' ] ][ $this->dict_qs[ $qsid ][ 's' ] ] );
         unset( $this->val_ndx[ $qsid ] );
         unset( $this->dict_qs[ $qsid ] );
@@ -395,7 +394,7 @@ class ChildThemeConfiguratorCSS {
         if ( isset( $_POST[ 'ctc_new_selectors' ] ) ):
             $this->styles = $this->parse_css_input( LF . $_POST[ 'ctc_new_selectors' ] );
             $this->parse_css( 'child', 
-                ( isset( $_POST[ 'ctc_sel_ovrd_query' ] )?trim( $_POST[ 'ctc_sel_ovrd_query' ] ):NULL ), FALSE );
+                ( isset( $_POST[ 'ctc_sel_ovrd_query' ] ) ? trim( $_POST[ 'ctc_sel_ovrd_query' ] ) : NULL ), FALSE );
         elseif ( isset( $_POST[ 'ctc_child_imports' ] ) ):
             $this->imports[ 'child' ] = array();
             $this->styles = $this->parse_css_input( $_POST[ 'ctc_child_imports' ] );
@@ -454,6 +453,9 @@ class ChildThemeConfiguratorCSS {
                                 $rule, trim( $value ), $important );
                             // clear the original selector's child value:
                             $this->update_arrays( 'child', $selarr[ 'query' ], $selarr[ 'selector' ], $rule, '' );
+                            // remove if all values have been cleared
+                            // note: 1.7.2 we are only pruning after rename
+                            $this->prune_if_empty( $qsid );
                         else:
                             // otherwise, just update with the new values:
                             $this->update_arrays( 'child', $selarr[ 'query' ], $selarr[ 'selector' ], 
@@ -517,6 +519,7 @@ class ChildThemeConfiguratorCSS {
                     'data'  => $this->obj_to_utf8( $this->denorm_sel_val( $qsid ) ),
                 );
             endif;
+            do_action( 'chld_thm_cfg_update_qsid', $qsid );                
         endif;
     }
     
@@ -561,7 +564,7 @@ class ChildThemeConfiguratorCSS {
         preg_match( $regex, $this->styles, $matches );
         $child_name = $this->get_prop( 'child_name' );
         if ( !empty( $matches[ 1 ] ) && 'child' == $template && empty( $child_name ) ) $this->set_prop( 'child_name', $matches[ 1 ] );
-        $this->parse_css( $template, NULL, NULL, $this->ctc()->normalize_path( dirname( $file ) ) );
+        $this->parse_css( $template, NULL, TRUE, $this->ctc()->normalize_path( dirname( $file ) ) );
     }
 
     // loads raw css file into local memory
@@ -707,6 +710,7 @@ class ChildThemeConfiguratorCSS {
                 'key'   => $qsid,
                 'data'  => $this->obj_to_utf8( $this->denorm_sel_val( $qsid ) ),
             );
+            do_action( 'chld_thm_cfg_update_qsid', $qsid );                
         endif;
     }
     // converts relative path to absolute path for preview

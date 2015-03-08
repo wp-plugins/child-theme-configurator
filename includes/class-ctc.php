@@ -4,9 +4,9 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 /*
     Class: Child_Theme_Configurator
-    Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
+    Plugin URI: http://www.childthemeconfigurator.com/
     Description: Main Controller Class
-    Version: 1.7.1
+    Version: 1.7.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -108,7 +108,7 @@ class ChildThemeConfiguratorAdmin {
         $this->ui->render();
     }
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.1' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.2' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -160,14 +160,14 @@ class ChildThemeConfiguratorAdmin {
             'inval_theme_txt'   => __( 'Please enter a valid Child Theme.',                                 'chld_thm_cfg' ),
             'inval_name_txt'    => __( 'Please enter a valid Child Theme name.',                            'chld_thm_cfg' ),
             'theme_exists_txt'  => __( '<strong>%s</strong> exists. Please enter a different Child Theme',  'chld_thm_cfg' ),
-            'js_txt'            => __( 'The page could not be loaded correctly so some controls have been disabled.',
+            'js_txt'            => __( 'The page could not be loaded correctly.',
                                                                                                             'chld_thm_cfg' ),
             'jquery_txt'        => __( 'Conflicting jQuery libraries were loaded by another plugin:',
                                                                                                             'chld_thm_cfg' ),
             'plugin_txt'        => __( 'Deactivating other plugins may resolve this issue.',                'chld_thm_cfg' ),
             'contact_txt'       => sprintf( __( '%sWhy am I seeing this?%s',
                                                                                                             'chld_thm_cfg' ),
-                '<a target="_blank" href="' . LILAEAMEDIA_URL . '/child-theme-configurator#script_dep">',
+                '<a target="_blank" href="' . CHLD_THM_CFG_DOCS_URL . '/#script_dep">',
                 '</a>' ),
         ) );
         wp_localize_script(
