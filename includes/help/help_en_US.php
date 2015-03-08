@@ -26,7 +26,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
   <li><strong>Restore from backup (optional - new in version 1.6.0):</strong> If using an existing child theme, you can choose whether to reload the current child theme stylesheet (leave unchanged), reset all values, or restore it from a backup. If there are backup files available, they will appear as radio button options.</li>
   <li><strong>Choose additional stylesheets</strong> If your theme uses additional stylesheets, you can open the &quot;Parse Additional Stylesheets&quot; toggle and they will appear as checkbox options. Stylesheets that are being used by the parent theme should be automatically selected for you. Only select additional stylesheets you wish to customize to reduce overhead. <strong>NOTE: If the parent theme uses Bootstrap stylesheets, they will not be automatically selected.</strong> You can select Bootstrap stylesheets manually if you need to customize them, but in most cases they add unecessary overhead to the configuration data.</li>
   <li><strong>Click "Generate/Rebuild Child Theme Files."</strong></li>
-  <li><strong>IMPORTANT: <a target="_blank" href="http://www.lilaeamedia.com/plugins/child-theme-configurator/#preview_activate" title="Test your child theme before activating!">Always test your child theme with Live Preview before activating!</a></strong></li>
+  <li><strong>IMPORTANT: <a target="_blank" href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/#preview_activate" title="Test your child theme before activating!">Always test your child theme with Live Preview before activating!</a></strong></li>
 </ol>
 <!-- END tab --> 
 <!-- BEGIN tab -->
@@ -86,7 +86,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_preview">Preview and Activate</h3>
-<p><strong>IMPORTANT: <a target="_blank" href="http://www.lilaeamedia.com/plugins/child-theme-configurator/#preview_activate" title="Test your child theme before activating!">Test your child theme before activating!</a></strong> Some themes (particularly commercial themes) do not correctly load parent template files or automatically load child theme stylesheets or php files. <strong>In the worst cases they will break your website when you activate the child theme.</strong></p>
+<p><strong>IMPORTANT: <a target="_blank" href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/#preview_activate" title="Test your child theme before activating!">Test your child theme before activating!</a></strong> Some themes (particularly commercial themes) do not correctly load parent template files or automatically load child theme stylesheets or php files. <strong>In the worst cases they will break your website when you activate the child theme.</strong></p>
 <ol>
   <li>Navigate to Appearance > Themes in the WordPress Admin. You will now see the new Child Theme as one of the installed Themes.</li>
   <li>Click "Live Preview" below the new Child Theme to see it in action.</li>
@@ -137,12 +137,12 @@ if ( !defined( 'ABSPATH' ) ) exit;
 </ul>
 </p> 
 <h5 id="existing_parent">How do I move changes I have already made to a Child Theme?</h5>
-<p>Follow <a href="http://www.lilaeamedia.com/plugins/child-theme-configurator#child_from_modified_parent" class="scroll-to">these steps</a>. </p>
+<p>Follow <a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/#child_from_modified_parent" class="scroll-to">these steps</a>. </p>
 <h5 id="web_fonts">How do I add Web Fonts?</h5>
 <p>The easiest method is to paste the @import code provided by <a href="http://www.google.com/fonts" title="Google Fonts">Google</a>, <a href="http://www.fontsquirrel.com/" title="Font Squirrel">Font Squirrel</a> or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the <strong>font-family</strong> rule. Be sure you understand the license for any embedded fonts. </p>
 <p>You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. </p>
 <h5 id="plugin">Does it work with plugins?</h5>
-<p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles/" title="Take Control of your Plugin Styles with Child Theme Configurator Plugin Extension for WordPress">Learn more <i class="genericon genericon-next"></i></a> 
+<p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="<?php echo CHLD_THM_CFG_PRO_URL; ?>" title="Take Control of your Plugin Styles with Child Theme Configurator Plugin Extension for WordPress">Learn more <i class="genericon genericon-next"></i></a> 
 <h5 id="doesnt_work">Why doesn't this work with my (insert theme vendor here) theme?</h5>
 <p>Some themes (particularly commercial themes) do not correctly load parent template files or automatically load child theme stylesheets or php files.</p><p>This is unfortunate, because in the best case they effectively prohibit the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. <strong>In the worst case they will break your website when you activate the child theme.</strong> </p>
 <p>Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org. </p>
@@ -207,11 +207,11 @@ The plugin only loads the bulk of the code in the admin when you are using the t
 <h4>Our plugins will not nag you for donations...</h4>
 <span style="font-size:smaller">...but we LOVE referrals.</span><br/><a href="http://wordpress.org/support/view/plugin-reviews/child-theme-configurator?rate=5#postform">Give Us 5 Stars</a>
 <h4>Introducing CTC Pro</h4>
-<a href="http://www.lilaeamedia.com/child-theme-configurator-pro/" title="<?php _e( 'Learn more about CTC Pro', 'chld_thm_cfg' ); ?>"><img src="<?php echo CHLD_THM_CFG_URL . 'css/pro-banner.jpg'; ?>" width="150" height="48" /></a>
-<p style="font-size:smaller">Designed by WordPress developers who use it every day, CTC Pro adds plugin stylesheets and other features to make design work quicker and easier. This is a free upgrade for users that purchased the Plugins Extension. <a href="http://www.lilaeamedia.com/plugins/child-theme-configurator-pro" title="Child Theme Configurator Pro">Learn more</a></p>
+<a href="<?php echo CHLD_THM_CFG_PRO_URL; ?>" title="<?php _e( 'Learn more about CTC Pro', 'chld_thm_cfg' ); ?>"><img src="<?php echo CHLD_THM_CFG_URL . 'css/pro-banner.jpg'; ?>" width="150" height="48" /></a>
+<p style="font-size:smaller">Designed by WordPress developers who use it every day, CTC Pro adds plugin stylesheets and other features to make design work quicker and easier. This is a free upgrade for users that purchased the Plugins Extension. <a href="<?php echo CHLD_THM_CFG_PRO_URL; ?>" title="Child Theme Configurator Pro">Learn more</a></p>
 <ul>
   <li><a href="http://www.lilaeamedia.com/about/contact/">Contact us</a></li>
-  <li><a href="http://www.lilaeamedia.com/plugins/child-theme-configurator">Plugin Website</a></li>
+  <li><a href="http://www.childthemeconfigurator.com/">Plugin Website</a></li>
   <li><a href="http://codex.wordpress.org/Child_Themes">WordPress Codex</a></li>
   <li><a href="http://wordpress.stackexchange.com/">WordPress Answers</a></li>
 </ul>
