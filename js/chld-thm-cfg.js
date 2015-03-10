@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.2
+ *  Version: 1.7.2.1
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -625,16 +625,20 @@
                     }
                     self.current_qsdata.value[ ui.item.label ] = { 'child': '' };
                     var newrule = ui.item.label.replace( /[^\w\-]/g, self.to_ascii ),
-                        n = $( self.input_row( self.current_qsid, newrule, 'ovrd', self.current_qsdata ) );
+                        n = $( self.input_row( self.current_qsid, newrule, 'ovrd', self.current_qsdata ) ),
+                        first;
                     $( '#ctc_sel_ovrd_rule_inputs' ).append( n );
                     $( '#ctc_new_rule_menu' ).val( '' );
                     
                     n.find( 'input[type="text"]' ).each( function( ndx, el ) {
+                        if (! first) first = el;
                         if ( $( el ).hasClass( 'color-picker' ) )
                             self.setup_iris( el );
-                        $( el ).focus();
                     } );
-                    if ( self.jquery_err.length ) self.jquery_notice();
+                    if ( first )
+                        $( first ).focus();
+                    if ( self.jquery_err.length ) 
+                        self.jquery_notice();
                     return false;
                 },
                 focus: function( e ) { 
@@ -950,9 +954,9 @@
                 }
             } );
             errors.push( '<strong>' + self.getxt( 'js' ) + '</strong>' );
-            if ( 1 == ctcAjax.is_debug ) {
+            //if ( 1 == ctcAjax.is_debug ) {
                 errors.push( self.jquery_err.join( '<br/>' ) );
-            }
+            //}
             if ( culprits.length ) {
                 errors.push( self.getxt( 'jquery' ) + '<br/>' + culprits.join( '<br/>' ) );
             }

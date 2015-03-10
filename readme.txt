@@ -266,7 +266,8 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
-= 1.7.2 = 
+= 1.7.2.1 = 
+* Fix: hide called before iris init
 * Fix: @import not being written on rebuild/configure
 * Fix: min height on rule/value panel
 * Only prune child theme selectors on rename
@@ -489,7 +490,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
-Version 1.7.2: @imports were not being written correctly on child theme rebuild. See changelog.
+Version 1.7.2.1: Fixed Iris bug in JS; 1.7.2: @imports were not being written correctly on child theme rebuild. See changelog.
 
 == Override Parent Styles ==
 
