@@ -5,7 +5,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 /*
     Plugin Name: Child Theme Configurator
     Plugin URI: http://www.childthemeconfigurator.com
-    Description: Create a child theme and customize the stylesheets and templates. Fast CSS editor lets you search, preview and modify any style.
+    Description: Create a child theme that follows WP best practice to enqueue stylesheets. Easy to use CSS editor lets you find, preview and customize any style.
     Version: 1.7.2.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com

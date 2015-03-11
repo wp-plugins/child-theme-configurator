@@ -4,15 +4,15 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, child themes, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1
-Stable tag: 1.7.2
+Stable tag: 1.7.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Create a child theme and customize the stylesheets and templates. Fast CSS editor lets you search, preview and modify any style.
+Create a child theme that follows WP best practice to enqueue stylesheets. Easy to use CSS editor lets you find, preview and customize any style.
 
 == Description ==
 
-Child Theme Configurator is a fast and easy to use CSS editor that allows you to create child themes and customize them beyond the options of the Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
+Child Theme Configurator is a fast and easy to use CSS editor that allows you to create a child theme and customize it beyond the options of the Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched. [Learn more about how to create a child theme](http://www.childthemeconfigurator.com).
 
 = Take Control of Your Child Themes =
 
@@ -31,7 +31,7 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Save hours of development time
 * Multisite compatible
 * Make modifications unavailable to the Customizer
-* Enqueue (link) parent theme stylesheet instead of using @import
+* Uses WP best practice for enqueuing (linking) stylesheets
 * Export child themes as Zip Archive
 * Use web fonts in your child theme
 * Identify and override exact selectors from the parent theme

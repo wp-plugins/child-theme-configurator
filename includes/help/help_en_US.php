@@ -136,8 +136,8 @@ if ( !defined( 'ABSPATH' ) ) exit;
 	<li><strong>Options: </strong> Every theme handles options in its own way. Most often, they will create a set of options and store them in the WordPress database. Some options are specific to the active theme (or child theme), and some are specific to the parent theme only (meaning the child theme CANNOT override them). You will have to find out from the theme author which are which.</li>
 </ul>
 </p> 
-<h5 id="existing_parent">How do I move changes I have already made to a Child Theme?</h5>
-<p>Follow <a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/#child_from_modified_parent" class="scroll-to">these steps</a>. </p>
+<h5 id="existing_parent">How do I move changes I have already made to my theme into a Child Theme?</h5>
+<p><a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/#child_from_modified_parent" class="scroll-to">Follow these steps</a>. </p>
 <h5 id="web_fonts">How do I add Web Fonts?</h5>
 <p>The easiest method is to paste the @import code provided by <a href="http://www.google.com/fonts" title="Google Fonts">Google</a>, <a href="http://www.fontsquirrel.com/" title="Font Squirrel">Font Squirrel</a> or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the <strong>font-family</strong> rule. Be sure you understand the license for any embedded fonts. </p>
 <p>You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. </p>
