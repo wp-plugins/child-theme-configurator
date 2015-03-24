@@ -3,8 +3,8 @@ Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
 Tags: child theme, child themes, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, stylesheet, customizer
 Requires at least: 3.9
-Tested up to: 4.1
-Stable tag: 1.7.2.1
+Tested up to: 4.1.1
+Stable tag: 1.7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,11 +98,11 @@ Select this option if all stylesheets are correctly enqueued for child themes. I
   * **Enqueue parent stylesheet (default)**
     Select this option if the theme enqueues the active stylesheet but has no special handling for child themes. Start with this option if unsure.
   * **Enqueue child stylesheet**
-    Select this option if the theme enqueues the parent stylesheet but does not enqueue the child stylesheet at all. This can happen if get_template() or get_template_directory_uri() is used to link the stylesheet.
+    Select this option if the theme enqueues the parent theme stylesheet but does not enqueue the child theme stylesheet at all. This can happen if get_template() or get_template_directory_uri() is used to link the stylesheet.
   * **Enqueue both parent and child stylesheets**
-    Select this option if stylesheet link tags are hard-coded into the header template (common in older themes). This enables the child stylesheet to override the parent stylesheet without using @import. 
+    Select this option if stylesheet link tags are hard-coded into the header template (common in older themes). This enables the child theme stylesheet to override the parent theme stylesheet without using @import. 
   * **@import parent stylesheet**
-    This option imports the parent stylesheet from the child stylesheet. This enables the child stylesheet to override the parent stylesheet, but using @import is no longer recommended.   
+    This option imports the parent theme stylesheet from the child theme stylesheet. This enables the child theme stylesheet to override the parent theme stylesheet, but using @import is no longer recommended.   
   * [See our website for more information about which option to use](http://www.childthemeconfigurator.com/how-to-use/#stylesheet_handling) 
 
 6. Optional: Save Backup
@@ -270,7 +270,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 = 1.7.3 =
-* Changed @import tab to "Web Fonts." @import statements are automatically converted to external links when the page is loaded.
+* Changed @import tab to "Web Fonts." @import statements are automatically converted to enqueued external links.
 * Added "Enqueue both parent and child stylesheets" option to enable child theme overrides without using @import.
 * Added checks for hard-coded link tags in header template to help resolve incorrect stylesheet load order.
 * Fix: "Enqueue child stylesheet" now passes correct value.
