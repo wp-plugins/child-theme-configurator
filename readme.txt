@@ -68,15 +68,15 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 == Installation ==
 
 1. To install from the Plugins repository:
-    * In the WordPress Admin, go to "Plugins > Add New."
-    * Type "child theme" in the "Search" box and click "Search Plugins."
-    * Locate "Child Theme Configurator" in the list and click "Install Now."
+  * In the WordPress Admin, go to "Plugins > Add New."
+  * Type "child theme" in the "Search" box and click "Search Plugins."
+  * Locate "Child Theme Configurator" in the list and click "Install Now."
 
 2. To install manually:
-    * Download the Child Theme Configurator plugin from http://wordpress.org/plugins/child-theme-configurator
-    * In the WordPress Admin, go to "Plugins > Add New."
-    * Click the "Upload" link at the top of the page.
-    * Browse for the zip file, select and click "Install."
+  * Download the Child Theme Configurator plugin from http://wordpress.org/plugins/child-theme-configurator
+  * In the WordPress Admin, go to "Plugins > Add New."
+  * Click the "Upload" link at the top of the page.
+  * Browse for the zip file, select and click "Install."
 
 3. In the WordPress Admin, go to "Plugins > Installed Plugins." Locate "Child Theme Configurator" in the list and click "Activate."
 
@@ -93,11 +93,17 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 4. Optional: Copy Parent Theme Menus, Widgets and other Options. NOTE: This will overwrite any child theme options you may have already set.
 
 5. Choose stylesheet handling:
-   * [See our website for information about which option to use](http://www.childthemeconfigurator.com/how-to-use/#stylesheet_handling) 
-   * **None (handled by theme):**
-   * **Enqueue parent stylesheet (default):**
-   * **Enqueue child stylesheet:**
-   * **@import parent stylesheet:**
+  * **None (handled by theme)**
+Select this option if all stylesheets are correctly enqueued for child themes. If you find that styles are not being applied correctly, use a different option.
+  * **Enqueue parent stylesheet (default)**
+    Select this option if the theme enqueues the active stylesheet but has no special handling for child themes. Start with this option if unsure.
+  * **Enqueue child stylesheet**
+    Select this option if the theme enqueues the parent stylesheet but does not enqueue the child stylesheet at all. This can happen if get_template() or get_template_directory_uri() is used to link the stylesheet.
+  * **Enqueue both parent and child stylesheets**
+    Select this option if stylesheet link tags are hard-coded into the header template (common in older themes). This enables the child stylesheet to override the parent stylesheet without using @import. 
+  * **@import parent stylesheet**
+    This option imports the parent stylesheet from the child stylesheet. This enables the child stylesheet to override the parent stylesheet, but using @import is no longer recommended.   
+  * [See our website for more information about which option to use](http://www.childthemeconfigurator.com/how-to-use/#stylesheet_handling) 
 
 6. Optional: Save Backup
 

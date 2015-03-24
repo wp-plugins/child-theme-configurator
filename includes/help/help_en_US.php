@@ -16,10 +16,16 @@ if ( !defined( 'ABSPATH' ) ) exit;
   <li><strong>Optional: Enter a Theme Name, Theme Website, Author, Author Website, Descriptiont, Tags and Version</strong> for the child theme. If using an existing child theme, they will be entered automatically  based on the child theme selected.</li>
   <li><strong>Choose how WordPress should handle the parent theme stylesheet:</strong> 
     <ul>
-      <li><strong>Enqueue parent stylesheet (default):</strong> Select this option if the parent theme enqueues the stylesheet but has no special handling for child themes. Start with this option if unsure.</li>
-      <li><strong>@import parent stylesheet:</strong> Select this option if the parent theme links the stylesheet in the header template. Using @import is discouraged but necessary in this case unless you modify the header template.</li>
-      <li><strong>Enqueue child stylesheet:</strong> Select this option if the parent theme incorrectly loads the "template" stylesheet or does not load the "style.css" file at all. This is unusual but occurs in some themes.</li>
-      <li><strong>None (handled by theme):</strong> Select this option if all stylesheets are automatically loaded for child themes (e.g., "Responsive" by CyberChimps).</li>
+      <li><strong>None (handled by theme)</strong>
+Select this option if all stylesheets are correctly enqueued for child themes. If you find that styles are not being applied correctly, use a different option.</li>
+      <li><strong>Enqueue parent stylesheet (default)</strong>
+Select this option if the theme enqueues the active stylesheet but has no special handling for child themes. Start with this option if unsure.</li>
+      <li><strong>Enqueue child stylesheet</strong>
+Select this option if the theme enqueues the parent stylesheet but does not enqueue the child stylesheet at all. This can happen if <code>get_template()</code> or <code>get_template_directory_uri()</code> is used to link the stylesheet.</li>
+      <li><strong>Enqueue both parent and child stylesheets</strong>
+Select this option if stylesheet link tags are hard-coded into the header template (common in older themes). This enables the child stylesheet to override the parent stylesheet without using <code>@import.</code></li>
+      <li><strong><code>@import</code> parent stylesheet</strong>
+This option imports the parent stylesheet from the child stylesheet. This enables the child stylesheet to override the parent stylesheet, but using <code>@import</code> is no longer recommended.</li>
     </ul></li>
   <li><strong>Use Parent Options (optional)</strong> If you want to maintain the same theme options as the parent theme, check "Copy Parent Theme Menus, Widgets and other Options". Depending on the theme, some options may need to be applied using separate theme option controls. <strong>NOTE: This will overwrite any child theme options you may have already set.</strong></li>
   <li><strong>Save Backup (optional)</strong> If using an existing child theme, you can check "Backup Stylesheet", to create a backup of the child theme stylesheet in the child theme directory.</li>
@@ -59,12 +65,8 @@ if ( !defined( 'ABSPATH' ) ) exit;
 <h3 id="ctc_imports">Web Fonts Tab</h3>
 <p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the Web Fonts tab. <strong>Important: do not import the parent theme stylesheet here. Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.</strong></p>
 <p>Below is an example that loads a local custom stylesheet (you would have to add the "fonts" directory and stylesheet) as well as the web font "Open Sans" from Google Web Fonts:</p>
-<blockquote>
-  <pre><code>
-@import url(fonts/stylesheet.css);
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic);
-</code></pre>
-</blockquote>
+<blockquote><pre><code>&#64;import url(fonts/stylesheet.css);
+&#64;import url(http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic);</code></pre></blockquote>
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_files">Files Tab</h3>
@@ -213,6 +215,6 @@ The plugin only loads the bulk of the code in the admin when you are using the t
   <li><a href="http://www.lilaeamedia.com/about/contact/">Contact us</a></li>
   <li><a href="http://www.childthemeconfigurator.com/">Plugin Website</a></li>
   <li><a href="http://codex.wordpress.org/Child_Themes">WordPress Codex</a></li>
-  <li><a href="http://wordpress.stackexchange.com/">WordPress Answers</a></li>
+  <li><a href="http://wordpress.stackexchange.com/">WordPress Development (StackExchange)</a></li>
 </ul>
 <!-- END sidebar -->
