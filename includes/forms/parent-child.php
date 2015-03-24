@@ -112,10 +112,10 @@ if ( !defined( 'ABSPATH' ) ) exit;
       </div><?php if ( count( $this->warnings ) && !in_array( $this->ctc()->css->enqueue, array( 'both', 'import' ) ) ):?>
 <div class="ctc-input-cell-wide update-nag"><strong><?php _e( 'This theme may not apply child theme styles correctly with the current settings:', 'chld_thm_cfg' ); ?></strong><ul class="smaller">
         <?php foreach ( $this->warnings as $warning ) echo '<li>' . $warning  . '</li>' . LF; ?>
-        </ul></div>
+        </ul> <a href="#" class="ctc-section-toggle" id="ctc_stylesheet_handling2"><?php _e( 'View options', 'chld_thm_cfg'); ?></a></div>
 <?php endif; ?>
 <div class="ctc-section-toggle-content clear" id="ctc_stylesheet_handling_content">
-      <div class="ctc-input-cell clear"><a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>#stylesheet_handling" target="_blank"><?php _e( 'Which option should I use?', 'chld_thm_cfg' ); ?></a></div>
+      <div class="ctc-input-cell clear"><a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/how-to-use/#stylesheet_handling" target="_blank"><?php _e( 'Which option should I use?', 'chld_thm_cfg' ); ?></a></div>
       <div class="ctc-input-cell">
         <label>
           <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_none" name="ctc_parent_enqueue" type="radio" 

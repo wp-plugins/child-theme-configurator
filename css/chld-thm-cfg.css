@@ -397,7 +397,15 @@ a.ctc-recent-tab {
 .ctc-section-toggle.open:after {
     content: "\f142";
 }
-
+a.ctc-section-toggle, a.ctc-section-toggle:hover, a.ctc-section-toggle:active, a.ctc-section-toggle:visited {
+    text-decoration: none;
+    float:right;
+    font-size:.85em;
+    box-shadow:none;
+    -moz-box-shadow:none;
+    -webkit-box-shadow:none;
+    outline:none;
+}
 .ctc-section-toggle-content {
     display: none;
     position: relative;

@@ -1246,9 +1246,14 @@
                     self.focus_panel( id );
                 } );
                 $( '.ctc-section-toggle' ).on( 'click', function( e ) {
-                    $( this ).toggleClass( 'open' );
-                    var id = $( this ).attr( 'id' ) + '_content';
-                    $( '#' + id ).slideToggle( 'fast' );
+                    e.preventDefault();
+                    $( this ).parents( '.ctc-input-row' ).first().find( '.ctc-section-toggle' )
+                        .each( function() { 
+                            $( this ).toggleClass( 'open' );
+                        } );
+                    var id = $( this ).attr( 'id' ).replace(/\d$/, '') + '_content';
+                    $( '#' + id ).stop().slideToggle( 'fast' );
+                    return false;
                 } );
                 $( '#view_child_options, #view_parnt_options' ).on( 'click', function( e ){ 
                     if ( $( this ).hasClass( 'ajax-pending' ) ) return false;

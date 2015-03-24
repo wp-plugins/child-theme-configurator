@@ -167,7 +167,7 @@ class ChildThemeConfiguratorAdmin {
             'plugin_txt'        => __( 'Deactivating or replacing plugins may resolve this issue.',         'chld_thm_cfg' ),
             'contact_txt'       => sprintf( __( '%sWhy am I seeing this?%s',
                                                                                                             'chld_thm_cfg' ),
-                '<a target="_blank" href="' . CHLD_THM_CFG_DOCS_URL . '/#script_dep">',
+                '<a target="_blank" href="' . CHLD_THM_CFG_DOCS_URL . '/how-to-use/#script_dep">',
                 '</a>' ),
         ) );
         wp_localize_script(
@@ -580,7 +580,12 @@ class ChildThemeConfiguratorAdmin {
         
         // if no errors so far, we are good to create child theme
         if ( empty( $this->errors ) ):
-            $this->css = new ChildThemeConfiguratorCSS();
+            // save imports in case this is a rebuild
+            $imports                = $this->css->imports;
+            // reset everything else
+            $this->css              = new ChildThemeConfiguratorCSS();
+            // restore imports if this is a rebuild
+            $this->css->imports     = $imports;
             // check if we have additional files from legacy plugin extension. if so, we have to override 
             // function to support wp_filesystem requirements
             if ( $this->is_theme( $configtype ) ):
@@ -596,7 +601,8 @@ class ChildThemeConfiguratorAdmin {
                 add_action( 'chld_thm_cfg_addl_files', array( &$this, 'write_addl_files' ), 10, 2 );
                 $this->css->set_prop( 'configtype', $configtype );
             endif;
-            //echo 'parnt: ' . $parnt . ' child: ' . $child . LF;
+    
+            // update with new parameters
             $this->css->set_prop( 'parnt', $parnt );
             $this->css->set_prop( 'child', $child );
             $this->css->set_prop( 'child_name', $name );
@@ -607,6 +613,7 @@ class ChildThemeConfiguratorAdmin {
             $this->css->set_prop( 'child_tags', $tags );
             $this->css->set_prop( 'child_version', strlen( $version ) ? $version : '1.0' );
             
+            // set stylesheet handling option
             if ( isset( $_POST[ 'ctc_parent_enqueue' ] ) )
                 $this->css->set_prop( 'enqueue', sanitize_text_field( $_POST[ 'ctc_parent_enqueue' ] ) );
             elseif ( !$this->is_theme( $configtype ) )
@@ -628,12 +635,13 @@ class ChildThemeConfiguratorAdmin {
                 endforeach;
             endif;
             
-            // runs code generation function in read-only mode to add existing external stylesheet links to import config data
+            // runs code generation function in read-only mode to add existing external stylesheet links to config data
             $this->enqueue_parent_css( $this->css, TRUE );
-            
             // hook for add'l plugin files and subdirectories. Must run after stylesheets are parsed to apply latest options
             do_action( 'chld_thm_cfg_addl_files', $this );
-            
+            // set flag to skip import link conversion on ajax save
+            $this->css->converted = 1;
+
             // try to write new stylsheet. If it fails send alert.
             if ( FALSE === $this->css->write_css( isset( $_POST[ 'ctc_backup' ] ) ) ):
                 $this->debug( 'failed to write', __FUNCTION__ );
@@ -774,20 +782,20 @@ if ( !defined( 'ABSPATH' ) ) exit;
     // converts enqueued path into @import statement for config settings
     function convert_enqueue_to_import( $path ) {
         if ( preg_match( '%(https?:)?//%', $path ) ):
-            $this->css->imports[ 'child' ][] = '@import url( ' . $path . ' )';
+            $this->css->imports[ 'child' ]['@import url(' . $path . ')'] = 1;
             return;
         endif;
         $regex  = '#^' . preg_quote( trailingslashit( $this->css->get_prop( 'child' ) ) ) . '#';
         $path   = preg_replace( $regex, '', $path, -1, $count );
         if ( $count ): 
-            $this->css->imports[ 'child' ][] = '@import url( ' . $path . ' )';
+            $this->css->imports[ 'child' ]['@import url(' . $path . ')'] = 1;
             return;
         endif;
         $parent = trailingslashit( $this->css->get_prop( 'parnt' ) );
         $regex  = '#^' . preg_quote( $parent ) . '#';
         $path   = preg_replace( $regex, '../' . $parent, $path, -1, $count );
         if ( $count )
-            $this->css->imports[ 'child' ][] = '@import url( ' . $path . ' )';
+            $this->css->imports[ 'child' ]['@import url(' . $path . ')'] = 1;
     }
     
     /**
@@ -944,7 +952,8 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         if ( ! $getexternals ):
             $this->debug( 'Writing new functions file...', __FUNCTION__ );
             if ( FALSE === $wp_filesystem->put_contents( $this->fspath( $filename ), $newfile ) )
-                return FALSE; 
+                return FALSE;
+            $this->css->converted = 1;
         endif;
     }
     

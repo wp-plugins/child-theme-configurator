@@ -19,9 +19,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     defined( 'LILAEAMEDIA_URL' ) or 
     define( 'LILAEAMEDIA_URL',                  "http://www.lilaeamedia.com" );
     defined( 'CHLD_THM_CFG_DOCS_URL' ) or 
-    define( 'CHLD_THM_CFG_DOCS_URL',            "http://www.childthemeconfigurator.com/how-to-use/" );
-    defined( 'CHLD_THM_CFG_PRO_URL' ) or 
-    define( 'CHLD_THM_CFG_PRO_URL',             "http://www.childthemeconfigurator.com/child-theme-configurator-pro/" );
+    define( 'CHLD_THM_CFG_DOCS_URL',            "http://www.childthemeconfigurator.com" );
     defined( 'CHLD_THM_CFG_OPTIONS' ) or 
     define( 'CHLD_THM_CFG_OPTIONS',             'chld_thm_cfg_options' );
     define( 'CHLD_THM_CFG_VERSION',             '1.7.3' );

@@ -40,6 +40,7 @@ class ChildThemeConfiguratorCSS {
     var $addl_css;          // parent additional stylesheets
     var $recent;            // history of edited styles
     var $enqueue;           // load parent css method (enqueue, import, none)
+    var $converted;         // @imports coverted to <link>?
     var $child_name;        // child theme name
     var $child_author;      // child theme author
     var $child_authoruri;   // child theme author website
@@ -82,6 +83,7 @@ class ChildThemeConfiguratorCSS {
         'selkey',
         'querykey',
         'recent',
+        'converted',
     );
     var $dicts = array(
         'dict_qs',
@@ -401,7 +403,6 @@ class ChildThemeConfiguratorCSS {
             $this->imports[ 'child' ] = array();
             $this->styles = $this->parse_css_input( $_POST[ 'ctc_child_imports' ] );
             $this->parse_css( 'child' );
-            add_action( 'chld_thm_cfg_addl_files',   array( $this->ctc(), 'enqueue_parent_css' ), 15, 2 );
         elseif ( isset( $_POST[ 'ctc_configtype' ] ) ):
             ob_start();
             do_action( 'chld_thm_cfg_get_stylesheets' );
@@ -524,6 +525,10 @@ class ChildThemeConfiguratorCSS {
             endif;
             do_action( 'chld_thm_cfg_update_qsid', $qsid );                
         endif;
+
+        // update enqueue function if imports have not been converted or new imports passed
+        if ( isset( $_POST[ 'ctc_child_imports' ] ) || empty( $this->converted ) )
+            add_action( 'chld_thm_cfg_addl_files',   array( $this->ctc(), 'enqueue_parent_css' ), 15, 2 );
     }
     
     /*
@@ -616,10 +621,14 @@ class ChildThemeConfiguratorCSS {
         // get all imports
         if ( $parse_imports ):
             
-            $regex = '#(\@import.+?);#';
+            $regex = '#(\@import\s+url\(.+?\));#';
             preg_match_all( $regex, $this->styles, $matches );
-            foreach ( preg_grep( '#' . $this->get_prop( 'parnt' ) . '\/style\.css#', $matches[ 1 ], PREG_GREP_INVERT ) as $import )
+            foreach ( preg_grep( '#' . $this->get_prop( 'parnt' ) . '\/style\.css#', $matches[ 1 ], PREG_GREP_INVERT ) as $import ):
+                $import = preg_replace( "#^.*?url\(([^\)]+?)\).*#", "$1", $import );
+                $import = preg_replace( "#[\'\"]#", '', $import );
+                $import = '@import url(' . trim( $import ) . ')';
                 $this->imports[ $template ][ $import ] = 1;
+            endforeach;
             if ( $this->ctc()->cache_updates ):
                 $this->ctc()->updates[] = array(
                     'obj'  => 'imports',
@@ -746,7 +755,8 @@ class ChildThemeConfiguratorCSS {
     function write_css( $backup = FALSE ) {
         // write new stylesheet
         $output = apply_filters( 'chld_thm_cfg_css_header', $this->get_css_header(), $this );
-        // 1.7.3 -- moving this to 
+        // 1.7.3 -- use read-only version of insert with markers to check if @imports need to be written to stylesheet
+        // eventually all will be migrated to link tags, but we need to account for user not updating import config
         /*
         $imports = $this->get_prop( 'imports' );
         if ( !empty( $imports ) ):
@@ -754,8 +764,8 @@ class ChildThemeConfiguratorCSS {
                 $output .= $import . ';' . LF;
             endforeach;
         endif;
-        */
         $output .= LF;
+        */
         // turn the dictionaries into indexes (value => id into id => value):
         $rulearr = array_flip( $this->dict_rule );
         $valarr  = array_flip( $this->dict_val );

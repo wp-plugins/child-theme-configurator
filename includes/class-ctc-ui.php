@@ -59,18 +59,19 @@ foreach(glob($path_to_check.'*.txt') as $filename)
 }
         */
         $bad_practice_descr = array(
+            //  Stylesheets should be enqueued using the <code>wp_enqueue_scripts</code> action.
             'links'     => __( 'A stylesheet link tag is hard-coded into the header template.', 'chld_thm_cfg' ),
-            //  All stylesheets should be enqueued using the <code>wp_enqueue_scripts</code> action.
-            'wphead'    => __( 'Code exists between the <code>wp_head()</code> function and the closing <code>&lt;/head&gt;</code> tag.', 'chld_thm_cfg'),
+            'enqueue'   => __( '<code>wp_enqueue_style()</code> called from the header template.', 'chld_thm_cfg' ),
             //  <code>wp_head()</code> should be located just before the closing <code>&lt;/head&gt;</code> tag. 
-            'require'   => __( 'This theme loads files from active theme directory.', 'chld_thm_cfg' ),
+            'wphead'    => __( 'Code exists between the <code>wp_head()</code> function and the closing <code>&lt;/head&gt;</code> tag.', 'chld_thm_cfg'),
         );
         $file  = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->get_current_parent() ) . 'header.php';
         if ( file_exists( $file ) ):
             $contents = file_get_contents( $file );
-            $contents = preg_replace( "/\/\/.*?\n|\/\*.*?\*\/|<\!\-\-.*?\-\->/s", '', $contents );
+            $contents = preg_replace( "/\/\/.*?(\?>|\n)|\/\*.*?\*\/|<\!\-\-.*?\-\->/s", '', $contents );
             // check for linked stylesheets
             if ( preg_match( '/rel=[\'"]stylesheet[\'"]/is', $contents ) ) $this->warnings[] = $bad_practice_descr[ 'links' ];
+            if ( preg_match( '/wp_enqueue_style/is', $contents ) ) $this->warnings[] = $bad_practice_descr[ 'enqueue' ];
             // check for code after wp_head
             if ( preg_match( '/wp_head(.*?)<\/head>/is', $contents, $matches ) ):
                 $codeafter = preg_replace( "/[\(\)\?>;\s]/s", '', $matches[ 1 ] );
