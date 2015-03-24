@@ -15,8 +15,10 @@ $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
             name="ctc_save_imports" value="<?php _e( 'Save', 'chld_thm_cfg' ); ?>"  disabled />
         </div>
         <strong>
-        <?php _e( '@import Statements', 'chld_thm_cfg' ); ?>
+        <?php _e( 'Linked Stylesheets', 'chld_thm_cfg' ); ?>
         </strong>
+        <p><?php _e( 'Use <code>@import url( [path] );</code> to link additional stylesheets. Child Theme Configurator uses the <code>@import</code> keyword to identify them and convert them to <code>&lt;link&gt;</code> tags. <strong>Example:</strong>');?></p> 
+        <p><code>@import url(http://fonts.googleapis.com/css?family=Oswald);</code></p> 
       </div>
       <div class="ctc-input-cell-wide">
         <textarea id="ctc_child_imports" name="ctc_child_imports" wrap="off"><?php 

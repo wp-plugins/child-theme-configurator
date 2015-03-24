@@ -218,6 +218,7 @@ a.ctc-recent-tab {
 
 .ctc-selector-inner-container {
     position: relative;
+    min-height: 300px;
     /*max-height: 500px;*/
     overflow: auto;
 }
@@ -396,7 +397,15 @@ a.ctc-recent-tab {
 .ctc-section-toggle.open:after {
     content: "\f142";
 }
-
+a.ctc-section-toggle, a.ctc-section-toggle:hover, a.ctc-section-toggle:active, a.ctc-section-toggle:visited {
+    text-decoration: none;
+    float:right;
+    font-size:.85em;
+    box-shadow:none;
+    -moz-box-shadow:none;
+    -webkit-box-shadow:none;
+    outline:none;
+}
 .ctc-section-toggle-content {
     display: none;
     position: relative;
@@ -543,10 +552,16 @@ h3.theme-name {
     font-size:1em;
     margin: .5em 0;
 }
-#get_pro_panel ul {
+.ctc-input-cell .update-nag, .ctc-input-cell-wide.update-nag {
+    margin: 0;
+}
+.ctc-input-cell-wide.update-nag {
+    margin-bottom:1em;
+}
+#get_pro_panel ul, .ctc-input-cell-wide.update-nag ul {
     list-style: square;
 }
-#get_pro_panel li {
+#get_pro_panel li, .ctc-input-cell-wide.update-nag li {
     margin-left:2em;
 }
 #get_pro_panel h3 a {

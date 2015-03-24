@@ -13,7 +13,7 @@ if ( !defined( 'CHLD_THM_CFG_PLUGINS_VERSION' ) ):
 <?php _e( 'Learn more', 'chld_thm_cfg'); ?><i class="dashicons dashicons-external" style="text-decoration:none"></i></a></p>
 </div></div>
 <div class="ctc-input-cell-wide">
-<a target="_blank" href="<?php echo LILAEAMEDIA_URL; ?>/child-theme-configurator-pro/" title="<?php _e( 'Learn more about CTC Pro', 'chld_thm_cfg' ); ?>"><img src="<?php echo CHLD_THM_CFG_URL . 'css/pro-banner.jpg'; ?>" width="610" height="197" /></a>
+<a target="_blank" href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/child-theme-configurator-pro/" title="<?php _e( 'Learn more about CTC Pro', 'chld_thm_cfg' ); ?>"><img src="<?php echo CHLD_THM_CFG_URL . 'css/pro-banner.jpg'; ?>" width="610" height="197" /></a>
 <h1><?php _e( 'Customizing WordPress just got even easier.', 'chld_thm_cfg' ); ?></h1>
 <p><?php _e( 'Thousands of users have already seen the benefits of using Child Theme Configurator. If you spend any amount of time customizing WordPress, CTC Pro will help maximize your productivity.', 'chld_thm_cfg' ); ?></p>
 <h1><?php _e( 'Designed by Developers Who Use It Every Day.', 'chld_thm_cfg' ); ?></h1>

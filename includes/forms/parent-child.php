@@ -104,15 +104,28 @@ if ( !defined( 'ABSPATH' ) ) exit;
                 value="<?php echo esc_attr( $css->get_prop( 'version' ) ); ?>" placeholder="<?php _e( 'Version', 'chld_thm_cfg' ); ?>" autocomplete="off" />
       </div>
     </div></div>
-    <?php $parent_handling = ( isset( $css->enqueue ) ? $css->enqueue : ( $mustimport ? 'import' : 'enqueue' ) ); ?>
+    <?php $parent_handling = ( isset( $css->enqueue ) ? $css->enqueue : 'enqueue' ); ?>
     <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>">
-      <div class="ctc-section-toggle" id="ctc_stylesheet_handling"> <strong>
-        <?php _e( 'Stylesheet handling', 'chld_thm_cfg' ); 
-        ?>
-        </strong>
+      <div class="ctc-input-cell ctc-section-toggle" id="ctc_stylesheet_handling">
+        <strong><?php _e( 'Stylesheet handling', 'chld_thm_cfg' ); ?></strong>
         <?php _e( '(click to view options)', 'chld_thm_cfg' ); ?>
+      </div><?php if ( count( $this->warnings ) && !in_array( $this->ctc()->css->enqueue, array( 'both', 'import' ) ) ):?>
+<div class="ctc-input-cell-wide update-nag"><strong><?php _e( 'This theme may not apply child theme styles correctly with the current settings:', 'chld_thm_cfg' ); ?></strong><ul class="smaller">
+        <?php foreach ( $this->warnings as $warning ) echo '<li>' . $warning  . '</li>' . LF; ?>
+        </ul> <a href="#" class="ctc-section-toggle" id="ctc_stylesheet_handling2"><?php _e( 'View options', 'chld_thm_cfg'); ?></a></div>
+<?php endif; ?>
+<div class="ctc-section-toggle-content clear" id="ctc_stylesheet_handling_content">
+      <div class="ctc-input-cell clear"><a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/how-to-use/#stylesheet_handling" target="_blank"><?php _e( 'Which option should I use?', 'chld_thm_cfg' ); ?></a></div>
+      <div class="ctc-input-cell">
+        <label>
+          <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_none" name="ctc_parent_enqueue" type="radio" 
+                value="none" <?php checked( 'none', $parent_handling ); ?> <?php echo $disabled; ?> />
+          <?php _e( 'None (handled by theme)', 'chld_thm_cfg' ); ?>
+        </label>
       </div>
-<div class="ctc-section-toggle-content" id="ctc_stylesheet_handling_content">
+      <div class="ctc-input-cell howto sep">
+        <?php _e( 'Select this option if all stylesheets are correctly enqueued for child themes. If you find that styles are not being applied correctly, use a different option.', 'chld_thm_cfg' ); ?>
+      </div>
       <div class="ctc-input-cell clear">&nbsp;</div>
       <div class="ctc-input-cell">
         <label>
@@ -121,10 +134,31 @@ if ( !defined( 'ABSPATH' ) ) exit;
           <?php _e( 'Enqueue parent stylesheet (default)', 'chld_thm_cfg' ); ?>
         </label>
         </strong> </div>
-      <div class="ctc-input-cell howto sep"><?php _e( "Select this option if the parent theme enqueues the stylesheet but has no special handling for child themes. Start with this option if unsure.", 'chld_thm_cfg' ); ?>
+      <div class="ctc-input-cell howto sep"><?php _e( "Select this option if the theme enqueues the active stylesheet but has no special handling for child themes. Start with this option if unsure.", 'chld_thm_cfg' ); ?>
 </div>
-      <div class="ctc-input-cell clear"><?php if ( $mustimport )
-         _e( '<strong>NOTE: This theme links the stylesheet in the header template and should use the @import option to render correctly.</strong>', 'chld_thm_cfg' ); ?> &nbsp;</div>
+      <div class="ctc-input-cell clear">&nbsp;</div>
+      <div class="ctc-input-cell">
+        <label>
+          <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_child" name="ctc_parent_enqueue" type="radio" 
+                value="both" <?php checked( 'child', $parent_handling ); ?> <?php echo $disabled; ?> />
+          <?php _e( 'Enqueue child stylesheet', 'chld_thm_cfg' ); ?>
+        </label>
+        </strong> </div>
+      <div class="ctc-input-cell howto sep"><?php _e( 'Select this option if the theme enqueues the parent stylesheet but does not enqueue the child stylesheet at all. This can happen if <code>get_template()</code> or <code>get_template_directory_uri()</code> is used to link the stylesheet.', 'chld_thm_cfg' ); ?>
+</div>
+      <div class="ctc-input-cell clear"><?php if ( count( $this->warnings ) ): ?><div class="update-nag">
+        <strong><?php _e( 'Recommended for this theme:', 'chld_thm_cfg' ); ?></strong></div>
+        <?php endif; ?>&nbsp;</div>
+      <div class="ctc-input-cell">
+        <label>
+          <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_both" name="ctc_parent_enqueue" type="radio" 
+                value="both" <?php checked( 'both', $parent_handling ); ?> <?php echo $disabled; ?> />
+          <?php _e( 'Enqueue both parent and child stylesheets', 'chld_thm_cfg' ); ?>
+        </label>
+        </strong> </div>
+      <div class="ctc-input-cell howto sep"><?php _e( 'Select this option if stylesheet link tags are hard-coded into the header template (common in older themes). This enables the child stylesheet to override the parent stylesheet without using <code>@import</code>.', 'chld_thm_cfg' ); ?>
+</div>
+      <div class="ctc-input-cell clear">&nbsp;</div>
       <div class="ctc-input-cell">
         <label>
           <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_import" name="ctc_parent_enqueue" type="radio" 
@@ -132,29 +166,8 @@ if ( !defined( 'ABSPATH' ) ) exit;
           <?php _e( '<code>@import</code> parent stylesheet', 'chld_thm_cfg' ); ?>
         </label>
         </strong> </div>
-      <div class="ctc-input-cell howto sep"><?php _e( "Select this option if the parent theme links the stylesheet in the header template. Using <code>@import</code> is discouraged but necessary in this case unless you modify the header template.", 'chld_thm_cfg' ); ?>
+      <div class="ctc-input-cell howto"><?php _e( "This option imports the parent stylesheet from the child stylesheet. This enables the child stylesheet to override the parent stylesheet, but using <code>@import</code> is no longer recommended.", 'chld_thm_cfg' ); ?>
 </div>
-      <div class="ctc-input-cell clear">&nbsp;</div>
-      <div class="ctc-input-cell">
-        <label>
-          <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_both" name="ctc_parent_enqueue" type="radio" 
-                value="both" <?php checked( 'child', $parent_handling ); ?> <?php echo $disabled; ?> />
-          <?php _e( 'Enqueue child stylesheet', 'chld_thm_cfg' ); ?>
-        </label>
-        </strong> </div>
-      <div class="ctc-input-cell howto sep"><?php _e( 'Select this option if the parent theme incorrectly loads the "template" stylesheet or does not load the "style.css" file at all. This is unusual but occurs in some themes.', 'chld_thm_cfg' ); ?>
-</div>
-      <div class="ctc-input-cell clear">&nbsp;</div>
-      <div class="ctc-input-cell">
-        <label>
-          <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_none" name="ctc_parent_enqueue" type="radio" 
-                value="none" <?php checked( 'none', $parent_handling ); ?> <?php echo $disabled; ?> />
-          <?php _e( 'None (handled by theme)', 'chld_thm_cfg' ); ?>
-        </label>
-      </div>
-      <div class="ctc-input-cell howto">
-        <?php _e( 'Select this option if all stylesheets are automatically loaded for child themes (e.g., "Responsive" by CyberChimps).', 'chld_thm_cfg' ); ?>
-      </div>
     </div></div>
     <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>">
       <div class="ctc-input-cell"> <strong>

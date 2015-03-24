@@ -4,9 +4,9 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 /*
     Class: Child_Theme_Configurator
-    Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
+    Plugin URI: http://www.childthemeconfigurator.com/
     Description: Main Controller Class
-    Version: 1.7.1
+    Version: 1.7.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -108,7 +108,7 @@ class ChildThemeConfiguratorAdmin {
         $this->ui->render();
     }
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.1' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.3' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -121,7 +121,7 @@ class ChildThemeConfiguratorAdmin {
             array(
                 'jquery-ui-autocomplete', 
                 'jquery-ui-selectmenu',   
-                'wp-color-picker',
+                'iris',
                 'ctc-thm-cfg-ctcgrad'
             ), FALSE, TRUE );
         $localize_array = apply_filters( 'chld_thm_cfg_localize_script', array(
@@ -160,14 +160,14 @@ class ChildThemeConfiguratorAdmin {
             'inval_theme_txt'   => __( 'Please enter a valid Child Theme.',                                 'chld_thm_cfg' ),
             'inval_name_txt'    => __( 'Please enter a valid Child Theme name.',                            'chld_thm_cfg' ),
             'theme_exists_txt'  => __( '<strong>%s</strong> exists. Please enter a different Child Theme',  'chld_thm_cfg' ),
-            'js_txt'            => __( 'The page could not be loaded correctly so some controls have been disabled.',
+            'js_txt'            => __( 'The page could not be loaded correctly.',
                                                                                                             'chld_thm_cfg' ),
-            'jquery_txt'        => __( 'Conflicting jQuery libraries were loaded by another plugin:',
+            'jquery_txt'        => __( 'Conflicting or out-of-date jQuery libraries were loaded by another plugin:',
                                                                                                             'chld_thm_cfg' ),
-            'plugin_txt'        => __( 'Deactivating other plugins may resolve this issue.',                'chld_thm_cfg' ),
+            'plugin_txt'        => __( 'Deactivating or replacing plugins may resolve this issue.',         'chld_thm_cfg' ),
             'contact_txt'       => sprintf( __( '%sWhy am I seeing this?%s',
                                                                                                             'chld_thm_cfg' ),
-                '<a target="_blank" href="' . LILAEAMEDIA_URL . '/child-theme-configurator#script_dep">',
+                '<a target="_blank" href="' . CHLD_THM_CFG_DOCS_URL . '/how-to-use/#script_dep">',
                 '</a>' ),
         ) );
         wp_localize_script(
@@ -307,6 +307,8 @@ class ChildThemeConfiguratorAdmin {
                     // if child theme config has been set up, save new data
                     // return recent edits and selected stylesheets as cache updates
                     if ( $this->css->get_prop( 'child' ) ):
+                        // hook for add'l plugin files and subdirectories
+                        do_action( 'chld_thm_cfg_addl_files', $this );
                         $this->css->write_css();
                         // add any additional updates to pass back to browser
                         do_action( 'chld_thm_cfg_cache_updates' );
@@ -578,7 +580,12 @@ class ChildThemeConfiguratorAdmin {
         
         // if no errors so far, we are good to create child theme
         if ( empty( $this->errors ) ):
-            $this->css = new ChildThemeConfiguratorCSS();
+            // save imports in case this is a rebuild
+            $imports                = $this->css->imports;
+            // reset everything else
+            $this->css              = new ChildThemeConfiguratorCSS();
+            // restore imports if this is a rebuild
+            $this->css->imports     = $imports;
             // check if we have additional files from legacy plugin extension. if so, we have to override 
             // function to support wp_filesystem requirements
             if ( $this->is_theme( $configtype ) ):
@@ -594,7 +601,8 @@ class ChildThemeConfiguratorAdmin {
                 add_action( 'chld_thm_cfg_addl_files', array( &$this, 'write_addl_files' ), 10, 2 );
                 $this->css->set_prop( 'configtype', $configtype );
             endif;
-            //echo 'parnt: ' . $parnt . ' child: ' . $child . LF;
+    
+            // update with new parameters
             $this->css->set_prop( 'parnt', $parnt );
             $this->css->set_prop( 'child', $child );
             $this->css->set_prop( 'child_name', $name );
@@ -605,14 +613,12 @@ class ChildThemeConfiguratorAdmin {
             $this->css->set_prop( 'child_tags', $tags );
             $this->css->set_prop( 'child_version', strlen( $version ) ? $version : '1.0' );
             
+            // set stylesheet handling option
             if ( isset( $_POST[ 'ctc_parent_enqueue' ] ) )
                 $this->css->set_prop( 'enqueue', sanitize_text_field( $_POST[ 'ctc_parent_enqueue' ] ) );
             elseif ( !$this->is_theme( $configtype ) )
                 $this->css->set_prop( 'enqueue', 'enqueue' );
 
-            // hook for add'l plugin files and subdirectories
-            do_action( 'chld_thm_cfg_addl_files', $this );
-            
             // parse parent stylesheet if theme or legacy plugin extension 
             if ( $this->is_theme( $configtype ) || $this->is_legacy() )
                 $this->css->parse_css_file( 'parnt' );
@@ -629,6 +635,13 @@ class ChildThemeConfiguratorAdmin {
                 endforeach;
             endif;
             
+            // runs code generation function in read-only mode to add existing external stylesheet links to config data
+            $this->enqueue_parent_css( $this->css, TRUE );
+            // hook for add'l plugin files and subdirectories. Must run after stylesheets are parsed to apply latest options
+            do_action( 'chld_thm_cfg_addl_files', $this );
+            // set flag to skip import link conversion on ajax save
+            $this->css->converted = 1;
+
             // try to write new stylsheet. If it fails send alert.
             if ( FALSE === $this->css->write_css( isset( $_POST[ 'ctc_backup' ] ) ) ):
                 $this->debug( 'failed to write', __FUNCTION__ );
@@ -684,20 +697,10 @@ class ChildThemeConfiguratorAdmin {
     function load_imports() {
         // allows fonts and other externals to be previewed
         // loads early not to conflict with admin stylesheets
-        $regex = "/\@import *(url)? *\( *['\"]?((https?:\/\/)?(.+?))['\"]? *\).*$/";
         if ( $imports = $this->css->get_prop( 'imports' ) ):
-            $count = 1;
+            $ext = 0;
             foreach ( $imports as $import ):
-                preg_match( $regex, $import, $matches );
-                if ( empty( $matches[ 3 ] ) && !empty( $matches[ 4 ] ) ): // relative filepath
-                    $url = get_stylesheet_directory_uri();
-                    preg_replace( "#\.\./#", '', $matches[ 4 ], -1, $count );
-                    for( $i = 0; $i < $count; $i++ ):
-                        $url = dirname( $url );
-                    endfor;
-                    $import = preg_replace( $regex, '@import url(' . trailingslashit( $url ) . $matches[ 4 ] . ')', $import );
-                endif;
-                wp_enqueue_style( 'chld-thm-cfg-admin' . ++$count, preg_replace( $regex, "$2", $import ) );
+                $this->convert_import_to_enqueue( $import, ++$ext, TRUE );
             endforeach;
         endif;
     }
@@ -762,21 +765,76 @@ if ( !defined( 'ABSPATH' ) ) exit;
         $this->write_child_file( 'style.css', $this->css->get_css_header() );
     }
     
+    // parses @import syntax and converts to wp_enqueue_style statement
+    function convert_import_to_enqueue( $import, $count, $execute = FALSE ) {
+        $relpath    = $this->css->get_prop( 'child' );
+        $import     = preg_replace( "#^.*?url\(([^\)]+?)\).*#", "$1", $import );
+        $import     = preg_replace( "#[\'\"]#", '', $import );
+        $path       = $this->css->convert_rel_url( trim( $import ), $relpath , FALSE );
+        $abs        = preg_match( '%(https?:)?//%', $path );
+        if ( $execute )
+            wp_enqueue_style( 'chld_thm_cfg_ext' . $count,  $abs ? $path : trailingslashit( get_theme_root_uri() ) . $path );
+        else
+            return "wp_enqueue_style( 'chld_thm_cfg_ext" . $count . "', " 
+                . ( $abs ? "'" . $path . "'" : "trailingslashit( get_theme_root_uri() ) . '" . $path . "'" ) . ' );';
+    }
+    
+    // converts enqueued path into @import statement for config settings
+    function convert_enqueue_to_import( $path ) {
+        if ( preg_match( '%(https?:)?//%', $path ) ):
+            $this->css->imports[ 'child' ]['@import url(' . $path . ')'] = 1;
+            return;
+        endif;
+        $regex  = '#^' . preg_quote( trailingslashit( $this->css->get_prop( 'child' ) ) ) . '#';
+        $path   = preg_replace( $regex, '', $path, -1, $count );
+        if ( $count ): 
+            $this->css->imports[ 'child' ]['@import url(' . $path . ')'] = 1;
+            return;
+        endif;
+        $parent = trailingslashit( $this->css->get_prop( 'parnt' ) );
+        $regex  = '#^' . preg_quote( $parent ) . '#';
+        $path   = preg_replace( $regex, '../' . $parent, $path, -1, $count );
+        if ( $count )
+            $this->css->imports[ 'child' ]['@import url(' . $path . ')'] = 1;
+    }
+    
+    /**
+     * Generates wp_enqueue_script code block for child theme functions file
+     * Enqueues parent and/or child stylesheet depending on value of 'enqueue' setting.
+     * If external imports are present, it enqueues them as well.
+     */
     function enqueue_parent_code(){
-        if ( 'none' == $this->css->enqueue || 'import' == $this->css->enqueue ) return array();
-        $code = "// AUTO GENERATED - Do not modify or remove comment markers above or below:
+        $imports    = $this->css->get_prop( 'imports' );
+        $enqueues   = array();
+        $code       = '';
+        // enqueue parent stylesheet 
+        if ( 'enqueue' == $this->css->enqueue ||  'both' == $this->css->enqueue )
+            $enqueues[] = "        wp_enqueue_style( 'chld_thm_cfg_parent', trailingslashit( get_template_directory_uri() ) . 'style.css' );"; 
+        // enqueue external stylesheets (previously used @import in the stylesheet)
+        if ( !empty( $imports ) ):
+            $ext = 0;
+            foreach ( $imports as $import ):
+                $ext++;
+                $enqueues[] = '        ' . $this->convert_import_to_enqueue( $import, $ext ); 
+            endforeach;
+        endif;
+        if ( count( $enqueues ) ):
+            $code = "// AUTO GENERATED - Do not modify or remove comment markers above or below:
 ";
-        if ( 'enqueue' == $this->css->enqueue ): 
             $code .= "
         
 if ( !function_exists( 'chld_thm_cfg_parent_css' ) ):
     function chld_thm_cfg_parent_css() {
-        wp_enqueue_style( 'chld_thm_cfg_parent', trailingslashit( get_template_directory_uri() ) . 'style.css' ); 
+";
+            $code .= implode( "\n", $enqueues );
+            $code .= "
     }
 endif;
 add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css' );
 ";
-        elseif ( 'child' == $this->css->enqueue ): 
+        endif;
+        // enqueue child stylesheet. This feature was added to avoid using @import to load parent stylesheet when links are hard-coded into header.php
+        if ( 'child' == $this->css->enqueue || 'both' == $this->css->enqueue ): 
             $code .= "
 if ( !function_exists( 'chld_thm_cfg_child_css' ) ):
     function chld_thm_cfg_child_css() {
@@ -789,19 +847,21 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         return explode( "\n", $code );
     }
     
-    function enqueue_parent_css( $obj ) {
+    // updates function file with wp_enqueue_script code block. If getexternals flag is passed function is run in read-only mode
+    function enqueue_parent_css( $obj, $getexternals = FALSE ) {
         $marker     = 'ENQUEUE PARENT ACTION';
         $insertion  =  $this->enqueue_parent_code();
-        if ( $filename   = $this->css->is_file_ok( $this->css->get_child_target( 'functions.php' ), 'write' ) ):
-            $this->insert_with_markers( $filename, $marker, $insertion );
-        endif;
+        if ( $filename   = $this->css->is_file_ok( $this->css->get_child_target( 'functions.php' ), 'write' ) )
+            $this->insert_with_markers( $filename, $marker, $insertion, $getexternals );
     }
     
     /**
+     * Update functions file with wp_enqueue_style code block. Runs in read-only mode if getexternals is passed.
+     * This function uses the same method as the WP core function that updates .htaccess 
      * we would have used WP's insert_with_markers function, 
-     * but it does not use wp_filesystem API!!!???
+     * but it does not use wp_filesystem API.
      */
-    function insert_with_markers( $filename, $marker, $insertion ) {
+    function insert_with_markers( $filename, $marker, $insertion, $getexternals = FALSE ) {
         if ( count( $this->errors ) ):
             $this->debug( 'Errors detected, returning', __FUNCTION__ );
             return FALSE;
@@ -819,18 +879,19 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
             // get_contents_array returns extra linefeeds so just split it ourself
 			$markerdata = explode( "\n", $wp_filesystem->get_contents( $this->fspath( $filename ) ) );
         $newfile = '';
+        $externals  = array();
         $phpopen    = 0;
         $in_comment = 0;
-		$foundit = false;
+		$foundit = FALSE;
         $lasttoken  = '';
 		if ( $markerdata ):
-			$state = true;
+			$state = TRUE;
 			foreach ( $markerdata as $n => $markerline ) {
                 // update open state
                 $openstars = 0;
                 $closestars = 0;
                 // remove double slash comment to end of line
-                $str = preg_replace( "/\/\/.*$/",     '', $markerline );
+                $str = preg_replace( "/\/\/.*$/", '', $markerline );
                 preg_match_all("/(<\?|\?>|\*\/|\/\*)/", $str, $matches );
                 if ( $matches ):
                     foreach ( $matches[1] as $token ): 
@@ -846,22 +907,26 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
                         endif;
                     endforeach;
                 endif;
-				if ( strpos( $markerline, '// BEGIN ' . $marker ) !== false )
-					$state = false;
+				if ( strpos( $markerline, '// BEGIN ' . $marker ) !== FALSE )
+					$state = FALSE;
 				if ( $state ):
 					if ( $n + 1 < count( $markerdata ) )
 						$newfile .= "{$markerline}\n";
 					else
 						$newfile .= "{$markerline}";
+                elseif ( $getexternals ):
+                    // look for existing external stylesheets and add to imports config data
+                    if ( preg_match( "/wp_enqueue_style.+?'chld_thm_cfg_ext\d+'.+?'(.+?)'/", $markerline, $matches ) )
+                        $this->convert_enqueue_to_import( $matches[ 1 ] );
 				endif;
-				if ( strpos( $markerline, '// END ' . $marker ) !== false ):
+				if ( strpos( $markerline, '// END ' . $marker ) !== FALSE ):
 					$newfile .= "// BEGIN {$marker}\n";
 					if ( is_array( $insertion ) )
 						foreach ( $insertion as $insertline )
 							$newfile .= "{$insertline}\n";
 					$newfile .= "// END {$marker}\n";
-					$state = true;
-					$foundit = true;
+					$state = TRUE;
+					$foundit = TRUE;
 				endif;
 			}
         else:
@@ -883,10 +948,16 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
 				$newfile .= "{$insertline}\n";
 			$newfile .= "// END {$marker}\n";
         endif;
-        $this->debug( 'Writing new functions file...', __FUNCTION__ );
-        if ( FALSE === $wp_filesystem->put_contents( $this->fspath( $filename ), $newfile ) ) return FALSE; 
+        // only write file when getexternals is false
+        if ( ! $getexternals ):
+            $this->debug( 'Writing new functions file...', __FUNCTION__ );
+            if ( FALSE === $wp_filesystem->put_contents( $this->fspath( $filename ), $newfile ) )
+                return FALSE;
+            $this->css->converted = 1;
+        endif;
     }
     
+    // creates/updates file via filesystem API
     function write_child_file( $file, $contents ) {
         if ( !$this->fs ): 
             $this->debug( 'No filesystem access.', __FUNCTION__ );

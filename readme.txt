@@ -1,18 +1,18 @@
 === Child Theme Configurator ===
 Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
-Tags: child theme, child themes, customize, CSS, responsive, css editor, theme generator, theme creator, stylesheet, customizer
+Tags: child theme, child themes, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, stylesheet, customizer
 Requires at least: 3.9
-Tested up to: 4.1
-Stable tag: 1.7.1
+Tested up to: 4.1.1
+Stable tag: 1.7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Create Child Themes and customize their stylesheets and templates. Fast CSS editor lets you search, preview and modify by selector, rule or value.
+Create a child theme that follows WP best practice to enqueue stylesheets. Easy to use CSS editor lets you find, preview and customize any style.
 
 == Description ==
 
-Child Theme Configurator is a fast and easy to use CSS editor that allows you to create Child Themes and customize them beyond the options of the theme Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched.
+Child Theme Configurator is a fast and easy to use CSS editor that allows you to create a child theme and customize it beyond the options of the Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched. [Learn more about how to create a child theme](http://www.childthemeconfigurator.com).
 
 = Take Control of Your Child Themes =
 
@@ -20,7 +20,7 @@ https://www.youtube.com/watch?v=53M7RVxDYEY
 
 The Child Theme Configurator parses and indexes your stylesheets so that every CSS media query, selector, rule and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the child theme. Finally, it saves your work so that you can fine-tune your child themes without the risk of losing your edits. 
 
-You can create any number of child themes from any existing Parent Theme. The Child Theme Configurator lets you choose from your installed themes (even existing child themes) and save the results in your Themes directory.
+You can create any number of child themes from your existing Parent Themes. The Child Theme Configurator lets you choose from your installed themes (even existing child themes) and save the results in your Themes directory.
 
 When you are ready, just activate the Child Theme and your WordPress site takes on the new look and feel automatically.
 
@@ -29,26 +29,25 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Update themes without losing customizations
 * Copy existing widgets, menus and other options to child theme
 * Save hours of development time
-* Multisite compatible - great for network sites
-* Make modifications above and beyond the theme Customizer
-* Enqueue (link) parent theme stylesheet instead of using @import
+* Multisite compatible
+* Make modifications unavailable to the Customizer
+* Uses WP best practice for enqueuing (linking) stylesheets
 * Export child themes as Zip Archive
-* Import web fonts and use them in place of theme fonts
+* Use web fonts in your child theme
 * Identify and override exact selectors from the parent theme
 * Change specific colors, backgrounds, font styles, etc., without changing other elements
 * Automatically generate cross-browser and vendor-prefixed rules and CSS gradients
 * Preview style changes before committing to them
 * Customize @media queries for responsive design
 * Uses WP Filesystem API – will not create files you cannot remove
-* Nag-free, no-strings-attached user experience
 
-= Introducing Child Theme Configurator PRO =
+= Child Theme Configurator PRO =
 
 Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets. We’ve added more features to make design work quicker and easier with PRO. 
 
 https://www.youtube.com/watch?v=fktwCk43a8c
 
-Learn more at http://www.lilaeamedia.com/child-theme-configurator-pro
+Learn more at http://www.childthemeconfigurator.com/child-theme-configurator-pro
 
 = Unlimited Widget Content With a Single Plugin =
 
@@ -69,15 +68,15 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 == Installation ==
 
 1. To install from the Plugins repository:
-    * In the WordPress Admin, go to "Plugins > Add New."
-    * Type "child theme" in the "Search" box and click "Search Plugins."
-    * Locate "Child Theme Configurator" in the list and click "Install Now."
+  * In the WordPress Admin, go to "Plugins > Add New."
+  * Type "child theme" in the "Search" box and click "Search Plugins."
+  * Locate "Child Theme Configurator" in the list and click "Install Now."
 
 2. To install manually:
-    * Download the Child Theme Configurator plugin from http://wordpress.org/plugins/child-theme-configurator
-    * In the WordPress Admin, go to "Plugins > Add New."
-    * Click the "Upload" link at the top of the page.
-    * Browse for the zip file, select and click "Install."
+  * Download the Child Theme Configurator plugin from http://wordpress.org/plugins/child-theme-configurator
+  * In the WordPress Admin, go to "Plugins > Add New."
+  * Click the "Upload" link at the top of the page.
+  * Browse for the zip file, select and click "Install."
 
 3. In the WordPress Admin, go to "Plugins > Installed Plugins." Locate "Child Theme Configurator" in the list and click "Activate."
 
@@ -94,14 +93,17 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 4. Optional: Copy Parent Theme Menus, Widgets and other Options. NOTE: This will overwrite any child theme options you may have already set.
 
 5. Choose stylesheet handling:
-   * **Enqueue parent stylesheet (default):**
-     Select this option if the parent theme enqueues the stylesheet but has no special handling for child themes. Start with this option if unsure.
-   * **@import parent stylesheet:**
-     Select this option if the parent theme links the stylesheet in the header template. Using @import is discouraged but necessary in this case unless you modify the header template.
-   * **Enqueue child stylesheet:**
-     Select this option if the parent theme incorrectly loads the "template" stylesheet or does not load the "style.css" file at all. This is unusual but occurs in some themes.
-   * **None (handled by theme):**
-     Select this option if all stylesheets are automatically loaded for child themes (e.g., "Responsive" by CyberChimps). 
+  * **None (handled by theme)**
+Select this option if all stylesheets are correctly enqueued for child themes. If you find that styles are not being applied correctly, use a different option.
+  * **Enqueue parent stylesheet (default)**
+    Select this option if the theme enqueues the active stylesheet but has no special handling for child themes. Start with this option if unsure.
+  * **Enqueue child stylesheet**
+    Select this option if the theme enqueues the parent theme stylesheet but does not enqueue the child theme stylesheet at all. This can happen if get_template() or get_template_directory_uri() is used to link the stylesheet.
+  * **Enqueue both parent and child stylesheets**
+    Select this option if stylesheet link tags are hard-coded into the header template (common in older themes). This enables the child theme stylesheet to override the parent theme stylesheet without using @import. 
+  * **@import parent stylesheet**
+    This option imports the parent theme stylesheet from the child theme stylesheet. This enables the child theme stylesheet to override the parent theme stylesheet, but using @import is no longer recommended.   
+  * [See our website for more information about which option to use](http://www.childthemeconfigurator.com/how-to-use/#stylesheet_handling) 
 
 6. Optional: Save Backup
 
@@ -135,7 +137,7 @@ Yes. Go to "Network Admin > Themes > Child Themes." Child themes must be "Networ
 
 = Does it work with plugins? =
 
-Child Theme Configurator PRO brings the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website by scanning your plugins and creating custom CSS in your Child Themes. Learn more at http://www.lilaeamedia.com/child-theme-configurator-pro
+Child Theme Configurator PRO brings the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website by scanning your plugins and creating custom CSS in your Child Themes. Learn more at http://www.childthemeconfigurator.com/child-theme-configurator-pro
 
 = Why doesn't this work with my [insert vendor here] theme? = 
 
@@ -192,9 +194,9 @@ Click the "Help" tab at the top right for a quick reference.
 
 = How do I add Web Fonts? =
 
-The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts.
+The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the Web Fonts tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts.
 
-You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. 
+You can also create a secondary stylesheet that contains @font-face rules and import it using the Web Fonts tab.
 
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
@@ -215,7 +217,7 @@ You have to load a child theme from the Parent/Child tab for the preview to disp
 
 You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
 
-= Where are the .php files? = 
+= Where are the child theme .php files? = 
 
 The Child Theme Configurator automatically adds a blank functions.php file to the child theme's directory. You can copy parent theme template files using the Files tab. If you want to create new templates and directories you will have to create/upload them manually via FTP or SSH. Remember that a child theme will automatically inherit the parent theme's templates unless they also exist in the child theme's directory. Only copy templates that you intend to customize.
 
@@ -262,12 +264,25 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 2. Parent/Child tab with parent theme menu open
 3. Query/Selector tab
 4. Rule/Value tab
-5. @import tab
+5. Web Fonts tab
 6. Parent CSS tab
 7. Files tab
 
 == Changelog ==
-= 1.7.1 = Removed conflicting wistia javascript link
+= 1.7.3 =
+* Changed @import tab to "Web Fonts." @import statements are automatically converted to enqueued external links.
+* Added "Enqueue both parent and child stylesheets" option to enable child theme overrides without using @import.
+* Added checks for hard-coded link tags in header template to help resolve incorrect stylesheet load order.
+* Fix: "Enqueue child stylesheet" now passes correct value.
+
+= 1.7.2.1 = 
+* Fix: hide called before iris init
+* Fix: @import not being written on rebuild/configure
+* Fix: min height on rule/value panel
+* Only prune child theme selectors on rename
+
+= 1.7.1 = 
+* Removed conflicting wistia javascript link
 
 = 1.7.0 =
 * New Feature: Enqueue child theme stylesheet option for themes that do not load it.
@@ -315,10 +330,11 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Fix: add check if theme uses hard-wired stylesheet link and alert to use @import instead of link option
 * Fix: conflicts with using jQuery UI from CDN - using local version of 1.11.2 Widget/Menu/Selectmenu instead
 * Fix: using wp-color-picker handle instead of iris as dependency to make sure wpColorPicker() methods are loaded
-* Fix: copy parent theme widgets logic different if child or parent are active theme
+* Fix: copy parent theme widgets logic is different when child theme is active
 
 = 1.6.0 = 
-* New Feature: option to load parent stylesheet using wp_enqueue_style (link), @import or none. Thanks to cmwwebfx and Shapeshifter3 for pushing me on this 
+* New Feature: option to load parent stylesheet using wp_enqueue_style (link), @import or none. 
+* Thanks to cmwwebfx and Shapeshifter3 for pushing me on this 
 * New Feature: automatically-generated slug and name
 * New Feature: restore from backup and reset options
 * New Feature: backup files to "Child Theme Files" on Files Tab so they can be deleted
@@ -339,7 +355,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Added regex filter for non-printable (e.g., null) characters in input strings
 
 = 1.5.2.2 =
-* Fixed a bug introduced in v1.5.2(.1) that copied all of the parent styles to the child stylesheet. This should only be an issue for 'background-image' styles that reference images in the parent theme and do not have child theme overrides.
+* Fixed a bug introduced in v1.5.2(.1) that copied all of the parent styles to the child theme stylesheet. This should only be an issue for 'background-image' styles that reference images in the parent theme and do not have child theme overrides.
 * Rolled back changes to the javascript controller that introduced a number of type errors.
 * Tweaked preview ajax call to handle ssl.
 
@@ -483,7 +499,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
-Version 1.7.0: New features including redesigned UI Javascript for better browser memory handling. See changelog for details.
+Version 1.7.3 now converts @import statements to link tags and checks parent theme for hard-coded stylesheet link tags and other problematic code issues.
 
 == Override Parent Styles ==
 
@@ -494,11 +510,11 @@ There are two ways to identify and override parent styles. The Child Theme Confi
 The Query/Selector tab lets you find specific CSS selectors and edit them. First, find the query that contains the CSS selector you wish to edit by typing in the Query autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. CSS selectors are in the base query by default.
 Next, find the CSS selector by typing in the "Selector" autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.
 
-This will load all of the rules for that CSS selector with the Parent values on the left and the Child values inputs on the right. Any existing child values will be automatically populated. There is also a Sample preview that displays the combination of Parent and Child overrides. Note that the border and background-image get special treatment.
+This will load all of the rules for that CSS selector with the Parent values on the left and the child theme values inputs on the right. Any existing child theme values will be automatically populated. There is also a Sample preview that displays the combination of Parent and Child overrides. Note that the border and background-image get special treatment.
 
 The "Order" field contains the original sequence of the CSS selector in the parent theme stylesheet. You can change the CSS selector order sequence by entering a lower or higher number in the "Order" field. You can also force style overrides (so called "!important" flag) by checking the "!" box next to each input. Please use judiciously.
 
-Click "Save" to update the child stylesheet and save your changes to the WordPress admin.
+Click "Save" to update the child theme stylesheet and save your changes to the WordPress admin.
 
 == Adding New Styles ==
 
@@ -512,17 +528,17 @@ If you prefer to use shorthand syntax for rules and values instead of the inputs
 
 The Rule/Value tab lets you find specific values for a given rule and then edit that value for individual CSS selectors that use that rule/value combination. First, find the rule you wish to override by typing in the Rule autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.
 
-This will load all of the unique values that exist for that rule in the parent stylesheet with a Sample preview for that value. If there are values that exist in the child stylesheet that do not exist in the parent stylesheet, they will be displayed as well.
+This will load all of the unique values that exist for that rule in the parent theme stylesheet with a Sample preview for that value. If there are values that exist in the child theme stylesheet that do not exist in the parent stylesheet, they will be displayed as well.
 
-For each unique value, click the "Selectors" link to view a list of CSS selectors that use that rule/value combination, grouped by query with a Sample preview of the value and inputs for the child value. Any existing child values will be automatically populated.
+For each unique value, click the "Selectors" link to view a list of CSS selectors that use that rule/value combination, grouped by query with a Sample preview of the value and inputs for the child theme value. Any existing child theme values will be automatically populated.
 
-Click "Save" to update the child stylesheet and save your changes to the WordPress admin.
+Click "Save" to update the child theme stylesheet and save your changes to the WordPress admin.
 
 If you want to edit all of the rules for the CSS selector you can click the “Edit” link and the CSS selector will automatically load in the Query/Selector Tab.
 
-== @import Tab and Web Fonts ==
+== Web Fonts Tab ==
 
-You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. **Important: do not import the parent theme stylesheet here.** Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.
+You can add additional stylesheets and web fonts by typing @import rules into the textarea on the Web Fonts tab. **Important: do not import the parent theme stylesheet here.** Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.
 
 == Files Tab ==
 
@@ -564,15 +580,17 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 
 == Caveats ==
 
-* The Child Theme Configurator plugin does not support the legacy webkit gradient.
 * Only two-color gradients. The Child Theme Configurator plugin is powerful, but we have simplified the gradient interface. You can use any gradient you want as long as it has two colors and no intermediate stops.
 * No @font-face rules. The Child Theme Configurator plugin only supports @media and @import. If you need other @rules, put them in a separate stylesheet and import them into the Child Theme stylesheet.
-* Not all CSS rules are supported. The Child Theme Configurator plugin works with the vast majority of CSS rules, however we’ve left out some of the more obscure options.
+* The Child Theme Configurator plugin works with the vast majority of CSS rules, however some obscure options are not auto-prefixed.
+* The Child Theme Configurator plugin does not support the legacy webkit gradient.
 * CSS Rules are auto-discovered. The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. You can always add new rules using the "Raw CSS" text area.
 * Multiple versions of the same rule in a single selector are not supported, with a few exceptions. The Child Theme Configurator plugin will automatically generate vendor-prefix variations for background-image, border-radius, transform, transition, and others.
 
 == Documentation ==
 
-Go to http://www.lilaeamedia.com/child-theme-configurator
+Go to http://www.childthemeconfigurator.com/documentation/
+
+Serbo-Croatian translation courtesy of Borisa Djuraskovic borisad@webhostinghub.com http://www.webhostinghub.com
 
 Copyright: (C) 2014-2015 Lilaea Media
