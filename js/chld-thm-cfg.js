@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.2.1
+ *  Version: 1.7.3
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -884,6 +884,7 @@
                 dataType:   self.is_empty( datatype ) ? 'json' : datatype,
                 type:       'POST'
             } ).done( function( response ) {
+                //console.log( response );
                 self.handle_success( obj, response );
             } ).fail( function() {
                 self.handle_failure( obj );
@@ -953,14 +954,14 @@
                     culprits.push( '<code><small>' + url.split( /\?/ )[ 0 ] + '</small></code>' );
                 }
             } );
-            errors.push( '<strong>' + self.getxt( 'js' ) + '</strong>' );
-            //if ( 1 == ctcAjax.is_debug ) {
+            errors.push( '<strong>' + self.getxt( 'js' ) + '</strong> ' + self.getxt( 'contact' ) );
+            if ( 1 == ctcAjax.is_debug ) {
                 errors.push( self.jquery_err.join( '<br/>' ) );
-            //}
+            }
             if ( culprits.length ) {
                 errors.push( self.getxt( 'jquery' ) + '<br/>' + culprits.join( '<br/>' ) );
             }
-            errors.push( self.getxt( 'plugin' ) + ' ' + self.getxt( 'contact' ) );
+            errors.push( self.getxt( 'plugin' ) );
             self.set_notice( { 'error': errors } );
         },
     

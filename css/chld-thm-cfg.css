@@ -544,10 +544,16 @@ h3.theme-name {
     font-size:1em;
     margin: .5em 0;
 }
-#get_pro_panel ul {
+.ctc-input-cell .update-nag, .ctc-input-cell-wide.update-nag {
+    margin: 0;
+}
+.ctc-input-cell-wide.update-nag {
+    margin-bottom:1em;
+}
+#get_pro_panel ul, .ctc-input-cell-wide.update-nag ul {
     list-style: square;
 }
-#get_pro_panel li {
+#get_pro_panel li, .ctc-input-cell-wide.update-nag li {
     margin-left:2em;
 }
 #get_pro_panel h3 a {

@@ -56,8 +56,8 @@ if ( !defined( 'ABSPATH' ) ) exit;
 <p>Click "Save" to update the child stylesheet and save your changes to the WordPress admin.</p>
 <!-- END tab --> 
 <!-- BEGIN tab -->
-<h3 id="ctc_imports">@import Tab and Web Fonts</h3>
-<p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. <strong>Important: do not import the parent theme stylesheet here. Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.</strong></p>
+<h3 id="ctc_imports">Web Fonts Tab</h3>
+<p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the Web Fonts tab. <strong>Important: do not import the parent theme stylesheet here. Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.</strong></p>
 <p>Below is an example that loads a local custom stylesheet (you would have to add the "fonts" directory and stylesheet) as well as the web font "Open Sans" from Google Web Fonts:</p>
 <blockquote>
   <pre><code>
@@ -139,8 +139,8 @@ if ( !defined( 'ABSPATH' ) ) exit;
 <h5 id="existing_parent">How do I move changes I have already made to my theme into a Child Theme?</h5>
 <p><a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/#child_from_modified_parent" class="scroll-to">Follow these steps</a>. </p>
 <h5 id="web_fonts">How do I add Web Fonts?</h5>
-<p>The easiest method is to paste the @import code provided by <a href="http://www.google.com/fonts" title="Google Fonts">Google</a>, <a href="http://www.fontsquirrel.com/" title="Font Squirrel">Font Squirrel</a> or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the <strong>font-family</strong> rule. Be sure you understand the license for any embedded fonts. </p>
-<p>You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. </p>
+<p>The easiest method is to paste the @import code provided by <a href="http://www.google.com/fonts" title="Google Fonts">Google</a>, <a href="http://www.fontsquirrel.com/" title="Font Squirrel">Font Squirrel</a> or any other Web Font site into the Web Fonts tab. The fonts will then be available to use as a value of the <strong>font-family</strong> rule. Be sure you understand the license for any embedded fonts. </p>
+<p>You can also create a secondary stylesheet that contains @font-face rules and import it using the Web Fonts tab. </p>
 <h5 id="plugin">Does it work with plugins?</h5>
 <p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="<?php echo CHLD_THM_CFG_PRO_URL; ?>" title="Take Control of your Plugin Styles with Child Theme Configurator Plugin Extension for WordPress">Learn more <i class="genericon genericon-next"></i></a> 
 <h5 id="doesnt_work">Why doesn't this work with my (insert theme vendor here) theme?</h5>

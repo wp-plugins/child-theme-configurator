@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.7.2.1
+    Version: 1.7.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -134,14 +134,16 @@ class ChildThemeConfiguratorCSS {
     function load_config() {
         $option = CHLD_THM_CFG_OPTIONS . apply_filters( 'chld_thm_cfg_option', '' );
         //echo 'loading option: ' . $option . LF;
-        if ( $configarray = get_option( $option . '_configvars' ) ):
-            foreach ( $this->configvars as $configkey )
+        if ( ( $configarray = get_option( $option . '_configvars' ) ) && count( $configarray ) ):
+            foreach ( $this->configvars as $configkey ):
                 if ( isset( $configarray[ $configkey ] ) )
                     $this->{$configkey} = $configarray[ $configkey ];
+            endforeach;
             $this->ctc()->debug( 'configvars: ' . print_r( $configarray, TRUE ), __FUNCTION__ );
             foreach ( $this->dicts as $configkey ):
-                if ( $configarray = get_option( $option . '_' . $configkey ) )
+                if ( ( $configarray = get_option( $option . '_' . $configkey ) ) && count( $configarray ) )
                     $this->{$configkey} = $configarray;
+                else return FALSE;
             endforeach;
         else:
             return FALSE;
@@ -399,6 +401,7 @@ class ChildThemeConfiguratorCSS {
             $this->imports[ 'child' ] = array();
             $this->styles = $this->parse_css_input( $_POST[ 'ctc_child_imports' ] );
             $this->parse_css( 'child' );
+            add_action( 'chld_thm_cfg_addl_files',   array( $this->ctc(), 'enqueue_parent_css' ), 15, 2 );
         elseif ( isset( $_POST[ 'ctc_configtype' ] ) ):
             ob_start();
             do_action( 'chld_thm_cfg_get_stylesheets' );
@@ -713,22 +716,22 @@ class ChildThemeConfiguratorCSS {
             do_action( 'chld_thm_cfg_update_qsid', $qsid );                
         endif;
     }
+
     // converts relative path to absolute path for preview
-    function convert_rel_url( $value, $relpath ) {
-        $source     = $this->get_prop( 'parnt' );
+    function convert_rel_url( $value, $relpath, $url = TRUE  ) {
         $path       = preg_replace( '%url\([\'" ]*(.+?)[\'" ]*\)%', "$1", $value );
-        if ( preg_match( '%https?://%', $path ) ) return $value;
+        if ( preg_match( '%(https?:)?//%', $path ) ) return $value;
         $pathparts  = explode( '/', $path );
         $fileparts  = explode( '/', $relpath );
         $newparts   = array();
-        $themeuri   = get_theme_root_uri();
         while ( $pathpart = array_shift( $pathparts ) ):
             if ( '..' == $pathpart )
                 array_pop( $fileparts );
-            else array_push( $newparts, $pathpart );
+            else array_push( $newparts, sanitize_text_field( $pathpart ) );
         endwhile;
-        $newvalue = 'url(' . //trailingslashit( $themeuri ) . trailingslashit( $source ) .
-            ( $fileparts ? trailingslashit( implode( '/', $fileparts ) ) : '' ) . implode( '/', $newparts ) . ')';
+        $newvalue = ( $url ? 'url(' : '' )
+            . ( $fileparts ? trailingslashit( implode( '/', $fileparts ) ) : '' ) 
+            . implode( '/', $newparts ) . ( $url ? ')' : '' );
         $this->ctc()->debug( 'converted ' . $value . ' to ' . $newvalue . ' with ' . $relpath, __FUNCTION__ );
         return $newvalue;
     }
@@ -743,12 +746,15 @@ class ChildThemeConfiguratorCSS {
     function write_css( $backup = FALSE ) {
         // write new stylesheet
         $output = apply_filters( 'chld_thm_cfg_css_header', $this->get_css_header(), $this );
+        // 1.7.3 -- moving this to 
+        /*
         $imports = $this->get_prop( 'imports' );
         if ( !empty( $imports ) ):
             foreach ( $imports as $import ):
                 $output .= $import . ';' . LF;
             endforeach;
         endif;
+        */
         $output .= LF;
         // turn the dictionaries into indexes (value => id into id => value):
         $rulearr = array_flip( $this->dict_rule );

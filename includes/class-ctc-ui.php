@@ -5,7 +5,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles the plugin User Interface
-    Version: 1.7.2.1
+    Version: 1.7.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -14,8 +14,10 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Copyright (C) 2014-2015 Lilaea Media
 */
 class ChildThemeConfiguratorUI {
+
+    var $warnings = array();
+
     // helper function to globalize ctc object
-    
     function ctc() {
         return ChildThemeConfigurator::ctc();
     }
@@ -26,7 +28,7 @@ class ChildThemeConfiguratorUI {
         $child      = $css->get_prop( 'child' );
         $hidechild  = ( count( $themes[ 'child' ] ) ? '' : 'style="display:none"' );
         $enqueueset = ( isset( $css->enqueue ) && $child );
-        $mustimport = $this->parent_stylesheet_check();
+        $this->parent_theme_check();
         $imports    = $css->get_prop( 'imports' );
         $id         = 0;
         $this->ctc()->fs_method = get_filesystem_method();
@@ -42,14 +44,39 @@ class ChildThemeConfiguratorUI {
         include ( CHLD_THM_CFG_DIR . '/includes/forms/main.php' ); 
     } 
 
-    function parent_stylesheet_check() {
+    function parent_theme_check() {
+        // check header for hard-coded 
+        /*
+foreach(glob($path_to_check.'*.txt') as $filename)
+{
+  foreach(file($filename) as $fli=>$fl)
+  {
+    if(strpos($fl, $needle)!==false)
+    {
+      echo $filename.' on line '.($fli+1).': '.$fl;
+    }
+  }
+}
+        */
+        $bad_practice_descr = array(
+            'links'     => __( 'A stylesheet link tag is hard-coded into the header template.', 'chld_thm_cfg' ),
+            //  All stylesheets should be enqueued using the <code>wp_enqueue_scripts</code> action.
+            'wphead'    => __( 'Code exists between the <code>wp_head()</code> function and the closing <code>&lt;/head&gt;</code> tag.', 'chld_thm_cfg'),
+            //  <code>wp_head()</code> should be located just before the closing <code>&lt;/head&gt;</code> tag. 
+            'require'   => __( 'This theme loads files from active theme directory.', 'chld_thm_cfg' ),
+        );
         $file  = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->get_current_parent() ) . 'header.php';
-        $regex = '/<link[^>]+?stylesheet_ur[li]/is';
         if ( file_exists( $file ) ):
             $contents = file_get_contents( $file );
-            if ( preg_match( $regex, $contents ) ) return TRUE;
+            $contents = preg_replace( "/\/\/.*?\n|\/\*.*?\*\/|<\!\-\-.*?\-\->/s", '', $contents );
+            // check for linked stylesheets
+            if ( preg_match( '/rel=[\'"]stylesheet[\'"]/is', $contents ) ) $this->warnings[] = $bad_practice_descr[ 'links' ];
+            // check for code after wp_head
+            if ( preg_match( '/wp_head(.*?)<\/head>/is', $contents, $matches ) ):
+                $codeafter = preg_replace( "/[\(\)\?>;\s]/s", '', $matches[ 1 ] );
+                if ( !empty( $codeafter ) ) $this->warnings[] = $bad_practice_descr[ 'wphead' ];
+            endif; 
         endif;
-        return FALSE;
     }
    
     function render_theme_menu( $template = 'child', $selected = NULL ) {

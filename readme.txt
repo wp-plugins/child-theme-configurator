@@ -93,14 +93,11 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 4. Optional: Copy Parent Theme Menus, Widgets and other Options. NOTE: This will overwrite any child theme options you may have already set.
 
 5. Choose stylesheet handling:
-   * **Enqueue parent stylesheet (default):**
-     Select this option if the parent theme enqueues the stylesheet but has no special handling for child themes. Start with this option if unsure.
-   * **@import parent stylesheet:**
-     Select this option if the parent theme links the stylesheet in the header template. Using @import is discouraged but necessary in this case unless you modify the header template.
-   * **Enqueue child stylesheet:**
-     Select this option if the parent theme incorrectly loads the "template" stylesheet or does not load the "style.css" file at all. This is unusual but occurs in some themes.
+   * [See our website for information about which option to use](http://www.childthemeconfigurator.com/how-to-use/#stylesheet_handling) 
    * **None (handled by theme):**
-     Select this option if all stylesheets are automatically loaded for child themes (e.g., "Responsive" by CyberChimps). 
+   * **Enqueue parent stylesheet (default):**
+   * **Enqueue child stylesheet:**
+   * **@import parent stylesheet:**
 
 6. Optional: Save Backup
 
@@ -191,9 +188,9 @@ Click the "Help" tab at the top right for a quick reference.
 
 = How do I add Web Fonts? =
 
-The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts.
+The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the Web Fonts tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts.
 
-You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. 
+You can also create a secondary stylesheet that contains @font-face rules and import it using the Web Fonts tab.
 
 = Why doesn't the Parent Theme have any styles when I "View Parent CSS"? = 
 
@@ -261,11 +258,17 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 2. Parent/Child tab with parent theme menu open
 3. Query/Selector tab
 4. Rule/Value tab
-5. @import tab
+5. Web Fonts tab
 6. Parent CSS tab
 7. Files tab
 
 == Changelog ==
+= 1.7.3 =
+* Changed @import tab to "Web Fonts." @import statements are automatically converted to external links when the page is loaded.
+* Added "Enqueue both parent and child stylesheets" option to enable child theme overrides without using @import.
+* Added checks for hard-coded link tags in header template to help resolve incorrect stylesheet load order.
+* Fix: "Enqueue child stylesheet" now passes correct value.
+
 = 1.7.2.1 = 
 * Fix: hide called before iris init
 * Fix: @import not being written on rebuild/configure
@@ -490,7 +493,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
-Version 1.7.2.1: Fixed Iris bug in JS; 1.7.2: @imports were not being written correctly on child theme rebuild. See changelog.
+Version 1.7.3 now converts @import statements to link tags and checks parent theme for hard-coded stylesheet link tags and other problematic code issues.
 
 == Override Parent Styles ==
 
@@ -527,9 +530,9 @@ Click "Save" to update the child theme stylesheet and save your changes to the W
 
 If you want to edit all of the rules for the CSS selector you can click the “Edit” link and the CSS selector will automatically load in the Query/Selector Tab.
 
-== @import Tab and Web Fonts ==
+== Web Fonts Tab ==
 
-You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. **Important: do not import the parent theme stylesheet here.** Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.
+You can add additional stylesheets and web fonts by typing @import rules into the textarea on the Web Fonts tab. **Important: do not import the parent theme stylesheet here.** Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.
 
 == Files Tab ==
 
