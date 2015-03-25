@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.7.3
+    Version: 1.7.3.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -41,6 +41,7 @@ class ChildThemeConfiguratorCSS {
     var $recent;            // history of edited styles
     var $enqueue;           // load parent css method (enqueue, import, none)
     var $converted;         // @imports coverted to <link>?
+    var $nowarn;            // ignore stylesheet handling warnings
     var $child_name;        // child theme name
     var $child_author;      // child theme author
     var $child_authoruri;   // child theme author website
@@ -84,6 +85,7 @@ class ChildThemeConfiguratorCSS {
         'querykey',
         'recent',
         'converted',
+        'nowarn',
     );
     var $dicts = array(
         'dict_qs',

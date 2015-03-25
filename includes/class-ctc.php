@@ -63,6 +63,7 @@ class ChildThemeConfiguratorAdmin {
             'child_version',
             'configtype', // backward compatability
             'revert',
+            'nowarn',
         );
     var $actionfields   = array(
             'load_styles',
@@ -581,11 +582,13 @@ class ChildThemeConfiguratorAdmin {
         // if no errors so far, we are good to create child theme
         if ( empty( $this->errors ) ):
             // save imports in case this is a rebuild
-            $imports                = $this->css->imports;
+            $imports            = $this->css->imports;
+            $nowarn             = ( $nowarn || $this->css->nowarn ) ? 1 : 0;
             // reset everything else
-            $this->css              = new ChildThemeConfiguratorCSS();
+            $this->css          = new ChildThemeConfiguratorCSS();
             // restore imports if this is a rebuild
-            $this->css->imports     = $imports;
+            $this->css->imports = $imports;
+            $this->css->nowarn  = $nowarn;
             // check if we have additional files from legacy plugin extension. if so, we have to override 
             // function to support wp_filesystem requirements
             if ( $this->is_theme( $configtype ) ):
@@ -613,6 +616,7 @@ class ChildThemeConfiguratorAdmin {
             $this->css->set_prop( 'child_tags', $tags );
             $this->css->set_prop( 'child_version', strlen( $version ) ? $version : '1.0' );
             
+            $this->css->set_prop( 'nowarn', $nowarn );
             // set stylesheet handling option
             if ( isset( $_POST[ 'ctc_parent_enqueue' ] ) )
                 $this->css->set_prop( 'enqueue', sanitize_text_field( $_POST[ 'ctc_parent_enqueue' ] ) );

@@ -109,10 +109,10 @@ if ( !defined( 'ABSPATH' ) ) exit;
       <div class="ctc-input-cell ctc-section-toggle" id="ctc_stylesheet_handling">
         <strong><?php _e( 'Stylesheet handling', 'chld_thm_cfg' ); ?></strong>
         <?php _e( '(click to view options)', 'chld_thm_cfg' ); ?>
-      </div><?php if ( count( $this->warnings ) && !in_array( $this->ctc()->css->enqueue, array( 'both', 'import' ) ) ):?>
+      </div><?php if ( empty( $css->nowarn ) && count( $this->warnings ) && in_array( $css->enqueue, array( 'none', 'enqueue' ) ) ):?>
 <div class="ctc-input-cell-wide update-nag"><strong><?php _e( 'This theme may not apply child theme styles correctly with the current settings:', 'chld_thm_cfg' ); ?></strong><ul class="smaller">
         <?php foreach ( $this->warnings as $warning ) echo '<li>' . $warning  . '</li>' . LF; ?>
-        </ul> <a href="#" class="ctc-section-toggle" id="ctc_stylesheet_handling2"><?php _e( 'View options', 'chld_thm_cfg'); ?></a></div>
+        </ul><span class="alignright"><label class="smaller"><input type="checkbox" name="ctc_nowarn" value="1" /><?php _e( "Don't show again.", 'chld_thm_cfg'); ?></label> &nbsp; <a href="#" class="ctc-section-toggle" id="ctc_stylesheet_handling2"><?php _e( 'View options', 'chld_thm_cfg'); ?></a></span></div>
 <?php endif; ?>
 <div class="ctc-section-toggle-content clear" id="ctc_stylesheet_handling_content">
       <div class="ctc-input-cell clear"><a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/how-to-use/#stylesheet_handling" target="_blank"><?php _e( 'Which option should I use?', 'chld_thm_cfg' ); ?></a></div>
@@ -140,7 +140,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
       <div class="ctc-input-cell">
         <label>
           <input class="ctc_radio ctc-themeonly" id="ctc_parent_enqueue_child" name="ctc_parent_enqueue" type="radio" 
-                value="both" <?php checked( 'child', $parent_handling ); ?> <?php echo $disabled; ?> />
+                value="child" <?php checked( 'child', $parent_handling ); ?> <?php echo $disabled; ?> />
           <?php _e( 'Enqueue child stylesheet', 'chld_thm_cfg' ); ?>
         </label>
         </strong> </div>

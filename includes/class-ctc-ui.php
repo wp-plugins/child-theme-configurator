@@ -28,7 +28,7 @@ class ChildThemeConfiguratorUI {
         $child      = $css->get_prop( 'child' );
         $hidechild  = ( count( $themes[ 'child' ] ) ? '' : 'style="display:none"' );
         $enqueueset = ( isset( $css->enqueue ) && $child );
-        $this->parent_theme_check();
+        if ( empty( $css->nowarn ) ) $this->parent_theme_check();
         $imports    = $css->get_prop( 'imports' );
         $id         = 0;
         $this->ctc()->fs_method = get_filesystem_method();
@@ -46,18 +46,6 @@ class ChildThemeConfiguratorUI {
 
     function parent_theme_check() {
         // check header for hard-coded 
-        /*
-foreach(glob($path_to_check.'*.txt') as $filename)
-{
-  foreach(file($filename) as $fli=>$fl)
-  {
-    if(strpos($fl, $needle)!==false)
-    {
-      echo $filename.' on line '.($fli+1).': '.$fl;
-    }
-  }
-}
-        */
         $bad_practice_descr = array(
             //  Stylesheets should be enqueued using the <code>wp_enqueue_scripts</code> action.
             'links'     => __( 'A stylesheet link tag is hard-coded into the header template.', 'chld_thm_cfg' ),
@@ -65,8 +53,9 @@ foreach(glob($path_to_check.'*.txt') as $filename)
             //  <code>wp_head()</code> should be located just before the closing <code>&lt;/head&gt;</code> tag. 
             'wphead'    => __( 'Code exists between the <code>wp_head()</code> function and the closing <code>&lt;/head&gt;</code> tag.', 'chld_thm_cfg'),
         );
-        $file  = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->get_current_parent() ) . 'header.php';
-        if ( file_exists( $file ) ):
+        $parentfile = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->get_current_parent() ) . 'header.php';
+        $childfile  = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->css->get_prop( 'child' ) ) . 'header.php';
+        if ( $file = ( file_exists( $childfile ) ? $childfile : ( file_exists( $parentfile ) ? $parentfile : FALSE ) ) ):
             $contents = file_get_contents( $file );
             $contents = preg_replace( "/\/\/.*?(\?>|\n)|\/\*.*?\*\/|<\!\-\-.*?\-\->/s", '', $contents );
             // check for linked stylesheets
