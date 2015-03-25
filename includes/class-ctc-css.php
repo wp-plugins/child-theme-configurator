@@ -4,9 +4,9 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 /*
     Class: ChildThemeConfiguratorCSS
-    Plugin URI: http://www.lilaeamedia.com/child-theme-configurator/
+    Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.7.1
+    Version: 1.7.3.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -40,6 +40,8 @@ class ChildThemeConfiguratorCSS {
     var $addl_css;          // parent additional stylesheets
     var $recent;            // history of edited styles
     var $enqueue;           // load parent css method (enqueue, import, none)
+    var $converted;         // @imports coverted to <link>?
+    var $nowarn;            // ignore stylesheet handling warnings
     var $child_name;        // child theme name
     var $child_author;      // child theme author
     var $child_authoruri;   // child theme author website
@@ -82,6 +84,8 @@ class ChildThemeConfiguratorCSS {
         'selkey',
         'querykey',
         'recent',
+        'converted',
+        'nowarn',
     );
     var $dicts = array(
         'dict_qs',
@@ -134,14 +138,16 @@ class ChildThemeConfiguratorCSS {
     function load_config() {
         $option = CHLD_THM_CFG_OPTIONS . apply_filters( 'chld_thm_cfg_option', '' );
         //echo 'loading option: ' . $option . LF;
-        if ( $configarray = get_option( $option . '_configvars' ) ):
-            foreach ( $this->configvars as $configkey )
+        if ( ( $configarray = get_option( $option . '_configvars' ) ) && count( $configarray ) ):
+            foreach ( $this->configvars as $configkey ):
                 if ( isset( $configarray[ $configkey ] ) )
                     $this->{$configkey} = $configarray[ $configkey ];
+            endforeach;
             $this->ctc()->debug( 'configvars: ' . print_r( $configarray, TRUE ), __FUNCTION__ );
             foreach ( $this->dicts as $configkey ):
-                if ( $configarray = get_option( $option . '_' . $configkey ) )
+                if ( ( $configarray = get_option( $option . '_' . $configkey ) ) && count( $configarray ) )
                     $this->{$configkey} = $configarray;
+                else return FALSE;
             endforeach;
         else:
             return FALSE;
@@ -292,6 +298,9 @@ class ChildThemeConfiguratorCSS {
      */
     function update_arrays( $template, $query, $sel, $rule = NULL, $value = NULL, $important = 0 ) {
         if ( $this->max_sel ) return;
+        if ( FALSE === strpos( $query, '@' ) ):
+            $query = 'base';
+        endif;
         // normalize selector styling
         $sel = implode( ', ', preg_split( '#\s*,\s*#s', trim( $sel ) ) );
         // add selector and query to index
@@ -328,8 +337,6 @@ class ChildThemeConfiguratorCSS {
             $this->val_ndx[ $qsid ][ $ruleid ][ $template ] = $this->dict_val[ $value ];
             // set the important flag for this value
             $this->val_ndx[ $qsid ][ $ruleid ][ 'i_' . $template ] = $important;
-            // remove if all child values have been cleared
-            $this->prune_if_empty( $qsid );
             return $qsid;
         endif;
     }
@@ -338,15 +345,13 @@ class ChildThemeConfiguratorCSS {
         if (! isset( $this->dict_val[ '' ] ) ) return FALSE;
         $empty = $this->dict_val[ '' ];
         foreach ( $this->val_ndx[ $qsid ] as $ruleid => $arr ):
-            // if any values exist return
-            if ( ( isset( $arr[ 'child' ] ) && $empty != $arr[ 'child' ] )
-                || ( isset( $arr[ 'parnt' ] ) && $empty != $arr[ 'parnt' ] ) ):
-
-                do_action( 'chld_thm_cfg_update_qsid', $qsid );                
+            if ( ( isset( $arr[ 'child' ] ) && $empty != $arr[ 'child' ] ) 
+                || ( isset( $arr[ 'parnt' ] ) && $empty != $arr[ 'parnt' ] )
+                ):
                 return FALSE;
             endif;
         endforeach;
-        // no values, prune from data ( keep dictionary entries )
+        // no values, prune from sel index, val index and qs dict data ( keep other dictionary records )
         unset( $this->sel_ndx[ $this->dict_qs[ $qsid ][ 'q' ] ][ $this->dict_qs[ $qsid ][ 's' ] ] );
         unset( $this->val_ndx[ $qsid ] );
         unset( $this->dict_qs[ $qsid ] );
@@ -395,7 +400,7 @@ class ChildThemeConfiguratorCSS {
         if ( isset( $_POST[ 'ctc_new_selectors' ] ) ):
             $this->styles = $this->parse_css_input( LF . $_POST[ 'ctc_new_selectors' ] );
             $this->parse_css( 'child', 
-                ( isset( $_POST[ 'ctc_sel_ovrd_query' ] )?trim( $_POST[ 'ctc_sel_ovrd_query' ] ):NULL ), FALSE );
+                ( isset( $_POST[ 'ctc_sel_ovrd_query' ] ) ? trim( $_POST[ 'ctc_sel_ovrd_query' ] ) : NULL ), FALSE );
         elseif ( isset( $_POST[ 'ctc_child_imports' ] ) ):
             $this->imports[ 'child' ] = array();
             $this->styles = $this->parse_css_input( $_POST[ 'ctc_child_imports' ] );
@@ -454,6 +459,9 @@ class ChildThemeConfiguratorCSS {
                                 $rule, trim( $value ), $important );
                             // clear the original selector's child value:
                             $this->update_arrays( 'child', $selarr[ 'query' ], $selarr[ 'selector' ], $rule, '' );
+                            // remove if all values have been cleared
+                            // note: 1.7.2 we are only pruning after rename
+                            $this->prune_if_empty( $qsid );
                         else:
                             // otherwise, just update with the new values:
                             $this->update_arrays( 'child', $selarr[ 'query' ], $selarr[ 'selector' ], 
@@ -517,7 +525,12 @@ class ChildThemeConfiguratorCSS {
                     'data'  => $this->obj_to_utf8( $this->denorm_sel_val( $qsid ) ),
                 );
             endif;
+            do_action( 'chld_thm_cfg_update_qsid', $qsid );                
         endif;
+
+        // update enqueue function if imports have not been converted or new imports passed
+        if ( isset( $_POST[ 'ctc_child_imports' ] ) || empty( $this->converted ) )
+            add_action( 'chld_thm_cfg_addl_files',   array( $this->ctc(), 'enqueue_parent_css' ), 15, 2 );
     }
     
     /*
@@ -561,7 +574,7 @@ class ChildThemeConfiguratorCSS {
         preg_match( $regex, $this->styles, $matches );
         $child_name = $this->get_prop( 'child_name' );
         if ( !empty( $matches[ 1 ] ) && 'child' == $template && empty( $child_name ) ) $this->set_prop( 'child_name', $matches[ 1 ] );
-        $this->parse_css( $template, NULL, NULL, $this->ctc()->normalize_path( dirname( $file ) ) );
+        $this->parse_css( $template, NULL, TRUE, $this->ctc()->normalize_path( dirname( $file ) ) );
     }
 
     // loads raw css file into local memory
@@ -610,10 +623,14 @@ class ChildThemeConfiguratorCSS {
         // get all imports
         if ( $parse_imports ):
             
-            $regex = '#(\@import.+?);#';
+            $regex = '#(\@import\s+url\(.+?\));#';
             preg_match_all( $regex, $this->styles, $matches );
-            foreach ( preg_grep( '#' . $this->get_prop( 'parnt' ) . '\/style\.css#', $matches[ 1 ], PREG_GREP_INVERT ) as $import )
+            foreach ( preg_grep( '#' . $this->get_prop( 'parnt' ) . '\/style\.css#', $matches[ 1 ], PREG_GREP_INVERT ) as $import ):
+                $import = preg_replace( "#^.*?url\(([^\)]+?)\).*#", "$1", $import );
+                $import = preg_replace( "#[\'\"]#", '', $import );
+                $import = '@import url(' . trim( $import ) . ')';
                 $this->imports[ $template ][ $import ] = 1;
+            endforeach;
             if ( $this->ctc()->cache_updates ):
                 $this->ctc()->updates[] = array(
                     'obj'  => 'imports',
@@ -707,24 +724,25 @@ class ChildThemeConfiguratorCSS {
                 'key'   => $qsid,
                 'data'  => $this->obj_to_utf8( $this->denorm_sel_val( $qsid ) ),
             );
+            do_action( 'chld_thm_cfg_update_qsid', $qsid );                
         endif;
     }
+
     // converts relative path to absolute path for preview
-    function convert_rel_url( $value, $relpath ) {
-        $source     = $this->get_prop( 'parnt' );
+    function convert_rel_url( $value, $relpath, $url = TRUE  ) {
         $path       = preg_replace( '%url\([\'" ]*(.+?)[\'" ]*\)%', "$1", $value );
-        if ( preg_match( '%https?://%', $path ) ) return $value;
+        if ( preg_match( '%(https?:)?//%', $path ) ) return $value;
         $pathparts  = explode( '/', $path );
         $fileparts  = explode( '/', $relpath );
         $newparts   = array();
-        $themeuri   = get_theme_root_uri();
         while ( $pathpart = array_shift( $pathparts ) ):
             if ( '..' == $pathpart )
                 array_pop( $fileparts );
-            else array_push( $newparts, $pathpart );
+            else array_push( $newparts, sanitize_text_field( $pathpart ) );
         endwhile;
-        $newvalue = 'url(' . //trailingslashit( $themeuri ) . trailingslashit( $source ) .
-            ( $fileparts ? trailingslashit( implode( '/', $fileparts ) ) : '' ) . implode( '/', $newparts ) . ')';
+        $newvalue = ( $url ? 'url(' : '' )
+            . ( $fileparts ? trailingslashit( implode( '/', $fileparts ) ) : '' ) 
+            . implode( '/', $newparts ) . ( $url ? ')' : '' );
         $this->ctc()->debug( 'converted ' . $value . ' to ' . $newvalue . ' with ' . $relpath, __FUNCTION__ );
         return $newvalue;
     }
@@ -739,6 +757,9 @@ class ChildThemeConfiguratorCSS {
     function write_css( $backup = FALSE ) {
         // write new stylesheet
         $output = apply_filters( 'chld_thm_cfg_css_header', $this->get_css_header(), $this );
+        // 1.7.3 -- use read-only version of insert with markers to check if @imports need to be written to stylesheet
+        // eventually all will be migrated to link tags, but we need to account for user not updating import config
+        /*
         $imports = $this->get_prop( 'imports' );
         if ( !empty( $imports ) ):
             foreach ( $imports as $import ):
@@ -746,6 +767,7 @@ class ChildThemeConfiguratorCSS {
             endforeach;
         endif;
         $output .= LF;
+        */
         // turn the dictionaries into indexes (value => id into id => value):
         $rulearr = array_flip( $this->dict_rule );
         $valarr  = array_flip( $this->dict_val );

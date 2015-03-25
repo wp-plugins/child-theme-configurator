@@ -1,8 +1,8 @@
 /*!
  *  Script: chld-thm-cfg.js
- *  Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
+ *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.1
+ *  Version: 1.7.3
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -625,16 +625,20 @@
                     }
                     self.current_qsdata.value[ ui.item.label ] = { 'child': '' };
                     var newrule = ui.item.label.replace( /[^\w\-]/g, self.to_ascii ),
-                        n = $( self.input_row( self.current_qsid, newrule, 'ovrd', self.current_qsdata ) );
+                        n = $( self.input_row( self.current_qsid, newrule, 'ovrd', self.current_qsdata ) ),
+                        first;
                     $( '#ctc_sel_ovrd_rule_inputs' ).append( n );
                     $( '#ctc_new_rule_menu' ).val( '' );
                     
                     n.find( 'input[type="text"]' ).each( function( ndx, el ) {
+                        if (! first) first = el;
                         if ( $( el ).hasClass( 'color-picker' ) )
                             self.setup_iris( el );
-                        $( el ).focus();
                     } );
-                    if ( self.jquery_err.length ) self.jquery_notice();
+                    if ( first )
+                        $( first ).focus();
+                    if ( self.jquery_err.length ) 
+                        self.jquery_notice();
                     return false;
                 },
                 focus: function( e ) { 
@@ -880,6 +884,7 @@
                 dataType:   self.is_empty( datatype ) ? 'json' : datatype,
                 type:       'POST'
             } ).done( function( response ) {
+                //console.log( response );
                 self.handle_success( obj, response );
             } ).fail( function() {
                 self.handle_failure( obj );
@@ -949,20 +954,21 @@
                     culprits.push( '<code><small>' + url.split( /\?/ )[ 0 ] + '</small></code>' );
                 }
             } );
-            errors.push( '<strong>' + self.getxt( 'js' ) + '</strong>' );
+            errors.push( '<strong>' + self.getxt( 'js' ) + '</strong> ' + self.getxt( 'contact' ) );
             if ( 1 == ctcAjax.is_debug ) {
                 errors.push( self.jquery_err.join( '<br/>' ) );
             }
             if ( culprits.length ) {
                 errors.push( self.getxt( 'jquery' ) + '<br/>' + culprits.join( '<br/>' ) );
             }
-            errors.push( self.getxt( 'plugin' ) + ' ' + self.getxt( 'contact' ) );
+            errors.push( self.getxt( 'plugin' ) );
             self.set_notice( { 'error': errors } );
         },
     
         update: {
             // render individual selector inputs on Query/Selector tab
             qsid: function( res ) {
+                //console.log( res );
                 var self = this,
                     id, html, val, selector;
                 self.current_qsid  = res.key;
@@ -979,14 +985,8 @@
                     $( '#ctc_child_load_order_container' ).html( html );
                 }
                 if ( self.is_empty( self.current_qsdata.value ) ) {
-                    $( '#ctc_sel_ovrd_selector_selected' ).empty();
-                    $( '.ctc-rewrite-toggle' ).empty();
-                    $( '#ctc_sel_ovrd_new_rule,'
-                        + '#ctc_sel_ovrd_rule_header,'
-                        + '#ctc_sel_ovrd_rule_inputs_container,'
-                        + '#ctc_sel_ovrd_rule_inputs,'
-                        + '.ctc-rewrite-toggle' ).hide();
                     $( '#ctc_sel_ovrd_rule_inputs' ).empty(); 
+                    $( '#ctc_sel_ovrd_rule_header' ).hide();
                 } else {
                     html = '';
                     $.each( self.current_qsdata.value, function( rule, value ) {
@@ -996,23 +996,23 @@
                         self.setup_iris( this );
                     } );
                     self.coalesce_inputs( '#ctc_child_all_0_swatch' );
-                    if ( self.jquery_err.length ) {
-                        self.jquery_notice();
-                    } else {
-                        //console.log( 'reload menus: ' + ( self.reload_menus ? 'true' : 'false' ) );
-                        if ( self.reload_menus ) {
-                            self.set_query( self.current_qsdata.query );
-                            self.load_rules();
-                        }
-                        $( '#ctc_sel_ovrd_selector_selected' ).text( self.current_qsdata.selector );
-                        $( '.ctc-rewrite-toggle' ).text( self.getxt( 'rename' ) );
-                        $( '#ctc_sel_ovrd_new_rule,'
-                            + '#ctc_sel_ovrd_rule_header,'
-                            + '#ctc_sel_ovrd_rule_inputs_container,'
-                            + '#ctc_sel_ovrd_rule_inputs,'
-                            + '.ctc-rewrite-toggle' ).show();
-                        self.scrolltop();
+                    $( '#ctc_sel_ovrd_rule_header' ).show();
+                }
+                if ( self.jquery_err.length ) {
+                    self.jquery_notice();
+                } else {
+                    //console.log( 'reload menus: ' + ( self.reload_menus ? 'true' : 'false' ) );
+                    if ( self.reload_menus ) {
+                        self.set_query( self.current_qsdata.query );
+                        self.load_rules();
                     }
+                    $( '#ctc_sel_ovrd_selector_selected' ).text( self.current_qsdata.selector );
+                    $( '.ctc-rewrite-toggle' ).text( self.getxt( 'rename' ) );
+                    $( '#ctc_sel_ovrd_new_rule,'
+                        + '#ctc_sel_ovrd_rule_inputs_container,'
+                        + '#ctc_sel_ovrd_rule_inputs,'
+                        + '.ctc-rewrite-toggle' ).show();
+                    //self.scrolltop();
                 }
             }, 
             // render list of unique values for given rule on Rule/Value tab
@@ -1246,9 +1246,14 @@
                     self.focus_panel( id );
                 } );
                 $( '.ctc-section-toggle' ).on( 'click', function( e ) {
-                    $( this ).toggleClass( 'open' );
-                    var id = $( this ).attr( 'id' ) + '_content';
-                    $( '#' + id ).slideToggle( 'fast' );
+                    e.preventDefault();
+                    $( this ).parents( '.ctc-input-row' ).first().find( '.ctc-section-toggle' )
+                        .each( function() { 
+                            $( this ).toggleClass( 'open' );
+                        } );
+                    var id = $( this ).attr( 'id' ).replace(/\d$/, '') + '_content';
+                    $( '#' + id ).stop().slideToggle( 'fast' );
+                    return false;
                 } );
                 $( '#view_child_options, #view_parnt_options' ).on( 'click', function( e ){ 
                     if ( $( this ).hasClass( 'ajax-pending' ) ) return false;

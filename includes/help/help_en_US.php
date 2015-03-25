@@ -16,17 +16,23 @@ if ( !defined( 'ABSPATH' ) ) exit;
   <li><strong>Optional: Enter a Theme Name, Theme Website, Author, Author Website, Descriptiont, Tags and Version</strong> for the child theme. If using an existing child theme, they will be entered automatically  based on the child theme selected.</li>
   <li><strong>Choose how WordPress should handle the parent theme stylesheet:</strong> 
     <ul>
-      <li><strong>Enqueue parent stylesheet (default):</strong> Select this option if the parent theme enqueues the stylesheet but has no special handling for child themes. Start with this option if unsure.</li>
-      <li><strong>@import parent stylesheet:</strong> Select this option if the parent theme links the stylesheet in the header template. Using @import is discouraged but necessary in this case unless you modify the header template.</li>
-      <li><strong>Enqueue child stylesheet:</strong> Select this option if the parent theme incorrectly loads the "template" stylesheet or does not load the "style.css" file at all. This is unusual but occurs in some themes.</li>
-      <li><strong>None (handled by theme):</strong> Select this option if all stylesheets are automatically loaded for child themes (e.g., "Responsive" by CyberChimps).</li>
+      <li><strong>None (handled by theme)</strong>
+Select this option if all stylesheets are correctly enqueued for child themes. If you find that styles are not being applied correctly, use a different option.</li>
+      <li><strong>Enqueue parent stylesheet (default)</strong>
+Select this option if the theme enqueues the active stylesheet but has no special handling for child themes. Start with this option if unsure.</li>
+      <li><strong>Enqueue child stylesheet</strong>
+Select this option if the theme enqueues the parent stylesheet but does not enqueue the child stylesheet at all. This can happen if <code>get_template()</code> or <code>get_template_directory_uri()</code> is used to link the stylesheet.</li>
+      <li><strong>Enqueue both parent and child stylesheets</strong>
+Select this option if stylesheet link tags are hard-coded into the header template (common in older themes). This enables the child stylesheet to override the parent stylesheet without using <code>@import.</code></li>
+      <li><strong><code>@import</code> parent stylesheet</strong>
+This option imports the parent stylesheet from the child stylesheet. This enables the child stylesheet to override the parent stylesheet, but using <code>@import</code> is no longer recommended.</li>
     </ul></li>
   <li><strong>Use Parent Options (optional)</strong> If you want to maintain the same theme options as the parent theme, check "Copy Parent Theme Menus, Widgets and other Options". Depending on the theme, some options may need to be applied using separate theme option controls. <strong>NOTE: This will overwrite any child theme options you may have already set.</strong></li>
   <li><strong>Save Backup (optional)</strong> If using an existing child theme, you can check "Backup Stylesheet", to create a backup of the child theme stylesheet in the child theme directory.</li>
   <li><strong>Restore from backup (optional - new in version 1.6.0):</strong> If using an existing child theme, you can choose whether to reload the current child theme stylesheet (leave unchanged), reset all values, or restore it from a backup. If there are backup files available, they will appear as radio button options.</li>
   <li><strong>Choose additional stylesheets</strong> If your theme uses additional stylesheets, you can open the &quot;Parse Additional Stylesheets&quot; toggle and they will appear as checkbox options. Stylesheets that are being used by the parent theme should be automatically selected for you. Only select additional stylesheets you wish to customize to reduce overhead. <strong>NOTE: If the parent theme uses Bootstrap stylesheets, they will not be automatically selected.</strong> You can select Bootstrap stylesheets manually if you need to customize them, but in most cases they add unecessary overhead to the configuration data.</li>
   <li><strong>Click "Generate/Rebuild Child Theme Files."</strong></li>
-  <li><strong>IMPORTANT: <a target="_blank" href="http://www.lilaeamedia.com/plugins/child-theme-configurator/#preview_activate" title="Test your child theme before activating!">Always test your child theme with Live Preview before activating!</a></strong></li>
+  <li><strong>IMPORTANT: <a target="_blank" href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/how-to-use/#preview_activate" title="Test your child theme before activating!">Always test your child theme with Live Preview before activating!</a></strong></li>
 </ol>
 <!-- END tab --> 
 <!-- BEGIN tab -->
@@ -56,15 +62,11 @@ if ( !defined( 'ABSPATH' ) ) exit;
 <p>Click "Save" to update the child stylesheet and save your changes to the WordPress admin.</p>
 <!-- END tab --> 
 <!-- BEGIN tab -->
-<h3 id="ctc_imports">@import Tab and Web Fonts</h3>
-<p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the @import tab. <strong>Important: do not import the parent theme stylesheet here. Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.</strong></p>
+<h3 id="ctc_imports">Web Fonts Tab</h3>
+<p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the Web Fonts tab. <strong>Important: do not import the parent theme stylesheet here. Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.</strong></p>
 <p>Below is an example that loads a local custom stylesheet (you would have to add the "fonts" directory and stylesheet) as well as the web font "Open Sans" from Google Web Fonts:</p>
-<blockquote>
-  <pre><code>
-@import url(fonts/stylesheet.css);
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic);
-</code></pre>
-</blockquote>
+<blockquote><pre><code>&#64;import url(fonts/stylesheet.css);
+&#64;import url(http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic);</code></pre></blockquote>
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_files">Files Tab</h3>
@@ -86,7 +88,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_preview">Preview and Activate</h3>
-<p><strong>IMPORTANT: <a target="_blank" href="http://www.lilaeamedia.com/plugins/child-theme-configurator/#preview_activate" title="Test your child theme before activating!">Test your child theme before activating!</a></strong> Some themes (particularly commercial themes) do not correctly load parent template files or automatically load child theme stylesheets or php files. <strong>In the worst cases they will break your website when you activate the child theme.</strong></p>
+<p><strong>IMPORTANT: <a target="_blank" href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/how-to-use/#preview_activate" title="Test your child theme before activating!">Test your child theme before activating!</a></strong> Some themes (particularly commercial themes) do not correctly load parent template files or automatically load child theme stylesheets or php files. <strong>In the worst cases they will break your website when you activate the child theme.</strong></p>
 <ol>
   <li>Navigate to Appearance > Themes in the WordPress Admin. You will now see the new Child Theme as one of the installed Themes.</li>
   <li>Click "Live Preview" below the new Child Theme to see it in action.</li>
@@ -136,13 +138,13 @@ if ( !defined( 'ABSPATH' ) ) exit;
 	<li><strong>Options: </strong> Every theme handles options in its own way. Most often, they will create a set of options and store them in the WordPress database. Some options are specific to the active theme (or child theme), and some are specific to the parent theme only (meaning the child theme CANNOT override them). You will have to find out from the theme author which are which.</li>
 </ul>
 </p> 
-<h5 id="existing_parent">How do I move changes I have already made to a Child Theme?</h5>
-<p>Follow <a href="http://www.lilaeamedia.com/plugins/child-theme-configurator#child_from_modified_parent" class="scroll-to">these steps</a>. </p>
+<h5 id="existing_parent">How do I move changes I have already made to my theme into a Child Theme?</h5>
+<p><a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/how-to-use/#child_from_modified_parent" class="scroll-to">Follow these steps</a>. </p>
 <h5 id="web_fonts">How do I add Web Fonts?</h5>
-<p>The easiest method is to paste the @import code provided by <a href="http://www.google.com/fonts" title="Google Fonts">Google</a>, <a href="http://www.fontsquirrel.com/" title="Font Squirrel">Font Squirrel</a> or any other Web Font site into the @import tab. The fonts will then be available to use as a value of the <strong>font-family</strong> rule. Be sure you understand the license for any embedded fonts. </p>
-<p>You can also create a secondary stylesheet that contains @font-face rules and import it using the @import tab. </p>
+<p>The easiest method is to paste the @import code provided by <a href="http://www.google.com/fonts" title="Google Fonts">Google</a>, <a href="http://www.fontsquirrel.com/" title="Font Squirrel">Font Squirrel</a> or any other Web Font site into the Web Fonts tab. The fonts will then be available to use as a value of the <strong>font-family</strong> rule. Be sure you understand the license for any embedded fonts. </p>
+<p>You can also create a secondary stylesheet that contains @font-face rules and import it using the Web Fonts tab. </p>
 <h5 id="plugin">Does it work with plugins?</h5>
-<p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="http://www.lilaeamedia.com/plugins/child-theme-plugin-styles/" title="Take Control of your Plugin Styles with Child Theme Configurator Plugin Extension for WordPress">Learn more <i class="genericon genericon-next"></i></a> 
+<p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/child-theme-configurator-pro/" title="Take Control of your Plugin Styles with Child Theme Configurator Plugin Extension for WordPress">Learn more <i class="genericon genericon-next"></i></a> 
 <h5 id="doesnt_work">Why doesn't this work with my (insert theme vendor here) theme?</h5>
 <p>Some themes (particularly commercial themes) do not correctly load parent template files or automatically load child theme stylesheets or php files.</p><p>This is unfortunate, because in the best case they effectively prohibit the webmaster from adding any customizations (other than those made through the admin theme options) that will survive past an upgrade. <strong>In the worst case they will break your website when you activate the child theme.</strong> </p>
 <p>Contact the vendor directly to ask for this core functionality. It is our opinion that ALL themes (especially commercial ones) must pass the Theme Unit Tests outlined by WordPress.org. </p>
@@ -207,12 +209,12 @@ The plugin only loads the bulk of the code in the admin when you are using the t
 <h4>Our plugins will not nag you for donations...</h4>
 <span style="font-size:smaller">...but we LOVE referrals.</span><br/><a href="http://wordpress.org/support/view/plugin-reviews/child-theme-configurator?rate=5#postform">Give Us 5 Stars</a>
 <h4>Introducing CTC Pro</h4>
-<a href="http://www.lilaeamedia.com/child-theme-configurator-pro/" title="<?php _e( 'Learn more about CTC Pro', 'chld_thm_cfg' ); ?>"><img src="<?php echo CHLD_THM_CFG_URL . 'css/pro-banner.jpg'; ?>" width="150" height="48" /></a>
-<p style="font-size:smaller">Designed by WordPress developers who use it every day, CTC Pro adds plugin stylesheets and other features to make design work quicker and easier. This is a free upgrade for users that purchased the Plugins Extension. <a href="http://www.lilaeamedia.com/plugins/child-theme-configurator-pro" title="Child Theme Configurator Pro">Learn more</a></p>
+<a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/child-theme-configurator-pro/" title="<?php _e( 'Learn more about CTC Pro', 'chld_thm_cfg' ); ?>"><img src="<?php echo CHLD_THM_CFG_URL . 'css/pro-banner.jpg'; ?>" width="150" height="48" /></a>
+<p style="font-size:smaller">Designed by WordPress developers who use it every day, CTC Pro adds plugin stylesheets and other features to make design work quicker and easier. This is a free upgrade for users that purchased the Plugins Extension. <a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/child-theme-configurator-pro/" title="Child Theme Configurator Pro">Learn more</a></p>
 <ul>
   <li><a href="http://www.lilaeamedia.com/about/contact/">Contact us</a></li>
-  <li><a href="http://www.lilaeamedia.com/plugins/child-theme-configurator">Plugin Website</a></li>
+  <li><a href="http://www.childthemeconfigurator.com/">Plugin Website</a></li>
   <li><a href="http://codex.wordpress.org/Child_Themes">WordPress Codex</a></li>
-  <li><a href="http://wordpress.stackexchange.com/">WordPress Answers</a></li>
+  <li><a href="http://wordpress.stackexchange.com/">WordPress Development (StackExchange)</a></li>
 </ul>
 <!-- END sidebar -->

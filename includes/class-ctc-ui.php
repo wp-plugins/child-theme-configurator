@@ -3,9 +3,9 @@
 if ( !defined( 'ABSPATH' ) ) exit;
 /*
     Class: Child_Theme_Configurator_UI
-    Plugin URI: http://www.lilaeamedia.com/plugins/child-theme-configurator/
+    Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles the plugin User Interface
-    Version: 1.7.1
+    Version: 1.7.3
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -14,8 +14,10 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Copyright (C) 2014-2015 Lilaea Media
 */
 class ChildThemeConfiguratorUI {
+
+    var $warnings = array();
+
     // helper function to globalize ctc object
-    
     function ctc() {
         return ChildThemeConfigurator::ctc();
     }
@@ -26,7 +28,7 @@ class ChildThemeConfiguratorUI {
         $child      = $css->get_prop( 'child' );
         $hidechild  = ( count( $themes[ 'child' ] ) ? '' : 'style="display:none"' );
         $enqueueset = ( isset( $css->enqueue ) && $child );
-        $mustimport = $this->parent_stylesheet_check();
+        if ( empty( $css->nowarn ) ) $this->parent_theme_check();
         $imports    = $css->get_prop( 'imports' );
         $id         = 0;
         $this->ctc()->fs_method = get_filesystem_method();
@@ -42,14 +44,29 @@ class ChildThemeConfiguratorUI {
         include ( CHLD_THM_CFG_DIR . '/includes/forms/main.php' ); 
     } 
 
-    function parent_stylesheet_check() {
-        $file  = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->get_current_parent() ) . 'header.php';
-        $regex = '/<link[^>]+?stylesheet_ur[li]/is';
-        if ( file_exists( $file ) ):
+    function parent_theme_check() {
+        // check header for hard-coded 
+        $bad_practice_descr = array(
+            //  Stylesheets should be enqueued using the <code>wp_enqueue_scripts</code> action.
+            'links'     => __( 'A stylesheet link tag is hard-coded into the header template.', 'chld_thm_cfg' ),
+            'enqueue'   => __( '<code>wp_enqueue_style()</code> called from the header template.', 'chld_thm_cfg' ),
+            //  <code>wp_head()</code> should be located just before the closing <code>&lt;/head&gt;</code> tag. 
+            'wphead'    => __( 'Code exists between the <code>wp_head()</code> function and the closing <code>&lt;/head&gt;</code> tag.', 'chld_thm_cfg'),
+        );
+        $parentfile = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->get_current_parent() ) . 'header.php';
+        $childfile  = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->css->get_prop( 'child' ) ) . 'header.php';
+        if ( $file = ( file_exists( $childfile ) ? $childfile : ( file_exists( $parentfile ) ? $parentfile : FALSE ) ) ):
             $contents = file_get_contents( $file );
-            if ( preg_match( $regex, $contents ) ) return TRUE;
+            $contents = preg_replace( "/\/\/.*?(\?>|\n)|\/\*.*?\*\/|<\!\-\-.*?\-\->/s", '', $contents );
+            // check for linked stylesheets
+            if ( preg_match( '/rel=[\'"]stylesheet[\'"]/is', $contents ) ) $this->warnings[] = $bad_practice_descr[ 'links' ];
+            if ( preg_match( '/wp_enqueue_style/is', $contents ) ) $this->warnings[] = $bad_practice_descr[ 'enqueue' ];
+            // check for code after wp_head
+            if ( preg_match( '/wp_head(.*?)<\/head>/is', $contents, $matches ) ):
+                $codeafter = preg_replace( "/[\(\)\?>;\s]/s", '', $matches[ 1 ] );
+                if ( !empty( $codeafter ) ) $this->warnings[] = $bad_practice_descr[ 'wphead' ];
+            endif; 
         endif;
-        return FALSE;
     }
    
     function render_theme_menu( $template = 'child', $selected = NULL ) {
