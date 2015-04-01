@@ -455,8 +455,9 @@ class ChildThemeConfiguratorAdmin {
                                 break;
                                 
                             case 'set_writable':
-                                // make child theme writable ( systems not running suExec )
-                                $this->set_writable();
+                                // make child theme style.css and functions.php writable ( systems not running suExec )
+                                $this->set_writable(); // no argument defaults to style.css
+                                $this->set_writable( 'functions' );
                                 $msg = '8&tab=file_options';
                                 break;
                             
@@ -870,18 +871,24 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
             $this->debug( 'Errors detected, returning', __FUNCTION__ );
             return FALSE;
         endif;
-        if ( !$this->fs ): 
+        // first check if this is an ajax update
+        if ( $this->is_ajax && is_readable( $filename ) && is_writable( $filename ) ):
+            // ok to proceed
+            $this->debug( 'Ajax update, bypassing wp filesystem.', __FUNCTION__ );
+            $markerdata = explode( "\n", @file_get_contents( $filename ) );
+        elseif ( !$this->fs ): 
             $this->debug( 'No filesystem access.', __FUNCTION__ );
             return FALSE; // return if no filesystem access
-        endif;
-        global $wp_filesystem;
-        if( !$wp_filesystem->exists( $this->fspath( $filename ) ) ):
-            // make sure file exists with php header
-            $this->debug( 'No functions file, creating...', __FUNCTION__ );
-            $this->add_base_files( $this );
-		endif;
+        else:
+            global $wp_filesystem;
+            if( !$wp_filesystem->exists( $this->fspath( $filename ) ) ):
+                // make sure file exists with php header
+                $this->debug( 'No functions file, creating...', __FUNCTION__ );
+                $this->add_base_files( $this );
+		    endif;
             // get_contents_array returns extra linefeeds so just split it ourself
-			$markerdata = explode( "\n", $wp_filesystem->get_contents( $this->fspath( $filename ) ) );
+            $markerdata = explode( "\n", $wp_filesystem->get_contents( $this->fspath( $filename ) ) );
+        endif;
         $newfile = '';
         $externals  = array();
         $phpopen    = 0;
@@ -955,8 +962,15 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         // only write file when getexternals is false
         if ( ! $getexternals ):
             $this->debug( 'Writing new functions file...', __FUNCTION__ );
-            if ( FALSE === $wp_filesystem->put_contents( $this->fspath( $filename ), $newfile ) )
+            if ( $this->is_ajax && is_writable( $filename ) ):
+                if ( FALSE === @file_put_contents( $filename, $newfile ) ): 
+                    $this->debug( 'Ajax write failed.', __FUNCTION__ );
+                    return FALSE;
+                endif;
+            elseif ( FALSE === $wp_filesystem->put_contents( $this->fspath( $filename ), $newfile ) ):
+                $this->debug( 'Filesystem write failed.', __FUNCTION__ );
                 return FALSE;
+            endif;
             $this->css->converted = 1;
         endif;
     }
@@ -969,16 +983,16 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         endif;
         global $wp_filesystem;
         if ( $file = $this->css->is_file_ok( $this->css->get_child_target( $file ), 'write' ) ):
-        if ( !$wp_filesystem->exists( $this->fspath( $file ) ) ):
-        $this->debug( 'Writing to filesystem: ' . $file, __FUNCTION__ );
-            if ( FALSE === $wp_filesystem->put_contents( $this->fspath( $file ), $contents ) ):
-                $this->debug( 'Filesystem write failed.', __FUNCTION__ );
-                return FALSE; 
+            if ( !$wp_filesystem->exists( $this->fspath( $file ) ) ):
+            $this->debug( 'Writing to filesystem: ' . $file, __FUNCTION__ );
+                if ( FALSE === $wp_filesystem->put_contents( $this->fspath( $file ), $contents ) ):
+                    $this->debug( 'Filesystem write failed.', __FUNCTION__ );
+                    return FALSE; 
+                endif;
+            else:
+                $this->debug( 'File exists.', __FUNCTION__ );
+                return FALSE;
             endif;
-        else:
-            $this->debug( 'File exists.', __FUNCTION__ );
-            return FALSE;
-        endif;
         else:
             $this->debug( 'No directory.', __FUNCTION__ );
             return FALSE;
@@ -1310,21 +1324,22 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
     }
     
     function writable_notice() {
-?>    <div class="update-nag">
-        <p><?php _e( 'Child Theme Configurator is unable to write to the stylesheet. This can be resolved using one of the following options:<ol>', 'chld_thm_cfg' );
+?>    <div class="update-nag" style="display:block">
+        <div class="ctc-section-toggle" id="ctc_perm_options"><?php _e( 'The child theme is in read-only mode and Child Theme Configurator cannot apply changes. Click to see options', 'chld_thm_cfg' ); ?></div><div class="ctc-section-toggle-content" id="ctc_perm_options_content"><p><ol><?php
         $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
-        if ( isset( $_SERVER[ 'SERVER_SOFTWARE' ] ) && preg_match( '%unix%i',$_SERVER[ 'SERVER_SOFTWARE' ] ) ):
-            _e( '<li>Temporarily make the stylesheet writable by clicking the button below. You should change this back when you are finished editing for security by clicking "Make read-only" under the "Files" tab.</li>', 'chld_thm_cfg' );
+        if ( 'WIN' != substr( strtoupper( PHP_OS ), 0, 3 ) ):
+            _e( '<li>Temporarily set write permissions by clicking the button below. When you are finished editing, revert to read-only by clicking "Make read-only" under the "Files" tab.</li>', 'chld_thm_cfg' );
 ?><form action="?page=<?php echo $ctcpage; ?>" method="post">
     <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
-<input name="ctc_set_writable" class="button" type="submit" value="<?php _e( 'Temporarily make stylesheet writable', 'chld_thm_cfg' ); ?>"/></form><?php   endif;
+<input name="ctc_set_writable" class="button" type="submit" value="<?php _e( 'Make files writable', 'chld_thm_cfg' ); ?>"/></form><?php   endif;
         _e( '<li><a target="_blank"  href="http://codex.wordpress.org/Editing_wp-config.php#WordPress_Upgrade_Constants" title="Editin wp-config.php">Add your FTP/SSH credentials to the WordPress config file</a>.</li>', 'chld_thm_cfg' );
         if ( isset( $_SERVER[ 'SERVER_SOFTWARE' ] ) && preg_match( '%iis%i',$_SERVER[ 'SERVER_SOFTWARE' ] ) )
             _e( '<li><a target="_blank" href="http://technet.microsoft.com/en-us/library/cc771170" title="Setting Application Pool Identity">Assign WordPress to an application pool that has write permissions</a> (Windows IIS systems).</li>', 'chld_thm_cfg' );
-        _e( '<li><a target="_blank" href="http://codex.wordpress.org/Changing_File_Permissions" title="Changing File Permissions">Set the stylesheet write permissions on the server manually</a> (not recommended).</li>', 'chld_thm_cfg' );
-        if ( isset( $_SERVER[ 'SERVER_SOFTWARE' ] ) && preg_match( '%unix%i',$_SERVER[ 'SERVER_SOFTWARE' ] ) )
-            _e( '<li>Run PHP under Apache with suEXEC (contact your web host).</li>', 'chld_thm_cfg' ) ?>
-        </ol></p>
+        _e( '<li><a target="_blank" href="http://codex.wordpress.org/Changing_File_Permissions" title="Changing File Permissions">Set write permissions on the server manually</a> (not recommended).</li>', 'chld_thm_cfg' );
+        if ( 'WIN' != substr( strtoupper( PHP_OS ), 0, 3 ) ):
+            _e( '<li>Run PHP under Apache with suEXEC (contact your web host).</li>', 'chld_thm_cfg' );
+        endif; ?>
+        </ol></p></div>
 </div>
     <?php
     }

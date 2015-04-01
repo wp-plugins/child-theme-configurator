@@ -1247,7 +1247,7 @@
                 } );
                 $( '.ctc-section-toggle' ).on( 'click', function( e ) {
                     e.preventDefault();
-                    $( this ).parents( '.ctc-input-row' ).first().find( '.ctc-section-toggle' )
+                    $( this ).parents( '.ctc-input-row, .update-nag' ).first().find( '.ctc-section-toggle' )
                         .each( function() { 
                             $( this ).toggleClass( 'open' );
                         } );

@@ -832,6 +832,17 @@ class ChildThemeConfiguratorCSS {
             // write new stylesheet:
             // try direct write first, then wp_filesystem write
             // stylesheet must already exist and be writable by web server
+            if ( $this->ctc()->is_ajax && is_writable( $stylesheet_verified ) ):
+                if ( FALSE === @file_put_contents( $stylesheet_verified, $output ) ): 
+                    $this->debug( 'Ajax write failed.', __FUNCTION__ );
+                    return FALSE;
+                endif;
+            elseif ( FALSE === $wp_filesystem->put_contents( $this->ctc()->fspath( $stylesheet_verified ), $output ) ):
+                $this->debug( 'Filesystem write failed.', __FUNCTION__ );
+                return FALSE;
+            endif;
+            return TRUE;
+            /*
             if ( FALSE !== @file_put_contents( $stylesheet_verified, $output ) ): //is_writable( $stylesheet_verified ) && 
                 //echo 'stylesheet write successful: ' . $stylesheet_verified . LF;
                 return TRUE;
@@ -839,6 +850,7 @@ class ChildThemeConfiguratorCSS {
                 //echo 'filesystem stylesheet write successful: ' . $stylesheet_verified . LF;
                 return TRUE;
             endif;
+            */
                 //echo 'stylesheet write failed: ' . $stylesheet_verified . LF;
         endif;   
         //echo 'file not ok! ' . $stylesheet . LF;
