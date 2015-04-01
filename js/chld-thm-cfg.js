@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.3.1
+ *  Version: 1.7.3.2
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
