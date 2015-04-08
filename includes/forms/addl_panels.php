@@ -25,13 +25,12 @@ if ( !defined( 'CHLD_THM_CFG_PLUGINS_VERSION' ) ):
 <li><h3><?php _e( 'Find related styles', 'chld_thm_cfg' ); ?></h3><p><?php _e( 'Use the "All Styles" panel to edit groups of selectors from a single combined list.', 'chld_thm_cfg' ); ?></p></li>
 <li><h3><?php _e( 'Find styles by Nav Menu', 'chld_thm_cfg' ); ?></h3><p><?php _e( 'Tweak menus quickly and easily.', 'chld_thm_cfg' ); ?></p></li>
 <li><h3><?php _e( 'Most recent edits', 'chld_thm_cfg' ); ?></h3><p><?php _e( 'Return to recently edited selectors from a toggleable sidebar.', 'chld_thm_cfg' ); ?></p></li>
-<li><h3><?php _e( 'Free Upgrades', 'chld_thm_cfg' ); ?></h3>
-<p><?php _e( 'Your Update Key gives you access to new Pro features as soon as they are released.', 'chld_thm_cfg' ); ?></p></li>
+<li><h3><?php _e( 'Genesis Framework Support', 'chld_thm_cfg' ); ?></h3>
+<p><?php _e( 'Automatically detects and configures Genesis Child Themes with more frameworks on the way.', 'chld_thm_cfg' ); ?></p></li>
 <li><h3><?php _e( 'Top-rated Online Support', 'chld_thm_cfg' ); ?></h3></li>
 <li><h3><?php _e( 'Online Documentation', 'chld_thm_cfg' ); ?></h3></li>
 <li><h3><?php _e( 'Tutorial Videos', 'chld_thm_cfg' ); ?></h3></li>
 </ul>
-<p><?php _e( 'For a limited time save over 15% off Child Theme Configurator Pro.', 'chld_thm_cfg' ); ?></p>
-<h3><a target="_blank" href="<?php echo LILAEAMEDIA_URL; ?>/cart/?add-to-cart=1710" title="<?php _e( 'Upgrade Now', 'chld_thm_cfg' ); ?>"><?php _e( 'Buy Now - Only $14.95 USD*', 'chld_thm_cfg' ); ?></a></h3><small><?php _e( '*Prices subject to change.', 'chld_thm_cfg' ); ?></small></div>
+<h3><a target="_blank" href="<?php echo LILAEAMEDIA_URL; ?>/cart/?add-to-cart=1710" title="<?php _e( 'Upgrade Now', 'chld_thm_cfg' ); ?>"><?php _e( 'Buy Now - Only $17.95 USD*', 'chld_thm_cfg' ); ?></a></h3><small><?php _e( '*Prices subject to change.', 'chld_thm_cfg' ); ?></small></div>
 </div></div><?php
 endif;

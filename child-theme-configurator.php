@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Plugin Name: Child Theme Configurator
     Plugin URI: http://www.childthemeconfigurator.com
     Description: Create a child theme that follows WP best practice to enqueue stylesheets. Easy to use CSS editor lets you find, preview and customize any style.
-    Version: 1.7.3.2
+    Version: 1.7.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com
     Text Domain: chld_thm_cfg
@@ -22,7 +22,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     define( 'CHLD_THM_CFG_DOCS_URL',            "http://www.childthemeconfigurator.com" );
     defined( 'CHLD_THM_CFG_OPTIONS' ) or 
     define( 'CHLD_THM_CFG_OPTIONS',             'chld_thm_cfg_options' );
-    define( 'CHLD_THM_CFG_VERSION',             '1.7.3.2' );
+    define( 'CHLD_THM_CFG_VERSION',             '1.7.4' );
     define( 'CHLD_THM_CFG_MIN_WP_VERSION',      '3.7' );
     defined( 'CHLD_THM_CFG_BPSEL' ) or 
     define( 'CHLD_THM_CFG_BPSEL',               '2500' );
@@ -49,7 +49,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
             // setup admin hooks
             if ( is_multisite() )
                 add_action( 'network_admin_menu',   'ChildThemeConfigurator::network_admin' );
-            else
+            //else
                 add_action( 'admin_menu',           'ChildThemeConfigurator::admin' );
             // setup ajax actions
             add_action( 'wp_ajax_ctc_update',   'ChildThemeConfigurator::save' );

@@ -2,14 +2,13 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.3.2
+ *  Version: 1.7.4
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
  *  Copyright (C) 2014-2015 Lilaea Media
  */
 ;
-// jQuery plugin template for plugin that does not work on element
 ( function( $ ) {
     $.chldthmcfg = {
         //console.log( 'executing main function' );
@@ -662,6 +661,9 @@
                     $( '#ctc_child_themeuri' ).val( ctcAjax.themes[ 'child' ][ child ].ThemeURI );
                     $( '#ctc_child_descr' ).val( ctcAjax.themes[ 'child' ][ child ].Descr );
                     $( '#ctc_child_tags' ).val( ctcAjax.themes[ 'child' ][ child ].Tags );
+                    $( '#ctc_duplicate_theme' ).prop( 'checked', false );
+                    $( '#ctc_duplicate_theme_slug' ).val( '' );
+                    $( '#input_row_duplicate_theme' ).show();
                 }
             }
         },
@@ -683,18 +685,30 @@
         },
         
         set_parent_menu: function( obj ) {
-            $( '#ctc_theme_parent' ).parents( '.ctc-input-row' ).first()
+            $( '#ctc_theme_parnt' ).parents( '.ctc-input-row' ).first()
                 .append( '<span class="ctc-status-icon spinner"></span>' );
             $( '.spinner' ).show();
             document.location='?page=' + ctcAjax.page + '&ctc_parent=' + obj.value;
         },
         
         set_child_menu: function( obj ) {
-            var self = this;
+            var self = this,
+                template,
+                parent;
             if ( !self.is_empty( ctcAjax.themes.child[ obj.value ] ) ) {
-                $( '#ctc_child_name' ).val( ctcAjax.themes.child[ obj.value ].Name );
-                $( '#ctc_child_author' ).val( ctcAjax.themes.child[ obj.value ].Author );
-                $( '#ctc_child_version' ).val( ctcAjax.themes.child[ obj.value ].Version );
+                template = ctcAjax.themes.child[ obj.value ].Template,
+                parent  = $( '#ctc_theme_parnt' ).val();
+                console.log( 'template: ' + template + ' parent: ' + parent );
+                if ( template == parent ) {
+                    $( '#ctc_child_name' ).val( ctcAjax.themes.child[ obj.value ].Name );
+                    $( '#ctc_child_author' ).val( ctcAjax.themes.child[ obj.value ].Author );
+                    $( '#ctc_child_version' ).val( ctcAjax.themes.child[ obj.value ].Version );
+                } else {
+                    $( '#ctc_theme_child' ).parents( '.ctc-input-row' ).first()
+                        .append( '<span class="ctc-status-icon spinner"></span>' );
+                    $( '.spinner' ).show();
+                    document.location='?page=' + ctcAjax.page + '&ctc_parent=' + template + '&ctc_child=' + obj.value;
+                }
             }
         },
         
@@ -1279,10 +1293,21 @@
                     $( '#ctc_child_template' ).val( '' );
                     self.set_existing();
                 } );
+                $( '#ctc_duplicate_theme' ).on( 'click', function() {
+                    if ( $( '#ctc_duplicate_theme' ).is( ':checked' ) ) {
+                        $( '#ctc_child_name' ).val( self.testname );
+                        $( '#ctc_duplicate_theme_slug' ).val( self.testslug );
+                    } else {
+                        self.set_existing();
+                    }
+                } );
                 $( '#ctc_child_type_new, #ctc_child_template' ).on( 'focus click', function() {
                     // change the inputs to use new child theme
                     $( '#ctc_child_type_existing' ).prop( 'checked', false );
+                    $( '#ctc_duplicate_theme' ).prop( 'checked', false );
+                    $( '#ctc_duplicate_theme_slug' ).val( '' );
                     $( '#ctc_child_type_new' ).prop( 'checked', true );
+                    $( '#input_row_duplicate_theme' ).hide();
                     $( '#ctc_child_name' ).val( self.testname );
                     $( '#ctc_child_template' ).val( self.testslug );
                 } );

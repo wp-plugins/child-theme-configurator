@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Main Controller Class
-    Version: 1.7.3.2
+    Version: 1.7.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -62,7 +62,6 @@ class ChildThemeConfiguratorAdmin {
             'child_tags',
             'child_version',
             'configtype', // backward compatability
-            'revert',
             'nowarn',
         );
     var $actionfields   = array(
@@ -99,17 +98,17 @@ class ChildThemeConfiguratorAdmin {
         $this->is_post      = ( 'POST' == $_SERVER[ 'REQUEST_METHOD' ] );
         $this->is_get       = ( 'GET' == $_SERVER[ 'REQUEST_METHOD' ] );
         $this->is_debug     = get_option( CHLD_THM_CFG_OPTIONS . '_debug' );
+        if ( $this->is_debug && ( $this->debug = get_site_transient( CHLD_THM_CFG_OPTIONS . '_debug' ) ) )
+            delete_site_transient( CHLD_THM_CFG_OPTIONS . '_debug' );
         // sel_limit is now calculated based on free memory to prevent out of memory on serialization
         $bytes_free         = $this->get_free_memory();
         $this->sel_limit    = ( int ) ( $bytes_free / CHLD_THM_CFG_BPSEL );
         $this->debug( 'Free memory: ' . $bytes_free . ' max selectors: ' . $this->sel_limit, __FUNCTION__ );
         //$this->set_benchmark( 'before', 'execute', 'program' );
     }
-    function render() {
-        $this->ui->render();
-    }
+
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.3.2' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.4' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -203,6 +202,10 @@ class ChildThemeConfiguratorAdmin {
         $this->load_imports();
 	}
     
+    function render() {
+        $this->ui->render();
+    }
+
     function get_themes() {
         // create cache of theme info
         $this->themes = array( 'child' => array(), 'parnt' => array() );
@@ -217,6 +220,7 @@ class ChildThemeConfiguratorAdmin {
             if ( 'child' == $group ) $version = preg_replace("/\.\d{6}\d+$/", '', $version );
             // add theme to themes array
             $this->themes[ $group ][ $slug ] = array(
+                'Template'      => $theme->get( 'Template' ),
                 'Name'          => $theme->get( 'Name' ),
                 'ThemeURI'      => $theme->get( 'ThemeURI' ),
                 'Author'        => $theme->get( 'Author' ),
@@ -241,18 +245,19 @@ class ChildThemeConfiguratorAdmin {
     function load_config() {
         include_once( CHLD_THM_CFG_DIR . '/includes/class-ctc-css.php' );
         $this->css = new ChildThemeConfiguratorCSS();
-        $is_rebuild = $this->css->load_config();
-        if ( FALSE !== $is_rebuild ):
+        if ( FALSE !== $this->css->load_config() ):
             // if themes do not exist reinitialize
             if ( ! $this->check_theme_exists( $this->css->get_prop( 'child' ) )
-            || ! $this->check_theme_exists( $this->css->get_prop( 'parnt' ) ) ):
+                || ! $this->check_theme_exists( $this->css->get_prop( 'parnt' ) ) ):
                 add_action( 'admin_notices', array( $this, 'config_notice' ) ); 	
                 $this->css = new ChildThemeConfiguratorCSS();
                 $this->css->enqueue = 'enqueue';
             endif;
         else:
+            // this is a fresh install
             $this->css->enqueue = 'enqueue';
         endif;
+        do_action( 'chld_thm_cfg_load' );
         if ( $this->is_get ):
             if ( $this->css->get_prop( 'child' ) ):
                 // get filesystem credentials if available
@@ -262,7 +267,7 @@ class ChildThemeConfiguratorAdmin {
                 if ( !is_writable( $stylesheet ) && !$this->fs ):
 	                add_action( 'admin_notices', array( $this, 'writable_notice' ) );
                 endif;
-                // enqueue flag will be null for anyone coming from < 1.6.0
+                // enqueue flag will be null for existing install < 1.6.0
                 if ( !isset( $this->css->enqueue ) ):
                     add_action( 'admin_notices', array( $this, 'enqueue_notice' ) ); 	
                 endif;
@@ -279,7 +284,6 @@ class ChildThemeConfiguratorAdmin {
 	            add_action( 'admin_notices', array( $this, 'owner_notice' ) ); 
             endif;
         endif;	
-        return $is_rebuild;
     }
     
     function cache_debug() {
@@ -294,6 +298,7 @@ class ChildThemeConfiguratorAdmin {
      */
     function ajax_save_postdata( $action = 'ctc_update' ) {
         $this->is_ajax = TRUE;
+        
         // security check
         if ( $this->validate_post( $action ) ):
             if ( 'ctc_plugin' == $action ) do_action( 'chld_thm_cfg_pluginmode' );
@@ -326,12 +331,10 @@ class ChildThemeConfiguratorAdmin {
                     $this->css->save_config();
                 endif;
             endif;
-            $result = $this->css->obj_to_utf8( $this->updates );
-            // send all updates back to browser to update cache
-            die( json_encode( $result ) );
-        else:
-            die( 0 );
         endif;
+        $result = $this->css->obj_to_utf8( $this->updates );
+        // send all updates back to browser to update cache
+        die( json_encode( $result ) );
     }
     
     /**
@@ -575,6 +578,27 @@ class ChildThemeConfiguratorAdmin {
                 endif;
             endif;
         endif;
+        
+        // clone existing child theme
+        if ( 'existing' == $type && isset( $_POST[ 'ctc_duplicate_theme' ] ) ):
+            $clone = strtolower( preg_replace( "%[^\w\-]%", '', sanitize_text_field( $_POST[ 'ctc_duplicate_theme_slug' ] ) ) ); 
+            if ( empty( $clone ) ):
+                $this->errors[] = __( 'Please enter a valid Child Theme template name.', 'chld_thm_cfg' );
+            else:
+                if ( $this->check_theme_exists( $clone ) ):
+                    $this->errors[] = sprintf( 
+                        __( '<strong>%s</strong> exists. Please enter a different Child Theme template name.', 
+                            'chld_thm_cfg' ), $clone );
+                else:
+                    $this->clone_child_theme( $clone );
+                    if ( empty( $this->errors ) ):
+                        $this->copy_theme_mods( $child, $clone );
+                        $child = $clone;
+                    endif;
+                endif;
+            endif;
+        endif;
+        
         if ( FALSE === $this->verify_child_dir( $child ) ):
             $this->errors[] = __( 'Your theme directories are not writable.', 'chld_thm_cfg' );
             add_action( 'admin_notices', array( $this, 'writable_notice' ) ); 	
@@ -590,15 +614,23 @@ class ChildThemeConfiguratorAdmin {
             // restore imports if this is a rebuild
             $this->css->imports = $imports;
             $this->css->nowarn  = $nowarn;
-            // check if we have additional files from legacy plugin extension. if so, we have to override 
+            // parse parent stylesheet if theme or legacy plugin extension 
+            if ( $this->is_theme( $configtype ) || $this->is_legacy() ):
+                add_action( 'chld_thm_cfg_parse_stylesheets', array( &$this, 'parse_parent_stylesheet' ) );
+                if ( is_multisite() )
+                    add_action( 'chld_thm_cfg_addl_options', array( &$this, 'network_enable' ) );
+            endif;
+            
+            add_action( 'chld_thm_cfg_parse_stylesheets', array( &$this, 'parse_additional_stylesheets' ) );
+            add_action( 'chld_thm_cfg_parse_stylesheets', array( &$this, 'parse_child_stylesheet' ) );
+
             // function to support wp_filesystem requirements
             if ( $this->is_theme( $configtype ) ):
                 // is theme means this is not a plugin stylesheet config
-                add_action( 'chld_thm_cfg_addl_files',   array( &$this, 'add_base_files' ), 10, 2 );
-                add_action( 'chld_thm_cfg_addl_files',   array( &$this, 'copy_screenshot' ), 10, 2 );
-                add_action( 'chld_thm_cfg_addl_files',   array( &$this, 'enqueue_parent_css' ), 15, 2 );
-            elseif( $this->is_legacy() 
-                && has_action( 'chld_thm_cfg_addl_files' ) ):
+                add_action( 'chld_thm_cfg_addl_files', array( &$this, 'add_base_files' ), 10, 2 );
+                add_action( 'chld_thm_cfg_addl_files', array( &$this, 'copy_screenshot' ), 10, 2 );
+                add_action( 'chld_thm_cfg_addl_files', array( &$this, 'enqueue_parent_css' ), 15, 2 );
+            elseif( $this->is_legacy() && has_action( 'chld_thm_cfg_addl_files' ) ):
                 // backwards compatability for plugins extension < 2.0.0 (before pro)
                 // action exists so we have to hijack it to use new filesystem checks
                 remove_all_actions( 'chld_thm_cfg_addl_files' );
@@ -624,23 +656,17 @@ class ChildThemeConfiguratorAdmin {
             elseif ( !$this->is_theme( $configtype ) )
                 $this->css->set_prop( 'enqueue', 'enqueue' );
 
-            // parse parent stylesheet if theme or legacy plugin extension 
-            if ( $this->is_theme( $configtype ) || $this->is_legacy() )
-                $this->css->parse_css_file( 'parnt' );
-            
-            // parse child stylesheet, backup or skip ( to reset )
-            $this->css->parse_css_file( 'child', $revert );
-            
-            // parse additional stylesheets
-            if ( isset( $_POST[ 'ctc_additional_css' ] ) && is_array( $_POST[ 'ctc_additional_css' ] ) ):
-                $this->css->addl_css = array();
-                foreach ( $_POST[ 'ctc_additional_css' ] as $file ):
-                    $this->css->parse_css_file( 'parnt', $file );
-                    $this->css->addl_css[] = $file;
-                endforeach;
-            endif;
-            
-            // runs code generation function in read-only mode to add existing external stylesheet links to config data
+            // plugin hooks for additional stylesheet handling options
+            do_action( 'chld_thm_cfg_stylesheet_handling' );
+            do_action( 'chld_thm_cfg_existing_theme' );
+            // plugin hook to parse additional or non-standard files
+            do_action( 'chld_thm_cfg_parse_stylesheets' );
+
+            // copy menus, widgets and other customizer options from parent to child if selected
+            if ( isset( $_POST[ 'ctc_parent_mods' ] ) ) // && empty( $_POST[ 'ctc_duplicate_theme' ] ) )
+                $this->copy_theme_mods( $parnt, $child );
+
+            // run code generation function in read-only mode to add existing external stylesheet links to config data
             $this->enqueue_parent_css( $this->css, TRUE );
             // hook for add'l plugin files and subdirectories. Must run after stylesheets are parsed to apply latest options
             do_action( 'chld_thm_cfg_addl_files', $this );
@@ -655,46 +681,14 @@ class ChildThemeConfiguratorAdmin {
                 return FALSE;
             endif; 
             
-            // copy parent theme mods option set
-            if ( isset( $_POST[ 'ctc_parent_mods' ] ) ):
-                // we can copy settings from parent to child even if neither is currently active
-                // so we need cases for active parent, active child or neither
-                
-                // get active theme
-                $active_theme = get_stylesheet();
-                // create temp array from parent settings
-                $child_mods = get_option( 'theme_mods_' . $parnt );
-                if ( $active_theme == $parnt ):
-                    // if parent theme is active, get widgets from active sidebars_widgets array
-                    $child_widgets = retrieve_widgets();
-                else:
-                    // otherwise get widgets from parent theme mods
-                    $child_widgets = $child_mods[ 'sidebars_widgets' ][ 'data' ];
-                endif;
-                if ( $active_theme == $child ):
-                    // if child theme is active, remove widgets from temp array
-                    unset( $child_mods[ 'sidebars_widgets' ] );
-                    // copy temp array to child mods
-                    update_option( 'theme_mods_' . $child, $child_mods );
-                    // copy widgets to active sidebars_widgets array
-                    wp_set_sidebars_widgets( $child_widgets );
-                else:
-                    // otherwise copy widgets to temp array with time stamp
-                    $child_mods[ 'sidebars_widgets' ][ 'data' ] = $child_widgets;
-                    $child_mods[ 'sidebars_widgets' ][ 'time' ] = time();
-                    // copy temp array to child theme mods
-                    update_option( 'theme_mods_' . $child, $child_mods );
-                endif;
-            endif;
-            
             // save new object to WP options table
             $this->css->save_config();
             
-            // hook for add'l plugin options
-            do_action( 'chld_thm_cfg_addl_options', $this ); // hook for add'l plugin options
+            // plugin hook for additional child theme setup functions
+            do_action( 'chld_thm_cfg_addl_options', $this );
             
-            // return message id 1, which says new child theme created successfull;
-            return 1; //isset( $_POST[ 'ctc_scan_subdirs' ] ) ? '9&tab=import_options' : 1;
+            // return message id 1, which says new child theme created successfully;
+            return 1;
         endif;
         return FALSE;
     }
@@ -718,13 +712,14 @@ class ChildThemeConfiguratorAdmin {
     }
     
     function update_redirect( $msg = 1 ) {
-        if ( empty( $this->is_ajax ) && !$this->is_debug ):
+        if ( empty( $this->is_ajax ) ):
+            if ( $this->is_debug )
+                set_site_transient( CHLD_THM_CFG_OPTIONS . '_debug', $this->debug, 3600 );
             $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
+            $screen = get_current_screen()->id;
             wp_safe_redirect(
-                ( is_multisite() ? 
-                    network_admin_url( 'themes.php' ) :
-                    admin_url( 'tools.php' ) ) . '?page=' . $ctcpage . ( $msg ? '&updated=' . $msg : '' )
-                );
+                ( strstr( $screen, '-network' ) ? network_admin_url( 'themes.php' ) : admin_url( 'tools.php' ) ) 
+                    . '?page=' . $ctcpage . ( $msg ? '&updated=' . $msg : '' ) );
             die();
         endif;
     }
@@ -849,7 +844,7 @@ endif;
 add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
 ";
         endif;
-        return explode( "\n", $code );
+        return explode( "\n", apply_filters( 'chld_thm_cfg_enqueue_code_filter', $code ) );
     }
     
     // updates function file with wp_enqueue_script code block. If getexternals flag is passed function is run in read-only mode
@@ -1131,6 +1126,31 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         return FALSE;
     }
     
+    function clone_child_theme( $newchild ) {
+        if ( !$this->fs ) return FALSE; // return if no filesystem access
+        global $wp_filesystem;
+        $dir        = untrailingslashit( $this->css->get_child_target( '' ) );
+        $child      = $this->theme_basename( '', $dir );
+        $themedir   = trailingslashit( get_theme_root() );
+        $fsthemedir = $this->fspath( $themedir );
+        $files = $this->css->recurse_directory( $dir, NULL, TRUE );
+        $errors = array();
+        foreach ( $files as $file ):
+            $childfile  = $this->theme_basename( $child, $this->normalize_path( $file ) );
+            $newfile    = trailingslashit( $newchild ) . $childfile;
+            $childpath  = $fsthemedir . trailingslashit( $child ) . $childfile;
+            $newpath    = $fsthemedir . $newfile;
+            $this->debug( 'Verifying child dir... ', __FUNCTION__ );
+            if ( $this->verify_child_dir( is_dir( $file ) ? $newfile : dirname( $newfile ) ) ):
+                if ( is_file( $file ) && !$wp_filesystem->copy( $childpath, $newpath ) ):
+                    $errors[] = 'could not copy ' . $newpath;
+                endif;
+            else:
+                $errors[] = 'invalid dir: ' . $newfile;
+            endif;
+        endforeach;
+    }
+
     function unset_writable() {
         if ( !$this->fs ) return FALSE; // return if no filesystem access
         global $wp_filesystem;
@@ -1452,6 +1472,14 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         else return get_template();
     }
     
+    /* returns child theme either from existing config or passed as post var */
+    function get_current_child() {
+        if ( isset( $_GET[ 'ctc_child' ] ) && ( $child = sanitize_text_field( $_GET[ 'ctc_child' ] ) ) )
+            return $child;
+        elseif ( $child = $this->css->get_prop( 'child' ) )
+            return $child;
+        else return get_stylesheet();
+    }
     /* debug backtrace with extraneous steps (missing class, function or line) removed */
     function backtrace_summary() {
         $bt = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
@@ -1502,6 +1530,73 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         $debug = '<textarea style="width:100%;height:200px">' . LF . $this->debug . LF . '</textarea>' . LF;
         if ( $noecho ) return $debug;
         echo $debug;
+    }
+    
+    function parse_parent_stylesheet() {
+        $this->css->parse_css_file( 'parnt' );
+    }
+    
+    function parse_child_stylesheet() {
+        // get revert/backup 
+        $revert = isset( $_POST[ 'ctc_revert' ] ) ? sanitize_text_field( $_POST[ 'ctc_revert' ] ) : '';
+        // parse child stylesheet, backup or skip ( to reset )
+        $this->css->parse_css_file( 'child', $revert );
+    }
+    
+    function parse_additional_stylesheets() {
+        // parse additional stylesheets
+        if ( isset( $_POST[ 'ctc_additional_css' ] ) && is_array( $_POST[ 'ctc_additional_css' ] ) ):
+            $this->css->addl_css = array();
+            foreach ( $_POST[ 'ctc_additional_css' ] as $file ):
+                $file = sanitize_text_field( $file );
+                $this->css->parse_css_file( 'parnt', $file );
+                $this->css->addl_css[] = $file;
+            endforeach;
+        endif;
+    }
+    
+    function copy_theme_mods( $from, $to ) {
+        
+        // we can copy settings from parent to child even if neither is currently active
+        // so we need cases for active parent, active child or neither
+        
+        // get active theme
+        $active_theme = get_stylesheet();
+        $this->debug( 'from: ' . $from . ' to: ' . $to . ' active: ' . $active_theme, __FUNCTION__ );
+        // create temp array from parent settings
+        $child_mods = get_option( 'theme_mods_' . $from );
+        if ( $active_theme == $from ):
+            $this->debug( 'from is active, using active widgets', __FUNCTION__ );
+            // if parent theme is active, get widgets from active sidebars_widgets array
+            $child_widgets = retrieve_widgets();
+        else:
+            $this->debug( 'from not active, using theme mods widgets', __FUNCTION__ );
+            // otherwise get widgets from parent theme mods
+            $child_widgets = $child_mods[ 'sidebars_widgets' ][ 'data' ];
+        endif;
+        if ( $active_theme == $to ):
+            $this->debug( 'to active, setting active widgets', __FUNCTION__ );
+            // if child theme is active, remove widgets from temp array
+            unset( $child_mods[ 'sidebars_widgets' ] );
+            // copy widgets to active sidebars_widgets array
+            wp_set_sidebars_widgets( $child_widgets );
+        else:
+            $this->debug( 'child not active, saving widgets in theme mods', __FUNCTION__ );
+            // otherwise copy widgets to temp array with time stamp
+            $child_mods[ 'sidebars_widgets' ][ 'data' ] = $child_widgets;
+            $child_mods[ 'sidebars_widgets' ][ 'time' ] = time();
+        endif;
+        $this->debug( 'saving child theme mods:' . LF . print_r( $child_mods, TRUE ), __FUNCTION__ );
+        // copy temp array to child mods
+        update_option( 'theme_mods_' . $to, $child_mods );
+    }
+    
+    function network_enable() {
+        if ( $child = $this->css->get_prop( 'child' ) ):
+            $allowed_themes = get_site_option( 'allowedthemes' );
+            $allowed_themes[ $child ] = true;
+            update_site_option( 'allowedthemes', $allowed_themes );
+        endif;
     }
     
 }
