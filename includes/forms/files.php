@@ -106,6 +106,5 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <input class="ctc_checkbox" id="ctc_is_debug" name="ctc_is_debug"  type="checkbox" 
             value="1" <?php echo checked( $this->ctc()->is_debug, 1 ); ?> autocomplete="off" />
       </div>
-      <div id="ctc_debug_container"><?php do_action( 'chld_thm_cfg_print_debug' ); ?></div>
   </div>
 </div>

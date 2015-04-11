@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, child themes, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.1.1
-Stable tag: 1.7.3.1
+Stable tag: 1.7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -269,6 +269,12 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.7.4 =
+* Restored multisite admin menu link under Tools by popular demand
+* Automatically Network enables new child theme on creation
+* Fix for FTP notice - now uses PHP_OS constant to detect win vs nix
+* Added duplicate child theme feature 
+
 = 1.7.3 =
 * 1.7.3.1 added dismiss option to warnings by popular demand.
 * Changed @import tab to "Web Fonts." @import statements are automatically converted to enqueued external links.

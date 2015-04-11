@@ -5,7 +5,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles the plugin User Interface
-    Version: 1.7.3.1
+    Version: 1.7.4
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -28,6 +28,7 @@ class ChildThemeConfiguratorUI {
         $child      = $css->get_prop( 'child' );
         $hidechild  = ( count( $themes[ 'child' ] ) ? '' : 'style="display:none"' );
         $enqueueset = ( isset( $css->enqueue ) && $child );
+        $this->ctc()->debug( 'Enqueue set: ' . ( $enqueueset ? 'TRUE' : 'FALSE' ), __FUNCTION__ );
         if ( empty( $css->nowarn ) ) $this->parent_theme_check();
         $imports    = $css->get_prop( 'imports' );
         $id         = 0;
@@ -70,6 +71,7 @@ class ChildThemeConfiguratorUI {
     }
    
     function render_theme_menu( $template = 'child', $selected = NULL ) {
+        
          ?>
         <select class="ctc-select" id="ctc_theme_<?php echo $template; ?>" name="ctc_theme_<?php echo $template; ?>" style="visibility:hidden" <?php echo $this->ctc()->is_theme() ? '' : ' disabled '; ?> ><?php
             foreach ( $this->ctc()->themes[ $template ] as $slug => $theme )
