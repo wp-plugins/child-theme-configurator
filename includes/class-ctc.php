@@ -197,7 +197,7 @@ class ChildThemeConfiguratorAdmin {
         // initialize help
         $this->ui->render_help_content();
         // load styles and scripts
-        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 999 );
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), 99 );
         // load web fonts for this theme
         $this->load_imports();
 	}
