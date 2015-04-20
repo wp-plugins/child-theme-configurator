@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS output, parsing, normalization
-    Version: 1.7.3.1
+    Version: 1.7.4.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -138,16 +138,15 @@ class ChildThemeConfiguratorCSS {
     function load_config() {
         $option = CHLD_THM_CFG_OPTIONS . apply_filters( 'chld_thm_cfg_option', '' );
         //echo 'loading option: ' . $option . LF;
-        if ( ( $configarray = get_option( $option . '_configvars' ) ) && count( $configarray ) ):
+        if ( ( $configarray = get_site_option( $option . '_configvars' ) ) && count( $configarray ) ):
             foreach ( $this->configvars as $configkey ):
                 if ( isset( $configarray[ $configkey ] ) )
                     $this->{$configkey} = $configarray[ $configkey ];
             endforeach;
             $this->ctc()->debug( 'configvars: ' . print_r( $configarray, TRUE ), __FUNCTION__ );
             foreach ( $this->dicts as $configkey ):
-                if ( ( $configarray = get_option( $option . '_' . $configkey ) ) && count( $configarray ) )
+                if ( ( $configarray = get_site_option( $option . '_' . $configkey ) ) && count( $configarray ) )
                     $this->{$configkey} = $configarray;
-                else return FALSE;
             endforeach;
         else:
             return FALSE;
@@ -162,10 +161,10 @@ class ChildThemeConfiguratorCSS {
         $configarray = array();
         foreach ( $this->configvars as $configkey )
             $configarray[ $configkey ] = $this->{$configkey};
-        update_option( $option . '_configvars', $configarray );
+        update_site_option( $option . '_configvars', $configarray );
         $this->ctc()->debug( 'configvars: ' . print_r( $configarray, TRUE ), __FUNCTION__ );
         foreach ( $this->dicts as $configkey )
-            update_option( $option . '_' . $configkey, $this->{$configkey} );
+            update_site_option( $option . '_' . $configkey, $this->{$configkey} );
     }
     
     /**
@@ -226,16 +225,17 @@ class ChildThemeConfiguratorCSS {
                     $this->read_stylesheet( 'child' );
                 else:
                     if ( isset( $this->addl_css ) ):
-                        foreach ( $this->addl_css as $template ):
-                            $this->styles .= '/*** BEGIN ' . $template . ' ***/' . LF;
-                            $this->read_stylesheet( 'parnt', $template );
-                            $this->styles .= '/*** END ' . $template . ' ***/' . LF;
+                        foreach ( $this->addl_css as $file ):
+                            $this->styles .= '/*** BEGIN ' . $file . ' ***/' . LF;
+                            $this->read_stylesheet( 'parnt', $file );
+                            $this->styles .= '/*** END ' . $file . ' ***/' . LF;
                         endforeach;
                     endif;
+                    list ( $template, $file ) = apply_filters( 'chld_thm_cfg_parent_preview_args', array( 'parnt', 'style.css' ) );
                     if ( $this->ctc()->is_theme() || $this->ctc()->is_legacy() ):
-                        $this->styles .= '/*** BEGIN style.css ***/' . LF;
-                        $this->read_stylesheet( 'parnt' );
-                        $this->styles .= '/*** END style.css ***/' . LF;
+                        $this->styles .= '/*** BEGIN ' . $file . ' ***/' . LF;
+                        $this->read_stylesheet( $template, $file );
+                        $this->styles .= '/*** END ' . $file . ' ***/' . LF;
                     endif;
                 endif;
                 $this->normalize_css();
@@ -258,11 +258,11 @@ class ChildThemeConfiguratorCSS {
     }
     // formats css string for accurate parsing
     function normalize_css() {
-        if ( preg_match( "/(\}[\w\#\.]|; *\})/", $this->styles ) ):                   // prettify compressed CSS
-            $this->styles = preg_replace( "/\*\/\s*/s", "*/\n", $this->styles );      // end comment
-            $this->styles = preg_replace( "/\{\s*/s", " {\n    ", $this->styles );    // open brace
-            $this->styles = preg_replace( "/;\s*/s", ";\n    ", $this->styles );      // semicolon
-            $this->styles = preg_replace( "/\s*\}\s*/s", "\n}\n", $this->styles );    // close brace
+        if ( preg_match( "/(\}[\w\#\.]|; *\})/", $this->styles ) ):                     // prettify compressed CSS
+            $this->styles = preg_replace( "/\*\/\s*/s", "*/\n",     $this->styles );    // end comment
+            $this->styles = preg_replace( "/\{\s*/s", " {\n    ",   $this->styles );    // open brace
+            $this->styles = preg_replace( "/;\s*/s", ";\n    ",     $this->styles );    // semicolon
+            $this->styles = preg_replace( "/\s*\}\s*/s", "\n}\n",   $this->styles );    // close brace
         endif;
     }
     // creates header comments for stylesheet
@@ -558,7 +558,7 @@ class ChildThemeConfiguratorCSS {
      * parse_css_file
      * reads stylesheet to get WordPress meta data and passes rest to parse_css 
      */
-    function parse_css_file( $template, $file = 'style.css' ) {
+    function parse_css_file( $template, $file = 'style.css', $cfgtemplate = FALSE ) {
         if ( '' == $file ) $file = 'style.css';
         // have we run out of memory?
         if ( $this->max_sel ):
@@ -574,7 +574,7 @@ class ChildThemeConfiguratorCSS {
         preg_match( $regex, $this->styles, $matches );
         $child_name = $this->get_prop( 'child_name' );
         if ( !empty( $matches[ 1 ] ) && 'child' == $template && empty( $child_name ) ) $this->set_prop( 'child_name', $matches[ 1 ] );
-        $this->parse_css( $template, NULL, TRUE, $this->ctc()->normalize_path( dirname( $file ) ) );
+        $this->parse_css( $cfgtemplate ? $cfgtemplate : $template, NULL, TRUE, $this->ctc()->normalize_path( dirname( $file ) ) );
     }
 
     // loads raw css file into local memory
@@ -757,17 +757,6 @@ class ChildThemeConfiguratorCSS {
     function write_css( $backup = FALSE ) {
         // write new stylesheet
         $output = apply_filters( 'chld_thm_cfg_css_header', $this->get_css_header(), $this );
-        // 1.7.3 -- use read-only version of insert with markers to check if @imports need to be written to stylesheet
-        // eventually all will be migrated to link tags, but we need to account for user not updating import config
-        /*
-        $imports = $this->get_prop( 'imports' );
-        if ( !empty( $imports ) ):
-            foreach ( $imports as $import ):
-                $output .= $import . ';' . LF;
-            endforeach;
-        endif;
-        $output .= LF;
-        */
         // turn the dictionaries into indexes (value => id into id => value):
         $rulearr = array_flip( $this->dict_rule );
         $valarr  = array_flip( $this->dict_val );
@@ -832,16 +821,17 @@ class ChildThemeConfiguratorCSS {
             // write new stylesheet:
             // try direct write first, then wp_filesystem write
             // stylesheet must already exist and be writable by web server
-            if ( FALSE !== @file_put_contents( $stylesheet_verified, $output ) ): //is_writable( $stylesheet_verified ) && 
-                //echo 'stylesheet write successful: ' . $stylesheet_verified . LF;
-                return TRUE;
-            elseif ( FALSE !== $wp_filesystem->put_contents( $this->ctc()->fspath( $stylesheet_verified ), $output ) ): 
-                //echo 'filesystem stylesheet write successful: ' . $stylesheet_verified . LF;
-                return TRUE;
+            if ( $this->ctc()->is_ajax && is_writable( $stylesheet_verified ) ):
+                if ( FALSE === @file_put_contents( $stylesheet_verified, $output ) ): 
+                    $this->debug( 'Ajax write failed.', __FUNCTION__ );
+                    return FALSE;
+                endif;
+            elseif ( FALSE === $wp_filesystem->put_contents( $this->ctc()->fspath( $stylesheet_verified ), $output ) ):
+                $this->debug( 'Filesystem write failed.', __FUNCTION__ );
+                return FALSE;
             endif;
-                //echo 'stylesheet write failed: ' . $stylesheet_verified . LF;
+            return TRUE;
         endif;   
-        //echo 'file not ok! ' . $stylesheet . LF;
         return FALSE;
     }
     

@@ -45,11 +45,11 @@ if ( !defined( 'ABSPATH' ) ) exit;
       </div>
       <div class="ctc-input-cell" style="clear:both"> <strong>&nbsp;</strong> </div>
       <div class="ctc-input-cell" >
-        <input class="ctc_text ctc-themeonly" id="ctc_child_template" name="ctc_child_template" type="text" placeholder="<?php _e( 'Theme Slug', 'chld_thm_cfg' ); ?>" autocomplete="off" <?php echo $disabled; ?> />
+        <input class="ctc_text ctc-themeonly" id="ctc_child_template" name="ctc_child_template" type="text" placeholder="<?php _e( 'New Child Theme Slug', 'chld_thm_cfg' ); ?>" autocomplete="off" <?php echo $disabled; ?> />
       </div>
       <?php if ( '' == $hidechild ): ?>
       <div class="ctc-input-cell">
-        <?php $this->render_theme_menu( 'child', $child ); ?>
+        <?php $this->render_theme_menu( 'child', $this->ctc()->get_current_child() ); ?>
       </div>
       <?php endif; ?>
     </div>
@@ -103,7 +103,24 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <input class="ctc_text" id="ctc_child_version" name="ctc_child_version" type="text" 
                 value="<?php echo esc_attr( $css->get_prop( 'version' ) ); ?>" placeholder="<?php _e( 'Version', 'chld_thm_cfg' ); ?>" autocomplete="off" />
       </div>
-    </div></div>
+    </div>
+    <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>" id="input_row_duplicate_theme" <?php echo $hidechild;?>>
+      <div class="ctc-input-cell"> <strong>
+        <?php _e( 'Duplicate Existing Child Theme', 'chld_thm_cfg' ); ?>
+        </strong> </div>
+      <div class="ctc-input-cell">
+        <input class="ctc_checkbox ctc-themeonly" id="ctc_duplicate_theme" name="ctc_duplicate_theme" type="checkbox" 
+                value="1" <?php echo $disabled; ?> />
+        <input class="ctc_text" id="ctc_duplicate_theme_slug" name="ctc_duplicate_theme_slug" type="text" 
+                value="" placeholder="<?php _e( 'Duplicate Theme Slug', 'chld_thm_cfg' ); ?>" autocomplete="off" />
+      </div>
+      <div class="ctc-input-cell howto"> <strong>
+        <?php _e( 'NOTE:', 'chld_thm_cfg' ); ?>
+        </strong>
+        <?php _e( 'This will copy all child theme files and apply changes to new version.', 'chld_thm_cfg' ); ?>
+      </div>
+    </div>
+    </div>
     <?php $parent_handling = ( isset( $css->enqueue ) ? $css->enqueue : 'enqueue' ); ?>
     <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>">
       <div class="ctc-input-cell ctc-section-toggle" id="ctc_stylesheet_handling">
@@ -157,7 +174,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
         </label>
         </strong> </div>
       <div class="ctc-input-cell howto sep"><?php _e( 'Select this option if stylesheet link tags are hard-coded into the header template (common in older themes). This enables the child stylesheet to override the parent stylesheet without using <code>@import</code>.', 'chld_thm_cfg' ); ?>
-</div>
+</div><?php do_action( 'chld_thm_cfg_enqueue_options' ); ?>
       <div class="ctc-input-cell clear">&nbsp;</div>
       <div class="ctc-input-cell">
         <label>
@@ -168,11 +185,11 @@ if ( !defined( 'ABSPATH' ) ) exit;
         </strong> </div>
       <div class="ctc-input-cell howto"><?php _e( "This option imports the parent stylesheet from the child stylesheet. This enables the child stylesheet to override the parent stylesheet, but using <code>@import</code> is no longer recommended.", 'chld_thm_cfg' ); ?>
 </div>
-    </div></div>
+    </div></div><?php if ( ! is_multisite() || ! empty( $this->ctc()->themes[ 'parnt' ][ $this->ctc()->get_current_parent() ][ 'allowed' ] ) ): ?>
     <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>">
-      <div class="ctc-input-cell"> <strong>
-        <?php _e( 'Copy Parent Theme Menus, Widgets and other Options', 'chld_thm_cfg' ); ?>
-        </strong> </div>
+      <div class="ctc-input-cell"> <strong><label for="ctc_parent_mods">
+        <?php _e( 'Copy Parent Theme Menus, Widgets and other Customizer Options', 'chld_thm_cfg' ); ?>
+        </label></strong> </div>
       <div class="ctc-input-cell">
         <input class="ctc_checkbox ctc-themeonly" id="ctc_parent_mods" name="ctc_parent_mods" type="checkbox" 
                 value="1" <?php echo $disabled; ?> />
@@ -182,12 +199,12 @@ if ( !defined( 'ABSPATH' ) ) exit;
         </strong>
         <?php _e( 'This will overwrite child theme options you may have already set.', 'chld_thm_cfg' ); ?>
       </div>
-    </div>
+    </div><?php endif; ?>
     <?php if ( '' == $hidechild ): ?>
     <div class="ctc-input-row clearfix">
-      <div class="ctc-input-cell"> <strong>
+      <div class="ctc-input-cell"> <strong><label for="ctc_backup">
         <?php _e( 'Backup current stylesheet', 'chld_thm_cfg' ); ?>
-        </strong> </div>
+        </label></strong> </div>
       <div class="ctc-input-cell">
         <input class="ctc_checkbox" id="ctc_backup" name="ctc_backup" type="checkbox" 
                 value="1" />
@@ -259,4 +276,5 @@ endif; ?>
       </div>
     </div>
   </form>
+<div id="ctc_debug_container"><?php do_action( 'chld_thm_cfg_print_debug' ); ?></div>
 </div>
