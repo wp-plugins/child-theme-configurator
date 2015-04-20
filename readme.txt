@@ -271,6 +271,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 == Changelog ==
 = 1.7.4.1 =
 * Fixed minified JS 
+
 = 1.7.4 =
 * Restored multisite admin menu link under Tools by popular demand
 * Automatically Network enables new child theme on creation
