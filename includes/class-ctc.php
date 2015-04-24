@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Main Controller Class
-    Version: 1.7.4.1
+    Version: 1.7.4.2
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -108,7 +108,7 @@ class ChildThemeConfiguratorAdmin {
     }
 
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.4.1' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.4.2' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -670,25 +670,28 @@ class ChildThemeConfiguratorAdmin {
             $this->enqueue_parent_css( $this->css, TRUE );
             // hook for add'l plugin files and subdirectories. Must run after stylesheets are parsed to apply latest options
             do_action( 'chld_thm_cfg_addl_files', $this );
-            // set flag to skip import link conversion on ajax save
-            $this->css->converted = 1;
-
-            // try to write new stylsheet. If it fails send alert.
-            if ( FALSE === $this->css->write_css( isset( $_POST[ 'ctc_backup' ] ) ) ):
-                $this->debug( 'failed to write', __FUNCTION__ );
-                $this->errors[] = __( 'Your stylesheet is not writable.', 'chld_thm_cfg' );
-                add_action( 'admin_notices', array( $this, 'writable_notice' ) ); 	
-                return FALSE;
-            endif; 
-            
-            // save new object to WP options table
-            $this->css->save_config();
-            
-            // plugin hook for additional child theme setup functions
-            do_action( 'chld_thm_cfg_addl_options', $this );
-            
-            // return message id 1, which says new child theme created successfully;
-            return 1;
+            // do not continue if errors 
+            if ( empty ( $this->errors ) ):
+                // set flag to skip import link conversion on ajax save
+                $this->css->converted = 1;
+    
+                // try to write new stylsheet. If it fails send alert.
+                if ( FALSE === $this->css->write_css( isset( $_POST[ 'ctc_backup' ] ) ) ):
+                    $this->debug( 'failed to write', __FUNCTION__ );
+                    $this->errors[] = __( 'Your stylesheet is not writable.', 'chld_thm_cfg' );
+                    add_action( 'admin_notices', array( $this, 'writable_notice' ) ); 	
+                    return FALSE;
+                endif; 
+                
+                // save new object to WP options table
+                $this->css->save_config();
+                
+                // plugin hook for additional child theme setup functions
+                do_action( 'chld_thm_cfg_addl_options', $this );
+                
+                // return message id 1, which says new child theme created successfully;
+                return 1;
+            endif;
         endif;
         return FALSE;
     }
@@ -1499,6 +1502,7 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         
         $this->memory[ $key ][ $label ][ $step ][ 'selectors' ] = isset( $this->css ) ? $this->css->qskey : 0;
     }
+    
     function calc_memory_usage() {
         //$this->debug( print_r( $this->memory, TRUE ), __FUNCTION__ );
         
@@ -1517,7 +1521,6 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
             endforeach;
         endforeach;
         $this->debug( "\n" . implode( "\n", $results ), __FUNCTION__ );
-        
     }
     
     function get_free_memory() {

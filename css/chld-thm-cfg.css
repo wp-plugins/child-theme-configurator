@@ -565,11 +565,12 @@ h3.theme-name {
     margin-left:2em;
 }
 #get_pro_panel h3 a {
-    display: inline-block;
+    display: block;
     padding:5px 10px;
     background-color: rgb(198, 66, 0);
     color: #fff;
     text-decoration: none;
+    text-align: center;
 }
 
 #get_pro_panel h3 a:hover {
