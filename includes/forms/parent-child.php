@@ -120,6 +120,20 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <?php _e( 'This will copy all child theme files and apply changes to new version.', 'chld_thm_cfg' ); ?>
       </div>
     </div>
+  <div class="ctc-input-row clearfix" id="input_row_debug">
+      <div class="ctc-input-cell">
+        <strong>
+          <?php _e( 'Debug', 'chld_thm_cfg_plugins' ); ?>
+        </strong>
+      </div>
+      <div class="ctc-input-cell">
+        <input class="ctc_checkbox" id="ctc_is_debug" name="ctc_is_debug"  type="checkbox" 
+            value="1" <?php echo checked( $this->ctc()->is_debug, 1 ); ?> autocomplete="off" />
+      </div>
+      <div class="ctc-input-cell howto">
+          <?php _e( 'Check the box to enable debugging output.', 'chld_thm_cfg_plugins' ); ?>
+      </div>
+  </div>
     </div>
     <?php $parent_handling = ( isset( $css->enqueue ) ? $css->enqueue : 'enqueue' ); ?>
     <div class="ctc-input-row clearfix ctc-themeonly-container<?php echo $disabledclass; ?>">

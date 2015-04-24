@@ -93,18 +93,4 @@ if ( !defined( 'ABSPATH' ) ) exit;
   echo $files_tab_options;
   ?>
   </div>
-  <div class="ctc-input-row clearfix" id="input_row_debug">
-      <div class="ctc-input-cell clear">
-        <strong>
-          <?php _e( 'Debug', 'chld_thm_cfg_plugins' ); ?>
-        </strong>
-        <p class="howto">
-          <?php _e( 'Check the box to enable debugging output.', 'chld_thm_cfg_plugins' ); ?>
-        </p>
-      </div>
-      <div class="ctc-input-cell">
-        <input class="ctc_checkbox" id="ctc_is_debug" name="ctc_is_debug"  type="checkbox" 
-            value="1" <?php echo checked( $this->ctc()->is_debug, 1 ); ?> autocomplete="off" />
-      </div>
-  </div>
 </div>

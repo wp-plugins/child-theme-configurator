@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.4.1
+ *  Version: 1.7.4.2
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -909,7 +909,7 @@
             var self = this;
             //console.log( 'handle_failure: ' + obj );
             $( '.query-icon, .save-icon' ).removeClass( 'spinner' ).addClass( 'failure' );
-            $( 'input[type=submit], input[type=button]' ).prop( 'disabled', false );
+            $( 'input[type=submit], input[type=button], input[type=checkbox]' ).prop( 'disabled', false );
             $( '.ajax-pending' ).removeClass( 'ajax-pending' );
             //FIXME: return fail text in ajax response
             if ( 'preview' == obj )
@@ -934,7 +934,7 @@
                 // show check mark
                 // FIXME: distinction between save and query, update specific status icon
                 $( '.query-icon, .save-icon' ).addClass( 'success' );
-                $( 'input[type=submit], input[type=button]' ).prop( 'disabled', false );
+                $( 'input[type=submit], input[type=button], input[type=checkbox]' ).prop( 'disabled', false );
                 // update ui from each response object  
                 $( response ).each( function() {
                     if ( 'function' == typeof self.update[ this.obj ] ) {
