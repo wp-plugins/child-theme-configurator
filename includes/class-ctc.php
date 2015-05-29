@@ -109,6 +109,7 @@ class ChildThemeConfiguratorAdmin {
 
     function enqueue_scripts() {
         wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.4.2' );
+        wp_enqueue_style( 'ctc-spectrum', CHLD_THM_CFG_URL . 'css/spectrum.css', array(), '1.7.4.2' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -116,12 +117,13 @@ class ChildThemeConfiguratorAdmin {
             wp_enqueue_script( 'jquery-ui-selectmenu', CHLD_THM_CFG_URL . 'js/selectmenu.min.js', 
                 array( 'jquery','jquery-ui-core','jquery-ui-position' ), FALSE, TRUE );
         endif;
+        wp_enqueue_script( 'ctc-spectrum', CHLD_THM_CFG_URL . 'js/spectrum.min.js', array( 'jquery' ), FALSE, TRUE );
         wp_enqueue_script( 'ctc-thm-cfg-ctcgrad', CHLD_THM_CFG_URL . 'js/ctcgrad.min.js', array( 'jquery' ), FALSE, TRUE );
-        wp_enqueue_script( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'js/chld-thm-cfg.min.js',
+        wp_enqueue_script( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'js/chld-thm-cfg.js',
             array(
                 'jquery-ui-autocomplete', 
                 'jquery-ui-selectmenu',   
-                'iris',
+                'ctc-spectrum',
                 'ctc-thm-cfg-ctcgrad'
             ), FALSE, TRUE );
         $localize_array = apply_filters( 'chld_thm_cfg_localize_script', array(

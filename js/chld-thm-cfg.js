@@ -182,15 +182,17 @@
                     value       = ( 'parent' == inputtheme ? $( this ).text().replace( /!$/, '' ) : $( this ).val() ),
                     important   = 'ctc_' + inputseq + '_child_' + inputrule + '_i_' + qsid,
                     parts, subparts;
+                console.log( '1: rule: ' + inputrule + ' value: ' + value );
                 if ( !self.is_empty( $( this ).data( 'color' ) ) ) {
-                    value = $( this ).data( 'color' );
+                    value = self.color_text( $( this ).data( 'color' ) );
                     $( this ).data( 'color', null );
                 }
-                //console.log( 'id: ' + inputid + ' value: ' + value );
+                console.log( '2: rule: ' + inputrule + ' value: ' + value );
                 if ( 'child' == inputtheme ) {
                     postdata[ inputid ] = value;
                     postdata[ important ] = ( $( '#' + important ).is( ':checked' ) ) ? 1 : 0;
                 }
+                console.log( '3: rule: ' + inputrule + ' value: ' + value );
                 if ( '' != value ) {
                     // handle specific inputs
                     if ( !self.is_empty( rulepart ) ) {
@@ -209,7 +211,7 @@
                                 cssrules[ inputtheme ][ 'background-image' ] = self.image_url( inputtheme, value );
                                 break;
                             case '_background_color':
-                                cssrules[ inputtheme ][ 'background-color' ] = obj.value;
+                                cssrules[ inputtheme ][ 'background-color' ] = value; // was obj.value ???
                                 break;
                             case '_background_color1':
                                 gradient[ inputtheme ].start   = value;
@@ -251,6 +253,7 @@
                         }
                     }
                 }
+                console.log( '4: rule: ' + inputrule + ' value: ' + value );
             } );
             // update swatch
             if ( 'undefined' != typeof swatch && !self.is_empty( swatch.attr( 'id' ) ) ) {
@@ -475,7 +478,7 @@
                 if ( !self.is_empty( parentObj.names ) ) {
                     $.each( parentObj.names, function( ndx, newname ) {
                         newname = ( self.is_empty( newname ) ? '' : newname );
-                        html += '<div class="ctc-child-input-cell">' + "\n";
+                        html += '<div class="ctc-child-input-cell clear">' + "\n";
                         var id = 'ctc_' + seq + '_child_' + rule + '_' + qsid + newname,
                             newval;
                         if ( false === ( newval = childObj.values.shift() ) ) {
@@ -530,17 +533,39 @@
          * The "setup" functions initialize jQuery UI widgets
          */
         setup_iris: function( obj ) {
+            // deprecated: using spectrum for alpha support
             var self = this;
+            self.setup_spectrum( obj );
+        },
+        
+        setup_spectrum: function( obj ) {
+            var self = this,
+                colortxt = $( obj ).attr( 'id' ) + '_colortxt';
             try {
-                $( obj ).iris( {
-                    change: function( e, ui ) {
-    
-                        $( obj ).data( 'color', ui.color.toString() );
+                $( obj ).spectrum( {
+                    showInput:              true,
+                    allowEmpty:             true,
+                    showAlpha:              true,
+                    showInitial:            true,
+                    preferredFormat:        "hex",
+                    clickoutFiresChange:    true,
+                    move:                   function( color ) {
+                        $( obj ).data( 'color', color );
+                        $( '#' + colortxt ).text( self.color_text( color ) );
                         self.coalesce_inputs( obj );
                     }
-                } );
+                } ).parents( '.ctc-child-input-cell' ).first().append( '<span id="' + colortxt + '">' + $( obj ).val() + '</span>' );
+                
             } catch ( exn ) {
-                self.jquery_exception( exn, 'Iris Color Picker' );
+                self.jquery_exception( exn, 'Spectrum Color Picker' );
+            }
+        },
+        
+        color_text: function( color ) {
+            if ( color.getAlpha() < 1 ) {
+                return color.toRgbString();
+            } else {
+                return color.toHexString();
             }
         },
         
@@ -632,12 +657,12 @@
                     n.find( 'input[type="text"]' ).each( function( ndx, el ) {
                         if (! first) first = el;
                         if ( $( el ).hasClass( 'color-picker' ) )
-                            self.setup_iris( el );
+                            self.setup_spectrum( el );
                     } );
                     if ( first )
                         $( first ).focus();
                     if ( self.jquery_err.length ) 
-                        self.jquery_notice();
+                        self.jquery_notice( 'setup_new_rule_menu' );
                     return false;
                 },
                 focus: function( e ) { 
@@ -722,6 +747,7 @@
             $( '#ctc_sel_ovrd_selector_selected' ).html( '&nbsp;' );
             //$( '#ctc_sel_ovrd_rule_inputs' ).html( '' );
             self.load_selectors();
+            self.scrolltop();
         },
         
         set_selector: function( value, label ) {
@@ -731,6 +757,7 @@
             self.current_qsid = value;
             self.reload_menus = false;
             self.load_selector_values();
+            self.scrolltop();
         },
         
         set_rule: function( value, label ) {
@@ -742,6 +769,7 @@
             $( '#ctc_rule_value_inputs, #ctc_input_row_rule_header' ).show();
             // retrieve unique values by rule
             self.query_css( 'rule_val', value );
+            self.scrolltop();
         },
         
         set_qsid: function( obj ) {
@@ -890,7 +918,7 @@
             var self = this,
                 url = ctcAjax.ajaxurl;
             //console.log( 'ajax_post: ' + obj );
-            //console.log( data );
+            console.log( data );
             // get ajax url from localized object
             $.ajax( { 
                 url:        url,  
@@ -954,8 +982,8 @@
             self.jquery_err.push( '<code><small>' + type + ': ' + exn.message + fn + ln + '</small></code>' );
         },
         
-        jquery_notice: function() {
-            
+        jquery_notice: function( fn ) {
+            console.log( fn );
             var self        = this,
                 culprits    = [],
                 errors      = [];
@@ -969,9 +997,9 @@
                 }
             } );
             errors.push( '<strong>' + self.getxt( 'js' ) + '</strong> ' + self.getxt( 'contact' ) );
-            if ( 1 == ctcAjax.is_debug ) {
+            //if ( 1 == ctcAjax.is_debug ) {
                 errors.push( self.jquery_err.join( '<br/>' ) );
-            }
+            //}
             if ( culprits.length ) {
                 errors.push( self.getxt( 'jquery' ) + '<br/>' + culprits.join( '<br/>' ) );
             }
@@ -1007,13 +1035,13 @@
                         html += self.input_row( self.current_qsid, rule, 'ovrd', self.current_qsdata );
                     } );
                     $( '#ctc_sel_ovrd_rule_inputs' ).html( html ).find( '.color-picker' ).each( function() {
-                        self.setup_iris( this );
+                        self.setup_spectrum( this );
                     } );
                     self.coalesce_inputs( '#ctc_child_all_0_swatch' );
                     $( '#ctc_sel_ovrd_rule_header' ).show();
                 }
                 if ( self.jquery_err.length ) {
-                    self.jquery_notice();
+                    self.jquery_notice( 'update.qsid' );
                 } else {
                     //console.log( 'reload menus: ' + ( self.reload_menus ? 'true' : 'false' ) );
                     if ( self.reload_menus ) {
@@ -1089,12 +1117,12 @@
                 }
                 selector = '#ctc_selector_' + rule + '_' + res.key + '_rows';
                 $( selector ).html( html ).find( '.color-picker' ).each( function() {
-                    self.setup_iris( this );
+                    self.setup_spectrum( this );
                 } );
                 $( selector ).find( '.ctc-swatch' ).each( function() {
                     self.coalesce_inputs( this );
                 } );
-                if ( self.jquery_err.length ) self.jquery_notice();
+                if ( self.jquery_err.length ) self.jquery_notice( 'val_qry' );
             },
             // populate list of queries and attach to query input element
             queries: function( res ) {
@@ -1176,6 +1204,8 @@
             if ( self.is_empty( self.jquery_err ) ){
                 // bind event handlers
                 // these elements get replaced so use delegated events
+                
+                /*
                 $( '#ctc_main' ).on( 'focus', '.color-picker', function() { //'.ctc-option-panel-container'
                     //set_notice( '' )
                     try {
@@ -1190,7 +1220,7 @@
                 $( '#ctc_main' ).on( 'change', '.ctc-child-value, input[type=checkbox]', function() {
                     self.coalesce_inputs( this );
                 } );
-                
+                */
                 $( '#ctc_main' ).on( 'click', '.ctc-selector-handle', function( e ) {
                     //'.ctc-option-panel-container'
                     e.preventDefault();
@@ -1333,7 +1363,7 @@
                 setTimeout( self.fade_update_notice, 20000 );
             } else {
                 //$( '.ctc-select' ).css( { 'visibility': 'visible' } ).show();
-                self.jquery_notice();
+                self.jquery_notice( 'init' );
             }
         },
         // object properties
