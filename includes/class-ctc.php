@@ -117,7 +117,7 @@ class ChildThemeConfiguratorAdmin {
             wp_enqueue_script( 'jquery-ui-selectmenu', CHLD_THM_CFG_URL . 'js/selectmenu.min.js', 
                 array( 'jquery','jquery-ui-core','jquery-ui-position' ), FALSE, TRUE );
         endif;
-        wp_enqueue_script( 'ctc-spectrum', CHLD_THM_CFG_URL . 'js/spectrum.min.js', array( 'jquery' ), FALSE, TRUE );
+        wp_enqueue_script( 'ctc-spectrum', CHLD_THM_CFG_URL . 'js/spectrum.js', array( 'jquery' ), FALSE, TRUE );
         wp_enqueue_script( 'ctc-thm-cfg-ctcgrad', CHLD_THM_CFG_URL . 'js/ctcgrad.min.js', array( 'jquery' ), FALSE, TRUE );
         wp_enqueue_script( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'js/chld-thm-cfg.js',
             array(
@@ -154,7 +154,7 @@ class ChildThemeConfiguratorAdmin {
             'important_txt'     => __( '<span style="font-size:10px">!</span>',                             'chld_thm_cfg' ),
             'selector_txt'      => __( 'Selectors',                                                         'chld_thm_cfg' ),
             'close_txt'         => __( 'Close',                                                             'chld_thm_cfg' ),
-            'edit_txt'          => __( 'Edit',                                                              'chld_thm_cfg' ),
+            'edit_txt'          => __( 'All Properties',                                                    'chld_thm_cfg' ),
             'cancel_txt'        => __( 'Cancel',                                                            'chld_thm_cfg' ),
             'rename_txt'        => __( 'Rename',                                                            'chld_thm_cfg' ),
             'css_fail_txt'      => __( 'The stylesheet cannot be displayed.',                               'chld_thm_cfg' ),

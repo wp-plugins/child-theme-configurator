@@ -9,12 +9,18 @@
  *  Copyright (C) 2014-2015 Lilaea Media
  */
 ;
+
+// ** for muliple property values: **
+// make sure sequence is passed with rule/val updates
+// determine sequence based on sequence of value array
+// add sequence to input name
+
 ( function( $ ) {
     $.chldthmcfg = {
         //console.log( 'executing main function' );
         esc_quot: function( str ) {
             var self = this;
-            return self.is_empty( str ) ? str : str.toString().replace( /"/g, '&quot;' );
+            return self.mt( str ) ? str : str.toString().replace( /"/g, '&quot;' );
         },
                 
         getxt: function( key ){
@@ -32,7 +38,13 @@
             return ascii;
         },
     
-        is_empty: function( obj ) {
+        /**
+         * mt ( is_empty )
+         * return true if value evaluates to false, null, null string, 
+         * empty array, empty object or undefined
+         * but NOT 0 ( zero returns false )
+         */
+        mt: function( obj ) {
             // first bail when definitely empty or undefined ( true ) NOTE: numeric zero returns false !
             if ( 'undefined' == typeof obj || false === obj || null === obj || '' === obj ) { return true; }
             // then, if this is bool, string or number it must not be empty ( false )
@@ -55,7 +67,11 @@
             // this must be an unsupported datatype, so return not empty
             return false; 
         },
-        // initialize functions
+        
+        /**
+         * theme_exists
+         * returns true if theme is already present for type
+         */
         theme_exists: function( testslug, testtype ) {
             var exists = false;
             $.each( ctcAjax.themes, function( type, theme ) {
@@ -119,7 +135,7 @@
             var panelid = id + '_panel';
             $( '.nav-tab' ).removeClass( 'nav-tab-active' );
             $( '.ctc-option-panel' ).removeClass( 'ctc-option-panel-active' );
-            $( '.ctc-selector-container' ).hide();
+            //$( '.ctc-selector-container' ).hide();
             $( id ).addClass( 'nav-tab-active' );
             $( '.ctc-option-panel-container' ).scrollTop( 0 );
             $( panelid ).addClass( 'ctc-option-panel-active' );
@@ -152,7 +168,8 @@
         coalesce_inputs: function( obj ) {
             //console.log( 'coalesce_inputs ' + $( obj ).attr( 'id' ) );
             var self        = this,
-                regex       = /^(ctc_(ovrd|\d+)_(parent|child)_([0-9a-z\-]+)_(\d+))(_\w+)?$/,
+                id          = $( obj ).attr( 'id' ),
+                regex       = /^(ctc_(ovrd|\d+)_(parent|child)_([0-9a-z\-]+)_(\d+?)(_(\d+))?)(_\w+)?$/,
                 container   = $( obj ).parents( '.ctc-selector-row, .ctc-parent-row' ).first(),
                 swatch      = container.find( '.ctc-swatch' ).first(),
                 cssrules    = { 'parent': {}, 'child': {} },
@@ -177,26 +194,27 @@
                     inputseq    = inputparts[ 2 ],
                     inputtheme  = inputparts[ 3 ],
                     inputrule   = ( 'undefined' == typeof inputparts[ 4 ] ? '' : inputparts[ 4 ] ),
+                    rulevalid   = inputparts[ 7 ],
                     qsid        = inputparts[ 5 ],
-                    rulepart    = ( 'undefined' == typeof inputparts[ 6 ] ? '' : inputparts[ 6 ] ),
-                    value       = ( 'parent' == inputtheme ? $( this ).text().replace( /!$/, '' ) : $( this ).val() ),
-                    important   = 'ctc_' + inputseq + '_child_' + inputrule + '_i_' + qsid,
+                    rulepart    = ( 'undefined' == typeof inputparts[ 7 ] ? '' : inputparts[ 8 ] ),
+                    value       = ( 'parent' == inputtheme ? $( this ).text().replace( /!$/, '' ) : 
+                                    ( 'ctc_delete_query_selector' == id ? '' : $( this ).val() ) ), // clear values if delete was clicked
+                    important   = ( 'seq' == inputrule ? false : 'ctc_' + inputseq + '_child_' + inputrule + '_i_' + qsid + '_' + rulevalid ),
                     parts, subparts;
-                console.log( '1: rule: ' + inputrule + ' value: ' + value );
-                if ( !self.is_empty( $( this ).data( 'color' ) ) ) {
-                    value = self.color_text( $( this ).data( 'color' ) );
-                    $( this ).data( 'color', null );
-                }
-                console.log( '2: rule: ' + inputrule + ' value: ' + value );
+                //console.log( inputparts );
+                //console.log( 'value: ' + value );
                 if ( 'child' == inputtheme ) {
-                    postdata[ inputid ] = value;
-                    postdata[ important ] = ( $( '#' + important ).is( ':checked' ) ) ? 1 : 0;
+                    if ( !self.mt( $( this ).data( 'color' ) ) ) {
+                        value = self.color_text( $( this ).data( 'color' ) );
+                        $( this ).data( 'color', null );
+                    }
+                    postdata[ inputid ]     = value;
+                    if ( important )
+                        postdata[ important ]   = ( $( '#' + important ).is( ':checked' ) ) ? 1 : 0;
                 }
-                console.log( '3: rule: ' + inputrule + ' value: ' + value );
-                if ( '' != value ) {
+                if ( '' !== value ) {
                     // handle specific inputs
-                    if ( !self.is_empty( rulepart ) ) {
-                        //console.log( 'rulepart: ' + rulepart + ' value: ' + value );
+                    if ( !self.mt( rulepart ) ) {
                         switch( rulepart ) {
                             case '_border_width':
                                 cssrules[ inputtheme ][ inputrule + '-width' ] = ( 'none' == value ? 0 : value );
@@ -229,20 +247,32 @@
                     } else {
                         // handle borders
                         if ( parts = inputrule.toString().match( /^border(\-(top|right|bottom|left))?$/ ) && !value.match( /none/ ) ) {
-                            subparts = value.toString().split( / +/ );
-                            cssrules[ inputtheme ][ inputrule + '-width' ] = 'undefined' == typeof subparts[ 0 ] ? '' : subparts[ 0 ];
-                            cssrules[ inputtheme ][ inputrule + '-style' ] = 'undefined' == typeof subparts[ 1 ] ? '' : subparts[ 1 ];
-                            cssrules[ inputtheme ][ inputrule + '-color' ] = 'undefined' == typeof subparts[ 2 ] ? '' : subparts[ 2 ];
+                            var borderregx = new RegExp( self.border_regx + self.color_regx, 'i' ),
+                                subparts = value.toString().match( borderregx );
+                            //console.log( value );
+                            //console.log( borderregx );
+                            //console.log( subparts );
+                            if ( !self.mt( subparts ) ) {
+                                orig = subparts.shift();
+                                cssrules[ inputtheme ][ inputrule + '-width' ] = subparts.shift() || '';
+                                cssrules[ inputtheme ][ inputrule + '-style' ] = subparts.shift() || '';
+                                cssrules[ inputtheme ][ inputrule + '-color' ] = subparts.shift() || '';
+                            }
                         // handle background images
                         } else if ( 'background-image' == inputrule && !value.match( /none/ ) ) {
                             if ( value.toString().match( /url\(/ ) ) {
                                 cssrules[ inputtheme ][ 'background-image' ] = self.image_url( inputtheme, value );
                             } else {
-                                subparts = value.toString().split( / +/ );
-                                if ( subparts.length > 2 ) {
-                                    gradient[ inputtheme ].origin = 'undefined' == typeof subparts[ 0 ] ? 'top' : subparts[ 0 ];
-                                    gradient[ inputtheme ].start  = 'undefined' == typeof subparts[ 1 ] ? 'transparent' : subparts[ 1 ];
-                                    gradient[ inputtheme ].end    = 'undefined' == typeof subparts[ 2 ] ? 'transparent' : subparts[ 2 ];
+                                var gradregex = new RegExp( self.grad_regx + self.color_regx + self.color_regx, 'i' ),
+                                    subparts = value.toString().match( gradregex );
+                                    //console.log( value );
+                                    //console.log( gradregex );
+                                    //console.log( subparts );
+                                if ( !self.mt( subparts ) && subparts.length > 2 ) {
+                                    orig = subparts.shift();
+                                    gradient[ inputtheme ].origin = subparts.shift() || 'top';
+                                    gradient[ inputtheme ].start  = subparts.shift() || 'transparent';
+                                    gradient[ inputtheme ].end    = subparts.shift() || 'transparent';
                                     has_gradient[ inputtheme ] = true;
                                 } else {
                                     cssrules[ inputtheme ][ 'background-image' ] = value;
@@ -253,19 +283,20 @@
                         }
                     }
                 }
-                console.log( '4: rule: ' + inputrule + ' value: ' + value );
             } );
             // update swatch
-            if ( 'undefined' != typeof swatch && !self.is_empty( swatch.attr( 'id' ) ) ) {
+            if ( 'undefined' != typeof swatch && !self.mt( swatch.attr( 'id' ) ) ) {
                 swatch.removeAttr( 'style' );
                 if ( has_gradient.parent ) {
                     swatch.ctcgrad( gradient.parent.origin, [ gradient.parent.start, gradient.parent.end ] );
                 }
+                //console.log( cssrules );
                 swatch.css( cssrules.parent );  
                 if ( !( swatch.attr( 'id' ).toString().match( /parent/ ) ) ) {
                     if ( has_gradient.child ) {
                         swatch.ctcgrad( gradient.child.origin, [ gradient.child.start, gradient.child.end ] );
                     }
+                    //console.log( cssrules.child );
                     swatch.css( cssrules.child );
                 }
                 swatch.css( {'z-index':-1} );
@@ -274,21 +305,30 @@
         },
         
         decode_value: function( rule, value ) {
+            //console.log( 'in decode_value ( ' + rule + ' ...' );
             value = ( 'undefined' == typeof value ? '' : value );
             var self = this,
-                obj = { 'orig':   value };
+                obj = { 
+                    'orig':     value, 
+                    'names':    [ '' ],
+                    'values':   [ value ]
+                };
             if ( rule.toString().match( /^border(\-(top|right|bottom|left))?$/ ) ) {
-                var params = value.toString().split( / +/ );
+                var regex = new RegExp( self.border_regx + self.color_regx, 'i' ),
+                    params = value.toString().match( regex );
+                if ( self.mt( params ) ) params = [];
                 obj[ 'names' ] = [
                     '_border_width',
                     '_border_style',
                     '_border_color',
                 ];
-                obj[ 'values' ] = [ 
-                    ( 'undefined' == typeof params[ 0 ] ? '' : params[ 0 ] ),
-                    ( 'undefined' == typeof params[ 1 ] ? '' : params[ 1 ] ),
-                    ( 'undefined' == typeof params[ 2 ] ? '' : params[ 2 ] )
-                ];
+                orig = params.shift();
+                //console.log( value );
+                //console.log( regex );
+                //console.log( params );
+                obj[ 'values' ][ 0 ] = params.shift() || '';
+                obj[ 'values' ][ 1 ] = params.shift() || '';
+                obj[ 'values' ][ 2 ] = params.shift() || '';
             } else if ( rule.toString().match( /^background\-image/ ) ) {
                 obj[ 'names' ] = [
                     '_background_url',
@@ -297,11 +337,16 @@
                     '_background_color2'
                 ];
                 obj[ 'values' ] = [ '', '', '', '' ];
-                if ( false === ( self.is_empty( value ) ) && !( value.toString().match( /(url|none)/ ) ) ) {
-                    var params = value.toString().split( /:/ );
-                    obj[ 'values' ][ 1 ] = ( 'undefined' == typeof params[ 0 ] ? '' : params[ 0 ] );
-                    obj[ 'values' ][ 2 ] = ( 'undefined' == typeof params[ 1 ] ? '' : params[ 1 ] );
-                    obj[ 'values' ][ 3 ] = ( 'undefined' == typeof params[ 3 ] ? '' : params[ 3 ] );
+                if ( !self.mt( value ) && !( value.toString().match( /(url|none)/ ) ) ) {
+                    var params = value.toString().split( /:/ ),
+                        stop1, stop2;
+                //console.log( value );
+                //console.log( params );
+                    obj[ 'values' ][ 1 ] = params.shift() || '';
+                    obj[ 'values' ][ 2 ] = params.shift() || '';
+                    stop1 = params.shift() || '';
+                    obj[ 'values' ][ 3 ] = params.shift() || '';
+                    stop2 = params.shift() || '';
                     obj[ 'orig' ] = [ 
                         obj[ 'values' ][ 1 ],
                         obj[ 'values' ][ 2 ],
@@ -310,17 +355,15 @@
                 } else {
                     obj[ 'values' ][ 0 ] = value;
                 }
-            } else {
-                obj[ 'names' ]    = [ '' ];
-                obj[ 'values' ]   = [ value ];
             }
+            //console.log( obj );
             return obj;
         },
         
         image_url: function( theme, value ) {
             var self = this,
                 parts = value.toString().match( /url\(['" ]*(.+?)['" ]*\)/ ),
-                path = self.is_empty( parts ) ? null : parts[ 1 ],
+                path = self.mt( parts ) ? null : parts[ 1 ],
                 url = ctcAjax.theme_uri + '/' + ( 'parent' == theme ? ctcAjax.parnt : ctcAjax.child ) + '/',
                 image_url;
             if ( !path ) { 
@@ -419,24 +462,12 @@
         get_filtered_rules: function( request, response ) {
             //console.log( 'get_filtered_rules' );
             var arr = [],
-                matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" ),
-                data    = $.chldthmcfg.current_qsdata,
-                noval   = ( $.chldthmcfg.is_empty( data ) ) || ( $.chldthmcfg.is_empty( data.value ) );
+                matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" ); //,
+                //data    = $.chldthmcfg.current_qsdata,
+                //noval   = ( $.chldthmcfg.mt( data ) ) || ( $.chldthmcfg.mt( data.value ) );
             $.each( $( '#ctc_rule_menu' ).data( 'menu' ), function( key, val ) {
-                var skip = false;
+                // no need to skip - multiple versions of rule ok
                 if ( matcher.test( key ) ) {
-                    if ( !noval ) {
-                        // skip rule if in current selector array
-                        $.each( data.value, function( rule, value ) {
-                            if ( key == rule.replace( /\d+/g, self.from_ascii ) ) {
-                                skip = true;
-                                return false;
-                            }
-                        } );
-                        if ( skip ) {
-                            return;
-                        }
-                    }
                     arr.push( { 'label': key, 'value': val } );
                 }
             } );
@@ -444,72 +475,94 @@
         },
         
         /**
-         * render individual row of inputs for a given selector/rule combination
+         * parent and child values are stored in separate arrays
+         * this function puts them into parent/child columns by rulevalid
          */
-        input_row: function( qsid, rule, seq, data ) {
-            //console.log( 'input_row: ' + qsid + ' rule: ' + rule + ' seq: ' + seq );
+        merge_ruleval_arrays: function( rule, value, isnew ) {
             var self = this,
-                html = '', 
-                value = ( self.is_empty( data ) || self.is_empty( data.value ) || self.is_empty( data.value[ rule ] ) ?
-                    '' : data.value[ rule ] ),
-                parentObj = self.decode_value( rule, ( self.is_empty( value ) ?
-                    '' : value.parnt ) ),
-                parentImp = ( !self.is_empty( value ) && !self.is_empty( value.i_parnt ) && 1 == value.i_parnt ) ? 
-                    self.getxt( 'important' ) : '',
-                childObj = self.decode_value( rule, ( self.is_empty( value ) ?
-                    '' : value[ 'child' ] ) ),
-                childImp = ( !self.is_empty( value ) && !self.is_empty( value.i_child ) && 1 == value.i_child ) ? 1 : 0,
-                impid = 'ctc_' + seq + '_child_' + rule + '_i_' + qsid;
-            if ( !self.is_empty( data ) ) {
-                html += '<div class="ctc-' + ( 'ovrd' == seq ? 'input' : 'selector' ) 
-                    + '-row clearfix">' + "\n" + '<div class="ctc-input-cell">'
-                    + ( 'ovrd' == seq ? rule.replace( /\d+/g, self.from_ascii ) : 
-                        data.selector + '<br/><a href="#" class="ctc-selector-edit"'
-                    + ' id="ctc_selector_edit_' + qsid + '" >' + self.getxt( 'edit' ) + '</a> '
-                    + ( self.is_empty( parentObj.orig ) ? self.getxt( 'child_only' ) : '' ) ) 
-                    + '</div>' + "\n";
-                if ( 'ovrd' == seq ) {
-                    html += '<div class="ctc-parent-value ctc-input-cell"'
-                        + ' id="ctc_' + seq + '_parent_' + rule + '_' + qsid + '">' 
-                        + ( self.is_empty( parentObj.orig ) ? '[no value]' : parentObj.orig + parentImp ) 
-                        + '</div>' + "\n";
-                }
-                html += '<div class="ctc-input-cell">' + "\n";
-                if ( !self.is_empty( parentObj.names ) ) {
-                    $.each( parentObj.names, function( ndx, newname ) {
-                        newname = ( self.is_empty( newname ) ? '' : newname );
-                        html += '<div class="ctc-child-input-cell clear">' + "\n";
-                        var id = 'ctc_' + seq + '_child_' + rule + '_' + qsid + newname,
-                            newval;
-                        if ( false === ( newval = childObj.values.shift() ) ) {
-                            newval = '';
+                valarr = {};
+                nextval = isnew ? value.child.pop() : null; // if new rule, pop off the top before counting
+            $.each( [ 'parnt', 'child' ], function( ndx, template ) {
+                // iterate through parent and child val arrays and populate new assoc array with parent/child for each rulevalid
+                if ( !self.mt( value[ template ] ) ) {
+                    $.each( value[ template ], function( ndx2, val ) {
+                        if ( isnew ) {
+                            // if new rule, increment new rulevalid but do not add to parent/child assoc array
+                            if ( parseInt( val[ 2 ] ) >= parseInt( nextval[ 2 ] ) ) nextval[ 2 ] = parseInt( val[ 2 ] ) + 1;
+                        } else {
+                            // add to parent/child assoc array with rulevalid as key
+                            if ( self.mt( valarr[ val[ 2 ] ] ) ) valarr[ val[ 2 ] ] = {};
+                            valarr[ val[ 2 ] ][ template ] = val;
                         }
-                            
-                        html += ( self.is_empty( newname ) ? '' : self.getxt( newname ) + ':<br/>' ) 
-                            + '<input type="text" id="' + id + '" name="' + id + '" class="ctc-child-value' 
-                            + ( ( newname + rule ).toString().match( /color/ ) ? ' color-picker' : '' ) 
-                            + ( ( newname ).toString().match( /url/ ) ? ' ctc-input-wide' : '' )
-                            + '" value="' + self.esc_quot( newval ) + '" />' + "\n" + '</div>' + "\n";
                     } );
-                    html += '<label for="' + impid + '"><input type="checkbox"'
-                        + ' id="' + impid + '" name="' + impid + '" value="1" '
-                        + ( 1 === childImp ? 'checked' : '' ) + ' />' 
-                        + self.getxt( 'important' ) + '</label>' + "\n";
                 }
-                html += '</div>' + "\n" + ( 'ovrd' == seq ? '' : 
-                    '<div class="ctc-swatch ctc-specific"'
-                    + ' id="ctc_child_' + rule + '_' + qsid + '_swatch">' 
-                    + self.getxt( 'swatch' ) + '</div>' + "\n" 
-                    + '<div class="ctc-child-input-cell ctc-button-cell"'
-                    + ' id="ctc_save_' + rule + '_' + qsid + '_cell">' + "\n"
-                    + '<input type="button" class="button ctc-save-input"'
-                    + ' id="ctc_save_' + rule + '_' + qsid + '"'
-                    + ' name="ctc_save_' + rule + '_' + qsid + '"'
-                    + ' value="Save" /></div>' + "\n" )
-                    + '</div><!-- end input row -->' + "\n";
-                //console.log( html );
-            } else {
-                //console.log( 'sel_val ' + qsid + ' is empty' );
+            } );
+            // if new rule, create new parent child assoc array element with new rulevalid as key
+            if ( isnew ) {
+                valarr[ nextval[ 2 ] ] = {
+                    parnt: [],
+                    child: nextval
+                };
+            }
+            return valarr;
+        },
+
+        /**
+         * input_row
+         * render individual row of inputs for a given selector/rule combination
+         * qsid     query/selector id
+         * rule     css property 
+         * seq      panel id from rule/value tab
+         * data     contains all rules/values for selector
+         * isnew    is passed true when new rule is selected from menu
+         */
+        input_row: function( qsid, rule, seq, data, isnew ) {
+            var self = this,
+                html = '';
+            if ( !self.mt( data ) && !self.mt( data.value ) && !self.mt( data.value[ rule ] ) ) {
+                var value = data.value[ rule ],
+                    valarr = self.merge_ruleval_arrays( rule, value, isnew );
+                $.each( valarr, function( ndx, val ) {
+                    var pval = self.decode_value( rule, self.mt( val.parnt ) ? '' : val.parnt[ 0 ] ),
+                        pimp = self.mt( val.parnt ) || 0 == val.parnt[ 1 ] ? 0 : 1,
+                        cval = self.decode_value( rule, self.mt( val.child ) ? '' : val.child[ 0 ] ),
+                        cimp = self.mt( val.child ) || 0 == val.child[ 1 ] ? 0 : 1;
+                    html += '<div class="ctc-input-row clearfix">' + "\n" + '<div class="ctc-input-cell">' 
+                    if ( 'ovrd' == seq ) {
+                        html += rule.replace( /\d+/g, self.from_ascii );
+                    } else {
+                        html += data.selector + '<br/><a href="#" class="ctc-selector-edit"'
+                            + ' id="ctc_selector_edit_' + qsid + '" >' + self.getxt( 'edit' ) + '</a> '
+                            + ( self.mt( pval.orig ) ? self.getxt( 'child_only' ) : '' );
+                    }
+                    html += '</div><div class="ctc-parent-value ctc-input-cell"'
+                        + ' id="ctc_' + seq + '_parent_' + rule + '_' + qsid + '_' + ndx + '">' 
+                        + ( self.mt( pval.orig ) ? '[no value]' : pval.orig + ( pimp ? self.getxt( 'important' ) : '' ) ) 
+                        + '</div>' + "\n" + '<div class="ctc-input-cell">' + "\n";
+                    if ( !self.mt( pval.names ) ) {
+                        $.each( pval.names, function( namendx, newname ) {
+                            newname = ( self.mt( newname ) ? '' : newname );
+                            html += '<div class="ctc-child-input-cell clear">' + "\n";
+                            var id = 'ctc_' + seq + '_child_' + rule + '_' + qsid + '_' + ndx + newname,
+                                newval;
+                            if ( false === ( newval = cval.values.shift() ) ) {
+                                newval = '';
+                            }
+                                
+                            html += ( self.mt( newname ) ? '' : self.getxt( newname ) + ':<br/>' ) 
+                                + '<input type="text" id="' + id + '" name="' + id + '" class="ctc-child-value' 
+                                + ( ( newname + rule ).toString().match( /color/ ) ? ' color-picker' : '' ) 
+                                + ( ( newname ).toString().match( /url/ ) ? ' ctc-input-wide' : '' )
+                                + '" value="' + self.esc_quot( newval ) + '" />' + "\n" + '</div>' + "\n";
+                        } );
+                        var impid = 'ctc_' + seq + '_child_' + rule + '_i_' + qsid + '_' + ndx;
+                        html += '<label for="' + impid + '"><input type="checkbox"'
+                            + ' id="' + impid + '" name="' + impid + '" value="1" '
+                            + ( cimp ? 'checked' : '' ) + ' />' 
+                            + self.getxt( 'important' ) + '</label>' + "\n" + '</div>';
+                    }
+                    html += '</div><!-- end input row -->' + "\n";
+                } );
             }
             return html;
         },
@@ -547,14 +600,18 @@
                     allowEmpty:             true,
                     showAlpha:              true,
                     showInitial:            true,
-                    preferredFormat:        "hex",
+                    preferredFormat:        "hex", // 'name', //
                     clickoutFiresChange:    true,
                     move:                   function( color ) {
                         $( obj ).data( 'color', color );
                         $( '#' + colortxt ).text( self.color_text( color ) );
                         self.coalesce_inputs( obj );
                     }
-                } ).parents( '.ctc-child-input-cell' ).first().append( '<span id="' + colortxt + '">' + $( obj ).val() + '</span>' );
+                } ).on( 'change', function( e ){
+                    var color = $( this ).spectrum( 'get' );
+                    //console.log( 'color change: ' + color );
+                    self.coalesce_inputs( this );
+                } );
                 
             } catch ( exn ) {
                 self.jquery_exception( exn, 'Spectrum Color Picker' );
@@ -562,7 +619,10 @@
         },
         
         color_text: function( color ) {
-            if ( color.getAlpha() < 1 ) {
+            var self = this;
+            if ( self.mt( color ) ) {
+                return '';
+            } else if ( color.getAlpha() < 1 ) {
                 return color.toRgbString();
             } else {
                 return color.toHexString();
@@ -643,18 +703,29 @@
                 selectFirst: true,
                 autoFocus: true,
                 select: function( e, ui ) {
+                    //console.log( 'new rule selected' );
                     e.preventDefault();
-                    if ( self.is_empty( self.current_qsdata.value ) ) {
-                        self.current_qsdata[ 'value' ] = {};
-                    }
-                    self.current_qsdata.value[ ui.item.label ] = { 'child': '' };
                     var newrule = ui.item.label.replace( /[^\w\-]/g, self.to_ascii ),
-                        n = $( self.input_row( self.current_qsid, newrule, 'ovrd', self.current_qsdata ) ),
+                        n = 1,
+                        row,
                         first;
-                    $( '#ctc_sel_ovrd_rule_inputs' ).append( n );
+                    if ( self.mt( self.current_qsdata.value ) ) {
+                        self.current_qsdata.value = {};
+                    }
+                    if ( self.mt( self.current_qsdata.value[ ui.item.label ] ) ) {
+                        self.current_qsdata.value[ ui.item.label ] = {};
+                    }
+                    if ( self.mt( self.current_qsdata.value[ ui.item.label ].child ) ) {
+                        self.current_qsdata.value[ ui.item.label ].child = [];
+                    }
+                    // seed current qsdata with new blank value with id 1
+                    // this will be modified during input_row function to be next id in order
+                    self.current_qsdata.value[ ui.item.label ].child.push( [ '', 0, 1, 1 ] );
+                    row = $( self.input_row( self.current_qsid, newrule, 'ovrd', self.current_qsdata, true ) );
+                    $( '#ctc_sel_ovrd_rule_inputs' ).append( row );
                     $( '#ctc_new_rule_menu' ).val( '' );
                     
-                    n.find( 'input[type="text"]' ).each( function( ndx, el ) {
+                    row.find( 'input[type="text"]' ).each( function( ndx, el ) {
                         if (! first) first = el;
                         if ( $( el ).hasClass( 'color-picker' ) )
                             self.setup_spectrum( el );
@@ -678,7 +749,7 @@
             var self = this;
             if ( $( '#ctc_theme_child' ).length && $( '#ctc_child_type_existing' ).is( ':checked' ) ) {
                 var child   = $( '#ctc_theme_child' ).val();
-                if ( !self.is_empty( child ) ) {
+                if ( !self.mt( child ) ) {
                     $( '#ctc_child_name' ).val( ctcAjax.themes[ 'child' ][ child ].Name );
                     $( '#ctc_child_author' ).val( ctcAjax.themes[ 'child' ][ child ].Author );
                     $( '#ctc_child_version' ).val( ctcAjax.themes[ 'child' ][ child ].Version );
@@ -696,7 +767,7 @@
         set_notice: function( noticearr ) {
             var self = this,
                 errorHtml = '';
-            if ( !self.is_empty( noticearr ) ) {
+            if ( !self.mt( noticearr ) ) {
                 $.each( noticearr, function( type, list ) {
                     errorHtml += '<div class="' + type + '"><ul>' + "\n";
                     $( list ).each( function( ndx, el ) {
@@ -706,7 +777,7 @@
                 } );
             }
             $( '#ctc_error_notice' ).html( errorHtml );
-            $('html, body').animate({ scrollTop: 0 }, 'slow');        
+            $( 'html, body' ).animate( { scrollTop: 0 }, 'slow' );        
         },
         
         set_parent_menu: function( obj ) {
@@ -720,10 +791,10 @@
             var self = this,
                 template,
                 parent;
-            if ( !self.is_empty( ctcAjax.themes.child[ obj.value ] ) ) {
+            if ( !self.mt( ctcAjax.themes.child[ obj.value ] ) ) {
                 template = ctcAjax.themes.child[ obj.value ].Template,
                 parent  = $( '#ctc_theme_parnt' ).val();
-                console.log( 'template: ' + template + ' parent: ' + parent );
+                //console.log( 'template: ' + template + ' parent: ' + parent );
                 if ( template == parent ) {
                     $( '#ctc_child_name' ).val( ctcAjax.themes.child[ obj.value ].Name );
                     $( '#ctc_child_author' ).val( ctcAjax.themes.child[ obj.value ].Author );
@@ -795,7 +866,7 @@
                 regex       = new RegExp( "<link rel=[\"']stylesheet[\"'][^>]+?" 
                     + theme_uri + '/' + template + '/(.+?\\.css)[^>]+?>', 'g' ),
                 additional;
-            if ( self.is_empty( template ) ) return;
+            if ( self.mt( template ) ) return;
             //console.log( template );
             if ( template != ctcAjax.parnt ) {
                 $.get( url, function( data ) {
@@ -841,7 +912,7 @@
             $( '.spinner' ).show();
             // add wp ajax action to array
             //console.log( $( '#ctc_action' ).val() );
-            postdata[ 'action' ] = ( !self.is_empty( $( '#ctc_action' ).val() ) 
+            postdata[ 'action' ] = ( !self.mt( $( '#ctc_action' ).val() ) 
                 && 'plugin' == $( '#ctc_action' ).val() ) ? 
                     'ctc_plgqry' : 'ctc_query';
             postdata[ '_wpnonce' ] = $( '#_wpnonce' ).val();
@@ -880,9 +951,9 @@
                 }
                 self.reload_menus = true;
             } else if ( ( $imports = $( '#ctc_child_imports' ) ) 
-                && 'ctc_save_imports' == $( obj ).attr( 'id' ) ) {
+                && 'ctc_save_imports' == id ) {
                 postdata[ 'ctc_child_imports' ] = $imports.val();
-            } else if ( 'ctc_is_debug' == $( obj ).attr( 'id' ) ) {
+            } else if ( 'ctc_is_debug' == id ) {
                 postdata[ 'ctc_is_debug' ] = $( '#ctc_is_debug' ).is( ':checked' ) ? 1 : 0;
             } else {
                 // coalesce inputs
@@ -894,7 +965,7 @@
                 .find( '#ctc_rewrite_selector' ).each( function() {
                 newsel = $( '#ctc_rewrite_selector' ).val();
                 origsel = $( '#ctc_rewrite_selector_orig' ).val();
-                if ( self.is_empty( newsel ) || !newsel.toString().match( /\w/ ) ) {
+                if ( self.mt( newsel ) || !newsel.toString().match( /\w/ ) ) {
                     newsel = origsel;
                 } else {
                     postdata[ 'ctc_rewrite_selector' ] = newsel;
@@ -905,7 +976,7 @@
             } );
             // add wp ajax action to array
             //console.log( $( '#ctc_action' ).val() );
-            postdata[ 'action' ] = ( !self.is_empty( $( '#ctc_action' ).val() ) 
+            postdata[ 'action' ] = ( !self.mt( $( '#ctc_action' ).val() ) 
                 && 'plugin' == $( '#ctc_action' ).val() ) ? 
                     'ctc_plugin' : 'ctc_update';
             postdata[ '_wpnonce' ] = $( '#_wpnonce' ).val();
@@ -918,12 +989,14 @@
             var self = this,
                 url = ctcAjax.ajaxurl;
             //console.log( 'ajax_post: ' + obj );
-            console.log( data );
+            //console.log( data );
             // get ajax url from localized object
             $.ajax( { 
                 url:        url,  
                 data:       data,
-                dataType:   self.is_empty( datatype ) ? 'json' : datatype,
+                dataType:   ( self.mt( datatype ) ? 'json' : datatype ),  //
+                //   'ctc_update' == data.action && // 'rule_val' == obj ? 'text' : // 'qsid' == obj ? 'text' : 
+                // 'ctc_update' == data.action && 'qsid' == obj ? 'text' : 
                 type:       'POST'
             } ).done( function( response ) {
                 //console.log( response );
@@ -954,7 +1027,7 @@
             $( '.query-icon, .save-icon' ).removeClass( 'spinner' );
             $( '.ajax-pending' ).removeClass( 'ajax-pending' );
             // hide spinner
-            if ( self.is_empty( response ) ) {
+            if ( self.mt( response ) ) {
                 self.handle_failure( obj );
             } else {
                 $( '#ctc_new_selectors' ).val( '' );
@@ -977,13 +1050,13 @@
         
         jquery_exception: function( exn, type ) {
             var self = this,
-                ln = self.is_empty( exn.lineNumber ) ? '' : ' line: ' + exn.lineNumber,
-                fn = self.is_empty( exn.fileName ) ? '' : ' ' + exn.fileName.split( /\?/ )[ 0 ];
+                ln = self.mt( exn.lineNumber ) ? '' : ' line: ' + exn.lineNumber,
+                fn = self.mt( exn.fileName ) ? '' : ' ' + exn.fileName.split( /\?/ )[ 0 ];
             self.jquery_err.push( '<code><small>' + type + ': ' + exn.message + fn + ln + '</small></code>' );
         },
         
         jquery_notice: function( fn ) {
-            console.log( fn );
+            //console.log( fn );
             var self        = this,
                 culprits    = [],
                 errors      = [];
@@ -991,7 +1064,7 @@
             $( 'input[type=submit], input[type=button]' ).prop( 'disabled', true );
             $( 'script' ).each( function( ndx,el ){
                 var url = $( this ).prop( 'src' );
-                if ( !self.is_empty( url ) && url.match( /jquery(\.min|\.js|\-?ui)/i ) 
+                if ( !self.mt( url ) && url.match( /jquery(\.min|\.js|\-?ui)/i ) 
                     && ! url.match( /load\-scripts.php/ ) ) {
                     culprits.push( '<code><small>' + url.split( /\?/ )[ 0 ] + '</small></code>' );
                 }
@@ -1017,7 +1090,7 @@
                 self.current_qsdata = res.data;
                 //console.log( 'update.qsid: ' + self.current_qsid );
                 $( '#ctc_sel_ovrd_qsid' ).val( self.current_qsid );
-                if ( self.is_empty( self.current_qsdata.seq ) ) {
+                if ( self.mt( self.current_qsdata.seq ) ) {
                     $( '#ctc_child_load_order_container' ).empty();
                 } else {
                     id = 'ctc_ovrd_child_seq_' + self.current_qsid;
@@ -1026,7 +1099,7 @@
                         + ' class="ctc-child-value" value="' + val + '" />';
                     $( '#ctc_child_load_order_container' ).html( html );
                 }
-                if ( self.is_empty( self.current_qsdata.value ) ) {
+                if ( self.mt( self.current_qsdata.value ) ) {
                     $( '#ctc_sel_ovrd_rule_inputs' ).empty(); 
                     $( '#ctc_sel_ovrd_rule_header' ).hide();
                 } else {
@@ -1065,7 +1138,7 @@
                     rule = $( '#ctc_rule_menu_selected' ).text(), 
                     html = '<div class="ctc-input-row clearfix" id="ctc_rule_row_' + rule + '">' + "\n";
                 //console.log( 'rule: ' + rule );
-                if ( !self.is_empty( res.data ) ) {
+                if ( !self.mt( res.data ) ) {
                     $.each( res.data, function( valid, value ) {
                         var parentObj = self.decode_value( rule, value );
                         html += '<div class="ctc-parent-row clearfix"'
@@ -1102,12 +1175,12 @@
             val_qry: function( res ) {
                 var self = this,
                     html = '';
-                if ( !self.is_empty( res.data ) ) {
+                if ( !self.mt( res.data ) ) {
                     $.each( res.data, function( rule, queries ) {
                         page_rule = rule;
                         $.each( queries, function( query, selectors ) {
                             html += '<h4 class="ctc-query-heading">' + query + '</h4>' + "\n";
-                            if ( !self.is_empty( selectors ) ) {
+                            if ( !self.mt( selectors ) ) {
                                 $.each( selectors, function( qsid, qsdata ) {
                                     html += self.input_row( qsid, rule, res.key, qsdata );
                                 } );
@@ -1181,7 +1254,7 @@
                     else $( '#ctc_theme_parnt-button' ).remove();
                     self.jquery_exception( exn, 'Parent Theme Menu' );
                 }
-                if ( self.is_empty( ctcAjax.themes.child ) ) {
+                if ( self.mt( ctcAjax.themes.child ) ) {
                     if ( $( '#ctc_child_name' ).length ) {
                         $( '#ctc_child_name' ).val( self.testname );
                         $( '#ctc_child_template' ).val( self.testslug );
@@ -1201,26 +1274,7 @@
                     }
                 }
             }
-            if ( self.is_empty( self.jquery_err ) ){
-                // bind event handlers
-                // these elements get replaced so use delegated events
-                
-                /*
-                $( '#ctc_main' ).on( 'focus', '.color-picker', function() { //'.ctc-option-panel-container'
-                    //set_notice( '' )
-                    try {
-                        $( '.color-picker' ).not( this ).iris( 'hide' );
-                        $( this ).iris( 'toggle' );
-                        $( '.iris-picker' ).css( {'position':'absolute', 'z-index':10} );
-                    } catch ( exn ) {
-                        self.jquery_exception( exn, 'Iris Color Picker' );
-                    }
-                } );
-                
-                $( '#ctc_main' ).on( 'change', '.ctc-child-value, input[type=checkbox]', function() {
-                    self.coalesce_inputs( this );
-                } );
-                */
+            if ( self.mt( self.jquery_err ) ){
                 $( '#ctc_main' ).on( 'click', '.ctc-selector-handle', function( e ) {
                     //'.ctc-option-panel-container'
                     e.preventDefault();
@@ -1230,7 +1284,7 @@
                     var id = $( this ).attr( 'id' ).toString().replace( '_close', '' ),
                         parts = id.toString().match( /_([^_]+)_(\d+)$/ );
                     if ( $( '#' + id + '_container' ).is( ':hidden' ) ) {
-                        if ( !self.is_empty( parts[ 1 ] ) && !self.is_empty( parts[ 2 ] ) ) {
+                        if ( !self.mt( parts[ 1 ] ) && !self.mt( parts[ 2 ] ) ) {
                             rule = parts[ 1 ];
                             valid = parts[ 2 ];
                             // retrieve selectors / values for individual value
@@ -1257,12 +1311,12 @@
                 } );
                 $( '#ctc_main' ).on( 'click', '#ctc_copy_selector', function( e ) {
                     var txt = $( '#ctc_sel_ovrd_selector_selected' ).text().trim();
-                    if ( !self.is_empty( txt ) )
+                    if ( !self.mt( txt ) )
                         $( '#ctc_new_selectors' ).val( $( '#ctc_new_selectors' ).val() + "\n" + txt + " {\n\n}" );
                 } );
                 $( '#ctc_configtype' ).on( 'change', function( e ) {
                     var val = $( this ).val();
-                    if ( self.is_empty( val ) || 'theme' == val ) {
+                    if ( self.mt( val ) || 'theme' == val ) {
                         $( '.ctc-theme-only, .ctc-themeonly-container' ).removeClass( 'ctc-disabled' );
                         $( '.ctc-theme-only, .ctc-themeonly-container input' ).prop( 'disabled', false );
                         try {
@@ -1373,7 +1427,11 @@
         current_query:  'base',
         current_qsid:   null,
         current_qsdata: {},
-        jquery_err:     []
+        jquery_err:     [],
+        color_regx:     '\\s+(\\#?\\w+|rgba?\\([\\d., ]+?\\)|hsla?\\([\\d%., ]+?\\))',
+        border_regx:    '(\\d\\w+)\\s+(\\w+)',
+        grad_regx:      '(\\w+)'
+
     };
 } ( jQuery ) );
 

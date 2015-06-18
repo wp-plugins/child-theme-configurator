@@ -283,7 +283,7 @@
             applyOptions();
 
             if (shouldReplace) {
-                boundElement.after(replacer).hide();
+                boundElement.after(replacer);//.hide();
             }
 
             if (!allowEmpty) {
@@ -305,7 +305,7 @@
 
             updateSelectionPaletteFromStorage();
 
-            offsetElement.bind("click.spectrum touchstart.spectrum", function (e) {
+            offsetElement.on("click.spectrum touchstart.spectrum", function (e) {
                 if (!disabled) {
                     toggle();
                 }
@@ -327,9 +327,13 @@
             // Handle user typed input
             textInput.change(setFromTextInput);
             textInput.bind("paste", function () {
+                //console.log( 'paste event' );
                 setTimeout(setFromTextInput, 1);
             });
-            textInput.keydown(function (e) { if (e.keyCode == 13) { setFromTextInput(); } });
+            textInput.keydown(function (e) { if (e.keyCode == 13) { 
+                //console.log( 'return event' );
+                setFromTextInput(); 
+            } });
 
             cancelButton.text(opts.cancelText);
             cancelButton.bind("click.spectrum", function (e) {
@@ -438,12 +442,14 @@
             }, dragStart, dragStop);
 
             if (!!initialColor) {
+                console.log( 'initialColor: ' + initialColor );
                 set(initialColor);
-
+                currentPreferredFormat = preferredFormat = tinycolor(initialColor).getFormat(); // changed from ||
                 // In case color was black - update the preview UI and set the format
                 // since the set function will not run (default color is black).
+                //console.log( 'initialize:  calling updateUI...' );
                 updateUI();
-                currentPreferredFormat = preferredFormat || tinycolor(initialColor).format;
+                //currentPreferredFormat = preferredFormat || tinycolor(initialColor).format; 
 
                 addColorToSelectionPalette(initialColor);
             }
@@ -575,17 +581,19 @@
             boundElement.trigger('dragstop.spectrum', [ get() ]);
         }
 
-        function setFromTextInput() {
-
+        function setFromTextInput( e ) {
+            //console.log( 'setFromTextInput' );
+            //console.log( e );
             var value = textInput.val();
-
             if ((value === null || value === "") && allowEmpty) {
                 set(null);
                 updateOriginalInput(true);
             }
             else {
                 var tiny = tinycolor(value);
+                //console.log( 'setFromTextInput: ' + tiny.getFormat() );
                 if (tiny.isValid()) {
+                    preferredFormat = currentPreferredFormat = tiny.getFormat();
                     set(tiny);
                     updateOriginalInput(true);
                 }
@@ -593,6 +601,8 @@
                     textInput.addClass("sp-validation-error");
                 }
             }
+            //console.log( 'setFromTextInput: ' + value );
+            //console.log( 'setFromTextInput: ' + currentPreferredFormat );
         }
 
         function toggle() {
@@ -685,6 +695,7 @@
             if (tinycolor.equals(color, get())) {
                 // Update UI just in case a validation error needs
                 // to be cleared.
+                //console.log( 'set ( no change ):  calling updateUI...' );
                 updateUI();
                 return;
             }
@@ -702,6 +713,7 @@
                 currentValue = newHsv.v;
                 currentAlpha = newHsv.a;
             }
+            //console.log( 'set ( newColor ):  calling updateUI...' );
             updateUI();
 
             if (newColor && newColor.isValid() && !ignoreFormatChange) {
@@ -752,7 +764,7 @@
                     format = "rgb";
                 }
             }
-
+            //console.log( 'updateUI: format: ' + format );
             var realColor = get({ format: format }),
                 displayColor = '';
 
@@ -801,6 +813,7 @@
 
             // Update the text entry input as it changes happen
             if (opts.showInput) {
+                //console.log( 'updateUI: displayColor: ' + displayColor );
                 textInput.val(displayColor);
             }
 
@@ -861,7 +874,6 @@
                 displayColor = '',
                 hasChanged = !tinycolor.equals(color, colorOnShow),
                 format = currentPreferredFormat;
-
             if (color) {
                 /**
                  * This is pulled from UpdateUI
@@ -872,8 +884,14 @@
                         format = "rgb";
                     }
                 }
-
                 displayColor = color.toString(format);
+                //console.log( 'updateOriginalInput: ' + ' format: ' + format );
+                //console.log( 'currentPreferredFormat: ' + currentPreferredFormat);
+                //console.log( 'colorOnShow: ' + colorOnShow );
+                //console.log( 'displayColor: ' + displayColor );
+                //console.log( 'hasChanged: ' + hasChanged );
+                //console.log( 'isInput: ' + isInput );
+                //console.log( 'fireCallback: ' + fireCallback );
                 // Update the selection palette with the current color
                 addColorToSelectionPalette(color);
             }
