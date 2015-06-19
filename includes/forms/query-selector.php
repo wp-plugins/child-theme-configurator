@@ -51,7 +51,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
       </div>
       <div class="ctc-input-row clearfix" id="ctc_sel_ovrd_rule_header" style="display:none">
         <div class="ctc-input-cell"> <strong>
-          <?php _e( 'Rule', 'chld_thm_cfg' ); ?>
+          <?php _e( 'Property', 'chld_thm_cfg' ); ?>
           </strong> </div>
         <div class="ctc-input-cell"> <strong>
           <?php _e( 'Parent Value', 'chld_thm_cfg' ); ?>
@@ -63,7 +63,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
       <div id="ctc_sel_ovrd_rule_inputs" style="display:none"> </div>
       <div class="ctc-input-row clearfix" id="ctc_sel_ovrd_new_rule" style="display:none">
         <div class="ctc-input-cell"> <strong>
-          <?php _e( 'New Rule', 'chld_thm_cfg' ); ?>
+          <?php _e( 'New Property', 'chld_thm_cfg' ); ?>
           </strong> </div>
         <div class="ctc-input-cell">
           <div class="ui-widget">

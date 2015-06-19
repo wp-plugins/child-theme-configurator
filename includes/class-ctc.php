@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Main Controller Class
-    Version: 1.7.4.2
+    Version: 1.7.5
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -108,8 +108,8 @@ class ChildThemeConfiguratorAdmin {
     }
 
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.4.2' );
-        wp_enqueue_style( 'ctc-spectrum', CHLD_THM_CFG_URL . 'css/spectrum.css', array(), '1.7.4.2' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.5' );
+        wp_enqueue_style( 'ctc-spectrum', CHLD_THM_CFG_URL . 'css/spectrum.css', array(), '1.7.5' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -117,9 +117,9 @@ class ChildThemeConfiguratorAdmin {
             wp_enqueue_script( 'jquery-ui-selectmenu', CHLD_THM_CFG_URL . 'js/selectmenu.min.js', 
                 array( 'jquery','jquery-ui-core','jquery-ui-position' ), FALSE, TRUE );
         endif;
-        wp_enqueue_script( 'ctc-spectrum', CHLD_THM_CFG_URL . 'js/spectrum.js', array( 'jquery' ), FALSE, TRUE );
+        wp_enqueue_script( 'ctc-spectrum', CHLD_THM_CFG_URL . 'js/spectrum.min.js', array( 'jquery' ), FALSE, TRUE );
         wp_enqueue_script( 'ctc-thm-cfg-ctcgrad', CHLD_THM_CFG_URL . 'js/ctcgrad.min.js', array( 'jquery' ), FALSE, TRUE );
-        wp_enqueue_script( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'js/chld-thm-cfg.js',
+        wp_enqueue_script( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'js/chld-thm-cfg.min.js',
             array(
                 'jquery-ui-autocomplete', 
                 'jquery-ui-selectmenu',   
@@ -154,7 +154,7 @@ class ChildThemeConfiguratorAdmin {
             'important_txt'     => __( '<span style="font-size:10px">!</span>',                             'chld_thm_cfg' ),
             'selector_txt'      => __( 'Selectors',                                                         'chld_thm_cfg' ),
             'close_txt'         => __( 'Close',                                                             'chld_thm_cfg' ),
-            'edit_txt'          => __( 'All Properties',                                                    'chld_thm_cfg' ),
+            'edit_txt'          => __( 'Edit Selector',                                                     'chld_thm_cfg' ),
             'cancel_txt'        => __( 'Cancel',                                                            'chld_thm_cfg' ),
             'rename_txt'        => __( 'Rename',                                                            'chld_thm_cfg' ),
             'css_fail_txt'      => __( 'The stylesheet cannot be displayed.',                               'chld_thm_cfg' ),

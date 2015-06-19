@@ -40,25 +40,25 @@ This option imports the parent stylesheet from the child stylesheet. This enable
 <iframe src="//fast.wistia.net/embed/iframe/c0fbu8jhtj" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width="640" height="360"></iframe><!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_query_selector">Query/Selector Tab</h3>
-<p>There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by <strong>selector</strong> and by <strong>rule</strong>. If you wish to change a specific selector (e.g., h1), use the "Query/Selector" tab. If you have a specific value you wish to change site-wide (e.g., the color of the type), use the "Rule/Value" tab.</p>
+<p>There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by <strong>selector</strong> and by <strong>property</strong>. If you wish to change a specific selector (e.g., h1), use the "Query/Selector" tab. If you have a specific value you wish to change site-wide (e.g., the color of the type), use the "Property/Value" tab.</p>
 <p>The Query/Selector tab lets you find specific selectors and edit them. First, find the query that contains the selector you wish to edit by typing in the <strong>Query</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. Selectors are in the <strong>base</strong> query by default.</p>
 <p>Next, find the selector by typing in the <strong>Selector</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.</p>
-<p>This will load all of the rules for that selector with the Parent values on the left and the Child values inputs on the right. Any existing child values will be automatically populated. There is also a Sample preview that displays the combination of Parent and Child overrides. Note that the <strong>border</strong> and <strong>background-image</strong> get special treatment.</p>
+<p>This will load all of the properties for that selector with the Parent values on the left and the Child values inputs on the right. Any existing child values will be automatically populated. There is also a Sample preview that displays the combination of Parent and Child overrides. Note that the <strong>border</strong> and <strong>background-image</strong> get special treatment.</p>
 <p>The "Order" field contains the original sequence of the selector in the parent theme stylesheet. You can change the selector order sequence by entering a lower or higher number in the "Order" field. You can also force style overrides (so called "!important" flag) by checking the "!" box next to each input. Please use judiciously.</p>
 <p>Click "Save" to update the child stylesheet and save your changes to the WordPress admin.</p>
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_new_styles">Adding New Styles</h3>
-<p>If you wish to add additional rules to a given selector, first load the selector using the Query/Selector tab. Then find the rule you wish to override by typing in the <strong>New Rule</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.</p>
+<p>If you wish to add additional properties to a given selector, first load the selector using the Query/Selector tab. Then find the property you wish to override by typing in the <strong>New Property</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.</p>
 <p>If you wish to add completely new selectors, or even new @media queries, you can enter free-form CSS in the "Raw CSS" textarea. Be aware that your syntax must be correct (i.e., balanced curly braces, etc.) for the parser to load the new styles. You will know it is invalid because a red "X" will appear next to the save button.</p>
-<p>If you prefer to use shorthand syntax for rules and values instead of the inputs provided by the Child Theme Configurator, you can enter them here as well. The parser will convert your input into normalized CSS code automatically.</p>
+<p>If you prefer to use shorthand syntax for properties and values instead of the inputs provided by the Child Theme Configurator, you can enter them here as well. The parser will convert your input into normalized CSS code automatically.</p>
 <!-- END tab --> 
 <!-- BEGIN tab -->
-<h3 id="ctc_rule_value">Rule/Value Tab</h3>
-<p>There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by <strong>selector</strong> and by <strong>rule</strong>. If you wish to change a specific selector (e.g., h1), use the "Query/Selector" tab. If you have a specific value you wish to change site-wide (e.g., the color of the type), use the "Rule/Value" tab.</p>
-<p>The Rule/Value tab lets you find specific values for a given rule and then edit that value for individual selectors that use that rule/value combination. First, find the rule you wish to override by typing in the <strong>Rule</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.</p>
-<p>This will load all of the unique values that exist for that rule in the parent stylesheet with a Sample preview for that value. If there are values that exist in the child stylesheet that do not exist in the parent stylesheet, they will be displayed as well.</p>
-<p>For each unique value, click the "Selectors" link to view a list of selectors that use that rule/value combination, grouped by query with a Sample preview of the value and inputs for the child value. Any existing child values will be automatically populated.</p>
+<h3 id="ctc_property_value">Property/Value Tab</h3>
+<p>There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by <strong>selector</strong> and by <strong>property</strong>. If you wish to change a specific selector (e.g., h1), use the "Query/Selector" tab. If you have a specific value you wish to change site-wide (e.g., the color of the type), use the "Property/Value" tab.</p>
+<p>The Property/Value tab lets you find specific values for a given property and then edit that value for individual selectors that use that property/value combination. First, find the property you wish to override by typing in the <strong>Property</strong> autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.</p>
+<p>This will load all of the unique values that exist for that property in the parent stylesheet with a Sample preview for that value. If there are values that exist in the child stylesheet that do not exist in the parent stylesheet, they will be displayed as well.</p>
+<p>For each unique value, click the "Selectors" link to view a list of selectors that use that property/value combination, grouped by query with a Sample preview of the value and inputs for the child value. Any existing child values will be automatically populated.</p>
 <p>Click "Save" to update the child stylesheet and save your changes to the WordPress admin.</p>
 <!-- END tab --> 
 <!-- BEGIN tab -->
@@ -141,7 +141,7 @@ This option imports the parent stylesheet from the child stylesheet. This enable
 <h5 id="existing_parent">How do I move changes I have already made to my theme into a Child Theme?</h5>
 <p><a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/how-to-use/#child_from_modified_parent" class="scroll-to">Follow these steps</a>. </p>
 <h5 id="web_fonts">How do I add Web Fonts?</h5>
-<p>The easiest method is to paste the @import code provided by <a href="http://www.google.com/fonts" title="Google Fonts">Google</a>, <a href="http://www.fontsquirrel.com/" title="Font Squirrel">Font Squirrel</a> or any other Web Font site into the Web Fonts tab. The fonts will then be available to use as a value of the <strong>font-family</strong> rule. Be sure you understand the license for any embedded fonts. </p>
+<p>The easiest method is to paste the @import code provided by <a href="http://www.google.com/fonts" title="Google Fonts">Google</a>, <a href="http://www.fontsquirrel.com/" title="Font Squirrel">Font Squirrel</a> or any other Web Font site into the Web Fonts tab. The fonts will then be available to use as a value of the <strong>font-family</strong> property. Be sure you understand the license for any embedded fonts. </p>
 <p>You can also create a secondary stylesheet that contains @font-face rules and import it using the Web Fonts tab. </p>
 <h5 id="plugin">Does it work with plugins?</h5>
 <p>We offer a premium extension to let you easily modify styles for any WordPress Plugin installed on your website. The Child Theme Configurator Plugin Extension scans your plugins and allows you to create custom stylesheets in your Child Theme. <a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/child-theme-configurator-pro/" title="Take Control of your Plugin Styles with Child Theme Configurator Plugin Extension for WordPress">Learn more <i class="genericon genericon-next"></i></a> 
@@ -168,15 +168,15 @@ The plugin only loads the bulk of the code in the admin when you are using the t
 <h5 id="functions">Where are the .php files?</h5>
 <p>The configurator automatically adds a blank functions.php file to the child theme directory. You can copy parent theme template files using the Files tab. If you want to create new templates and directories you will have to create/upload them manually via FTP or SSH. Remember that a child theme will automatically inherit the parent theme's templates unless they also exist in the child theme directory. Only copy templates that you intend to customize.</p>
 <h5 id="specific_color">How do I change a specific color/font style/background?</h5>
-<p>You can override a specific value globally using the Rule/Value tab. See Rule/Value, above.</p>
+<p>You can override a specific value globally using the Property/Value tab. See Property/Value, above.</p>
 <h5 id="add_styles">How do I add styles that aren't in the Parent Theme?</h5>
 <p>You can add queries and selectors using the "Raw CSS" textarea on the Query/Selector tab. See Query/Selector, above. </p>
 <h5 id="add_styles">How do I remove a style from the Parent Theme?</h5>
-<p>You shouldn't really "remove" a style from the Parent. You can, however, set the rule to "inherit," "none," or zero (depending on the rule). This will negate the Parent value. Some experimentation may be necessary.</p>
+<p>You shouldn't really "remove" a style from the Parent. You can, however, set the property to "inherit," "none," or zero (depending on the property). This will negate the Parent value. Some experimentation may be necessary.</p>
 <h5 id="remove_styles">How do I remove a style from the Child Theme?</h5>
-<p>Delete the value from the input for the rule you wish to remove. The Child Theme Configurator only adds overrides for rules that contain values. </p>
+<p>Delete the value from the input for the property you wish to remove. The Child Theme Configurator only adds overrides for properties that contain values. </p>
 <h5 id="important_flag">How do I set the !important flag?</h5>
-<p>We always recommend relying on good cascading design over global overrides. To that end, you have ability to change the load order of child theme styles by entering a value in the "Order" field. And yes, you can now set rules as important by checking the "!" box next to each input. Please use judiciously. </p>
+<p>We always recommend relying on good cascading design over global overrides. To that end, you have ability to change the load order of child theme styles by entering a value in the "Order" field. You can set properties as important by checking the "!" box next to each input. Please use judiciously. </p>
 <h5 id="gradients">How do I create cross-browser gradients?</h5>
 <p>The Child Theme Configurator uses a standardized syntax for gradients and only supports two-color gradients without intermediate stops. The inputs consist of origin (e.g., top, left, 135deg, etc.), start color and end color. The browser-specific syntax is generated automatically when you save these values. See Caveats, below, for more information. </p>
 <h5 id="responsive">How do I make my Theme responsive?</h5>
@@ -192,9 +192,9 @@ The plugin only loads the bulk of the code in the admin when you are using the t
 <ul>
   <li id="parent_theme"><strong>Parent Theme</strong> The WordPress Theme you wish to edit. WordPress first loads the Child Theme, then loads the Parent Theme. If a style exists in the Child Theme, it overrides the Parent Theme.</li>
   <li id="child_theme"><strong>Child Theme</strong> New Theme based on Parent Theme. You can create any number of Child Themes from a single Parent Theme.</li>
-  <li id="class"><strong>Class</strong> A term used to organize objects. For example, a &lt;div&gt; might be assigned the "blue-text" class. The stylesheet might then assign the "color: blue;" rule to members of the "blue-text" class. Thus, the &lt;div&gt; would display text as blue in the browser.</li>
+  <li id="class"><strong>Class</strong> A term used to organize objects. For example, a &lt;div&gt; might be assigned the "blue-text" class. The stylesheet might then assign "color: blue;" to members of the "blue-text" class. Thus, the &lt;div&gt; would display text as blue in the browser.</li>
   <li id="selector"><strong>Selector</strong> One or more html elements, classes, ids or other terms used to identify groups of objects.</li>
-  <li id="rule"><strong>Rule</strong> One of many standardized attributes used to tell the browser how to display objects matching a given selector. Examples are <strong>color</strong>, <strong>background-image</strong> and <strong>font-size</strong>.</li>
+  <li id="property"><strong>Property</strong> One of many standardized terms used to tell the browser how to display objects matching a given selector. Examples are <strong>color</strong>, <strong>background-image</strong> and <strong>font-size</strong>.</li>
   <li id="at-rule"><strong>At-rule</strong> CSS browser instruction to extend default functionality. The Child Theme Configurator supports two At-rules:
     <ul>
       <li id="import"><strong>@import</strong> Instructs the browser to load additional CSS information from an external source.</li>

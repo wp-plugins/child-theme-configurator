@@ -2,6 +2,7 @@
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
 // License: MIT
+// Modifications for CTC (c) 2015 LIlaea Media LLC
 
 (function (factory) {
     "use strict";
@@ -442,9 +443,8 @@
             }, dragStart, dragStop);
 
             if (!!initialColor) {
-                console.log( 'initialColor: ' + initialColor );
+                //console.log( 'initialColor: ' + initialColor );
                 set(initialColor);
-                currentPreferredFormat = preferredFormat = tinycolor(initialColor).getFormat(); // changed from ||
                 // In case color was black - update the preview UI and set the format
                 // since the set function will not run (default color is black).
                 //console.log( 'initialize:  calling updateUI...' );
@@ -700,7 +700,7 @@
                 return;
             }
 
-            var newColor, newHsv;
+            var newColor, newHsv, newFormat;
             if (!color && allowEmpty) {
                 isEmpty = true;
             } else {
@@ -717,7 +717,11 @@
             updateUI();
 
             if (newColor && newColor.isValid() && !ignoreFormatChange) {
-                currentPreferredFormat = preferredFormat || newColor.getFormat();
+                newFormat = newColor.getFormat();
+                if ( 'name' === newFormat ) {
+                    preferredFormat = newFormat;
+                }
+                currentPreferredFormat = preferredFormat || newFormat;
             }
         }
 
@@ -985,7 +989,9 @@
             offset: setOffset,
             set: function (c) {
                 set(c);
-                updateOriginalInput();
+                // for CTC, don't update original input
+                // because set is called from original input
+                //updateOriginalInput();
             },
             get: get,
             destroy: destroy,

@@ -16,7 +16,7 @@ $active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'parent_child_options';
 <?php _e( 'Query/Selector', 'chld_thm_cfg' ); ?>
 </a><!----><a id="rule_value_options" href="" 
                     class="nav-tab<?php echo 'rule_value_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
-<?php _e( 'Rule/Value', 'chld_thm_cfg' ); ?>
+<?php _e( 'Property/Value', 'chld_thm_cfg' ); ?>
 </a><!----><a id="import_options" href="" 
                     class="nav-tab<?php echo 'import_options' == $active_tab ? ' nav-tab-active' : ''; ?>" <?php echo $hidechild; ?>>
 <?php _e( 'Web Fonts', 'chld_thm_cfg' ); ?>

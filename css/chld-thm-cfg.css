@@ -134,7 +134,9 @@ a.ctc-recent-tab {
     margin: 0 2% 0 0;/*color:#7f7f7f;
     border: 1px solid #ddd;*/
 }
-
+.ctc-selector-inner-container .ctc-swatch.ctc-specific {
+    max-width:13%;
+}
 .ctc-parent-row {
     clear: both;
     position: relative;
@@ -151,6 +153,9 @@ a.ctc-recent-tab {
     max-width: 350px;
     margin-right: 2%;
     word-wrap: break-word;
+}
+.ctc-selector-inner-container .ctc-input-cell {
+    width:35%;
 }
 .ctc-input-cell-wide {
     display: block;
@@ -175,8 +180,8 @@ a.ctc-recent-tab {
 .ctc-save-input {
 }
 
-.ctc-button-cell, .ctc-input-cell.ctc-button-cell {
-    /*width: 85px;*/
+.ctc-selector-inner-container .ctc-button-cell, .ctc-selector-inner-container .ctc-input-cell.ctc-button-cell {
+    width: 8%;
 }
 
 .ctc-textarea-button-cell {
