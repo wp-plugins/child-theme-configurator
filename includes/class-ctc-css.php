@@ -1358,7 +1358,7 @@ class ChildThemeConfiguratorCSS {
      */
     function encode_gradient( $value ) {
         // don't try this at home, kids
-        $regex = '#gradient[^\)]*?\((((to )?(top|bottom|left|right)?( (top|bottom|left|right))?|\d+deg),)?([^\w\)]*[\'"]?(\#\w{3,8}|rgba?\([\d., ]+?\)|hsla?\([\d%., ]+?\)|[a-z]+)( [\d.]+%)?)([^\w\)]*[\'"]?(\#\w{3,8}|rgba?\([\d., ]+?\)|hsla?\([\d%., ]+?\)|[a-z]+)( [\d.]+%)?)([^\w\)]*gradienttype=[\'"]?(\d)[\'"]?)?[^\)]*\)#i';
+        $regex = '#gradient[^\)]*?\((((to )?(top|bottom|left|right)?( (top|bottom|left|right))?|\d+deg),)?([^\w\)]*[\'"]?(\#\w{3,8}|rgba?\([\d., ]+?\)|hsla?\([\d%., ]+?\)|[a-z]+)( [\d.]+%)?)([^\w\)]*[\'"]?(\#\w{3,8}|rgba?\([\d., ]+?\)|hsla?\([\d%., ]+?\)|[a-z]+)( [\d.]+%)?)([^\w\)]*gradienttype=[\'"]?(\d)[\'"]?)?[^\w\)]*\)#i';
         $param = $parts = array();
         preg_match( $regex, $value, $parts );
         if ( empty( $parts[ 14 ] ) ):
