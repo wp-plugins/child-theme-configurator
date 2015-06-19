@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, child themes, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.2
-Stable tag: 1.7.4.2
+Stable tag: 1.7.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -223,7 +223,7 @@ The Child Theme Configurator automatically adds a blank functions.php file to th
 
 = How do I change a specific color/font style/background? = 
 
-You can override a specific CSS value globally using the Rule/Value tab. See Rule/Value, above.
+You can override a specific CSS value globally using the Property/Value tab. See Property/Value, above.
 
 = How do I add styles that aren't in the Parent Theme? = 
 
@@ -263,7 +263,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 1. Parent/Child tab
 2. Parent/Child tab with parent theme menu open
 3. Query/Selector tab
-4. Rule/Value tab
+4. Property/Value tab
 5. Web Fonts tab
 6. Parent CSS tab
 7. Files tab
@@ -461,7 +461,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Bugs fixed: "star hack" rules no longer throwing js error. Important flag now works on borders and gradients.
 
 = 1.2.0 =
-* New features: Link to Query/Selector tab from specific Rule/Value selector, new rule focus on adding new rule. Bugs fixed: clear Query/Selector inputs when loaded selector is empty, use latest min.js script.
+* New features: Link to Query/Selector tab from specific Property/Value selector, new rule focus on adding new rule. Bugs fixed: clear Query/Selector inputs when loaded selector is empty, use latest min.js script.
 
 = 1.1.9 =
 * Added check for writability before attempting to create child theme files to avoid fatal error on servers not running suEXEC. Fixed a bug in the ctc_update_cache function that was throwing a fatal JS error when new media queries were saved via the Raw CSS input. Configurator now adds functions.php file to child theme when it does not exist.
@@ -516,7 +516,7 @@ Version 1.7.3 now converts @import statements to link tags and checks parent the
 
 == Override Parent Styles ==
 
-There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by CSS selector and by rule. If you wish to change a specific CSS selector (e.g., h1), use the "Query/Selector" tab. If you have a specific CSS value you wish to change site-wide (e.g., the color of the type), use the "Rule/Value" tab.
+There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by CSS selector and by rule. If you wish to change a specific CSS selector (e.g., h1), use the "Query/Selector" tab. If you have a specific CSS value you wish to change site-wide (e.g., the color of the type), use the "Property/Value" tab.
 
 = Query/Selector Tab =
 
@@ -531,15 +531,15 @@ Click "Save" to update the child theme stylesheet and save your changes to the W
 
 == Adding New Styles ==
 
-If you wish to add additional rules to a given CSS selector, first load the selector using the Query/Selector tab. Then find the rule you wish to override by typing in the New Rule autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.
+If you wish to add additional rules to a given CSS selector, first load the selector using the Query/Selector tab. Then find the rule you wish to override by typing in the New Property autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.
 
 If you wish to add completely new CSS selectors, or even new @media queries, you can enter free-form CSS in the "Raw CSS" textarea. Be aware that your syntax must be correct (i.e., balanced curly braces, etc.) for the parser to load the new styles. You will know it is invalid because a red "X" will appear next to the save button.
 
 If you prefer to use shorthand syntax for rules and values instead of the inputs provided by the Child Theme Configurator, you can enter them here as well. The parser will convert your input into normalized CSS code automatically.
 
-= Rule/Value Tab =
+= Property/Value Tab =
 
-The Rule/Value tab lets you find specific values for a given rule and then edit that value for individual CSS selectors that use that rule/value combination. First, find the rule you wish to override by typing in the Rule autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.
+The Property/Value tab lets you find specific values for a given rule and then edit that value for individual CSS selectors that use that rule/value combination. First, find the rule you wish to override by typing in the Property autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.
 
 This will load all of the unique values that exist for that rule in the parent theme stylesheet with a Sample preview for that value. If there are values that exist in the child theme stylesheet that do not exist in the parent stylesheet, they will be displayed as well.
 
@@ -597,7 +597,7 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 * No @font-face rules. The Child Theme Configurator plugin only supports @media and @import. If you need other @rules, put them in a separate stylesheet and import them into the Child Theme stylesheet.
 * The Child Theme Configurator plugin works with the vast majority of CSS rules, however some obscure options are not auto-prefixed.
 * The Child Theme Configurator plugin does not support the legacy webkit gradient.
-* CSS Rules are auto-discovered. The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. You can always add new rules using the "Raw CSS" text area.
+* CSS Properties are auto-discovered. The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. You can always add new rules using the "Raw CSS" text area.
 * Multiple versions of the same rule in a single selector are not supported, with a few exceptions. The Child Theme Configurator plugin will automatically generate vendor-prefix variations for background-image, border-radius, transform, transition, and others.
 
 == Documentation ==

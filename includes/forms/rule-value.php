@@ -1,6 +1,6 @@
 <?php  
 if ( !defined( 'ABSPATH' ) ) exit;
-// Rule/Value Panel
+// Property/Value Panel
         $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
 ?>
 
@@ -10,7 +10,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
     <div class="ctc-input-row clearfix" id="ctc_input_row_rule_menu">
       <div class="ctc-input-cell"> <strong>
-        <?php _e( 'Rule', 'chld_thm_cfg' ); ?>
+        <?php _e( 'Property', 'chld_thm_cfg' ); ?>
         </strong> </div>
       <div class="ctc-input-cell" id="ctc_rule_menu_selected">&nbsp;</div>
       <div id="ctc_status_rule_val"></div>

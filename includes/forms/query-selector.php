@@ -43,13 +43,15 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
           <input type="submit" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
             name="ctc_save_query_selector" value="<?php _e( 'Save Child Values', 'chld_thm_cfg' ); ?>" disabled />
+          <input type="button" class="button ctc-save-input" id="ctc_delete_query_selector" 
+            name="ctc_delete_query_selector" value="<?php _e( 'Delete Child Values', 'chld_thm_cfg' ); ?>" disabled />
           <input type="hidden" id="ctc_sel_ovrd_qsid" 
             name="ctc_sel_ovrd_qsid" value="" />
         </div>
       </div>
       <div class="ctc-input-row clearfix" id="ctc_sel_ovrd_rule_header" style="display:none">
         <div class="ctc-input-cell"> <strong>
-          <?php _e( 'Rule', 'chld_thm_cfg' ); ?>
+          <?php _e( 'Property', 'chld_thm_cfg' ); ?>
           </strong> </div>
         <div class="ctc-input-cell"> <strong>
           <?php _e( 'Parent Value', 'chld_thm_cfg' ); ?>
@@ -61,7 +63,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
       <div id="ctc_sel_ovrd_rule_inputs" style="display:none"> </div>
       <div class="ctc-input-row clearfix" id="ctc_sel_ovrd_new_rule" style="display:none">
         <div class="ctc-input-cell"> <strong>
-          <?php _e( 'New Rule', 'chld_thm_cfg' ); ?>
+          <?php _e( 'New Property', 'chld_thm_cfg' ); ?>
           </strong> </div>
         <div class="ctc-input-cell">
           <div class="ui-widget">
