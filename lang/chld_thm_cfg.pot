@@ -1,10 +1,10 @@
-# Copyright (C) 2015 Lilaea Media LLC 
+# Copyright (C) 2015 Child Theme Configurator
 # This file is distributed under the same license as the Child Theme Configurator package.
 msgid ""
 msgstr ""
 "Project-Id-Version: Child Theme Configurator 1.7.5\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/child-theme-configurator\n"
-"POT-Creation-Date: 2015-06-19 16:34:54+00:00\n"
+"POT-Creation-Date: 2015-06-21 07:39:17+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -232,39 +232,39 @@ msgstr ""
 msgid "Could not set write permissions."
 msgstr ""
 
-#: includes/class-ctc.php:1228
+#: includes/class-ctc.php:1230
 msgid "There were errors while resetting permissions."
 msgstr ""
 
-#: includes/class-ctc.php:1270
+#: includes/class-ctc.php:1272
 msgid "Could not upload file."
 msgstr ""
 
-#: includes/class-ctc.php:1353
+#: includes/class-ctc.php:1355
 msgid ""
 "The child theme is in read-only mode and Child Theme Configurator cannot "
 "apply changes. Click to see options"
 msgstr ""
 
-#: includes/class-ctc.php:1356
+#: includes/class-ctc.php:1358
 msgid ""
 "<li>Temporarily set write permissions by clicking the button below. When you "
 "are finished editing, revert to read-only by clicking \"Make read-only\" "
 "under the \"Files\" tab.</li>"
 msgstr ""
 
-#: includes/class-ctc.php:1359
+#: includes/class-ctc.php:1361
 msgid "Make files writable"
 msgstr ""
 
-#: includes/class-ctc.php:1360
+#: includes/class-ctc.php:1362
 msgid ""
 "<li><a target=\"_blank\"  href=\"http://codex.wordpress.org/Editing_wp-"
 "config.php#WordPress_Upgrade_Constants\" title=\"Editin wp-config.php\">Add "
 "your FTP/SSH credentials to the WordPress config file</a>.</li>"
 msgstr ""
 
-#: includes/class-ctc.php:1362
+#: includes/class-ctc.php:1364
 msgid ""
 "<li><a target=\"_blank\" href=\"http://technet.microsoft.com/en-us/library/"
 "cc771170\" title=\"Setting Application Pool Identity\">Assign WordPress to "
@@ -272,18 +272,18 @@ msgid ""
 "li>"
 msgstr ""
 
-#: includes/class-ctc.php:1363
+#: includes/class-ctc.php:1365
 msgid ""
 "<li><a target=\"_blank\" href=\"http://codex.wordpress.org/"
 "Changing_File_Permissions\" title=\"Changing File Permissions\">Set write "
 "permissions on the server manually</a> (not recommended).</li>"
 msgstr ""
 
-#: includes/class-ctc.php:1365
+#: includes/class-ctc.php:1367
 msgid "<li>Run PHP under Apache with suEXEC (contact your web host).</li>"
 msgstr ""
 
-#: includes/class-ctc.php:1376
+#: includes/class-ctc.php:1378
 msgid ""
 "This Child Theme is not owned by your website account. It may have been "
 "created by a prior version of this plugin or by another program. Moving "
@@ -292,25 +292,25 @@ msgid ""
 "below."
 msgstr ""
 
-#: includes/class-ctc.php:1379
+#: includes/class-ctc.php:1381
 msgid "Correct Child Theme Permissions"
 msgstr ""
 
-#: includes/class-ctc.php:1386
+#: includes/class-ctc.php:1388
 msgid ""
 "Child Theme Configurator needs to update its interal data. Please set your "
 "preferences below and click \"Generate Child Theme Files\" to update your "
 "configuration."
 msgstr ""
 
-#: includes/class-ctc.php:1392
+#: includes/class-ctc.php:1394
 msgid ""
 "<strong>However, some styles could not be parsed due to memory limits.</"
 "strong> Try deselecting \"Additional Stylesheets\" below and click "
 "\"Generate/Rebuild Child Theme Files\". %sWhy am I seeing this?%s"
 msgstr ""
 
-#: includes/class-ctc.php:1401
+#: includes/class-ctc.php:1403
 msgid ""
 "Child Theme Configurator did not detect any configuration data because a "
 "previously configured Child Theme has been removed. Please set your "
@@ -376,7 +376,7 @@ msgid ""
 "experience."
 msgstr ""
 
-#: includes/forms/addl_panels.php:19 includes/help/help_en_US.php:212
+#: includes/forms/addl_panels.php:19 includes/help/help_en_US.php:217
 msgid "Learn more about CTC Pro"
 msgstr ""
 
@@ -668,7 +668,7 @@ msgid "Duplicate Theme Slug"
 msgstr ""
 
 #: includes/forms/parent-child.php:118 includes/forms/parent-child.php:212
-#: includes/forms/parent-child.php:227
+#: includes/forms/parent-child.php:226
 msgid "NOTE:"
 msgstr ""
 
@@ -777,11 +777,11 @@ msgstr ""
 msgid "This will overwrite child theme options you may have already set."
 msgstr ""
 
-#: includes/forms/parent-child.php:220
+#: includes/forms/parent-child.php:219
 msgid "Backup current stylesheet"
 msgstr ""
 
-#: includes/forms/parent-child.php:229
+#: includes/forms/parent-child.php:228
 msgid ""
 "This creates a copy of the current stylesheet before applying changes. You "
 "can remove old backup files using the Files tab."
@@ -803,7 +803,29 @@ msgstr ""
 msgid "Parse additional stylesheets"
 msgstr ""
 
-#: includes/forms/parent-child.php:289
+#: includes/forms/parent-child.php:290
+msgid "Please read before you click:"
+msgstr ""
+
+#: includes/forms/parent-child.php:291
+msgid ""
+"This plugin makes significant modifications to your child theme, to include "
+"changing CSS, removing comments and adding php functions."
+msgstr ""
+
+#: includes/forms/parent-child.php:292
+msgid "If you are using an existing Child Theme,"
+msgstr ""
+
+#: includes/forms/parent-child.php:292
+msgid "please consider using the Duplicate Child Theme option"
+msgstr ""
+
+#: includes/forms/parent-child.php:292
+msgid "before proceeding."
+msgstr ""
+
+#: includes/forms/parent-child.php:298
 msgid "Generate/Rebuild Child Theme Files"
 msgstr ""
 

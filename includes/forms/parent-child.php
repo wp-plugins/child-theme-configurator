@@ -214,7 +214,6 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <?php _e( 'This will overwrite child theme options you may have already set.', 'chld_thm_cfg' ); ?>
       </div>
     </div><?php endif; ?>
-    <?php if ( '' == $hidechild ): ?>
     <div class="ctc-input-row clearfix">
       <div class="ctc-input-cell"> <strong><label for="ctc_backup">
         <?php _e( 'Backup current stylesheet', 'chld_thm_cfg' ); ?>
@@ -229,6 +228,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <?php _e( 'This creates a copy of the current stylesheet before applying changes. You can remove old backup files using the Files tab.', 'chld_thm_cfg' ); ?>
       </div>
     </div>
+    <?php if ( '' == $hidechild ): ?>
     <div class="ctc-input-row clearfix">
       <div class="ctc-input-cell ctc-section-toggle" id="ctc_revert_css"> <strong>
         <?php _e( 'Reset/Restore from backup', 'chld_thm_cfg' ); ?>

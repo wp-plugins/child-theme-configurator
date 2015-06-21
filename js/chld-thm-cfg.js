@@ -838,6 +838,7 @@
         
         set_query: function( value ) {
             var self = this;
+            if ( self.is_empty( value ) ) return false;
             //console.log( 'set_query: ' + value );
             self.current_query = value;
             $( '#ctc_sel_ovrd_query' ).val( '' );
@@ -851,6 +852,7 @@
         
         set_selector: function( value, label ) {
             var self = this;
+            if ( self.is_empty( value ) ) return false;
             //console.log( 'set_selector: ' + value + ' label: ' + label );
             $( '#ctc_sel_ovrd_selector' ).val( '' );
             self.current_qsid = value;
@@ -862,6 +864,7 @@
         set_rule: function( value, label ) {
             //console.log( 'set_rule: ' + value + ' label: ' + label );
             var self = this;
+            if ( self.is_empty( value ) ) return false;
             $( '#ctc_rule_menu' ).val( '' );
             $( '#ctc_rule_menu_selected' ).text( label );
             $( '.ctc-rewrite-toggle' ).text( self.getxt( 'rename' ) );
@@ -1022,8 +1025,8 @@
             $.ajax( { 
                 url:        url,  
                 data:       data,
-                dataType:   'ctc_update' == data.action && 'qsid' == obj ? 'text' : ( self.is_empty( datatype ) ? 'json' : datatype ),  //
-                //   'ctc_update' == data.action && // 'rule_val' == obj ? 'text' : // 'qsid' == obj ? 'text' : 
+                dataType:   ( self.is_empty( datatype ) ? 'json' : datatype ), 
+                // 'ctc_update' == data.action && // 'rule_val' == obj ? 'text' : // 'qsid' == obj ? 'text' : 
                 // 'ctc_update' == data.action && 'qsid' == obj ? 'text' : 
                 type:       'POST'
             } ).done( function( response ) {
