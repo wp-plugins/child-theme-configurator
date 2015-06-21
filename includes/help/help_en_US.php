@@ -63,7 +63,11 @@ This option imports the parent stylesheet from the child stylesheet. This enable
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_imports">Web Fonts Tab</h3>
-<p>You can add additional stylesheets and web fonts by typing @import rules into the textarea on the Web Fonts tab. <strong>Important: do not import the parent theme stylesheet here. Use the &quot;Parent stylesheet handling&quot; option from the Parent/Child tab.</strong></p>
+<p>You can link additional stylesheets and web fonts by typing @import rules into the textarea on the Web Fonts tab.</p>
+<p><strong>Note:</strong> Child Theme Configurator no longer writes @import rules to the stylesheet. Instead, it uses the @import keyword to identify and enqueue them in the script queue. WordPress then converts them to &lt;link&gt; tags in the rendered HTML.</p>
+<p>Important: do not import the parent theme stylesheet here. Use the "Parent stylesheet handling" option from the Parent/Child tab.</p>
+<p>If you selected any stylesheets under “Parse additional stylesheets” when you created your child theme, those styles will be available to create overrides in the Child Theme stylesheet.</p>
+<p>WordPress will automatically load the additional stylesheets when it loads the parent theme, so you do not need to add @import rules for them here.</p>
 <p>Below is an example that loads a local custom stylesheet (you would have to add the "fonts" directory and stylesheet) as well as the web font "Open Sans" from Google Web Fonts:</p>
 <blockquote><pre><code>&#64;import url(fonts/stylesheet.css);
 &#64;import url(http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic);</code></pre></blockquote>
@@ -118,7 +122,8 @@ This option imports the parent stylesheet from the child stylesheet. This enable
 <code>[path/to/wordpress]/wp-content/themes/[child-theme]</code>
 
 <p>To prevent this in the future, always test your child themes with Live Preview before activating them.</p> 
-
+<h5 id="no-comments">How do I add comments?</h5>
+<p><strong>Arbitrary comments are not supported.</strong> Providing a high level of flexibility for previewing and modifying styles requires sophisticated parsing and data structures. Maintaining comments that bound to any particular element in the stylesheet is prohibitively expensive compared to the value it would add. Although we are working to include this as an option in the future, <em>currently all comments are stripped from the child theme stylesheet code.</em></p>
 <h5 id="menus_broken">Why are my menus displaying incorrectly when I activate the new child theme?</h5>...or...
 <h5 id="header_broken">Why is my custom header missing when I activate the new child theme?</h5>...or...
 <h5 id="background_broken">Why does my custom background go back to the default when I activate the new child theme?</h5>...or...

@@ -214,7 +214,6 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <?php _e( 'This will overwrite child theme options you may have already set.', 'chld_thm_cfg' ); ?>
       </div>
     </div><?php endif; ?>
-    <?php if ( '' == $hidechild ): ?>
     <div class="ctc-input-row clearfix">
       <div class="ctc-input-cell"> <strong><label for="ctc_backup">
         <?php _e( 'Backup current stylesheet', 'chld_thm_cfg' ); ?>
@@ -229,6 +228,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <?php _e( 'This creates a copy of the current stylesheet before applying changes. You can remove old backup files using the Files tab.', 'chld_thm_cfg' ); ?>
       </div>
     </div>
+    <?php if ( '' == $hidechild ): ?>
     <div class="ctc-input-row clearfix">
       <div class="ctc-input-cell ctc-section-toggle" id="ctc_revert_css"> <strong>
         <?php _e( 'Reset/Restore from backup', 'chld_thm_cfg' ); ?>
@@ -283,6 +283,15 @@ if ( count( $stylesheets ) ):?>
 endif; ?>
     </div>
     <div class="ctc-input-row clearfix">
+<?php if ( '' == $hidechild && !$enqueueset ): ?>
+      <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
+      <div class="ctc-input-cell-wide">
+      <div class="update-nag">
+        <strong><?php _e( 'Please read before you click:', 'chld_thm_cfg' ); ?></strong>
+        <p><?php _e( 'This plugin makes significant modifications to your child theme, to include changing CSS, removing comments and adding php functions.', 'chld_thm_cfg' ); ?>
+        <?php _e( 'If you are using an existing Child Theme,', 'chld_thm_cfg' ); ?> <a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/how-to-use/#duplicating-existing-child-themes" target="_blank"><?php _e( 'please consider using the Duplicate Child Theme option', 'chld_thm_cfg' ); ?></a> <?php _e( 'before proceeding.', 'chld_thm_cfg' ); ?></p>
+      </div><p>&nbsp;</p></div>
+<?php endif; ?>
       <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
       <div class="ctc-input-cell">
         <input class="ctc_submit button button-primary" id="ctc_load_styles" name="ctc_load_styles"  type="submit" 

@@ -592,7 +592,7 @@ class ChildThemeConfiguratorAdmin {
                         __( '<strong>%s</strong> exists. Please enter a different Child Theme template name.', 
                             'chld_thm_cfg' ), $clone );
                 else:
-                    $this->clone_child_theme( $clone );
+                    $this->clone_child_theme( $child, $clone );
                     if ( empty( $this->errors ) ):
                         $this->copy_theme_mods( $child, $clone );
                         $child = $clone;
@@ -1131,23 +1131,25 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         return FALSE;
     }
     
-    function clone_child_theme( $newchild ) {
+    function clone_child_theme( $child, $clone ) {
         if ( !$this->fs ) return FALSE; // return if no filesystem access
         global $wp_filesystem;
+        // set child theme if not set for get_child_target to use new child theme as source
+        $this->css->set_prop( 'child', $child );
+
         $dir        = untrailingslashit( $this->css->get_child_target( '' ) );
-        $child      = $this->theme_basename( '', $dir );
         $themedir   = trailingslashit( get_theme_root() );
         $fsthemedir = $this->fspath( $themedir );
         $files = $this->css->recurse_directory( $dir, NULL, TRUE );
         $errors = array();
         foreach ( $files as $file ):
             $childfile  = $this->theme_basename( $child, $this->normalize_path( $file ) );
-            $newfile    = trailingslashit( $newchild ) . $childfile;
+            $newfile    = trailingslashit( $clone ) . $childfile;
             $childpath  = $fsthemedir . trailingslashit( $child ) . $childfile;
             $newpath    = $fsthemedir . $newfile;
             $this->debug( 'Verifying child dir... ', __FUNCTION__ );
             if ( $this->verify_child_dir( is_dir( $file ) ? $newfile : dirname( $newfile ) ) ):
-                if ( is_file( $file ) && !$wp_filesystem->copy( $childpath, $newpath ) ):
+                if ( is_file( $file ) && !@$wp_filesystem->copy( $childpath, $newpath ) ):
                     $errors[] = 'could not copy ' . $newpath;
                 endif;
             else:

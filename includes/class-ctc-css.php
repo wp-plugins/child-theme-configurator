@@ -53,7 +53,7 @@ class ChildThemeConfiguratorCSS {
     var $vendorrule       = array(
         'box\-sizing',
         'font\-smoothing',
-        'border\-radius',
+        'border(\-(top|right|bottom|left))*\-radius',
         'box\-shadow',
         'transition',
         'transition\-property',
@@ -397,33 +397,26 @@ class ChildThemeConfiguratorCSS {
             $this->convert_ruleval_array( $this->val_ndx[ $qsid ][ $ruleid ] );
             // rulevalid passed
             if ( isset( $rulevalid ) ):
-                //**echo "id " . $rulevalid . " passed with value " . $valid . ", unsetting for ruleid " . $ruleid . "\n";
                 $this->unset_rule_value( $this->val_ndx[ $qsid ][ $ruleid ][ $template ], $rulevalid );
                 // value empty?
                 if ( '' === $value ):
-                    //**echo "empty value for ruleid " . $ruleid . "\n";
                 // value exist?
                 elseif ( $id = $this->rule_value_exists( $this->val_ndx[ $qsid ][ $ruleid ][ $template ], $valid ) ):
-                    //**echo "value " . $valid . " exists, unsetting and updating " . $id . " for ruleid " . $ruleid . "\n";
                     $this->unset_rule_value( $this->val_ndx[ $qsid ][ $ruleid ][ $template ], $id );
                     $this->update_rule_value( $this->val_ndx[ $qsid ][ $ruleid ][ $template ], $rulevalid, $valid, $important );
                 // update new value
                 else:
-                    //**echo "adding new value " . $valid . " with id " . $rulevalid . " for ruleid " . $ruleid . "\n";
                     $this->update_rule_value( $this->val_ndx[ $qsid ][ $ruleid ][ $template ], $rulevalid, $valid, $important );
                 endif;
             // rulevalid not passed
             else:
-                //**echo "no id passed with value " . $valid . " for ruleid " . $ruleid . "\n";
                 // value exist?
                 if ( $id = $this->rule_value_exists( $this->val_ndx[ $qsid ][ $ruleid ][ $template ], $valid ) ):
-                    //**echo "value " . $valid . " exists, unsetting and updating id " . $id . " for ruleid " . $ruleid . "\n";
                     $this->unset_rule_value( $this->val_ndx[ $qsid ][ $ruleid ][ $template ], $id );
                     $this->update_rule_value( $this->val_ndx[ $qsid ][ $ruleid ][ $template ], $id, $valid, $important );
                 // get new id and update new value
                 else:
                     $id = $this->get_rule_value_id( $this->val_ndx[ $qsid ][ $ruleid ][ $template ] );
-                    //**echo "adding new value " . $valid . " with id " . $id . " for ruleid " . $ruleid . "\n";
                     $this->update_rule_value( $this->val_ndx[ $qsid ][ $ruleid ][ $template ], $id, $valid, $important );
                 endif;
             endif;
@@ -440,11 +433,9 @@ class ChildThemeConfiguratorCSS {
     function rule_value_exists( &$arr, $valid ) {
         foreach ( $arr as $valarr ):
             if ( isset( $valarr[ 0 ] ) && isset( $valarr[ 2 ] ) && $valid == $valarr[ 0 ] ):
-                //**echo 'fn:' . __FUNCTION__ . ': valid: ' . $valid . ' found ' . $valarr[ 0 ] . "\n";
                 return $valarr[ 2 ];
             endif;
         endforeach;
-        //**echo 'fn:' . __FUNCTION__ . ': no match to ' . $valid . "\n";
         return FALSE;
     }
     
@@ -457,7 +448,6 @@ class ChildThemeConfiguratorCSS {
         $newid = 1;
         foreach ( $arr as $valarr )
             if ( isset( $valarr[ 2 ] ) && $valarr[ 2 ] >= $newid ) $newid = $valarr[ 2 ] + 1;
-        //**echo 'fn:' . __FUNCTION__ . ': newid generated: ' . $newid . "\n";
         return $newid;
     }
     
@@ -466,7 +456,6 @@ class ChildThemeConfiguratorCSS {
      * Generate a new value subarray
      */
     function update_rule_value( &$arr, $id, $valid, $important ) {
-        //**echo 'fn:' . __FUNCTION__ . ': updating ' . $id . ' to ' . $valid . "\n";
         $arr[] = array(
             $valid,
             $important,
@@ -480,7 +469,6 @@ class ChildThemeConfiguratorCSS {
      */
     function unset_rule_value( &$arr, $id ) {
         $index = 0;
-        //**echo 'fn:' . __FUNCTION__ . ': unsetting value id ' . $id . "\n";
         foreach ( $arr as $valarr ):
             if ( $id == $valarr[ 2 ] ):
                 //echo 'found ' . $valarr[ 2 ] . '(index ' . $index . " )\n";
@@ -501,6 +489,9 @@ class ChildThemeConfiguratorCSS {
         foreach ( $this->val_ndx[ $qsid ] as $ruleid => $arr ):
             foreach ( array( 'child', 'parnt' ) as $template ):
                 if ( isset( $arr[ $template ] ) ):
+                    // v1.7.5: don't prune until converted to multi value format
+                    if ( !is_array( $arr[ $template ] ) ) return FALSE; 
+                    // otherwise check each value, if not empty return false
                     foreach ( $arr[ $template ] as $valarr ) 
                         if ( $empty != $valarr[ 0 ] ) return FALSE;
                 endif;
@@ -609,14 +600,6 @@ class ChildThemeConfiguratorCSS {
                     $value      = $this->normalize_color( $this->sanitize( $this->parse_css_input( $_POST[ $post_key ] ) ) );
                     $important  = $this->is_important( $value );
                     if ( !empty( $_POST[ 'ctc_' . $valid . '_child_' . $rule . '_i_' . $qsid . '_' . $rulevalid ] ) ) $important = 1;
-                    //**echo 'processing post data: ' . $post_key . "\n";
-                    //**echo 'valid: ' . $valid . "\n";
-                    //**echo 'rule: ' . $rule . "\n";
-                    //**echo 'ruleid: ' . $ruleid . "\n";
-                    //**echo 'qsid: ' . $qsid . "\n";
-                    //**echo 'rulevalid: ' . $rulevalid . "\n";
-                    //**echo 'value: ' . $value . "\n";
-                    //**echo 'important: ' . $important . "\n";
                     $selarr = $this->denorm_query_sel( $qsid );
                     if ( !empty( $matches[ 6 ] ) ):
                         $parts[ $qsid ][ $rule ][ 'values' ][ $rulevalid ][ $matches[ 6 ] ] = $value;
@@ -624,7 +607,6 @@ class ChildThemeConfiguratorCSS {
                         $parts[ $qsid ][ $rule ][ 'query' ]     = $selarr[ 'query' ];
                         $parts[ $qsid ][ $rule ][ 'selector' ]  = $selarr[ 'selector' ];
                     else:
-                        //**echo 'updating ' . $rule . ': ' . $value . "\n";
                         if ( $newselector && $newselector != $selarr[ 'selector' ] ):
                             // If this is a renamed selector, add new selector to array 
                             $newqsid = $this->update_arrays( 
@@ -646,6 +628,7 @@ class ChildThemeConfiguratorCSS {
                                 0,
                                 $rulevalid
                             );
+                            $this->dict_seq[ $newqsid ] = $this->dict_seq[ $qsid ];
                         else:
                             // otherwise, just update with the new values:
                             $this->update_arrays( 
@@ -671,7 +654,6 @@ class ChildThemeConfiguratorCSS {
                 foreach ( $rules as $rule => $rule_arr ):
                     // new 'values' array to segment parts into rulevalids
                     foreach ( $rule_arr[ 'values' ] as $rulevalid => $rule_part ):
-                        //**echo 'updating ' . $rule . ' ' . $rulevalid . ': ' . print_r( $rule_part, TRUE ) . "\n";
                         if ( 'background' == $rule ):
                             $value = $rule_part[ 'background_url' ];
                         elseif ( 'background-image' == $rule ):
@@ -679,6 +661,10 @@ class ChildThemeConfiguratorCSS {
                                 if ( empty( $rule_part[ 'background_color2' ] ) ):
                                     $value = '';
                                 else:
+                                    if ( empty( $rule_part[ 'background_origin' ] ) )
+                                        $rule_part[ 'background_origin' ] = 'top';
+                                    if ( empty( $rule_part[ 'background_color1' ] ) )
+                                        $rule_part[ 'background_color1' ] = $rule_part[ 'background_color2' ];
                                     $value = implode( ':', array(
                                         $rule_part[ 'background_origin' ], 
                                         $rule_part[ 'background_color1' ], '0%', 
@@ -690,7 +676,7 @@ class ChildThemeConfiguratorCSS {
                             endif;
                         elseif ( preg_match( '#^border(\-(top|right|bottom|left))?$#', $rule ) ):
                             if ( empty( $rule_part[ 'border_width' ] ) && !empty( $rule_part[ 'border_color' ] ) )
-                                $rule_part[ 'border_width' ] = '0';
+                                $rule_part[ 'border_width' ] = '1px';
                             if ( empty( $rule_part[ 'border_style' ] ) && !empty( $rule_part[ 'border_color' ] ) )
                                 $rule_part[ 'border_style' ] = 'solid';
                             $value = implode( ' ', array(
@@ -935,7 +921,6 @@ class ChildThemeConfiguratorCSS {
                         $rules[]    = $rule;
                         $values[]   = $value;
                     endif;
-                    $resetrule = array();
                     foreach ( $rules as $rule ):
                         $value = trim( array_shift( $values ) );
                         // normalize zero values
@@ -1358,7 +1343,7 @@ class ChildThemeConfiguratorCSS {
      */
     function encode_gradient( $value ) {
         // don't try this at home, kids
-        $regex = '#gradient[^\)]*?\((((to )?(top|bottom|left|right)?( (top|bottom|left|right))?|\d+deg),)?([^\w\)]*[\'"]?(\#\w{3,8}|rgba?\([\d., ]+?\)|hsla?\([\d%., ]+?\)|[a-z]+)( [\d.]+%)?)([^\w\)]*[\'"]?(\#\w{3,8}|rgba?\([\d., ]+?\)|hsla?\([\d%., ]+?\)|[a-z]+)( [\d.]+%)?)([^\w\)]*gradienttype=[\'"]?(\d)[\'"]?)?[^\)]*\)#i';
+        $regex = '#gradient[^\)]*?\((((to )?(top|bottom|left|right)?( (top|bottom|left|right))?|\d+deg),)?([^\w\#\)]*[\'"]?(\#\w{3,8}|rgba?\([\d., ]+?\)|hsla?\([\d%., ]+?\)|[a-z]+)( [\d.]+%)?)([^\w\#\)]*[\'"]?(\#\w{3,8}|rgba?\([\d., ]+?\)|hsla?\([\d%., ]+?\)|[a-z]+)( [\d.]+%)?)([^\w\)]*gradienttype=[\'"]?(\d)[\'"]?)?[^\w\)]*\)#i';
         $param = $parts = array();
         preg_match( $regex, $value, $parts );
         if ( empty( $parts[ 14 ] ) ):

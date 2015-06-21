@@ -43,8 +43,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
         <div class="ctc-input-cell ctc-button-cell" id="ctc_save_query_selector_cell">
           <input type="submit" class="button button-primary ctc-save-input" id="ctc_save_query_selector" 
             name="ctc_save_query_selector" value="<?php _e( 'Save Child Values', 'chld_thm_cfg' ); ?>" disabled />
-          <input type="button" class="button ctc-save-input" id="ctc_delete_query_selector" 
-            name="ctc_delete_query_selector" value="<?php _e( 'Delete Child Values', 'chld_thm_cfg' ); ?>" disabled />
+          <a class="ctc-delete-input" id="ctc_delete_query_selector" href="#"><?php _e( 'Delete Child Values', 'chld_thm_cfg' ); ?></a>
           <input type="hidden" id="ctc_sel_ovrd_qsid" 
             name="ctc_sel_ovrd_qsid" value="" />
         </div>
