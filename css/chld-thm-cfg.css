@@ -203,6 +203,12 @@ a.ctc-recent-tab {
     display: none;
     outline: none;
 }
+.ctc-delete-input {
+    font-size: 0.8em;
+    float:right;
+    color: darkred;
+    text-decoration:none;
+}
 
 .ctc-selector-container {
     clear: both;

@@ -4,15 +4,15 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, child themes, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.3
-Stable tag: 1.7.4.2
+Stable tag: 1.7.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Create child themes and customize WordPress. Enqueues stylesheets, handles RGBA (transparent) colors, fallback styles, gradients, vendor-prefixes and more.
+Create child themes and customize styles, templates and functions. Enqueues stylesheets and web fonts. Handles rgba, vendor-prefixes and more.
 
 == Description ==
 
-Child Theme Configurator is a fast and easy to use CSS editor that allows you to create a child theme and customize it beyond the options of the Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It properly enqueues theme stylesheets for optimum performance and handles vendor-specific syntax, giving you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched. [Learn more about how to create a child theme](http://www.childthemeconfigurator.com).
+Child Theme Configurator is a fast and easy to use CSS editor that allows you to create a child theme and customize it beyond the options of the Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It properly enqueues theme and font stylesheets for optimum performance and handles vendor-specific syntax, giving you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched. [Learn more about how to create a child theme](http://www.childthemeconfigurator.com).
 
 = Take Control of Your Child Themes =
 

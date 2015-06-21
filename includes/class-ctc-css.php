@@ -489,6 +489,9 @@ class ChildThemeConfiguratorCSS {
         foreach ( $this->val_ndx[ $qsid ] as $ruleid => $arr ):
             foreach ( array( 'child', 'parnt' ) as $template ):
                 if ( isset( $arr[ $template ] ) ):
+                    // v1.7.5: don't prune until converted to multi value format
+                    if ( !is_array( $arr[ $template ] ) ) return FALSE; 
+                    // otherwise check each value, if not empty return false
                     foreach ( $arr[ $template ] as $valarr ) 
                         if ( $empty != $valarr[ 0 ] ) return FALSE;
                 endif;

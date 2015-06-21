@@ -1041,7 +1041,7 @@
             var self = this;
             //console.log( 'handle_failure: ' + obj );
             $( '.query-icon, .save-icon' ).removeClass( 'spinner' ).addClass( 'failure' );
-            $( 'input[type=submit], input[type=button], input[type=checkbox]' ).prop( 'disabled', false );
+            $( 'input[type=submit], input[type=button], input[type=checkbox],.ctc-delete-input' ).prop( 'disabled', false );
             $( '.ajax-pending' ).removeClass( 'ajax-pending' );
             //FIXME: return fail text in ajax response
             if ( 'preview' == obj )
@@ -1066,7 +1066,7 @@
                 // show check mark
                 // FIXME: distinction between save and query, update specific status icon
                 $( '.query-icon, .save-icon' ).addClass( 'success' );
-                $( 'input[type=submit], input[type=button], input[type=checkbox]' ).prop( 'disabled', false );
+                $( 'input[type=submit], input[type=button], input[type=checkbox],.ctc-delete-input' ).prop( 'disabled', false );
                 // update ui from each response object  
                 $( response ).each( function() {
                     if ( 'function' == typeof self.update[ this.obj ] ) {
@@ -1325,10 +1325,12 @@
                     $( '#' + id + '_container' ).fadeToggle( 'fast' );
                     $( '.ctc-selector-container' ).not( '#' + id + '_container' ).fadeOut( 'fast' );
                 } );
-                $( '#ctc_main' ).on( 'click', '.ctc-save-input[type=button]', function( e ) {
+                $( '#ctc_main' ).on( 'click', '.ctc-save-input[type=button], .ctc-delete-input', function( e ) {
+                    e.preventDefault();
                     if ( $( this ).hasClass( 'ajax-pending' ) ) return false;
                     $( this ).addClass( 'ajax-pending' );
                     self.save( this ); // refresh menus after updating data
+                    return false;
                 } );
                 $( '#ctc_main' ).on( 'click', '.ctc-selector-edit', function( e ) {
                     e.preventDefault();
