@@ -16,7 +16,7 @@ Child Theme Configurator is a fast and easy to use CSS editor that allows you to
 
 = Take Control of Your Child Themes =
 
-https://www.youtube.com/watch?v=53M7RVxDYEY
+https://www.youtube.com/watch?v=NQ1M-ZlRScY
 
 The Child Theme Configurator parses and indexes your stylesheets so that every CSS media query, selector, property and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the child theme. Finally, it saves your work so that you can fine-tune your child themes without the risk of losing your edits. 
 
@@ -122,7 +122,7 @@ Select this option if all stylesheets are correctly enqueued for child themes. I
 
 = Is there a tutorial? =
 
-https://www.youtube.com/watch?v=53M7RVxDYEY
+https://www.youtube.com/watch?v=NQ1M-ZlRScY
 
 = If the parent theme changes (e.g., upgrade), do I have to update the child theme? = 
 
