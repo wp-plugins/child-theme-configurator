@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Main Controller Class
-    Version: 1.7.5
+    Version: 1.7.5.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -108,8 +108,7 @@ class ChildThemeConfiguratorAdmin {
     }
 
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.5' );
-        wp_enqueue_style( 'ctc-spectrum', CHLD_THM_CFG_URL . 'css/spectrum.css', array(), '1.7.5' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.5.1' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -572,7 +571,7 @@ class ChildThemeConfiguratorAdmin {
             if ( empty( $template ) && empty( $name ) ):
                 $this->errors[] = __( 'Please enter a valid Child Theme template name.', 'chld_thm_cfg' );
             else:
-                $child = strtolower( preg_replace( "%[^\w\-]%", '', empty( $template ) ? $name : $template ) );
+                $child = preg_replace( "%[^\w\-]%", '', empty( $template ) ? $name : $template );
                 if ( $this->check_theme_exists( $child ) ):
                     $this->errors[] = sprintf( 
                         __( '<strong>%s</strong> exists. Please enter a different Child Theme template name.', 
@@ -1442,9 +1441,11 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
 	    $path = preg_replace( '|/+|','/', $path );
 	    return $path;
     }
-    
+
+    // case insensitive theme search    
     function check_theme_exists( $theme ) {
-        return in_array( $theme, array_keys( wp_get_themes() ) );
+        $search_array = array_map( 'strtolower', array_keys( wp_get_themes() ) );
+        return in_array( strtolower( $theme ), $search_array );
     }
     
     // helper functions to support legacy plugin extension

@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS input, output, parsing, normalization and storage
-    Version: 1.7.5
+    Version: 1.7.5.1
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -50,6 +50,7 @@ class ChildThemeConfiguratorCSS {
     var $child_tags;        // child theme tags
     var $child_version;     // stylesheet version
     var $max_sel;
+    var $temparray;
     var $vendorrule       = array(
         'box\-sizing',
         'font\-smoothing',
@@ -1242,46 +1243,45 @@ class ChildThemeConfiguratorCSS {
      * parses background shorthand value and returns
      * normalized rule/value pairs for each property
      */
-    function normalize_background( $value, &$rules, &$values ){
+    function normalize_background( $value, &$rules, &$values ) {
         if ( FALSE !== strpos( $value, 'gradient' ) ):
             // only supporting linear syntax
             if ( preg_match( '#(linear\-|Microsoft\.)#', $value ) ):
                 $values[] = $value;
                 $rules[] = 'background-image';
-            endif;
-        else:            
-            $regex = '#(url *\([^\)]+\))#';
-            if ( preg_match( $regex, $value, $matches ) ) $url = $matches[ 1 ];
-            $parts = preg_split( $regex, $value );
-            
-            if ( count( $parts ) == 1 ):
-                // this is a named color or single hex color or none
-                $part = str_replace( ' ', '', $parts[ 0 ] );
-                $rules[] = 'none' == $part ? 'background' : 'background-color'; 
-                $values[]   = $part;
             else:
-                $rules[]    = 'background-image';
-                $values[]   = $url;
-                if ( !empty( $parts[ 0 ] ) && '' !== $parts[ 0 ] ):
-                    $rules[]    = 'background-color';
-                    $values[]   = trim( $parts[ 0 ] );
-                endif;
-                $position = array();
-                foreach( preg_split( '/ +/', trim( $parts[ 1 ] ) ) as $part ):
-                    if ( '' === $part ) continue; // empty( $part ) || 
-                    if ( FALSE === strpos( $part, 'repeat' ) ):
-                        $position[] = $part;
-                    else:
-                        $rules[] = 'background-repeat';
-                        $values[] = $part;
-                    endif;
-                endforeach;
-                if ( count( $position ) ):
-                    $rules[] = 'background-position';
-                    $values[] = implode( ' ', $position );
-                endif;
+                // don't try to normalize non-linear gradients
+                $values[] = $value;
+                $rules[] = 'background';
             endif;
+        else:
+            $regexes = array(
+                'image'         => 'url *\\([^)]+?\\)|none',
+                'attachment'    => 'scroll|fixed|local',
+                'clip'          => '(padding|border|content)\\-box',
+                'repeat'        => '(no\\-)?repeat(\\-(x|y))?|round|space',
+                'size'          => 'cover|contain|auto',
+                'position'      => 'top|bottom|left|right|center|\b0 +0\b|(\b0 +)?[\\-\\d.]+(px|%)( +0\b)?',
+                'color'         => '\\#[a-fA-F0-9]{3,6}|(hsl|rgb)a? *\\([^)]+?\\)|[a-z]+'                
+            );
+            //echo '<pre><code>' . "\n";
+            //echo '<strong>' . $value . '</strong>' . "\n";
+            foreach ( $regexes as $property => $regex ):
+                $this->temparray = array();
+                //echo $property . ': ' . $regex . "\n";
+                $value = preg_replace_callback( "/(" . $regex . ")/", array( $this, 'background_callback' ), $value );
+                if ( count( $this->temparray ) ):
+                    $rules[] = 'background-' . $property;
+                    $values[] = implode( ' ', $this->temparray );
+                    //echo '<strong>result: ' . implode( ' ', $this->temparray ) . "</strong>\n";
+                endif;
+            endforeach;
+            //echo '</code></pre>' . "\n";
         endif;
+    }
+    
+    function background_callback( $matches ) {
+        $this->temparray[] = $matches[ 1 ];
     }
 
     /**

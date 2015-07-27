@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, child themes, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.3
-Stable tag: 1.7.5
+Stable tag: 1.7.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -276,6 +276,11 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.7.5.1 =
+* Refactored background normalization function to better follow CSS specification.
+* Check child theme exists function case-insensitive.
+* Changed chldthmcfg.init() call to fire on load instead of .ready() to prevent JS conflicts
+
 = 1.7.5 =
 * Uses spectrum color picker to support transparency and named colors.
 * Refactored entire system to support fallback values for any property.
@@ -525,7 +530,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
-Version 1.7.5 adds long-awaited delete child values button and support for multiple fallback styles along with several other improvements. Replaced Iris color picker with Spectrum which supports rgba, hsla and named colors.
+1.7.5.1 aligns background normalization function with CSS spec.
 
 == Override Parent Styles ==
 

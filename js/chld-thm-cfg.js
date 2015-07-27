@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.5
+ *  Version: 1.7.5.1
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -75,7 +75,7 @@
             var exists = false;
             $.each( ctcAjax.themes, function( type, theme ) {
                 $.each( theme, function( slug, data ) {
-                    if ( slug == testslug && ( 'parnt' == type || 'new' == testtype ) ) {
+                    if ( slug.toLowerCase() === testslug.toLowerCase() && ( 'parnt' == type || 'new' == testtype ) ) {
                         exists = true;
                         return false;
                     }
@@ -89,9 +89,9 @@
             var self    = this,
                 regex   = /[^\w\-]/,
                 newslug = $( '#ctc_child_template' ).length ? $( '#ctc_child_template' )
-                    .val().toString().replace( regex ).toLowerCase() : '',
+                    .val().toString().replace( regex ) : '',
                 slug    = $( '#ctc_theme_child' ).length ? $( '#ctc_theme_child' )
-                    .val().toString().replace( regex ).toLowerCase() : newslug,
+                    .val().toString().replace( regex ) : newslug,
                 type    = $( 'input[name=ctc_child_type]:checked' ).val(),
                 errors  = [];
             if ( 'new' == type ) slug = newslug;
@@ -1030,7 +1030,7 @@
                 // 'ctc_update' == data.action && 'qsid' == obj ? 'text' : 
                 type:       'POST'
             } ).done( function( response ) {
-                //**console.log( response );
+                //console.log( response );
                 self.handle_success( obj, response );
             } ).fail( function() {
                 self.handle_failure( obj );
@@ -1466,9 +1466,6 @@
         grad_regx:      '(\\w+)'
 
     };
-} ( jQuery ) );
-
-jQuery( document ).ready( function( $ ) {
     //console.log( 'creating new chldthmcfg object ...' );
     $.chldthmcfg.init();
-});
+} ( jQuery ) );
