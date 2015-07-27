@@ -3,22 +3,22 @@ Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
 Tags: child theme, child themes, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, stylesheet, customizer
 Requires at least: 3.9
-Tested up to: 4.2
-Stable tag: 1.7.5
+Tested up to: 4.3
+Stable tag: 1.7.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Create a child theme that follows WP best practice to enqueue stylesheets. Easy to use CSS editor lets you find, preview and customize any style.
+Create child themes and customize styles, templates and functions. Enqueues stylesheets and web fonts. Handles rgba, vendor-prefixes and more.
 
 == Description ==
 
-Child Theme Configurator is a fast and easy to use CSS editor that allows you to create a child theme and customize it beyond the options of the Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It gives you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched. [Learn more about how to create a child theme](http://www.childthemeconfigurator.com).
+Child Theme Configurator is a fast and easy to use CSS editor that allows you to create a child theme and customize it beyond the options of the Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It properly enqueues theme and font stylesheets for optimum performance and handles vendor-specific syntax, giving you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched. [Learn more about how to create a child theme](http://www.childthemeconfigurator.com).
 
 = Take Control of Your Child Themes =
 
-https://www.youtube.com/watch?v=53M7RVxDYEY
+https://www.youtube.com/watch?v=NQ1M-ZlRScY
 
-The Child Theme Configurator parses and indexes your stylesheets so that every CSS media query, selector, rule and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the child theme. Finally, it saves your work so that you can fine-tune your child themes without the risk of losing your edits. 
+The Child Theme Configurator parses and indexes your stylesheets so that every CSS media query, selector, property and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the child theme. Finally, it saves your work so that you can fine-tune your child themes without the risk of losing your edits. 
 
 You can create any number of child themes from your existing Parent Themes. The Child Theme Configurator lets you choose from your installed themes (even existing child themes) and save the results in your Themes directory.
 
@@ -27,18 +27,21 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 = Why create child themes using the Child Theme Configurator? =
 
 * Update themes without losing customizations
+* Enqueue (link) stylesheets instead of using @import
+* Customize @media queries for responsive design
 * Copy existing widgets, menus and other options to child theme
+* Select hex, RGBA (transparent) and named colors using Spectrum color picker
+* Add fallback styles (multiple values per property)
+* Resolve common child theme issues with almost any parent theme
 * Save hours of development time
 * Multisite compatible
 * Make modifications unavailable to the Customizer
-* Uses WP best practice for enqueuing (linking) stylesheets
 * Export child themes as Zip Archive
 * Use web fonts in your child theme
 * Identify and override exact selectors from the parent theme
 * Change specific colors, backgrounds, font styles, etc., without changing other elements
-* Automatically generate cross-browser and vendor-prefixed rules and CSS gradients
+* Automatically generate cross-browser and vendor-prefixed properties and CSS gradients
 * Preview style changes before committing to them
-* Customize @media queries for responsive design
 * Uses WP Filesystem API – will not create files you cannot remove
 
 = Child Theme Configurator PRO =
@@ -119,7 +122,7 @@ Select this option if all stylesheets are correctly enqueued for child themes. I
 
 = Is there a tutorial? =
 
-https://www.youtube.com/watch?v=53M7RVxDYEY
+https://www.youtube.com/watch?v=NQ1M-ZlRScY
 
 = If the parent theme changes (e.g., upgrade), do I have to update the child theme? = 
 
@@ -130,6 +133,10 @@ A child theme is not a "copy" of the parent theme. It is a special feature of Wo
 = If I uninstall Child Theme Configurator are child themes affected? =
 
 No. Child Theme Configurator is designed to work independently of themes and plugins. Just remember that if you re-install, you must rebuild the configuration data using the Parent/Child tab.
+
+= How do I add comments? =
+
+Arbitrary comments are not supported. Providing a high level of flexibility for previewing and modifying styles requires sophisticated parsing and data structures. Maintaining comments that bound to any particular element in the stylesheet is prohibitively expensive compared to the value it would add. Although we are working to include this as an option in the future, currently all comments are stripped from the child theme stylesheet code.
 
 = Does it work with Multisite? =
 
@@ -194,7 +201,7 @@ Click the "Help" tab at the top right for a quick reference.
 
 = How do I add Web Fonts? =
 
-The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the Web Fonts tab. The fonts will then be available to use as a value of the font-family rule. Be sure you understand the license for any embedded fonts.
+The easiest method is to paste the @import code provided by Google, Font Squirrel or any other Web Font site into the Web Fonts tab. The fonts will then be available to use as a value of the font-family property. Be sure you understand the license for any embedded fonts.
 
 You can also create a secondary stylesheet that contains @font-face rules and import it using the Web Fonts tab.
 
@@ -231,15 +238,15 @@ You can add queries and selectors using the "Raw CSS" textarea on the Query/Sele
 
 = How do I remove a style from the Parent Theme? = 
 
-You shouldn't really "remove" a style from the Parent. You can, however, set the rule to "inherit," "none," or zero (depending on the rule). This will negate the Parent value. Some experimentation may be necessary.
+You shouldn't really "remove" a style from the Parent. You can, however, set the property to "inherit," "none," or zero (depending on the property). This will negate the Parent value. Some experimentation may be necessary.
 
 = How do I remove a style from the Child Theme? = 
 
-Delete the value from the input for the rule you wish to remove. The Child Theme Configurator only adds overrides for rules that contain values.
+Delete the value from the input for the property you wish to remove. The Child Theme Configurator only adds overrides for properties that contain values.
 
 = How do I set the !important flag? = 
 
-We always recommend relying on good cascading design over global overrides. To that end, you have ability to change the load order of child theme styles by entering a value in the "Order" field. And yes, you can now set rules as important by checking the "!" box next to each input. Please use judiciously.
+We always recommend relying on good cascading design over global overrides. To that end, you have ability to change the load order of child theme styles by entering a value in the "Order" field. And yes, you can now set properties as important by checking the "!" box next to each input. Please use judiciously.
 
 = How do I create cross-browser gradients? = 
 
@@ -269,6 +276,17 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.7.5.1 =
+* Refactored background normalization function to better follow CSS specification.
+* Check child theme exists function case-insensitive.
+* Changed chldthmcfg.init() call to fire on load instead of .ready() to prevent JS conflicts
+
+= 1.7.5 =
+* Uses spectrum color picker to support transparency and named colors.
+* Refactored entire system to support fallback values for any property.
+* Fix path when duplicating child theme on first run
+* New Feature: "delete child values" button - easily revert styles in child theme stylesheet
+
 = 1.7.4.2 =
 * Will not write child theme stylesheet if error detected in functions.php 
 
@@ -291,7 +309,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 = 1.7.2.1 = 
 * Fix: hide called before iris init
 * Fix: @import not being written on rebuild/configure
-* Fix: min height on rule/value panel
+* Fix: min height on property/value panel
 * Only prune child theme selectors on rename
 
 = 1.7.1 = 
@@ -314,7 +332,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 = 1.6.5 =
 * Fix: incorrect path generation and validation on Windows servers
 * Added error handling and notification to prevent jQuery conflicts and out of memory conditions
-* Fix: removed max-height on rule/value overlay
+* Fix: removed max-height on property/value overlay
 * Added debug option
 
 = 1.6.4 = 
@@ -393,7 +411,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 = 1.4.6 =
 * Feature: export child themes as zip archive
-* Added transform to list of vendor rules
+* Added transform to list of vendor properties
 * Bug fixed: parser not loading multiple instances of same @media rulesets
 * Refactored uploader to use wp core functions for compatibility and security
 * Increased CHLD_THM_CFG_MAX_RECURSE_LOOPS to 1000 to accommodate complex parent frameworks
@@ -458,16 +476,16 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * New Features: You can now rename selectors in place from the Query/Selector panel. Made stylesheet backup optional. Bugs fixed: Incorrect parsing of background position when '0', fixed type error when background image url value is removed.
 
 = 1.2.1 =
-* Bugs fixed: "star hack" rules no longer throwing js error. Important flag now works on borders and gradients.
+* Bugs fixed: "star hack" properties no longer throwing js error. Important flag now works on borders and gradients.
 
 = 1.2.0 =
-* New features: Link to Query/Selector tab from specific Property/Value selector, new rule focus on adding new rule. Bugs fixed: clear Query/Selector inputs when loaded selector is empty, use latest min.js script.
+* New features: Link to Query/Selector tab from specific Property/Value selector, new property focus on adding new property. Bugs fixed: clear Query/Selector inputs when loaded selector is empty, use latest min.js script.
 
 = 1.1.9 =
 * Added check for writability before attempting to create child theme files to avoid fatal error on servers not running suEXEC. Fixed a bug in the ctc_update_cache function that was throwing a fatal JS error when new media queries were saved via the Raw CSS input. Configurator now adds functions.php file to child theme when it does not exist.
 
 = 1.1.8 =
-* Added reorder sequence and important flag functionality. Fixed bug where multiple inputs with same selector/rule combo were assigned the same id. Fixed bug in the shorthand encoding routine. 
+* Added reorder sequence and important flag functionality. Fixed bug where multiple inputs with same selector/property combo were assigned the same id. Fixed bug in the shorthand encoding routine. 
 
 = 1.1.7 =
 * Added tutorial video to help tabs.
@@ -478,10 +496,10 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 = 1.1.5 =
 * Query/Selector panel now defaults to 'base'
 * Fixed bug causing background-image with full urls (http://) to be parsed as gradients
-* Fixed bug causing rule menu to throw error when selector has no rules
+* Fixed bug causing property menu to throw error when selector has no properties
 
 = 1.1.4 =
-* Fixed sort bug in shorthand parser that was returning rules in wrong order
+* Fixed sort bug in shorthand parser that was returning properties in wrong order
 
 = 1.1.3 = 
 * Fixed bug that assumed lowercase only for theme slugs. (Thanks to timk)
@@ -497,7 +515,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Fixed gettext calls to use static namespace parameter
 * Auto populate child theme inputs when existing theme is selected
 * Correctly remove border when values are blanked
-* Fixed duplicate "new rule" bug on Query/Selector panel
+* Fixed duplicate "new property" bug on Query/Selector panel
 * added timestamp to backup file 
 * Added encode_shorthand function to recombine margin/padding values when all 4 sides are present
 
@@ -512,18 +530,18 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
-Version 1.7.3 now converts @import statements to link tags and checks parent theme for hard-coded stylesheet link tags and other problematic code issues. 1.7.3.1 added dismiss option to warnings by popular demand.
+1.7.5.1 aligns background normalization function with CSS spec.
 
 == Override Parent Styles ==
 
-There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by CSS selector and by rule. If you wish to change a specific CSS selector (e.g., h1), use the "Query/Selector" tab. If you have a specific CSS value you wish to change site-wide (e.g., the color of the type), use the "Property/Value" tab.
+There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by CSS selector and by property. If you wish to change a specific CSS selector (e.g., h1), use the "Query/Selector" tab. If you have a specific CSS value you wish to change site-wide (e.g., the color of the type), use the "Property/Value" tab.
 
 = Query/Selector Tab =
 
 The Query/Selector tab lets you find specific CSS selectors and edit them. First, find the query that contains the CSS selector you wish to edit by typing in the Query autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. CSS selectors are in the base query by default.
 Next, find the CSS selector by typing in the "Selector" autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.
 
-This will load all of the rules for that CSS selector with the Parent values on the left and the child theme values inputs on the right. Any existing child theme values will be automatically populated. There is also a Sample preview that displays the combination of Parent and Child overrides. Note that the border and background-image get special treatment.
+This will load all of the properties for that CSS selector with the Parent values on the left and the child theme values inputs on the right. Any existing child theme values will be automatically populated. There is also a Sample preview that displays the combination of Parent and Child overrides. Note that the border and background-image get special treatment.
 
 The "Order" field contains the original sequence of the CSS selector in the parent theme stylesheet. You can change the CSS selector order sequence by entering a lower or higher number in the "Order" field. You can also force style overrides (so called "!important" flag) by checking the "!" box next to each input. Please use judiciously.
 
@@ -531,23 +549,23 @@ Click "Save" to update the child theme stylesheet and save your changes to the W
 
 == Adding New Styles ==
 
-If you wish to add additional rules to a given CSS selector, first load the selector using the Query/Selector tab. Then find the rule you wish to override by typing in the New Property autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.
+If you wish to add additional properties to a given CSS selector, first load the selector using the Query/Selector tab. Then find the property you wish to override by typing in the New Property autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.
 
 If you wish to add completely new CSS selectors, or even new @media queries, you can enter free-form CSS in the "Raw CSS" textarea. Be aware that your syntax must be correct (i.e., balanced curly braces, etc.) for the parser to load the new styles. You will know it is invalid because a red "X" will appear next to the save button.
 
-If you prefer to use shorthand syntax for rules and values instead of the inputs provided by the Child Theme Configurator, you can enter them here as well. The parser will convert your input into normalized CSS code automatically.
+If you prefer to use shorthand syntax for properties and values instead of the inputs provided by the Child Theme Configurator, you can enter them here as well. The parser will convert your input into normalized CSS code automatically.
 
 = Property/Value Tab =
 
-The Property/Value tab lets you find specific values for a given rule and then edit that value for individual CSS selectors that use that rule/value combination. First, find the rule you wish to override by typing in the Property autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.
+The Property/Value tab lets you find specific values for a given property and then edit that value for individual CSS selectors that use that property/value combination. First, find the property you wish to override by typing in the Property autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys.
 
-This will load all of the unique values that exist for that rule in the parent theme stylesheet with a Sample preview for that value. If there are values that exist in the child theme stylesheet that do not exist in the parent stylesheet, they will be displayed as well.
+This will load all of the unique values that exist for that property in the parent theme stylesheet with a Sample preview for that value. If there are values that exist in the child theme stylesheet that do not exist in the parent stylesheet, they will be displayed as well.
 
-For each unique value, click the "Selectors" link to view a list of CSS selectors that use that rule/value combination, grouped by query with a Sample preview of the value and inputs for the child theme value. Any existing child theme values will be automatically populated.
+For each unique value, click the "Selectors" link to view a list of CSS selectors that use that property/value combination, grouped by query with a Sample preview of the value and inputs for the child theme value. Any existing child theme values will be automatically populated.
 
 Click "Save" to update the child theme stylesheet and save your changes to the WordPress admin.
 
-If you want to edit all of the rules for the CSS selector you can click the “Edit” link and the CSS selector will automatically load in the Query/Selector Tab.
+If you want to edit all of the properties for the CSS selector you can click the “Edit” link and the CSS selector will automatically load in the Query/Selector Tab.
 
 == Web Fonts Tab ==
 
@@ -593,16 +611,16 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 
 == Caveats ==
 
+* Arbitrary comments are not supported. Providing a high level of flexibility for previewing and modifying styles requires a sophisticated parsing system. Maintaining comments that bound to any particular element in the stylesheet is prohibitively expensive compared to the value it would add. Although we are working to include this as an option in the future, currently all comments are stripped from the child theme stylesheet code.
+* Legacy gradient syntax is not supported. The Child Theme Configurator plugin does not support the MS filter gradient or legacy webkit gradient. These will continue to work if they are used in the parent theme, but will not be written to the child theme stylesheet. If there is a demand, we may add it in a future release, but most users should have upgraded by now.
 * Only two-color gradients. The Child Theme Configurator plugin is powerful, but we have simplified the gradient interface. You can use any gradient you want as long as it has two colors and no intermediate stops.
 * No @font-face rules. The Child Theme Configurator plugin only supports @media and @import. If you need other @rules, put them in a separate stylesheet and import them into the Child Theme stylesheet.
-* The Child Theme Configurator plugin works with the vast majority of CSS rules, however some obscure options are not auto-prefixed.
-* The Child Theme Configurator plugin does not support the legacy webkit gradient.
-* CSS Properties are auto-discovered. The Child Theme Configurator plugin loads the rules that exist in the Parent stylesheet. You can always add new rules using the "Raw CSS" text area.
-* Multiple versions of the same rule in a single selector are not supported, with a few exceptions. The Child Theme Configurator plugin will automatically generate vendor-prefix variations for background-image, border-radius, transform, transition, and others.
+* Not all CSS properties are customizable. The Child Theme Configurator plugin works with the vast majority of vendor-specific properties, however we’ve left out some of the more obscure options. As with legacy gradients, they will work, but will not be automatically enhanced by the Configurator.
+* CSS properties are auto-discovered. The Child Theme Configurator plugin loads the properties that exist in the Parent stylesheet. You can always add new rules using the “Raw CSS” text area.
 
 == Documentation ==
 
-Go to http://www.childthemeconfigurator.com/documentation/
+Go to http://www.childthemeconfigurator.com/
 
 Serbo-Croatian translation courtesy of Borisa Djuraskovic borisad@webhostinghub.com http://www.webhostinghub.com
 

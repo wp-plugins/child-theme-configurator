@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.5
+ *  Version: 1.7.5.1
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -75,7 +75,7 @@
             var exists = false;
             $.each( ctcAjax.themes, function( type, theme ) {
                 $.each( theme, function( slug, data ) {
-                    if ( slug == testslug && ( 'parnt' == type || 'new' == testtype ) ) {
+                    if ( slug.toLowerCase() === testslug.toLowerCase() && ( 'parnt' == type || 'new' == testtype ) ) {
                         exists = true;
                         return false;
                     }
@@ -89,9 +89,9 @@
             var self    = this,
                 regex   = /[^\w\-]/,
                 newslug = $( '#ctc_child_template' ).length ? $( '#ctc_child_template' )
-                    .val().toString().replace( regex ).toLowerCase() : '',
+                    .val().toString().replace( regex ) : '',
                 slug    = $( '#ctc_theme_child' ).length ? $( '#ctc_theme_child' )
-                    .val().toString().replace( regex ).toLowerCase() : newslug,
+                    .val().toString().replace( regex ) : newslug,
                 type    = $( 'input[name=ctc_child_type]:checked' ).val(),
                 errors  = [];
             if ( 'new' == type ) slug = newslug;
@@ -838,6 +838,7 @@
         
         set_query: function( value ) {
             var self = this;
+            if ( self.is_empty( value ) ) return false;
             //console.log( 'set_query: ' + value );
             self.current_query = value;
             $( '#ctc_sel_ovrd_query' ).val( '' );
@@ -851,6 +852,7 @@
         
         set_selector: function( value, label ) {
             var self = this;
+            if ( self.is_empty( value ) ) return false;
             //console.log( 'set_selector: ' + value + ' label: ' + label );
             $( '#ctc_sel_ovrd_selector' ).val( '' );
             self.current_qsid = value;
@@ -862,6 +864,7 @@
         set_rule: function( value, label ) {
             //console.log( 'set_rule: ' + value + ' label: ' + label );
             var self = this;
+            if ( self.is_empty( value ) ) return false;
             $( '#ctc_rule_menu' ).val( '' );
             $( '#ctc_rule_menu_selected' ).text( label );
             $( '.ctc-rewrite-toggle' ).text( self.getxt( 'rename' ) );
@@ -1022,12 +1025,12 @@
             $.ajax( { 
                 url:        url,  
                 data:       data,
-                dataType:   'ctc_update' == data.action && 'qsid' == obj ? 'text' : ( self.is_empty( datatype ) ? 'json' : datatype ),  //
-                //   'ctc_update' == data.action && // 'rule_val' == obj ? 'text' : // 'qsid' == obj ? 'text' : 
+                dataType:   ( self.is_empty( datatype ) ? 'json' : datatype ), 
+                // 'ctc_update' == data.action && // 'rule_val' == obj ? 'text' : // 'qsid' == obj ? 'text' : 
                 // 'ctc_update' == data.action && 'qsid' == obj ? 'text' : 
                 type:       'POST'
             } ).done( function( response ) {
-                //**console.log( response );
+                //console.log( response );
                 self.handle_success( obj, response );
             } ).fail( function() {
                 self.handle_failure( obj );
@@ -1038,7 +1041,7 @@
             var self = this;
             //console.log( 'handle_failure: ' + obj );
             $( '.query-icon, .save-icon' ).removeClass( 'spinner' ).addClass( 'failure' );
-            $( 'input[type=submit], input[type=button], input[type=checkbox]' ).prop( 'disabled', false );
+            $( 'input[type=submit], input[type=button], input[type=checkbox],.ctc-delete-input' ).prop( 'disabled', false );
             $( '.ajax-pending' ).removeClass( 'ajax-pending' );
             //FIXME: return fail text in ajax response
             if ( 'preview' == obj )
@@ -1063,7 +1066,7 @@
                 // show check mark
                 // FIXME: distinction between save and query, update specific status icon
                 $( '.query-icon, .save-icon' ).addClass( 'success' );
-                $( 'input[type=submit], input[type=button], input[type=checkbox]' ).prop( 'disabled', false );
+                $( 'input[type=submit], input[type=button], input[type=checkbox],.ctc-delete-input' ).prop( 'disabled', false );
                 // update ui from each response object  
                 $( response ).each( function() {
                     if ( 'function' == typeof self.update[ this.obj ] ) {
@@ -1322,10 +1325,12 @@
                     $( '#' + id + '_container' ).fadeToggle( 'fast' );
                     $( '.ctc-selector-container' ).not( '#' + id + '_container' ).fadeOut( 'fast' );
                 } );
-                $( '#ctc_main' ).on( 'click', '.ctc-save-input[type=button]', function( e ) {
+                $( '#ctc_main' ).on( 'click', '.ctc-save-input[type=button], .ctc-delete-input', function( e ) {
+                    e.preventDefault();
                     if ( $( this ).hasClass( 'ajax-pending' ) ) return false;
                     $( this ).addClass( 'ajax-pending' );
                     self.save( this ); // refresh menus after updating data
+                    return false;
                 } );
                 $( '#ctc_main' ).on( 'click', '.ctc-selector-edit', function( e ) {
                     e.preventDefault();
@@ -1461,9 +1466,6 @@
         grad_regx:      '(\\w+)'
 
     };
-} ( jQuery ) );
-
-jQuery( document ).ready( function( $ ) {
     //console.log( 'creating new chldthmcfg object ...' );
     $.chldthmcfg.init();
-});
+} ( jQuery ) );

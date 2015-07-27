@@ -283,6 +283,15 @@ if ( count( $stylesheets ) ):?>
 endif; ?>
     </div>
     <div class="ctc-input-row clearfix">
+<?php if ( '' == $hidechild && !$enqueueset ): ?>
+      <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
+      <div class="ctc-input-cell-wide">
+      <div class="update-nag">
+        <strong><?php _e( 'Please read before you click:', 'chld_thm_cfg' ); ?></strong>
+        <p><?php _e( 'This plugin makes significant modifications to your child theme, to include changing CSS, removing comments and adding php functions.', 'chld_thm_cfg' ); ?>
+        <?php _e( 'If you are using an existing Child Theme,', 'chld_thm_cfg' ); ?> <a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/how-to-use/#duplicating-existing-child-themes" target="_blank"><?php _e( 'please consider using the Duplicate Child Theme option', 'chld_thm_cfg' ); ?></a> <?php _e( 'before proceeding.', 'chld_thm_cfg' ); ?></p>
+      </div><p>&nbsp;</p></div>
+<?php endif; ?>
       <div class="ctc-input-cell"> <strong>&nbsp;</strong> </div>
       <div class="ctc-input-cell">
         <input class="ctc_submit button button-primary" id="ctc_load_styles" name="ctc_load_styles"  type="submit" 
