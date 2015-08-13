@@ -466,6 +466,10 @@
                     set($(e.target).closest(".sp-thumb-el").data("color"));
                     move();
                 }
+                else if ( e.altKey ) {
+                    removeColorFromSelectionPalette( $(e.target).closest(".sp-thumb-el").data("color") );
+                    drawPalette();
+                }
                 else {
                     set($(e.target).closest(".sp-thumb-el").data("color"));
                     move();
@@ -506,6 +510,18 @@
             }
         }
 
+        function removeColorFromSelectionPalette( rgbString ) {
+            while (selectionPalette.indexOf( rgbString ) !== -1) {
+                selectionPalette.splice(selectionPalette.indexOf( rgbString ), 1 );
+            }
+            if (localStorageKey && window.localStorage) {
+                try {
+                    window.localStorage[localStorageKey] = selectionPalette.join(";");
+                }
+                catch(e) { }
+            }
+        }
+        
         function addColorToSelectionPalette(color) {
             if (showSelectionPalette) {
                 var rgb = tinycolor(color).toRgbString();
