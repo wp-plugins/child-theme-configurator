@@ -277,9 +277,9 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Changelog ==
 = 1.7.6 =
-* Set background to none
 * Sanitize child theme slug
 * Remove cascade load order comments from generated CSS
+* Set admin background to prevent theme override
 
 = 1.7.5.1 =
 * Refactored background normalization function to better follow CSS specification.
