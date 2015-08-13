@@ -25,6 +25,7 @@ if ( !defined( 'CHLD_THM_CFG_PLUGINS_VERSION' ) ):
 <li><h3><?php _e( 'Customize Plugin Stylesheets', 'chld_thm_cfg' ); ?></h3>
 <p><?php _e( 'Apply the power of CTC\'s top-rated interface to your site\'s plugin styles. All new design makes it much easier to get the results you want.', 'chld_thm_cfg' ); ?></p></li>
 <li><h3><?php _e( 'Quick Preview', 'chld_thm_cfg' ); ?></h3><p><?php _e( 'Test your child theme with a single click.', 'chld_thm_cfg' ); ?></p></li>
+<li><h3><?php _e( 'Color Palettes', 'chld_thm_cfg' ); ?></h3><p><?php _e( 'Keep the colors you select just a click away. No more searching for hex codes and RGB values.', 'chld_thm_cfg' ); ?></p></li>
 <li><h3><?php _e( 'Find related styles', 'chld_thm_cfg' ); ?></h3><p><?php _e( 'Use the "All Styles" panel to edit groups of selectors from a single combined list.', 'chld_thm_cfg' ); ?></p></li>
 <li><h3><?php _e( 'Find styles by Nav Menu', 'chld_thm_cfg' ); ?></h3><p><?php _e( 'Tweak menus quickly and easily.', 'chld_thm_cfg' ); ?></p></li>
 <li><h3><?php _e( 'Most recent edits', 'chld_thm_cfg' ); ?></h3><p><?php _e( 'Return to recently edited selectors from a toggleable sidebar.', 'chld_thm_cfg' ); ?></p></li>

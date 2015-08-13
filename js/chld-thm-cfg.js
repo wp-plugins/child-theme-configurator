@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.5.1
+ *  Version: 1.7.6
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -609,8 +609,9 @@
         },
         
         setup_spectrum: function( obj ) {
-            var self = this,
-                colortxt = $( obj ).attr( 'id' ) + '_colortxt';
+            var self        = this,
+                colortxt    = $( obj ).attr( 'id' ) + '_colortxt',
+                palette     = !self.is_empty( ctcAjax.palette );
             try {
                 $( obj ).spectrum( {
                     showInput:              true,
@@ -622,7 +623,13 @@
                     move:                   function( color ) {
                         $( obj ).data( 'color', color );
                         self.coalesce_inputs( obj );
-                    }
+                    },
+                    showPalette: palette ? true : false, 
+                    showSelectionPalette: palette ? true : false,
+                    palette: [ ],
+                    maxSelectionSize: 36,
+                    localStorageKey: "ctc-palette." + ctcAjax.child,
+                    hideAfterPaletteSelect: true,
                 } ).on( 'change', function( e ){
                     var color = $( this ).spectrum( 'get' );
                     //console.log( 'color change: ' + color );
@@ -636,6 +643,7 @@
                         function() { 
                             self.coalesce_inputs( $this );
                             $( $this ).spectrum( 'set', $val );
+                            
                         }, 
                         500  
                     ) );

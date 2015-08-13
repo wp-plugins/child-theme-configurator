@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS input, output, parsing, normalization and storage
-    Version: 1.7.5.1
+    Version: 1.7.6
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -1049,8 +1049,8 @@ class ChildThemeConfiguratorCSS {
                     /** FIXME ** need better way to sort rules and multiple values ***/
                     $this->encode_shorthand( $shorthand, $rule_output );
                     if ( count( $rule_output ) ):
-                        // show load order
-                        $sel_output .= isset( $this->dict_seq[ $qsid ] )?'/*' . $this->dict_seq[ $qsid ] . '*/' . LF:''; 
+                        // show load order -- removed in v.1.7.6 by popular demand
+                        //$sel_output .= isset( $this->dict_seq[ $qsid ] )?'/*' . $this->dict_seq[ $qsid ] . '*/' . LF:''; 
                         $sel_output .= $sel . ' {' . LF . $this->stringify_rule_output( $rule_output ) . '}' . LF; 
                         $has_selector = 1;
                     endif;

@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Main Controller Class
-    Version: 1.7.5.1
+    Version: 1.7.6
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -108,7 +108,7 @@ class ChildThemeConfiguratorAdmin {
     }
 
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.5.1' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.css', array(), '1.7.6' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -214,7 +214,7 @@ class ChildThemeConfiguratorAdmin {
             // organize into parent and child themes
             $group      = $theme->parent() ? 'child' : 'parnt';
             // get the theme slug
-            $slug       = $theme->get_stylesheet();
+            $slug       = $this->sanitize_slug( $theme->get_stylesheet() );
             // get the theme slug
             $version    = $theme->get( 'Version' );
             // strip auto-generated timestamp from CTC child theme version
@@ -713,6 +713,13 @@ class ChildThemeConfiguratorAdmin {
      */
     function sanitize_options( $input ) {
         return $input;
+    }
+    
+    /**
+     * remove slashes and non-alphas from stylesheet name
+     */
+    function sanitize_slug( $slug ) {
+        return preg_replace( "/[^\w\-]/", '', $slug );
     }
     
     function update_redirect( $msg = 1 ) {
