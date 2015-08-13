@@ -37,7 +37,7 @@ This option imports the parent stylesheet from the child stylesheet. This enable
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_tutorial">Tutorial Video</h3>
-<iframe src="//fast.wistia.net/embed/iframe/c0fbu8jhtj" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width="640" height="360"></iframe><!-- END tab --> 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NQ1M-ZlRScY?rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe><!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_query_selector">Query/Selector Tab</h3>
 <p>There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by <strong>selector</strong> and by <strong>property</strong>. If you wish to change a specific selector (e.g., h1), use the "Query/Selector" tab. If you have a specific value you wish to change site-wide (e.g., the color of the type), use the "Property/Value" tab.</p>

@@ -1,3 +1,6 @@
+body {
+    background:none !important;
+}
 p {
     line-height:1.4;
 }
@@ -909,6 +912,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 /* Palettes */
 .sp-palette-container {
     border-right: solid 1px #ccc;
+    max-width: 60px;
 }
 
 .sp-palette-only .sp-palette-container {
