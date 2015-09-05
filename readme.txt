@@ -1,7 +1,7 @@
 === Child Theme Configurator ===
 Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
-Tags: child theme, child themes, customize style, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, style, stylesheet, customizer
+Tags: child theme, child themes, custom styles, customize styles, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, style, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.3
 Stable tag: 1.7.6.1
@@ -12,19 +12,19 @@ Create child themes and customize styles, templates and functions. Enqueues styl
 
 == Description ==
 
-Child Theme Configurator is a fast and easy to use CSS editor that allows you to create a child theme and customize it beyond the options of the Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to change. It properly enqueues theme and font stylesheets for optimum performance and handles vendor-specific syntax, giving you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched. [Learn more about how to create a child theme](http://www.childthemeconfigurator.com).
+Child Theme Configurator is a fast and easy to use CSS editor that allows you to create a child theme and customize it beyond the options of the Customizer. Designed for WordPress users who want to be able to customize stylesheets directly, the Child Theme Configurator lets you easily identify and override the exact CSS attributes you want to customize. It properly enqueues theme and font stylesheets for optimum performance and handles vendor-specific syntax, giving you unlimited control over your WordPress look and feel while leaving your Parent Theme untouched. [Learn more about how to create a child theme](http://www.childthemeconfigurator.com).
 
 = Take Control of Your Child Themes =
 
 https://www.youtube.com/watch?v=NQ1M-ZlRScY
 
-The Child Theme Configurator parses and indexes your stylesheets so that every CSS media query, selector, property and value are at your fingertips. Second, it shows you how each change you make will look before you commit it to the child theme. Finally, it saves your work so that you can fine-tune your child themes without the risk of losing your edits. 
+The Child Theme Configurator parses and indexes your stylesheets so that every CSS media query, selector, property and value are at your fingertips. Second, it shows you how each customization you make will look before you commit it to the child theme. Finally, it saves your work so that you can customize styles in your child themes without the risk of losing your edits. 
 
 You can create any number of child themes from your existing Parent Themes. The Child Theme Configurator lets you choose from your installed themes (even existing child themes) and save the results in your Themes directory.
 
-When you are ready, just activate the Child Theme and your WordPress site takes on the new look and feel automatically.
+When you are ready, just activate the Child Theme and your WordPress site takes on the custom styles automatically.
 
-= Why create child themes using the Child Theme Configurator? =
+= Why create child themes and customize styles using the Child Theme Configurator? =
 
 * Update themes without losing customizations
 * Enqueue (link) stylesheets instead of using @import
@@ -41,12 +41,12 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 * Identify and override exact selectors from the parent theme
 * Change specific colors, backgrounds, font styles, etc., without changing other elements
 * Automatically generate cross-browser and vendor-prefixed properties and CSS gradients
-* Preview style changes before committing to them
+* Preview custom styles before committing to them
 * Uses WP Filesystem API – will not create files you cannot remove
 
 = Child Theme Configurator PRO =
 
-Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets. We’ve added more features to make customizing styles quicker and easier with PRO. 
+Apply the CSS customizing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets. We’ve added more features to make customizing styles quicker and easier with PRO. 
 
 https://www.youtube.com/watch?v=fktwCk43a8c
 
@@ -222,13 +222,13 @@ You have to load a child theme from the Parent/Child tab for the preview to disp
 
 = Can I edit the Child Theme stylesheet manually offline or by using the Editor or do I have to use the Configurator? = 
 
-You can make any manual changes you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your changes the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
+You can make any manual customizations you wish to the stylesheet. Just make sure you import the revised stylesheet using the Parent/Child panel or the Configurator will overwrite your customizations the next time you use it. Just follow the steps as usual but select the "Use Existing Child Theme" radio button as the "Child Theme" option. The Configurator will automatically update its internal data from the new stylesheet.
 
 = Where are the child theme .php files? = 
 
 The Child Theme Configurator automatically adds a blank functions.php file to the child theme's directory. You can copy parent theme template files using the Files tab. If you want to create new templates and directories you will have to create/upload them manually via FTP or SSH. Remember that a child theme will automatically inherit the parent theme's templates unless they also exist in the child theme's directory. Only copy templates that you intend to customize.
 
-= How do I change a specific color/font style/background? = 
+= How do I customize a specific color/font style/background? = 
 
 You can override a specific CSS value globally using the Property/Value tab. See Property/Value, above.
 
@@ -543,7 +543,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 
 == Override Parent Styles ==
 
-There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by CSS selector and by property. If you wish to change a specific CSS selector (e.g., h1), use the "Query/Selector" tab. If you have a specific CSS value you wish to change site-wide (e.g., the color of the type), use the "Property/Value" tab.
+There are two ways to identify and customize parent styles. The Child Theme Configurator lets you search styles by CSS selector and by property. If you wish to customize a specific CSS selector (e.g., h1), use the "Query/Selector" tab. If you have a specific CSS value you wish to customize site-wide (e.g., the color of the type), use the "Property/Value" tab.
 
 = Query/Selector Tab =
 
