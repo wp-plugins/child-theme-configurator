@@ -1,7 +1,7 @@
 === Child Theme Configurator ===
 Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
-Tags: child theme, child themes, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, stylesheet, customizer
+Tags: child theme, child themes, customize style, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, style, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.3
 Stable tag: 1.7.6.1
@@ -46,7 +46,7 @@ When you are ready, just activate the Child Theme and your WordPress site takes 
 
 = Child Theme Configurator PRO =
 
-Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets. We’ve added more features to make design work quicker and easier with PRO. 
+Apply the CSS editing power of Child Theme Configurator to any WordPress Plugin installed on your website. Child Theme Configurator PRO scans your plugins and lets you customize their stylesheets. We’ve added more features to make customizing styles quicker and easier with PRO. 
 
 https://www.youtube.com/watch?v=fktwCk43a8c
 
@@ -97,7 +97,7 @@ Learn more at http://www.lilaeamedia.com/plugins/intelliwidget-responsive-menu
 
 5. Choose stylesheet handling:
   * **None (handled by theme)**
-Select this option if all stylesheets are correctly enqueued for child themes. If you find that styles are not being applied correctly, use a different option.
+Select this option if all stylesheets are correctly enqueued for child themes. If you find that custom styles are not being applied correctly, use a different option.
   * **Enqueue parent stylesheet (default)**
     Select this option if the theme enqueues the active stylesheet but has no special handling for child themes. Start with this option if unsure.
   * **Enqueue child stylesheet**
@@ -136,7 +136,7 @@ No. Child Theme Configurator is designed to work independently of themes and plu
 
 = How do I add comments? =
 
-Arbitrary comments are not supported. Providing a high level of flexibility for previewing and modifying styles requires sophisticated parsing and data structures. Maintaining comments that bound to any particular element in the stylesheet is prohibitively expensive compared to the value it would add. Although we are working to include this as an option in the future, currently all comments are stripped from the child theme stylesheet code.
+Arbitrary comments are not supported. Providing a high level of flexibility for previewing and modifying custom styles requires sophisticated parsing and data structures. Maintaining comments that bound to any particular element in the stylesheet is prohibitively expensive compared to the value it would add. Although we are working to include this as an option in the future, currently all comments are stripped from the child theme stylesheet code.
 
 = Does it work with Multisite? =
 
@@ -159,7 +159,7 @@ Contact the vendor directly to ask for this core functionality. It is our opinio
 Child Theme Configurator is designed to add the minimum amount of additional overhead possible and can actually improve performance. **For example:**
 
    * Child Theme Configurator creates or updates files that are already being read by the system. On the front-end, there are no database calls so WordPress can run independent of the plugin. In fact, you can remove Child Theme Configurator when you are finished setting up your child themes.
-   * Customizations are applied to a stylesheet file that can be cached by the browser and/or cached and minimized by a performance caching plugin. Because the editor creates mostly "overrides" to existing styles, the file is typically smaller than other stylesheets.
+   * Custom styles are applied to a stylesheet file that can be cached by the browser and/or cached and minimized by a performance caching plugin. Because the editor creates mostly "overrides" to existing styles, the file is typically smaller than other stylesheets.
    * The code that drives the editor interface only loads when the tool is being used from the WordPress Admin, including Javascript and CSS. This means that it will not get in the way of other admin pages.
    * The biggest performance hit occurs when you generate the Child Theme files from the Parent/Child tab, but this is a one-time event and only occurs from the WordPress Admin.
 
@@ -232,7 +232,7 @@ The Child Theme Configurator automatically adds a blank functions.php file to th
 
 You can override a specific CSS value globally using the Property/Value tab. See Property/Value, above.
 
-= How do I add styles that aren't in the Parent Theme? = 
+= How do I add custom styles that aren't in the Parent Theme? = 
 
 You can add queries and selectors using the "Raw CSS" textarea on the Query/Selector tab. See Query/Selector, above.
 
@@ -246,7 +246,7 @@ Delete the value from the input for the property you wish to remove. The Child T
 
 = How do I set the !important flag? = 
 
-We always recommend relying on good cascading design over global overrides. To that end, you have ability to change the load order of child theme styles by entering a value in the "Order" field. And yes, you can now set properties as important by checking the "!" box next to each input. Please use judiciously.
+We always recommend relying on good cascading design over global overrides. To that end, you have ability to change the load order of child theme custom styles by entering a value in the "Order" field. And yes, you can now set properties as important by checking the "!" box next to each input. Please use judiciously.
 
 = How do I create cross-browser gradients? = 
 
@@ -294,7 +294,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Uses spectrum color picker to support transparency and named colors.
 * Refactored entire system to support fallback values for any property.
 * Fix path when duplicating child theme on first run
-* New Feature: "delete child values" button - easily revert styles in child theme stylesheet
+* New Feature: "delete child values" button - easily revert custom styles in child theme stylesheet
 
 = 1.7.4.2 =
 * Will not write child theme stylesheet if error detected in functions.php 
@@ -560,7 +560,7 @@ Click "Save" to update the child theme stylesheet and save your changes to the W
 
 If you wish to add additional properties to a given CSS selector, first load the selector using the Query/Selector tab. Then find the property you wish to override by typing in the New Property autoselect box. Select by clicking with the mouse or by pressing the "Enter" or "Tab" keys. This will add a new input row to the selector inputs.
 
-If you wish to add completely new CSS selectors, or even new @media queries, you can enter free-form CSS in the "Raw CSS" textarea. Be aware that your syntax must be correct (i.e., balanced curly braces, etc.) for the parser to load the new styles. You will know it is invalid because a red "X" will appear next to the save button.
+If you wish to add completely new CSS selectors, or even new @media queries, you can enter free-form CSS in the "Raw CSS" textarea. Be aware that your syntax must be correct (i.e., balanced curly braces, etc.) for the parser to load the new custom styles. You will know it is invalid because a red "X" will appear next to the save button.
 
 If you prefer to use shorthand syntax for properties and values instead of the inputs provided by the Child Theme Configurator, you can enter them here as well. The parser will convert your input into normalized CSS code automatically.
 
@@ -620,7 +620,7 @@ Some themes (particularly commercial themes) do not correctly load parent templa
 
 == Caveats ==
 
-* Arbitrary comments are not supported. Providing a high level of flexibility for previewing and modifying styles requires a sophisticated parsing system. Maintaining comments that bound to any particular element in the stylesheet is prohibitively expensive compared to the value it would add. Although we are working to include this as an option in the future, currently all comments are stripped from the child theme stylesheet code.
+* Arbitrary comments are not supported. Providing a high level of flexibility for previewing and modifying custom styles requires a sophisticated parsing system. Maintaining comments that bound to any particular element in the stylesheet is prohibitively expensive compared to the value it would add. Although we are working to include this as an option in the future, currently all comments are stripped from the child theme stylesheet code.
 * Legacy gradient syntax is not supported. The Child Theme Configurator plugin does not support the MS filter gradient or legacy webkit gradient. These will continue to work if they are used in the parent theme, but will not be written to the child theme stylesheet. If there is a demand, we may add it in a future release, but most users should have upgraded by now.
 * Only two-color gradients. The Child Theme Configurator plugin is powerful, but we have simplified the gradient interface. You can use any gradient you want as long as it has two colors and no intermediate stops.
 * No @font-face rules. The Child Theme Configurator plugin only supports @media and @import. If you need other @rules, put them in a separate stylesheet and import them into the Child Theme stylesheet.
