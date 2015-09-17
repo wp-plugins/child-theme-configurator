@@ -3,7 +3,7 @@ Contributors: lilaeamedia
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8QE5YJ8WE96AJ
 Tags: child theme, child themes, custom styles, customize styles, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, style, stylesheet, customizer
 Requires at least: 3.9
-Tested up to: 4.3
+Tested up to: 4.4
 Stable tag: 1.7.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
