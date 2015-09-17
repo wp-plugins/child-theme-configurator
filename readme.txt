@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, child themes, custom styles, customize styles, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, style, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.3
-Stable tag: 1.7.6.1
+Stable tag: 1.7.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -276,6 +276,9 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.7.7 =
+* Fix: Margin and Padding shorthand generated incorrectly.
+
 = 1.7.6.1 =
 * Addressed case where parent or child theme is in subdirectory.
 * Minimized admin CSS.
@@ -539,7 +542,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
-1.7.6.1 Minor changes to improve UI and CSS generation.
+1.7.7 Fixed significant issue with shorthand generation.
 
 == Override Parent Styles ==
 

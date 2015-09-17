@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Main Controller Class
-    Version: 1.7.6.1
+    Version: 1.7.7
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -108,7 +108,7 @@ class ChildThemeConfiguratorAdmin {
     }
 
     function enqueue_scripts() {
-        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.min.css', array(), '1.7.6.1' );
+        wp_enqueue_style( 'chld-thm-cfg-admin', CHLD_THM_CFG_URL . 'css/chld-thm-cfg.min.css', array(), '1.7.7' );
         
         // we need to use local jQuery UI Widget/Menu/Selectmenu 1.11.2 because selectmenu is not included in < 1.11.2
         // this will be updated in a later release to use WP Core scripts when it is widely adopted
@@ -1053,11 +1053,15 @@ add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_child_css', 999 );
         // verify file is in child theme and exists before removing.
         $file = ( 'img' == $ext ? $file : $file . '.' . $ext );
         if ( $child_file  = $this->css->is_file_ok( $this->css->get_child_target( $file ), 'write' ) ):
-            if ( $wp_filesystem->exists( $this->fspath( $child_file ) ) )
-                if ( $wp_filesystem->delete( $this->fspath( $child_file ) ) ) return TRUE;
+            if ( $wp_filesystem->exists( $this->fspath( $child_file ) ) ):
+                if ( $wp_filesystem->delete( $this->fspath( $child_file ) ) ):
+                    return TRUE;
+                else:
+                    $this->errors[] = __( 'Could not delete file.', 'chld_thm_cfg' );
+                    $this->debug( 'Could not delete file', __FUNCTION__ );
+                endif;
+            endif;
         endif;
-        $this->errors[] = __( 'Could not delete file.', 'chld_thm_cfg' );
-        $this->debug( 'Could not delete file', __FUNCTION__ );
     }
     
     function get_files( $theme, $type = 'template' ) {
