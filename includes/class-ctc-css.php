@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS input, output, parsing, normalization and storage
-    Version: 1.7.6
+    Version: 1.7.7
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -62,7 +62,10 @@ class ChildThemeConfiguratorCSS {
         'transition\-timing\-function',
         'transition\-delay',
         'hyphens',
-        'transform'
+        'transform',
+        'columns',
+        'column\-gap',
+        'column\-count',
     );
     var $configvars = array(
         'addl_css',
@@ -1110,7 +1113,7 @@ class ChildThemeConfiguratorCSS {
      * FIXME - somehow condense all these foreach loops?
      */
     function encode_shorthand( $shorthand, &$rule_output ) {
-        //print_r( $shorthand );
+        //if ( $shorthand ) print_r( $shorthand );
         foreach ( $shorthand as $property => $sides ):
             if ( isset( $sides[ 'top' ] ) ):
                 foreach ( $sides[ 'top' ] as $tval => $tarr ):
@@ -1134,6 +1137,7 @@ class ChildThemeConfiguratorCSS {
                                                 $bval,
                                                 $lval,
                                             );
+                                            // echo 'combo before: ' . print_r( $combo, TRUE ) . LF;
                                             // remove from shorthand array
                                             unset( $shorthand[ $property ][ 'top' ][ $tval ] );
                                             unset( $shorthand[ $property ][ 'right' ][ $rval ] );
@@ -1141,10 +1145,19 @@ class ChildThemeConfiguratorCSS {
                                             unset( $shorthand[ $property ][ 'left' ][ $lval ] );
                                             
                                             // combine into shorthand syntax
-                                            if ( $lval == $rval ) array_pop( $combo );
-                                            if ( $bval == $tval ) array_pop( $combo );
-                                            if ( $rval == $tval && $bval == $tval ) array_pop( $combo );
-                                            
+                                            if ( $lval === $rval ):
+                                                //echo 'left same as right, popping left' . LF;
+                                                array_pop( $combo );
+                                                if ( $bval === $tval ):
+                                                    //echo 'bottom same as top, popping bottom' . LF;
+                                                    array_pop( $combo );
+                                                    if ( $rval === $tval ): // && $bval === $tval ):
+                                                        //echo 'right same as top, popping right' . LF;
+                                                        array_pop( $combo );
+                                                    endif;
+                                                endif;
+                                            endif;
+                                            //echo 'combo after: ' . print_r( $combo, TRUE ) . LF;
                                             // set rule
                                             $rule_output[ $property . ': ' . implode( ' ', $combo ) . ( $tarr[ 0 ] ? ' !important' : '' ) ] = $this->sortstr( $property, $currseq );
                                             // reset sort sequence
