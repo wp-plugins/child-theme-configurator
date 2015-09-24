@@ -5,7 +5,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles the plugin User Interface
-    Version: 1.7.7
+    Version: 1.7.8
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -200,6 +200,7 @@ class ChildThemeConfiguratorUI {
 
     		// Add help tabs
             if ( isset( $tabs[ 1 ] ) ):
+                $priority = 0;
                 while( count( $tabs[ 1 ] ) ):
                     $id         = array_shift( $tabs[ 1 ] );
                     $title      = array_shift( $tabs[ 2 ] );
@@ -208,6 +209,7 @@ class ChildThemeConfiguratorUI {
 	    	    	    'id'        => $id,
     		    	    'title'     => $title,
 	    		        'content'   => $content, 
+                        'priority'  => ++$priority,
                     ) );
                 endwhile;
             endif;

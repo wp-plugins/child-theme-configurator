@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.7
+ *  Version: 1.7.8
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -522,6 +522,7 @@
          * isnew    is passed true when new rule is selected from menu
          */
         input_row: function( qsid, rule, seq, data, isnew ) {
+            //console.log( 'in input_row' );
             var self = this,
                 html = '';
             if ( !self.is_empty( data ) && !self.is_empty( data.value ) && !self.is_empty( data.value[ rule ] ) ) {
@@ -745,6 +746,8 @@
                         n = 1,
                         row,
                         first;
+                    //console.log( 'current qsdata before:' );
+                    //console.log( self.current_qsdata );
                     if ( self.is_empty( self.current_qsdata.value ) ) {
                         self.current_qsdata.value = {};
                     }
@@ -754,6 +757,8 @@
                     if ( self.is_empty( self.current_qsdata.value[ ui.item.label ].child ) ) {
                         self.current_qsdata.value[ ui.item.label ].child = [];
                     }
+                    //console.log( 'current qsdata after:' );
+                    //console.log( self.current_qsdata );
                     // seed current qsdata with new blank value with id 1
                     // this will be modified during input_row function to be next id in order
                     self.current_qsdata.value[ ui.item.label ].child.push( [ '', 0, 1, 1 ] );
@@ -944,7 +949,7 @@
                     postdata[ 'ctc_query_' + key ] = val;
                 } );
             }
-            $( '.query-icon' ).remove();
+            $( '.query-icon,.ctc-status-icon' ).remove();
             //console.log( status_sel + ' ' + $( status_sel ).length );
             $( status_sel + ' .ctc-status-icon' ).remove();
             $( status_sel ).append( '<span class="ctc-status-icon spinner query-icon"></span>' );
@@ -974,7 +979,7 @@
             // disable the button until ajax returns
             $( obj ).prop( 'disabled', true );
             // clear previous success/fail icons
-            $( '.ctc-status-icon' ).remove();
+            $( '.ctc-query-icon,.ctc-status-icon' ).remove();
             // show spinner
             $( obj ).parent( '.ctc-textarea-button-cell, .ctc-button-cell' )
                 .append( '<span class="ctc-status-icon spinner save-icon"></span>' );
@@ -1027,8 +1032,8 @@
         ajax_post: function( obj, data, datatype ) {
             var self = this,
                 url = ctcAjax.ajaxurl;
-            //**console.log( 'ajax_post: ' + obj );
-            //**console.log( data );
+            //console.log( 'ajax_post: ' + obj );
+            //console.log( data );
             // get ajax url from localized object
             $.ajax( { 
                 url:        url,  
@@ -1124,7 +1129,7 @@
             qsid: function( res ) {
                 //console.log( res );
                 var self = this,
-                    id, html, val, selector;
+                    id, html, val, selector, empty;
                 self.current_qsid  = res.key;
                 self.current_qsdata = res.data;
                 //console.log( 'update.qsid: ' + self.current_qsid );
@@ -1139,9 +1144,12 @@
                     $( '#ctc_child_load_order_container' ).html( html );
                 }
                 if ( self.is_empty( self.current_qsdata.value ) ) {
+                    //console.log( 'qsdata is empty' );
+                    empty = true;
                     $( '#ctc_sel_ovrd_rule_inputs' ).empty(); 
-                    $( '#ctc_sel_ovrd_rule_header' ).hide();
                 } else {
+                    //console.log( 'qsdata NOT empty' );
+                    empty = false;
                     html = '';
                     $.each( self.current_qsdata.value, function( rule, value ) {
                         html += self.input_row( self.current_qsid, rule, 'ovrd', self.current_qsdata );
@@ -1150,22 +1158,30 @@
                         self.setup_spectrum( this );
                     } );
                     self.coalesce_inputs( '#ctc_child_all_0_swatch' );
-                    $( '#ctc_sel_ovrd_rule_header' ).show();
                 }
                 if ( self.jquery_err.length ) {
                     self.jquery_notice( 'update.qsid' );
                 } else {
                     //console.log( 'reload menus: ' + ( self.reload_menus ? 'true' : 'false' ) );
                     if ( self.reload_menus ) {
+                        self.load_queries();
                         self.set_query( self.current_qsdata.query );
                         self.load_rules();
                     }
                     $( '#ctc_sel_ovrd_selector_selected' ).text( self.current_qsdata.selector );
                     $( '.ctc-rewrite-toggle' ).text( self.getxt( 'rename' ) );
-                    $( '#ctc_sel_ovrd_new_rule,'
+                    $( '.ctc-rewrite-toggle' ).show();
+                    if ( !empty ){
+                        $( '#ctc_sel_ovrd_rule_header,'
+                        + '#ctc_sel_ovrd_new_rule,'
                         + '#ctc_sel_ovrd_rule_inputs_container,'
-                        + '#ctc_sel_ovrd_rule_inputs,'
-                        + '.ctc-rewrite-toggle' ).show();
+                        + '#ctc_sel_ovrd_rule_inputs' ).show();
+                    } else {
+                        $( '#ctc_sel_ovrd_rule_header,'
+                        + '#ctc_sel_ovrd_new_rule,'
+                        + '#ctc_sel_ovrd_rule_inputs_container,'
+                        + '#ctc_sel_ovrd_rule_inputs' ).hide();
+                    }
                     //self.scrolltop();
                 }
             }, 
@@ -1263,12 +1279,14 @@
         
         // initialize object vars, bind event listeners to elements, load menus and start plugin
         init: function() {
+            //console.log( 'initializing...' )
             var self = this;
             // auto populate parent/child tab values
             self.autogen_slugs();
             self.set_existing();
             // initialize theme menus
             if ( !$( '#ctc_theme_parnt' ).is( 'input' ) ) {
+                //console.log( 'initializing theme select menus...' )
                 try {
                     $.widget( 'ctc.themeMenu', $.ui.selectmenu, {
                         _renderItem: function( ul, item ) {
@@ -1315,6 +1333,7 @@
                 }
             }
             if ( self.is_empty( self.jquery_err ) ){
+                //console.log( 'delegating event bindings...' )
                 $( '#ctc_main' ).on( 'click', '.ctc-selector-handle', function( e ) {
                     //'.ctc-option-panel-container'
                     e.preventDefault();
@@ -1340,6 +1359,20 @@
                     $( this ).addClass( 'ajax-pending' );
                     self.save( this ); // refresh menus after updating data
                     return false;
+                } );
+                $( '#ctc_main' ).on( 'keydown', '.ctc-selector-container .ctc-child-value[type=text]', function( e ) {
+                    if ( 13 === e.which ) { 
+                        //console.log( 'return key pressed' );
+                        var $obj = $( this ).parents( '.ctc-selector-row' ).find( '.ctc-save-input[type=button]' ).first();
+                        if ( $obj.length ) {
+                            e.preventDefault();
+                            //console.log( $obj.attr( 'id' ) );
+                            if ( $obj.hasClass( 'ajax-pending' ) ) return false;
+                            $obj.addClass( 'ajax-pending' );
+                            self.save( $obj );
+                            return false;
+                        }
+                    }
                 } );
                 $( '#ctc_main' ).on( 'click', '.ctc-selector-edit', function( e ) {
                     e.preventDefault();
@@ -1381,7 +1414,7 @@
                     e.preventDefault();
                     // clear the notice box
                     //set_notice( '' );
-                    $( '.ctc-status-icon' ).remove();
+                    $( '.ctc-query-icon,.ctc-status-icon' ).remove();
                     var id = '#' + $( this ).attr( 'id' );
                     self.focus_panel( id );
                 } );
@@ -1403,12 +1436,17 @@
                 $( '#ctc_load_form' ).on( 'submit', function() {
                     return ( self.validate() ); //&& confirm( self.getxt( 'load' ) ) ) ;
                 } );
-                $( '#ctc_query_selector_form').on( 'submit', function( e ) {
+                $( '#ctc_query_selector_form' ).on( 'submit', function( e ) {
                     e.preventDefault();
                     $this = $( '#ctc_save_query_selector' );
                     if ( $this.hasClass( 'ajax-pending' ) ) return false;
                     $this.addClass( 'ajax-pending' );
                     self.save( $this ); // refresh menus after updating data
+                    return false;
+                } );
+                $( '#ctc_rule_value_form' ).on( 'submit', function( e ) {
+                    //console.log( 'rule value empty submit' );
+                    e.preventDefault();
                     return false;
                 } );
                 $( '#ctc_theme_child, #ctc_theme_child-button, #ctc_child_type_existing' )
@@ -1446,15 +1484,19 @@
                     document.location = $( this ).prop( 'href' );
                     return false;
                 } );
+                //console.log( 'loading autoselect menus...' )
                 // initialize autoselect menus
                 self.setup_menus();
+                //console.log( 'checking for additional stylesheets...' )
                 // mark additional linked stylesheets for parsing
                 self.set_addl_css();
                 // show last 25 selectors edited
     //                    render_recent();
                 // turn on submit buttons (disabled until everything is loaded to prevent errors)
+                //console.log( 'releasing submit buttons...' )
                 $( 'input[type=submit], input[type=button]' ).prop( 'disabled', false );
                 self.scrolltop();
+                //console.log( 'Ready.' )
                 // disappear any notices after 20 seconds
                 setTimeout( self.fade_update_notice, 20000 );
             } else {
