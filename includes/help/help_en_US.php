@@ -36,8 +36,8 @@ This option imports the parent stylesheet from the child stylesheet. This enable
 </ol>
 <!-- END tab --> 
 <!-- BEGIN tab -->
-<h3 id="ctc_tutorial">Tutorial Video</h3>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/NQ1M-ZlRScY?rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe><!-- END tab --> 
+<h3 id="ctc_tutorial">Tutorial Videos</h3>
+<p>We are no longer embedding videos for performance reasons. <a href="http://www.childthemeconfigurator.com/tutorial-videos" target="_blank">Click here to view videos.</a></p><!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_query_selector">Query/Selector Tab</h3>
 <p>There are two ways to identify and override parent styles. The Child Theme Configurator lets you search styles by <strong>selector</strong> and by <strong>property</strong>. If you wish to change a specific selector (e.g., h1), use the "Query/Selector" tab. If you have a specific value you wish to change site-wide (e.g., the color of the type), use the "Property/Value" tab.</p>
@@ -189,8 +189,6 @@ The plugin only loads the bulk of the code in the admin when you are using the t
 <ul class="instructions"><li>Avoiding fixed width and height values. Using max- and min-height values and percentages are ways to make your designs respond to the viewer's browser size.</li>
 <li>Combining floats and clears with inline and relative positions allow the elements to adjust gracefully to their container's width.</li>
 <li>Showing and hiding content with Javascript.</li></ul> 
-<p>We've put together a video tutorial that shows how to use Child Theme Configurator to make a fixed-width theme responsive.</p>
-<iframe width="560" height="315" src="//www.youtube.com/embed/iBiiAgsK4G4?rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe> 
 <!-- END tab --> 
 <!-- BEGIN tab -->
 <h3 id="ctc_glossary">Glossary</h3>

@@ -4,6 +4,12 @@ body {
 p {
     line-height:1.4;
 }
+.wrap h1, .wrap h2 {
+    font-size: 23px;
+    font-weight: 400;
+    line-height: 29px;
+    margin: .5em 0 1em;
+}
 a.nav-tab, a.nav-tab:focus, a.nav-tab:active {
     outline: none;
     -moz-box-shadow: none;

@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS input, output, parsing, normalization and storage
-    Version: 1.7.6
+    Version: 1.7.8
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -62,7 +62,10 @@ class ChildThemeConfiguratorCSS {
         'transition\-timing\-function',
         'transition\-delay',
         'hyphens',
-        'transform'
+        'transform',
+        'columns',
+        'column\-gap',
+        'column\-count',
     );
     var $configvars = array(
         'addl_css',
@@ -163,6 +166,7 @@ class ChildThemeConfiguratorCSS {
     
     // writes ctc config data to options api
     function save_config( $override = NULL ) {
+        global $wpdb;
         if ( isset( $override ) ) $option = $override;
         else $option = apply_filters( 'chld_thm_cfg_option', '' );
         $option = CHLD_THM_CFG_OPTIONS . $option;
@@ -170,10 +174,35 @@ class ChildThemeConfiguratorCSS {
         $configarray = array();
         foreach ( $this->configvars as $configkey )
             $configarray[ $configkey ] = $this->{$configkey};
-        update_site_option( $option . '_configvars', $configarray );
         $this->ctc()->debug( 'configvars: ' . print_r( $configarray, TRUE ), __FUNCTION__ );
-        foreach ( $this->dicts as $configkey )
-            update_site_option( $option . '_' . $configkey, $this->{$configkey} );
+        if ( is_multisite() ):
+            update_site_option( $option . '_configvars', $configarray ); 
+        else:
+            update_option( $option . '_configvars', $configarray, FALSE ); 
+            // do not autoload ( passing false above only works if value changes
+            // we have to turn off autoload for all existing options )
+		    $result = $wpdb->update( 
+                // SET 'autoload' = 'no'
+                $wpdb->options, array( 'autoload' => 'no' ), 
+                // WHERE option_name = ?
+                array( 'option_name' => $option . '_configvars' ) 
+            );
+        endif;
+        foreach ( $this->dicts as $configkey ):
+            if ( is_multisite() ):
+                update_site_option( $option . '_' . $configkey, $this->{$configkey} ); 
+            else:
+                update_option( $option . '_' . $configkey, $this->{$configkey}, FALSE );
+                // do not autoload ( passing false above only works if value changes
+                // we have to turn off autoload for all existing options )
+                $result = $wpdb->update( 
+                    // SET 'autoload' = 'no'
+                    $wpdb->options, array( 'autoload' => 'no' ), 
+                    // WHERE option_name = ?
+                    array( 'option_name' => $option . '_' . $configkey ) 
+                );
+            endif;
+        endforeach;
     }
     
     /**
@@ -868,9 +897,10 @@ class ChildThemeConfiguratorCSS {
         ) as $regex ): // (((?!\@media).) backreference too memory intensive - rolled back in v 1.4.8.1
             preg_match_all( $regex, $this->styles, $matches );
             foreach ( $matches[ 1 ] as $segment ):
-                $ruleset[ trim( $segment ) ] = array_shift( $matches[ 2 ] ) 
-                    . ( isset( $ruleset[ trim( $segment ) ] ) ?
-                        $ruleset[ trim( $segment ) ] : '' );
+                $segment = $this->normalize_query( $segment );
+                $ruleset[ $segment ] = array_shift( $matches[ 2 ] ) 
+                    . ( isset( $ruleset[ $segment ] ) ?
+                        $ruleset[ $segment ] : '' );
             endforeach;
             // stripping rulesets leaves base styles
             $this->styles = preg_replace( $regex, '', $this->styles );
@@ -1110,7 +1140,7 @@ class ChildThemeConfiguratorCSS {
      * FIXME - somehow condense all these foreach loops?
      */
     function encode_shorthand( $shorthand, &$rule_output ) {
-        //print_r( $shorthand );
+        //if ( $shorthand ) print_r( $shorthand );
         foreach ( $shorthand as $property => $sides ):
             if ( isset( $sides[ 'top' ] ) ):
                 foreach ( $sides[ 'top' ] as $tval => $tarr ):
@@ -1134,6 +1164,7 @@ class ChildThemeConfiguratorCSS {
                                                 $bval,
                                                 $lval,
                                             );
+                                            // echo 'combo before: ' . print_r( $combo, TRUE ) . LF;
                                             // remove from shorthand array
                                             unset( $shorthand[ $property ][ 'top' ][ $tval ] );
                                             unset( $shorthand[ $property ][ 'right' ][ $rval ] );
@@ -1141,10 +1172,19 @@ class ChildThemeConfiguratorCSS {
                                             unset( $shorthand[ $property ][ 'left' ][ $lval ] );
                                             
                                             // combine into shorthand syntax
-                                            if ( $lval == $rval ) array_pop( $combo );
-                                            if ( $bval == $tval ) array_pop( $combo );
-                                            if ( $rval == $tval && $bval == $tval ) array_pop( $combo );
-                                            
+                                            if ( $lval === $rval ):
+                                                //echo 'left same as right, popping left' . LF;
+                                                array_pop( $combo );
+                                                if ( $bval === $tval ):
+                                                    //echo 'bottom same as top, popping bottom' . LF;
+                                                    array_pop( $combo );
+                                                    if ( $rval === $tval ): // && $bval === $tval ):
+                                                        //echo 'right same as top, popping right' . LF;
+                                                        array_pop( $combo );
+                                                    endif;
+                                                endif;
+                                            endif;
+                                            //echo 'combo after: ' . print_r( $combo, TRUE ) . LF;
                                             // set rule
                                             $rule_output[ $property . ': ' . implode( ' ', $combo ) . ( $tarr[ 0 ] ? ' !important' : '' ) ] = $this->sortstr( $property, $currseq );
                                             // reset sort sequence
@@ -1702,6 +1742,18 @@ class ChildThemeConfiguratorCSS {
     function normalize_color( $value ) {
         $value = preg_replace_callback( "/#([0-9A-F]{3}([0-9A-F]{3})?)/i", array( $this, 'tolower' ), $value );
         $value = preg_replace( "/#([0-9A-F])\\1([0-9A-F])\\2([0-9A-F])\\3/i", "#$1$2$3", $value );
+        return $value;
+    }
+    
+    function normalize_query( $value ) {
+        // space after :
+        $value = str_replace( ':', ': ', trim( $value ) );
+        // remove multiple whitespace
+        $value = preg_replace( "/\s+/s", ' ', $value );
+        // remove space after (
+        $value = str_replace( '( ', '(', $value );
+        // remove space before )
+        $value = str_replace( ' )', ')', $value );
         return $value;
     }
     
