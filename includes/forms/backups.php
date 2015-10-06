@@ -7,6 +7,6 @@ if ( !defined( 'ABSPATH' ) ) exit;
           <label>
             <input class="ctc_checkbox" id="ctc_revert_<?php echo $backup; ?>" name="ctc_revert" type="radio" 
                 value="<?php echo $backup; ?>" />
-            <?php echo __( 'Restore backup from', 'chld_thm_cfg' ) . ' ' . $label; ?></label>
+            <?php echo __( 'Restore backup from', 'child-theme-configurator' ) . ' ' . $label; ?></label>
           <br/>
           <?php endforeach;

@@ -5,7 +5,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: Child_Theme_Configurator_UI
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles the plugin User Interface
-    Version: 1.7.8
+    Version: 1.7.9
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -49,10 +49,10 @@ class ChildThemeConfiguratorUI {
         // check header for hard-coded 
         $bad_practice_descr = array(
             //  Stylesheets should be enqueued using the <code>wp_enqueue_scripts</code> action.
-            'links'     => __( 'A stylesheet link tag is hard-coded into the header template.', 'chld_thm_cfg' ),
-            'enqueue'   => __( '<code>wp_enqueue_style()</code> called from the header template.', 'chld_thm_cfg' ),
+            'links'     => __( 'A stylesheet link tag is hard-coded into the header template.', 'child-theme-configurator' ),
+            'enqueue'   => __( '<code>wp_enqueue_style()</code> called from the header template.', 'child-theme-configurator' ),
             //  <code>wp_head()</code> should be located just before the closing <code>&lt;/head&gt;</code> tag. 
-            'wphead'    => __( 'Code exists between the <code>wp_head()</code> function and the closing <code>&lt;/head&gt;</code> tag.', 'chld_thm_cfg'),
+            'wphead'    => __( 'Code exists between the <code>wp_head()</code> function and the closing <code>&lt;/head&gt;</code> tag.', 'child-theme-configurator'),
         );
         $parentfile = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->get_current_parent() ) . 'header.php';
         $childfile  = trailingslashit( get_theme_root() ) . trailingslashit( $this->ctc()->css->get_prop( 'child' ) ) . 'header.php';
@@ -159,17 +159,17 @@ class ChildThemeConfiguratorUI {
         elseif ( isset( $_GET[ 'updated' ] ) ):
             echo '<div class="updated">' . LF;
             if ( 8 == $_GET[ 'updated' ] ):
-                echo '<p>' . __( 'Child Theme files modified successfully.', 'chld_thm_cfg' ) . '</p>' . LF;
+                echo '<p>' . __( 'Child Theme files modified successfully.', 'child-theme-configurator' ) . '</p>' . LF;
             else:
                 $child_theme = wp_get_theme( $this->ctc()->css->get_prop( 'child' ) );
                 echo '<p>' . apply_filters( 'chld_thm_cfg_update_msg', sprintf( __( 'Child Theme <strong>%s</strong> has been generated successfully.
-                ', 'chld_thm_cfg' ), $child_theme->Name ), $this->ctc() ) . LF;
+                ', 'child-theme-configurator' ), $child_theme->Name ), $this->ctc() ) . LF;
                 if ( $this->ctc()->is_theme() ):
-                echo '<strong>' . __( 'IMPORTANT:', 'chld_thm_cfg' ) . LF;
+                echo '<strong>' . __( 'IMPORTANT:', 'child-theme-configurator' ) . LF;
                 if ( is_multisite() && !$child_theme->is_allowed() ): 
-                    echo 'You must <a href="' . network_admin_url( '/themes.php' ) . '" title="' . __( 'Go to Themes', 'chld_thm_cfg' ) . '" class="ctc-live-preview">' . __( 'Network enable', 'chld_thm_cfg' ) . '</a> ' . __( 'your child theme.', 'chld_thm_cfg' );
+                    echo 'You must <a href="' . network_admin_url( '/themes.php' ) . '" title="' . __( 'Go to Themes', 'child-theme-configurator' ) . '" class="ctc-live-preview">' . __( 'Network enable', 'child-theme-configurator' ) . '</a> ' . __( 'your child theme.', 'child-theme-configurator' );
                 else: 
-                    echo '<a href="' . admin_url( '/customize.php?theme=' . $this->ctc()->css->get_prop( 'child' ) ) . '" title="' . __( 'Live Preview', 'chld_thm_cfg' ) . '" class="ctc-live-preview">' . __( 'Test your child theme', 'chld_thm_cfg' ) . '</a> ' . __( 'before activating.', 'chld_thm_cfg' );
+                    echo '<a href="' . admin_url( '/customize.php?theme=' . $this->ctc()->css->get_prop( 'child' ) ) . '" title="' . __( 'Live Preview', 'child-theme-configurator' ) . '" class="ctc-live-preview">' . __( 'Test your child theme', 'child-theme-configurator' ) . '</a> ' . __( 'before activating.', 'child-theme-configurator' );
                 endif;
                 echo '</strong></p>' . LF;
                 endif;
@@ -189,9 +189,12 @@ class ChildThemeConfiguratorUI {
             
             $regex_sidebar = '/' . preg_quote( '<!-- BEGIN sidebar -->' ) . '(.*?)' . preg_quote( '<!-- END sidebar -->' ) . '/s';
             $regex_tab = '/' . preg_quote( '<!-- BEGIN tab -->' ) . '\s*<h\d id="(.*?)">(.*?)<\/h\d>(.*?)' . preg_quote( '<!-- END tab -->' ) . '/s';
+            $locale = get_locale();
+            $dir = CHLD_THM_CFG_DIR . '/includes/help/';
+            $file = $dir . $locale . '.php';
+            if ( !is_readable( $file ) ) $file = $dir . 'en_US.php';
             ob_start();
-            // stub for multiple languages future release
-            include( CHLD_THM_CFG_DIR . '/includes/help/help_en_US.php' );
+            include( $file );
             $help_raw = ob_get_contents();
             ob_end_clean();
             // parse raw html for tokens
@@ -200,7 +203,7 @@ class ChildThemeConfiguratorUI {
 
     		// Add help tabs
             if ( isset( $tabs[ 1 ] ) ):
-                $priority = 0;
+                //$priority = 0;
                 while( count( $tabs[ 1 ] ) ):
                     $id         = array_shift( $tabs[ 1 ] );
                     $title      = array_shift( $tabs[ 2 ] );
@@ -209,7 +212,7 @@ class ChildThemeConfiguratorUI {
 	    	    	    'id'        => $id,
     		    	    'title'     => $title,
 	    		        'content'   => $content, 
-                        'priority'  => ++$priority,
+                        //'priority'  => ++$priority,
                     ) );
                 endwhile;
             endif;
