@@ -10,7 +10,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     <?php wp_nonce_field( apply_filters( 'chld_thm_cfg_action', 'ctc_update' ) ); ?>
     <div class="ctc-input-row clearfix" id="ctc_input_row_rule_menu">
       <div class="ctc-input-cell"> <strong>
-        <?php _e( 'Property', 'chld_thm_cfg' ); ?>
+        <?php _e( 'Property', 'child-theme-configurator' ); ?>
         </strong> </div>
       <div class="ctc-input-cell" id="ctc_rule_menu_selected">&nbsp;</div>
       <div id="ctc_status_rule_val"></div>
@@ -23,13 +23,13 @@ if ( !defined( 'ABSPATH' ) ) exit;
     </div>
     <div class="ctc-input-row clearfix" id="ctc_input_row_rule_header" style="display:none">
       <div class="ctc-input-cell"> <strong>
-        <?php _e( 'Value', 'chld_thm_cfg' ); ?>
+        <?php _e( 'Value', 'child-theme-configurator' ); ?>
         </strong> </div>
       <div class="ctc-input-cell"> <strong>
-        <?php _e( 'Sample', 'chld_thm_cfg' ); ?>
+        <?php _e( 'Sample', 'child-theme-configurator' ); ?>
         </strong> </div>
       <div class="ctc-input-cell"> <strong>
-        <?php _e( 'Selectors', 'chld_thm_cfg' ); ?>
+        <?php _e( 'Selectors', 'child-theme-configurator' ); ?>
         </strong> </div>
     </div>
     <div class="ctc-rule-value-input-container clearfix" id="ctc_rule_value_inputs" style="display:none"> </div>

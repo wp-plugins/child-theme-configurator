@@ -20,7 +20,7 @@ background:#f9f9f9 url(<?php echo includes_url( 'images/xit-2x.gif' );
 </style>
 <div class="wrap" id="ctc_main">
   <?php do_action( 'chld_thm_cfg_related_links' ); ?>
-  <h2><?php echo apply_filters( 'chld_thm_cfg_header', __( 'Child Theme Configurator', 'chld_thm_cfg' ) . ' ' . __( 'version', 'chld_thm_cfg' ) . ' ' . CHLD_THM_CFG_VERSION ); ?></h2>
+  <h2><?php echo apply_filters( 'chld_thm_cfg_header', __( 'Child Theme Configurator', 'child-theme-configurator' ) . ' ' . __( 'version', 'child-theme-configurator' ) . ' ' . CHLD_THM_CFG_VERSION ); ?></h2>
   <?php 
 if ( $this->ctc()->is_post && !$this->ctc()->fs ):
     echo $this->ctc()->fs_prompt;

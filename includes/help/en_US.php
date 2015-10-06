@@ -207,13 +207,13 @@ The plugin only loads the bulk of the code in the admin when you are using the t
   <li id="override"><strong>Override</strong> When a selector exists in both the Child Theme and the Parent Theme, the Child Theme takes priority over the Parent theme. This is where the Child Theme Configurator stands out: it helps you create <strong>exact overrides</strong> of selectors from the Parent Theme, eliminating hours of trial and error.</li>
 </ul>
 <!-- END tab -->
-<h3 id="ctc_help_sidebar">Links</h3>
 <!-- BEGIN sidebar -->
 <h4>Our plugins will not nag you for donations...</h4>
 <span style="font-size:smaller">...but we LOVE referrals.</span><br/><a href="http://wordpress.org/support/view/plugin-reviews/child-theme-configurator?rate=5#postform">Give Us 5 Stars</a>
 <h4>Introducing CTC Pro</h4>
-<a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/child-theme-configurator-pro/" title="<?php _e( 'Learn more about CTC Pro', 'chld_thm_cfg' ); ?>"><img src="<?php echo CHLD_THM_CFG_URL . 'css/pro-banner.jpg'; ?>" width="150" height="48" /></a>
+<a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/child-theme-configurator-pro/" title="<?php _e( 'Learn more about CTC Pro', 'child-theme-configurator' ); ?>"><img src="<?php echo CHLD_THM_CFG_URL . 'css/pro-banner.jpg'; ?>" width="150" height="48" /></a>
 <p style="font-size:smaller">Designed by WordPress developers who use it every day, CTC Pro adds plugin stylesheets and other features to make design work quicker and easier. This is a free upgrade for users that purchased the Plugins Extension. <a href="<?php echo CHLD_THM_CFG_DOCS_URL; ?>/child-theme-configurator-pro/" title="Child Theme Configurator Pro">Learn more</a></p>
+<h4 id="ctc_help_sidebar">Links</h4>
 <ul>
   <li><a href="http://www.lilaeamedia.com/about/contact/">Contact us</a></li>
   <li><a href="http://www.childthemeconfigurator.com/">Plugin Website</a></li>

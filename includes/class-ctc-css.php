@@ -6,7 +6,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     Class: ChildThemeConfiguratorCSS
     Plugin URI: http://www.childthemeconfigurator.com/
     Description: Handles all CSS input, output, parsing, normalization and storage
-    Version: 1.7.8
+    Version: 1.7.9
     Author: Lilaea Media
     Author URI: http://www.lilaeamedia.com/
     Text Domain: chld_thm_cfg
@@ -178,29 +178,15 @@ class ChildThemeConfiguratorCSS {
         if ( is_multisite() ):
             update_site_option( $option . '_configvars', $configarray ); 
         else:
-            update_option( $option . '_configvars', $configarray, FALSE ); 
             // do not autoload ( passing false above only works if value changes
-            // we have to turn off autoload for all existing options )
-		    $result = $wpdb->update( 
-                // SET 'autoload' = 'no'
-                $wpdb->options, array( 'autoload' => 'no' ), 
-                // WHERE option_name = ?
-                array( 'option_name' => $option . '_configvars' ) 
-            );
+            update_option( $option . '_configvars', $configarray, FALSE ); 
         endif;
         foreach ( $this->dicts as $configkey ):
             if ( is_multisite() ):
                 update_site_option( $option . '_' . $configkey, $this->{$configkey} ); 
             else:
-                update_option( $option . '_' . $configkey, $this->{$configkey}, FALSE );
                 // do not autoload ( passing false above only works if value changes
-                // we have to turn off autoload for all existing options )
-                $result = $wpdb->update( 
-                    // SET 'autoload' = 'no'
-                    $wpdb->options, array( 'autoload' => 'no' ), 
-                    // WHERE option_name = ?
-                    array( 'option_name' => $option . '_' . $configkey ) 
-                );
+                update_option( $option . '_' . $configkey, $this->{$configkey}, FALSE );
             endif;
         endforeach;
     }
@@ -787,7 +773,7 @@ class ChildThemeConfiguratorCSS {
     
     // strips non printables and potential commands
     function sanitize( $styles ) {
-        return sanitize_text_field( preg_replace( '/[^[:print:]]/', '', $styles ) );
+        return sanitize_text_field( preg_replace( '/[^[:print:]]|\{.*/', '', $styles ) );
     }
     
     // escapes octal values in input to allow for specific ascii strings in content rule
