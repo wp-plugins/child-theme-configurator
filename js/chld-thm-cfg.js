@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.9
+ *  Version: 1.7.9.1
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -479,19 +479,14 @@
                 
         get_filtered_rules: function( request, response ) {
             //console.log( 'get_filtered_rules' );
-            var self = this,
-                arr = [],
+            var arr = [],
                 matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" ); //,
-            if ( $.chldthmcfg.is_empty( this.element.data( 'menu' ) ) ) {
-                arr.push( { 'label': ctcAjax.nosels_txt, 'value': null } );
-            } else {
-                $.each( $( '#ctc_rule_menu' ).data( 'menu' ), function( key, val ) {
-                    //multiple versions of rule ok
-                    if ( matcher.test( key ) ) {
-                        arr.push( { 'label': key, 'value': val } );
-                    }
-                } );
-            }
+            $.each( $( '#ctc_rule_menu' ).data( 'menu' ), function( key, val ) {
+                //multiple versions of rule ok
+                if ( matcher.test( key ) ) {
+                    arr.push( { 'label': key, 'value': val } );
+                }
+            } );
             response( arr );
         },
         

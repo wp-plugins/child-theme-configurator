@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: child theme, child themes, custom styles, customize styles, customize theme, CSS, responsive, css editor, child theme generator, child theme creator, style, stylesheet, customizer
 Requires at least: 3.9
 Tested up to: 4.4
-Stable tag: 1.7.9
+Stable tag: 1.7.9.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -276,6 +276,9 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 7. Files tab
 
 == Changelog ==
+= 1.7.9.1 =
+* Fix: regression bug in 1.7.9 causing new property menu to fail
+
 = 1.7.9 =
 * Fix: use nonce when retrieving front-end html to parse default additional stylesheets
 * Refactored classes to make Child Theme Configurator more lightweight on front end
@@ -550,6 +553,7 @@ https://www.youtube.com/watch?v=iBiiAgsK4G4
 * Initial release.
 
 == Upgrade Notice ==
+1.7.9.1 Fixed regression bug in 1.7.9 causing new property menu to fail. 
 1.7.9 Fix to autopopulate default additional stylesheets. Changes to make Child Theme Configurator more lightweight on the front-end. 
 
 == Override Parent Styles ==

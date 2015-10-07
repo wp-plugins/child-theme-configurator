@@ -91,7 +91,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
     define( 'LILAEAMEDIA_URL',                  "http://www.lilaeamedia.com" );
     defined( 'CHLD_THM_CFG_DOCS_URL' ) or 
     define( 'CHLD_THM_CFG_DOCS_URL',            "http://www.childthemeconfigurator.com" );
-    define( 'CHLD_THM_CFG_VERSION',             '1.7.9' );
+    define( 'CHLD_THM_CFG_VERSION',             '1.7.9.1' );
     define( 'CHLD_THM_CFG_MIN_WP_VERSION',      '3.7' );
     defined( 'CHLD_THM_CFG_BPSEL' ) or 
     define( 'CHLD_THM_CFG_BPSEL',               '2500' );
