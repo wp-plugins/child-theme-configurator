@@ -12,10 +12,10 @@ $ctcpage = apply_filters( 'chld_thm_cfg_admin_page', CHLD_THM_CFG_MENU );
       <div class="ctc-input-cell">
         <div class="ctc-textarea-button-cell" id="ctc_save_imports_cell">
           <input type="button" class="button ctc-save-input" id="ctc_save_imports" 
-            name="ctc_save_imports" value="<?php _e( 'Save', 'chld_thm_cfg' ); ?>"  disabled />
+            name="ctc_save_imports" value="<?php _e( 'Save', 'child-theme-configurator' ); ?>"  disabled />
         </div>
         <strong>
-        <?php _e( 'Linked Stylesheets', 'chld_thm_cfg' ); ?>
+        <?php _e( 'Linked Stylesheets', 'child-theme-configurator' ); ?>
         </strong>
         <p><?php _e( 'Use <code>@import url( [path] );</code> to link additional stylesheets. Child Theme Configurator uses the <code>@import</code> keyword to identify them and convert them to <code>&lt;link&gt;</code> tags. <strong>Example:</strong>');?></p> 
         <p><code>@import url(http://fonts.googleapis.com/css?family=Oswald);</code></p> 

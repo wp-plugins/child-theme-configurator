@@ -2,7 +2,7 @@
  *  Script: chld-thm-cfg.js
  *  Plugin URI: http://www.childthemeconfigurator.com/
  *  Description: Handles jQuery, AJAX and other UI
- *  Version: 1.7.8
+ *  Version: 1.7.9.1
  *  Author: Lilaea Media
  *  Author URI: http://www.lilaeamedia.com/
  *  License: GPLv2
@@ -425,42 +425,55 @@
         get_queries: function( request, response ) {
             //console.log( 'get_queries' );
             //console.log( this );
-            var arr = [], 
+            var self = this,
+                arr = [], 
                 matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
-            
-            // note: key = ndx, value = query name
-            $.each( this.element.data( 'menu' ), function( key, val ) {
-                if ( matcher.test( val ) ) {
-                    arr.push( { 'label': val, 'value': val } );
-                }
-            } );
-            
+            if ( $.chldthmcfg.is_empty( this.element.data( 'menu' ) ) ) {
+                arr.push( { 'label': ctcAjax.nosels_txt, 'value': null } );
+            } else {
+                // note: key = ndx, value = query name
+                $.each( this.element.data( 'menu' ), function( key, val ) {
+                    if ( matcher.test( val ) ) {
+                        arr.push( { 'label': val, 'value': val } );
+                    }
+                } );
+            }
             response( arr );
         },
         
         get_selectors: function( request, response ) {
             //console.log( 'get_selectors' );
-            var arr = [], 
+            var self = this,
+                arr = [], 
                 matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
-            // note: key = selector name, value = qsid
-            $.each( this.element.data( 'menu' ), function( key, val ) {
-                if ( matcher.test( key ) ) {
-                    arr.push( { 'label': key, 'value': val } );
-                }
-            } );
+            if ( $.chldthmcfg.is_empty( this.element.data( 'menu' ) ) ) {
+                arr.push( { 'label': ctcAjax.nosels_txt, 'value': null } );
+            } else {
+                // note: key = selector name, value = qsid
+                $.each( this.element.data( 'menu' ), function( key, val ) {
+                    if ( matcher.test( key ) ) {
+                        arr.push( { 'label': key, 'value': val } );
+                    }
+                } );
+            }
             response( arr );
         },
         
         get_rules: function( request, response ) {
             //console.log( 'get_rules' );
-            var arr = [], 
+            var self = this,
+                arr = [], 
                 matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
-            // note: key = ruleid, value = rule name
-            $.each( this.element.data( 'menu' ), function( key, val ) {
-                if ( matcher.test( key ) ) {
-                    arr.push( { 'label': key, 'value': val } );
-                }
-            } );
+            if ( $.chldthmcfg.is_empty( this.element.data( 'menu' ) ) ) {
+                arr.push( { 'label': ctcAjax.nosels_txt, 'value': null } );
+            } else {
+                // note: key = ruleid, value = rule name
+                $.each( this.element.data( 'menu' ), function( key, val ) {
+                    if ( matcher.test( key ) ) {
+                        arr.push( { 'label': key, 'value': val } );
+                    }
+                } );
+            }
             response( arr );
         },
                 
@@ -906,7 +919,7 @@
                 template    = $( '#ctc_theme_parnt' ).val(),
                 theme_uri   = ctcAjax.theme_uri.replace( /^https?:\/\//, '' ),
                 homeurl     = ctcAjax.homeurl.replace( /^https?/, ctcAjax.ssl ? 'https' : 'http' ),
-                url         = homeurl + '?preview=1&p=x&template=' + template + '&stylesheet=' + template,
+                url         = homeurl + '&template=' + template + '&stylesheet=' + template,
                 regex       = new RegExp( "<link rel=[\"']stylesheet[\"'][^>]+?" 
                     + theme_uri + '/' + template + '/(.+?\\.css)[^>]+?>', 'g' ),
                 additional;
